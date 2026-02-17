@@ -1,0 +1,44 @@
+// Usamos el sistema de módulos de Sass
+@use "./styles/variables" as v;
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: "Inter", system-ui, sans-serif;
+}
+
+body {
+	background-color: v.$bg-body; // Usamos el alias 'v'
+	color: v.$text-main;
+	min-height: 100vh;
+
+	// Fondo Claro: Un degradado muy sutil para que el cristal resalte
+	background-image:
+		radial-gradient(
+			circle at 15% 50%,
+			rgba(v.$primary, 0.08) 0%,
+			transparent 25%
+		),
+		radial-gradient(
+			circle at 85% 30%,
+			rgba(v.$secondary, 0.08) 0%,
+			transparent 25%
+		);
+}
+
+// Scrollbar
+::-webkit-scrollbar {
+	width: 8px;
+}
+::-webkit-scrollbar-track {
+	background: v.$bg-body;
+}
+::-webkit-scrollbar-thumb {
+	background: #cbd5e1; // Gris claro para el scroll
+	border-radius: 4px;
+
+	&:hover {
+		background: #94a3b8;
+	}
+}

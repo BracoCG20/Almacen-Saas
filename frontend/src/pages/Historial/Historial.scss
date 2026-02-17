@@ -1,0 +1,328 @@
+@use "../../styles/variables" as v;
+
+.historial-container {
+	padding: 2rem;
+	max-width: 1600px;
+	margin: 0 auto;
+
+	.page-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 2rem;
+
+		h1 {
+			font-size: 1.8rem;
+			font-weight: 700;
+			color: v.$primary;
+			margin: 0;
+		}
+
+		.header-actions {
+			display: flex;
+			gap: 12px;
+		}
+
+		.btn-action-header {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			padding: 10px 20px;
+			border-radius: 10px;
+			font-weight: 600;
+			font-size: 0.95rem;
+			border: none;
+			cursor: pointer;
+			color: white;
+			transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+
+			&:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+			}
+
+			&.btn-excel {
+				background-color: #10b981;
+				&:hover {
+					background-color: #059669;
+				}
+			}
+		}
+	}
+
+	// --- FILTROS ---
+	.filters-container {
+		display: flex;
+		gap: 1rem;
+		margin-bottom: 1.5rem;
+		align-items: center;
+
+		@media (max-width: 768px) {
+			flex-direction: column;
+			align-items: stretch;
+		}
+
+		.search-bar {
+			flex: 1;
+			background: white;
+			padding: 0 18px;
+			height: 50px;
+			border-radius: 8px;
+			border: 1px solid #cbd5e1;
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			transition: all 0.2s ease;
+
+			&:focus-within {
+				border-color: v.$primary;
+				box-shadow: 0 0 0 3px rgba(v.$primary, 0.15);
+			}
+
+			input {
+				border: none;
+				outline: none;
+				width: 100%;
+				font-size: 0.95rem;
+				color: #1e293b;
+				background: transparent;
+				&::placeholder {
+					color: #9ca3af;
+				}
+			}
+		}
+
+		.select-filter {
+			width: 300px;
+			@media (max-width: 768px) {
+				width: 100%;
+			}
+		}
+	}
+
+	// --- TABLA ---
+	.table-container {
+		background: white;
+		border-radius: 16px;
+		box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
+		border: 1px solid #f1f5f9;
+		overflow: hidden;
+
+		table {
+			width: 100%;
+			border-collapse: collapse;
+
+			thead tr {
+				background-color: #eef2ff;
+				th {
+					padding: 16px 20px;
+					text-align: left;
+					font-weight: 700;
+					font-size: 0.75rem;
+					text-transform: uppercase;
+					color: #4338ca;
+					letter-spacing: 0.8px;
+					&.center {
+						text-align: center;
+					}
+				}
+			}
+
+			tbody tr {
+				border-bottom: 1px solid #f1f5f9;
+				transition: all 0.2s ease;
+				position: relative;
+				&:hover {
+					background-color: #f8fafc;
+				}
+				td:first-child {
+					position: relative;
+					&::before {
+						content: "";
+						position: absolute;
+						left: 0;
+						top: 0;
+						bottom: 0;
+						width: 4px;
+						background-color: transparent;
+						transition: background-color 0.2s ease;
+					}
+				}
+				&:hover td:first-child::before {
+					background-color: v.$primary;
+				}
+				td {
+					padding: 14px 20px;
+					vertical-align: middle !important;
+					&.center {
+						text-align: center;
+					}
+				}
+			}
+		}
+	}
+
+	// --- CELDAS INTERNAS ---
+	.info-cell {
+		display: flex;
+		flex-direction: column;
+		.name {
+			font-weight: 600;
+			color: #1e293b;
+			font-size: 0.9rem;
+		}
+		.audit-text {
+			font-size: 0.75rem;
+			color: #64748b;
+			margin-top: 2px;
+		}
+	}
+
+	.audit-cell {
+		.user-info {
+			display: flex;
+			flex-direction: column;
+			.name {
+				font-weight: 600;
+				color: #1e293b;
+				font-size: 0.85rem;
+			}
+			.audit-text {
+				font-size: 0.7rem;
+				color: #94a3b8;
+				margin-top: 2px;
+			}
+		}
+		.system-text {
+			font-style: italic;
+			color: #cbd5e1;
+			font-size: 0.85rem;
+		}
+	}
+
+	.email-cell {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		font-size: 0.85rem;
+		font-weight: 600;
+	}
+
+	// --- BADGES ---
+	.status-badge {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 4px 10px;
+		border-radius: 20px;
+		font-size: 0.65rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		&.entrega {
+			background-color: #dcfce7;
+			color: #15803d;
+			border: 1px solid #bbf7d0;
+		}
+		&.devolucion {
+			background-color: #fee2e2;
+			color: #b91c1c;
+			border: 1px solid #fecaca;
+		}
+	}
+
+	.status-badge-mini {
+		display: inline-flex;
+		padding: 4px 8px;
+		border-radius: 6px;
+		font-size: 0.65rem;
+		font-weight: 700;
+		text-transform: uppercase;
+
+		// --- COLORES EXACTOS PARA CADA ESTADO ---
+		&.operativo {
+			background-color: #f0fdf4;
+			color: #16a34a;
+			border: 1px solid #bbf7d0;
+		}
+		&.inoperativo {
+			background-color: #fef2f2;
+			color: #dc2626;
+			border: 1px solid #fecaca;
+		} // NUEVO
+		&.malogrado {
+			background-color: #fff7ed;
+			color: #ea580c;
+			border: 1px solid #ffedd5;
+		}
+		&.robado {
+			background-color: #fef2f2;
+			color: #dc2626;
+			border: 1px solid #fecaca;
+		}
+		&.neutro {
+			background-color: #f1f5f9;
+			color: #64748b;
+			border: 1px solid #e2e8f0;
+		}
+	}
+
+	// --- PAGINACIÓN ---
+	.pagination-footer {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 16px 25px;
+		border-top: 1px solid #e2e8f0;
+		background-color: white;
+		.info {
+			color: #64748b;
+			font-size: 0.85rem;
+			strong {
+				color: #1e293b;
+				font-weight: 700;
+			}
+		}
+		.controls {
+			display: flex;
+			gap: 8px;
+			button {
+				width: 32px;
+				height: 32px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				border: 1px solid #e2e8f0;
+				border-radius: 8px;
+				background-color: white;
+				cursor: pointer;
+				color: #64748b;
+				transition: all 0.2s;
+				&:disabled:not(.active) {
+					opacity: 0.5;
+					cursor: not-allowed;
+					background-color: #f8fafc;
+				}
+				&:hover:not(:disabled) {
+					background-color: v.$primary;
+					color: white;
+					border-color: v.$primary;
+				}
+				&.active {
+					background-color: v.$primary;
+					color: white;
+					border-color: v.$primary;
+					cursor: default;
+				}
+			}
+		}
+	}
+	.loading-state,
+	.no-data {
+		padding: 3rem;
+		text-align: center;
+		color: #94a3b8;
+		font-size: 1.1rem;
+	}
+}

@@ -1,0 +1,103 @@
+@use "../../styles/variables" as v;
+
+.equipo-form {
+	display: flex;
+	flex-direction: column;
+	gap: 1.2rem;
+	padding: 5px;
+
+	.form-row {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 1.2rem;
+
+		@media (max-width: 600px) {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	.divider {
+		border: none;
+		border-top: 1px solid rgba(0, 0, 0, 0.08);
+		margin: 0.5rem 0;
+	}
+
+	.input-group {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+
+		label {
+			font-size: 0.85rem;
+			font-weight: 700;
+			color: #4b5563;
+			display: flex;
+			align-items: center;
+			gap: 0.4rem;
+		}
+
+		input {
+			width: 100%;
+			height: 50px; // ALTO FORZADO PARA UNIFORMIDAD
+			padding: 0 14px;
+			border-radius: 8px;
+			border: 1px solid #cbd5e1;
+			font-size: 0.95rem;
+			color: #1e293b;
+			background-color: #fff;
+			transition: all 0.2s;
+			outline: none;
+			font-family: inherit;
+			box-sizing: border-box;
+			display: flex;
+			align-items: center;
+
+			&:focus {
+				border-color: v.$primary;
+				box-shadow: 0 0 0 3px rgba(v.$primary, 0.15);
+			}
+
+			&::placeholder {
+				color: #9ca3af;
+			}
+			&:disabled {
+				background-color: #f8fafc;
+				color: #9ca3af;
+				cursor: not-allowed;
+			}
+		}
+	}
+
+	.form-actions {
+		display: flex;
+		justify-content: flex-end;
+		margin-top: 1.5rem;
+		padding-top: 20px;
+		padding-bottom: 10px;
+		border-top: 1px solid #e5e7eb;
+
+		.btn-submit {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 8px;
+			padding: 0 24px;
+			height: 50px;
+			border-radius: 8px;
+			font-weight: 600;
+			border: none;
+			cursor: pointer;
+			font-size: 1rem;
+			transition: all 0.2s;
+			background-color: v.$primary;
+			color: white;
+			flex: 1;
+			box-shadow: 0 4px 6px rgba(v.$primary, 0.2);
+
+			&:hover {
+				filter: brightness(1.1);
+				transform: translateY(-2px);
+			}
+		}
+	}
+}
