@@ -78,7 +78,6 @@ const Colaboradores = () => {
 			// 3. Obtener lista de colaboradores
 			const res = await api.get("/colaboradores");
 			const sorted = res.data.sort((a, b) => {
-				// Ordenar por estado (Activos primero) y luego alfabéticamente
 				if (a.estado === b.estado) return a.nombres.localeCompare(b.nombres);
 				return a.estado ? -1 : 1;
 			});
@@ -124,26 +123,40 @@ const Colaboradores = () => {
 		indexOfLastItem,
 	);
 	const totalPages = Math.ceil(filteredColaboradores.length / itemsPerPage);
+	const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-	// --- FUNCIONES DE ACCIÓN ---
+	// --- EXPORTAR EXCEL DETALLADO GERENCIAL ---
 	const exportarExcel = () => {
+		if (colaboradores.length === 0)
+			return toast.info("No hay datos para exportar");
+
 		const dataParaExcel = filteredColaboradores.map((c) => ({
-			ID: c.id,
-			Estado: c.estado ? "ACTIVO" : "INACTIVO",
-			DNI: c.dni || "-",
-			Nombres: c.nombres,
+			"Estado Actual": c.estado ? "ACTIVO" : "INACTIVO",
+			"Nombres Completos": c.nombres,
 			Apellidos: c.apellidos,
-			"Correo Electrónico": c.email_contacto,
-			Empresa: c.empresa_nombre,
-			Cargo: c.cargo,
-			Género: c.genero,
-			Teléfono: c.telefono || "-",
-			"Registrado Por": c.creador_nombre || "Sistema",
+			"DNI / Cédula": c.dni || "-",
+			Género: c.genero === "F" ? "Femenino" : "Masculino",
+
+			// Datos Laborales
+			"Empresa Asignada": c.empresa_nombre,
+			"Cargo / Puesto": c.cargo,
+
+			// Datos de Contacto
+			"Correo Corporativo/Personal": c.email_contacto,
+			"Teléfono / Celular": c.telefono || "-",
+
+			// Auditoría
+			"Registrado Por": c.creador_nombre ? `${c.creador_nombre}` : "Sistema",
+			"Fecha de Registro": c.fecha_creacion
+				? new Date(c.fecha_creacion).toLocaleDateString("es-PE")
+				: "-",
 		}));
+
 		const ws = XLSX.utils.json_to_sheet(dataParaExcel);
 		const wb = XLSX.utils.book_new();
-		XLSX.utils.book_append_sheet(wb, ws, "Colaboradores");
-		XLSX.writeFile(wb, "Reporte_Colaboradores.xlsx");
+		XLSX.utils.book_append_sheet(wb, ws, "Directorio_Personal");
+		XLSX.writeFile(wb, "Reporte_Gerencial_Colaboradores.xlsx");
+		toast.success("Reporte gerencial generado exitosamente");
 	};
 
 	const handleAdd = () => {

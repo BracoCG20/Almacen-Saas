@@ -5,6 +5,7 @@ const getColaboradores = async (req, res) => {
 	try {
 		const query = `
             SELECT c.*, 
+				   c.fecha_registro as fecha_creacion,
                    e.razon_social as empresa_nombre,
                    cc.nombres as creador_nombre,
                    uc.email_login as creador_email

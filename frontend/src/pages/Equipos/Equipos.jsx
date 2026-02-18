@@ -22,24 +22,28 @@ import {
 } from "lucide-react";
 import Modal from "../../components/Modal/Modal";
 import AddEquipoForm from "./AddEquipoForm";
-import EquipoHistorial from "./EquipoHistorial"; // COMPONENTE NUEVO
-import EquipoSpecs from "./EquipoSpecs"; // COMPONENTE NUEVO
+import EquipoHistorial from "./EquipoHistorial";
+import EquipoSpecs from "./EquipoSpecs";
 import "./Equipos.scss";
 
 const Equipos = () => {
+	// --- ESTADOS PRINCIPALES ---
 	const [equipos, setEquipos] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [userRole, setUserRole] = useState(null);
 
+	// --- ESTADOS DE FILTRO ---
 	const [searchTerm, setSearchTerm] = useState("");
 	const [filterCondicion, setFilterCondicion] = useState({
 		value: "todos",
 		label: "Todos los Equipos",
 	});
 
+	// --- ESTADOS DE PAGINACIÓN ---
 	const [currentPage, setCurrentPage] = useState(1);
 	const itemsPerPage = 8;
 
+	// --- ESTADOS DE MODALES ---
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 	const [modalType, setModalType] = useState("specs");
@@ -55,6 +59,7 @@ const Equipos = () => {
 		{ value: "alquilados", label: "Equipos Alquilados" },
 	];
 
+	// --- FETCH DE DATOS ---
 	const fetchData = async () => {
 		setLoading(true);
 		try {
@@ -77,10 +82,13 @@ const Equipos = () => {
 	useEffect(() => {
 		fetchData();
 	}, []);
+
+	// Reiniciar paginación al filtrar
 	useEffect(() => {
 		setCurrentPage(1);
 	}, [searchTerm, filterCondicion]);
 
+	// --- FORMATEADORES ---
 	const formatDate = (dateString) => {
 		if (!dateString) return "-";
 		const date = new Date(dateString);
@@ -109,6 +117,7 @@ const Equipos = () => {
 		return [partAnios, partMeses].filter(Boolean).join(" y ");
 	};
 
+	// --- LÓGICA DE FILTRADO ---
 	const filteredEquipos = equipos.filter((item) => {
 		const term = searchTerm.toLowerCase();
 		const matchesSearch =
@@ -131,32 +140,71 @@ const Equipos = () => {
 	const currentItems = filteredEquipos.slice(indexOfFirstItem, indexOfLastItem);
 	const totalPages = Math.ceil(filteredEquipos.length / itemsPerPage);
 
+	// --- EXPORTAR EXCEL DETALLADO PARA DIRECTORES ---
 	const exportarExcel = () => {
-		const dataParaExcel = filteredEquipos.map((e) => ({
-			ID: e.id,
-			Marca: e.marca,
-			Modelo: e.modelo,
-			"N° Serie": e.numero_serie,
-			"Cód. Patrimonial": e.codigo_patrimonial || "-",
-			Estado: e.disponible ? e.estado_fisico_nombre : "INACTIVO",
-			Observaciones: e.observaciones || "Ninguna",
-			Condición: e.es_propio ? "PROPIO" : "ALQUILADO",
-			"Empresa Propietaria": e.empresa_nombre || "-",
-			Proveedor: e.nombre_proveedor || "-",
-			"Fecha Adquisición": e.fecha_adquisicion
-				? formatDate(e.fecha_adquisicion)
-				: "-",
-			Antigüedad: calcularAntiguedad(e.fecha_adquisicion),
-			"Fin Contrato": e.fecha_fin_alquiler
-				? formatDate(e.fecha_fin_alquiler)
-				: "-",
-		}));
+		if (equipos.length === 0) return toast.info("No hay datos para exportar");
+
+		const dataParaExcel = filteredEquipos.map((e) => {
+			// --- LÓGICA DE SEGURIDAD PARA EL JSON ---
+			let specs = {};
+			try {
+				if (typeof e.especificaciones === "string") {
+					// Si viene como texto, lo convertimos a objeto
+					specs = JSON.parse(e.especificaciones);
+				} else if (
+					typeof e.especificaciones === "object" &&
+					e.especificaciones !== null
+				) {
+					// Si ya es un objeto, lo usamos directamente
+					specs = e.especificaciones;
+				}
+			} catch (error) {
+				console.warn("Error parseando especificaciones:", error);
+				specs = {};
+			}
+
+			return {
+				"ID Inventario": e.id,
+				"Código Patrimonial": e.codigo_patrimonial || "No asignado",
+				Marca: e.marca,
+				Modelo: e.modelo,
+				"Número de Serie": e.numero_serie,
+				"Estado Actual": e.disponible ? "ACTIVO" : "BAJA",
+				"Condición Física": e.estado_fisico_nombre || "Desconocido",
+
+				// Datos de Propiedad
+				"Tipo de Propiedad": e.es_propio ? "PROPIO" : "ALQUILADO",
+				"Empresa Propietaria": e.empresa_nombre || "-",
+				"Proveedor (Si es alquilado)": e.nombre_proveedor || "-",
+
+				// Fechas Clave
+				"Fecha Adquisición/Inicio": e.fecha_adquisicion
+					? formatDate(e.fecha_adquisicion)
+					: "-",
+				"Fecha Fin Alquiler": e.fecha_fin_alquiler
+					? formatDate(e.fecha_fin_alquiler)
+					: "-",
+				"Tiempo de Antigüedad": calcularAntiguedad(e.fecha_adquisicion),
+
+				// Especificaciones Técnicas (Ahora sí seguras)
+				// Probamos con minúsculas y Mayúsculas por si acaso
+				Procesador: specs.procesador || specs.Procesador || "-",
+				"Memoria RAM": specs.ram || specs.RAM || specs.Ram || "-",
+				Almacenamiento: specs.almacenamiento || specs.Almacenamiento || "-",
+
+				// Observaciones
+				"Notas Adicionales": e.observaciones || "Ninguna",
+			};
+		});
+
 		const ws = XLSX.utils.json_to_sheet(dataParaExcel);
 		const wb = XLSX.utils.book_new();
-		XLSX.utils.book_append_sheet(wb, ws, "Inventario_Completo");
-		XLSX.writeFile(wb, "Reporte_Equipos_Detallado.xlsx");
+		XLSX.utils.book_append_sheet(wb, ws, "Inventario_Equipos");
+		XLSX.writeFile(wb, "Reporte_Gerencial_Inventario.xlsx");
+		toast.success("Reporte gerencial generado exitosamente");
 	};
 
+	// --- HANDLERS DE MODALES ---
 	const handleViewSpecs = (equipo) => {
 		setModalType("specs");
 		setSelectedEquipo(equipo);
