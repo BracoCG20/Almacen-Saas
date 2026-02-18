@@ -19,24 +19,28 @@ import { toast } from "react-toastify";
 import "./Historial.scss";
 
 const Historial = () => {
+	// --- ESTADOS PRINCIPALES ---
 	const [historial, setHistorial] = useState([]);
+	const [loading, setLoading] = useState(true);
+
+	// --- ESTADOS DE FILTRO ---
 	const [filtroTexto, setFiltroTexto] = useState("");
 	const [filtroTipo, setFiltroTipo] = useState({
 		value: "todos",
 		label: "Todos los movimientos",
 	});
-	const [loading, setLoading] = useState(true);
 
+	// --- ESTADOS DE PAGINACIÓN ---
 	const [currentPage, setCurrentPage] = useState(1);
-	const itemsPerPage = 10;
+	const itemsPerPage = 8;
 
 	const typeOptions = [
 		{ value: "todos", label: "Todos los movimientos" },
-		{ value: "entrega", label: "Asignaciones" }, // <-- Cambiado visualmente a Asignaciones
+		{ value: "entrega", label: "Asignaciones" },
 		{ value: "devolucion", label: "Devoluciones" },
 	];
 
-	// --- ESTILOS REACT-SELECT A 50PX Y CENTRADOS ---
+	// --- ESTILOS REACT-SELECT ---
 	const customSelectStyles = {
 		control: (provided, state) => ({
 			...provided,
@@ -80,6 +84,7 @@ const Historial = () => {
 		menuPortal: (base) => ({ ...base, zIndex: 9999 }),
 	};
 
+	// --- FETCH DE DATOS ---
 	useEffect(() => {
 		const fetchHistorial = async () => {
 			try {
@@ -95,10 +100,12 @@ const Historial = () => {
 		fetchHistorial();
 	}, []);
 
+	// Reiniciar paginación al filtrar
 	useEffect(() => {
 		setCurrentPage(1);
 	}, [filtroTexto, filtroTipo]);
 
+	// --- FORMATEADORES ---
 	const formatDateTime = (isoString) => {
 		if (!isoString) return "-";
 		const date = new Date(isoString);
@@ -122,29 +129,15 @@ const Historial = () => {
 		return texto.join(", ");
 	};
 
-	const exportarExcel = () => {
-		const dataParaExcel = historial.map((h) => ({
-			Fecha: formatDateTime(h.fecha_movimiento),
-			Tipo: h.tipo === "entrega" ? "ASIGNADO" : "DEVOLUCIÓN", // <-- Cambiado en el Excel
-			Marca: h.marca,
-			Modelo: h.modelo,
-			Serie: h.serie,
-			Empleado: `${h.empleado_nombre} ${h.empleado_apellido}`,
-			DNI: h.dni || "-",
-			Responsable: h.admin_nombre ? h.admin_nombre : "Sistema",
-			"Correo Responsable": h.admin_correo || "-",
-			"Tiempo de Uso":
-				h.tipo === "entrega" ? formatDuration(h.tiempo_uso) : "-",
-			"Estado Final": h.estado_equipo_momento || "-",
-			Observaciones: h.observaciones || "",
-		}));
-
-		const ws = XLSX.utils.json_to_sheet(dataParaExcel);
-		const wb = XLSX.utils.book_new();
-		XLSX.utils.book_append_sheet(wb, ws, "Historial");
-		XLSX.writeFile(wb, "Reporte_Historial_GTH.xlsx");
+	// Obtenemos la URL base del backend dinámicamente para los PDFs
+	const getBackendUrl = () => {
+		const baseUrl = api.defaults.baseURL
+			? api.defaults.baseURL.replace(/\/api\/?$/, "")
+			: "http://localhost:5000";
+		return baseUrl;
 	};
 
+	// --- LÓGICA DE FILTRADO Y PAGINACIÓN ---
 	const historialFiltrado = historial.filter((h) => {
 		const coincideTexto =
 			h.empleado_nombre?.toLowerCase().includes(filtroTexto.toLowerCase()) ||
@@ -164,6 +157,52 @@ const Historial = () => {
 	);
 	const totalPages = Math.ceil(historialFiltrado.length / itemsPerPage);
 	const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+	// --- EXPORTAR EXCEL DETALLADO PARA DIRECTORES ---
+	const exportarExcel = () => {
+		if (historialFiltrado.length === 0)
+			return toast.info("No hay datos para exportar");
+
+		const dataParaExcel = historialFiltrado.map((h) => ({
+			"ID Registro": h.id,
+			"Fecha y Hora": formatDateTime(h.fecha_movimiento),
+			"Tipo de Acción": h.tipo === "entrega" ? "ASIGNACIÓN" : "DEVOLUCIÓN",
+
+			// Datos del Equipo
+			"Equipo (Marca/Modelo)": `${h.marca} ${h.modelo}`,
+			"N° Serie": h.serie,
+			"Estado Físico Reportado": h.estado_equipo_momento || "Operativo",
+			"¿Incluyó Cargador?": h.cargador ? "SÍ" : "NO",
+			"Tiempo de Uso":
+				h.tipo === "entrega" ? formatDuration(h.tiempo_uso) : "N/A",
+
+			// Datos del Colaborador
+			"Colaborador Asignado": `${h.empleado_nombre} ${h.empleado_apellido}`,
+			"DNI Colaborador": h.dni || "-",
+			"Correo Colaborador": h.empleado_correo || "-",
+
+			// Auditoría y Sistema
+			"Observaciones del Movimiento": h.observaciones || "Ninguna",
+			"Registrado Por": h.admin_nombre
+				? `${h.admin_nombre} (${h.admin_correo})`
+				: "Sistema",
+			"Auditoría: Correo Enviado": h.correo_enviado ? "SÍ" : "NO",
+			"Auditoría: Firma PDF": h.firma_valida
+				? "VÁLIDO"
+				: h.pdf_firmado_url
+					? "SIN VALIDAR"
+					: "NO SUBIDO",
+			"Enlace Documento (Acta)": h.pdf_firmado_url
+				? `${getBackendUrl()}${h.pdf_firmado_url}`
+				: "No disponible",
+		}));
+
+		const ws = XLSX.utils.json_to_sheet(dataParaExcel);
+		const wb = XLSX.utils.book_new();
+		XLSX.utils.book_append_sheet(wb, ws, "Auditoria_Movimientos");
+		XLSX.writeFile(wb, "Reporte_Auditoria_Equipos_GTH.xlsx");
+		toast.success("Reporte de Auditoría generado exitosamente");
+	};
 
 	if (loading)
 		return <div className='loading-state'>Cargando Historial...</div>;
@@ -224,18 +263,15 @@ const Historial = () => {
 						<tbody>
 							{currentItems.map((h) => {
 								const isEntrega = h.tipo === "entrega";
-
-								// --- SOLUCIÓN AL BUG DEL COLOR DE INOPERATIVO ---
 								const estLower = (h.estado_equipo_momento || "")
 									.toLowerCase()
 									.trim();
 								let estadoClass = "neutro";
 
-								// Usamos coincidencia exacta (===) en lugar de .includes()
 								if (estLower === "operativo") {
 									estadoClass = "operativo";
 								} else if (estLower === "inoperativo") {
-									estadoClass = "inoperativo"; // <-- Nueva clase CSS
+									estadoClass = "inoperativo";
 								} else if (
 									estLower === "mantenimiento" ||
 									estLower === "malogrado"
@@ -254,7 +290,6 @@ const Historial = () => {
 											</div>
 										</td>
 										<td className='center'>
-											{/* Aquí se define el color y el texto: ASIGNADO O DEVOLUCIÓN */}
 											<span className={`status-badge ${h.tipo}`}>
 												{isEntrega ? (
 													<ArrowUpRight
@@ -379,28 +414,52 @@ const Historial = () => {
 							</strong>{" "}
 							de <strong>{historialFiltrado.length}</strong>
 						</div>
-						<div className='controls'>
+
+						{/* --- PAGINACIÓN ELEGANTE --- */}
+						<div
+							className='controls'
+							style={{ display: "flex", alignItems: "center", gap: "15px" }}
+						>
 							<button
 								onClick={() => paginate(currentPage - 1)}
 								disabled={currentPage === 1}
+								style={{
+									display: "flex",
+									alignItems: "center",
+									gap: "5px",
+									padding: "6px 12px",
+									borderRadius: "8px",
+									fontWeight: "600",
+									width: "auto",
+								}}
 							>
-								<ChevronLeft size={16} />
+								<ChevronLeft size={16} /> Anterior
 							</button>
-							{[...Array(totalPages)].map((_, i) => (
-								<button
-									key={i + 1}
-									onClick={() => paginate(i + 1)}
-									className={currentPage === i + 1 ? "active" : ""}
-									disabled={currentPage === i + 1}
-								>
-									{i + 1}
-								</button>
-							))}
+
+							<span
+								style={{
+									fontSize: "0.9rem",
+									color: "#64748b",
+									fontWeight: "600",
+								}}
+							>
+								Página {currentPage} de {totalPages}
+							</span>
+
 							<button
 								onClick={() => paginate(currentPage + 1)}
 								disabled={currentPage === totalPages}
+								style={{
+									display: "flex",
+									alignItems: "center",
+									gap: "5px",
+									padding: "6px 12px",
+									borderRadius: "8px",
+									fontWeight: "600",
+									width: "auto",
+								}}
 							>
-								<ChevronRight size={16} />
+								Siguiente <ChevronRight size={16} />
 							</button>
 						</div>
 					</div>

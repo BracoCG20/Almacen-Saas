@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import api from "../../service/api";
 import { toast } from "react-toastify";
 import Select from "react-select";
@@ -8,21 +8,19 @@ import {
 	Eye,
 	Download,
 	Trash2,
-	FileImage,
-	FileText,
 	Save,
-	AlertTriangle, // NUEVO
-	X, // NUEVO
-	Check, // NUEVO
+	AlertTriangle,
+	X,
+	Check,
 } from "lucide-react";
-import Modal from "../../components/Modal/Modal"; // IMPORTAMOS TU MODAL
+import Modal from "../../components/Modal/Modal";
+import FileUploader from "../../components/FileUploader/FileUploader"; // <-- IMPORTAMOS EL COMPONENTE
 import "./AddServicioForm.scss";
 import "./PagoServicioModal.scss";
 
 const PagoServicioModal = ({ servicio, onClose }) => {
 	const [pagos, setPagos] = useState([]);
 	const [loading, setLoading] = useState(false);
-	const fileInputRef = useRef(null);
 
 	const [formData, setFormData] = useState({
 		fecha_pago: new Date().toISOString().split("T")[0],
@@ -33,10 +31,9 @@ const PagoServicioModal = ({ servicio, onClose }) => {
 		nueva_fecha_proximo_pago: "",
 	});
 
-	const [archivo, setArchivo] = useState(null);
-	const [previewUrl, setPreviewUrl] = useState(null);
+	const [archivo, setArchivo] = useState(null); // Solo necesitamos guardar el archivo aquí
 
-	// --- NUEVOS ESTADOS PARA EL MODAL DE ANULAR PAGO ---
+	// --- ESTADOS PARA EL MODAL DE ANULAR PAGO ---
 	const [isAnularModalOpen, setIsAnularModalOpen] = useState(false);
 	const [pagoToAnular, setPagoToAnular] = useState(null);
 
@@ -90,12 +87,6 @@ const PagoServicioModal = ({ servicio, onClose }) => {
 		}
 	}, [servicio]);
 
-	useEffect(() => {
-		return () => {
-			if (previewUrl) URL.revokeObjectURL(previewUrl);
-		};
-	}, [previewUrl]);
-
 	const getUrlCompleta = (url) => {
 		if (!url) return "";
 		return url.startsWith("http") ? url : `http://localhost:4000${url}`;
@@ -103,25 +94,12 @@ const PagoServicioModal = ({ servicio, onClose }) => {
 
 	const handleChange = (e) =>
 		setFormData({ ...formData, [e.target.name]: e.target.value });
+
 	const handleSelectChange = (selectedOption, actionMeta) =>
 		setFormData({
 			...formData,
 			[actionMeta.name]: selectedOption ? selectedOption.value : null,
 		});
-
-	const handleFileChange = (e) => {
-		const file = e.target.files[0];
-		if (file) {
-			setArchivo(file);
-			setPreviewUrl(URL.createObjectURL(file));
-		}
-	};
-
-	const handleRemoveFile = () => {
-		setArchivo(null);
-		setPreviewUrl(null);
-		if (fileInputRef.current) fileInputRef.current.value = "";
-	};
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -138,7 +116,7 @@ const PagoServicioModal = ({ servicio, onClose }) => {
 				headers: { "Content-Type": "multipart/form-data" },
 			});
 			toast.success("Pago registrado ✅");
-			handleRemoveFile();
+			setArchivo(null); // Limpiamos el archivo tras éxito
 			fetchPagos();
 		} catch (error) {
 			toast.error("Error al registrar ❌");
@@ -147,7 +125,6 @@ const PagoServicioModal = ({ servicio, onClose }) => {
 		}
 	};
 
-	// --- NUEVAS FUNCIONES PARA ANULAR PAGO CON MODAL ---
 	const triggerAnularPago = (pagoId) => {
 		setPagoToAnular(pagoId);
 		setIsAnularModalOpen(true);
@@ -298,62 +275,15 @@ const PagoServicioModal = ({ servicio, onClose }) => {
 						</div>
 					</div>
 
-					<div className='input-group'>
+					<div className='input-group' style={{ marginTop: "10px" }}>
 						<label>Comprobante / Factura (PDF o Imagen)</label>
-						{!archivo && (
-							<input
-								type='file'
-								accept='.pdf,image/*'
-								ref={fileInputRef}
-								onChange={handleFileChange}
-								className='file-input-custom'
-							/>
-						)}
-						{archivo && (
-							<div className='file-preview-box'>
-								<div className='file-info'>
-									{archivo.type.includes("image") ? (
-										<FileImage className='icon img' />
-									) : (
-										<FileText className='icon pdf' />
-									)}
-									<div className='details'>
-										<span className='filename'>{archivo.name}</span>
-										<span className='filesize'>
-											{(archivo.size / 1024).toFixed(1)} KB
-										</span>
-									</div>
-								</div>
-								<div className='file-actions'>
-									<button
-										type='button'
-										className='action-btn view'
-										onClick={() => window.open(previewUrl, "_blank")}
-										title='Vista Previa'
-									>
-										<Eye size={16} />
-									</button>
-									<a
-										href={previewUrl}
-										download={archivo.name}
-										target='_blank'
-										rel='noreferrer'
-										className='action-btn download'
-										title='Descargar'
-									>
-										<Download size={16} />
-									</a>
-									<button
-										type='button'
-										className='action-btn remove'
-										onClick={handleRemoveFile}
-										title='Quitar archivo'
-									>
-										<Trash2 size={16} />
-									</button>
-								</div>
-							</div>
-						)}
+						{/* --- AQUÍ USAMOS NUESTRO NUEVO COMPONENTE --- */}
+						<FileUploader
+							accept='.pdf,image/*'
+							newFile={archivo}
+							onFileSelect={(file) => setArchivo(file)}
+							onFileRemove={() => setArchivo(null)}
+						/>
 					</div>
 
 					<button type='submit' className='btn-submit' disabled={loading}>
@@ -396,7 +326,7 @@ const PagoServicioModal = ({ servicio, onClose }) => {
 											</td>
 											<td className='center'>
 												<div className='table-actions'>
-													{pago.url_factura ? (
+													{pago.url_factura && (
 														<>
 															<button
 																onClick={() =>
@@ -418,11 +348,8 @@ const PagoServicioModal = ({ servicio, onClose }) => {
 																<Download size={14} />
 															</a>
 														</>
-													) : (
-														<span style={{ color: "#cbd5e1" }}></span>
 													)}
 
-													{/* BOTÓN PARA ANULAR PAGO */}
 													<button
 														type='button'
 														onClick={() => triggerAnularPago(pago.id)}
@@ -442,7 +369,6 @@ const PagoServicioModal = ({ servicio, onClose }) => {
 				)}
 			</div>
 
-			{/* --- MODAL PARA CONFIRMAR ANULACIÓN DEL PAGO --- */}
 			<Modal
 				isOpen={isAnularModalOpen}
 				onClose={() => setIsAnularModalOpen(false)}

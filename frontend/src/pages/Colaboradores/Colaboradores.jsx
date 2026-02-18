@@ -3,7 +3,6 @@ import api from "../../service/api";
 import * as XLSX from "xlsx";
 import { toast } from "react-toastify";
 import Select from "react-select";
-// NUEVO: Importación desde lucide-react
 import {
 	Plus,
 	User,
@@ -27,38 +26,44 @@ import AddColaboradorForm from "./AddColaboradorForm";
 import "./Colaboradores.scss";
 
 const Colaboradores = () => {
+	// --- ESTADOS PRINCIPALES ---
 	const [colaboradores, setColaboradores] = useState([]);
 	const [empresasOptions, setEmpresasOptions] = useState([]);
 	const [loading, setLoading] = useState(true);
+	const [userRole, setUserRole] = useState(null);
 
+	// --- ESTADOS DE FILTRO Y BÚSQUEDA ---
 	const [searchTerm, setSearchTerm] = useState("");
 	const [filterEmpresa, setFilterEmpresa] = useState({
 		value: "todas",
 		label: "Todas las Empresas",
 	});
 
-	const [userRole, setUserRole] = useState(null);
-
+	// --- ESTADOS DE PAGINACIÓN ---
 	const [currentPage, setCurrentPage] = useState(1);
 	const itemsPerPage = 8;
 
+	// --- ESTADOS DE MODALES ---
 	const [isFormModalOpen, setIsFormModalOpen] = useState(false);
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 	const [colaboradorToEdit, setColaboradorToEdit] = useState(null);
 	const [colaboradorToDelete, setColaboradorToDelete] = useState(null);
 
+	// --- FETCH INICIAL DE DATOS ---
 	const fetchData = async () => {
 		setLoading(true);
 		try {
+			// 1. Obtener rol del usuario
 			const resPerfil = await api.get("/auth/perfil");
 			setUserRole(Number(resPerfil.data.rol_id));
 
+			// 2. Obtener lista de empresas para el filtro
 			try {
 				const resEmpresas = await api.get("/empresas");
 				const options = resEmpresas.data
 					.filter((e) => e.estado === true || e.estado === "Activo")
 					.map((e) => ({
-						value: e.id, // ¡Importante! Ahora usamos el ID
+						value: e.id,
 						label: e.razon_social,
 					}));
 				setEmpresasOptions([
@@ -66,12 +71,14 @@ const Colaboradores = () => {
 					...options,
 				]);
 			} catch (err) {
-				console.log("Error cargando empresas", err);
+				console.error("Error cargando empresas", err);
 				setEmpresasOptions([{ value: "todas", label: "Todas las Empresas" }]);
 			}
 
+			// 3. Obtener lista de colaboradores
 			const res = await api.get("/colaboradores");
 			const sorted = res.data.sort((a, b) => {
+				// Ordenar por estado (Activos primero) y luego alfabéticamente
 				if (a.estado === b.estado) return a.nombres.localeCompare(b.nombres);
 				return a.estado ? -1 : 1;
 			});
@@ -88,10 +95,12 @@ const Colaboradores = () => {
 		fetchData();
 	}, []);
 
+	// Reiniciar paginación al filtrar
 	useEffect(() => {
 		setCurrentPage(1);
 	}, [searchTerm, filterEmpresa]);
 
+	// --- LÓGICA DE FILTRADO ---
 	const filteredColaboradores = colaboradores.filter((c) => {
 		const term = searchTerm.toLowerCase();
 		const matchesSearch =
@@ -107,6 +116,7 @@ const Colaboradores = () => {
 		return matchesSearch && matchesEmpresa;
 	});
 
+	// --- CÁLCULOS DE PAGINACIÓN ---
 	const indexOfLastItem = currentPage * itemsPerPage;
 	const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 	const currentItems = filteredColaboradores.slice(
@@ -114,8 +124,8 @@ const Colaboradores = () => {
 		indexOfLastItem,
 	);
 	const totalPages = Math.ceil(filteredColaboradores.length / itemsPerPage);
-	const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+	// --- FUNCIONES DE ACCIÓN ---
 	const exportarExcel = () => {
 		const dataParaExcel = filteredColaboradores.map((c) => ({
 			ID: c.id,
@@ -179,6 +189,7 @@ const Colaboradores = () => {
 		fetchData();
 	};
 
+	// --- ESTILOS PERSONALIZADOS REACT-SELECT ---
 	const customFilterStyles = {
 		control: (provided, state) => ({
 			...provided,
@@ -410,39 +421,59 @@ const Colaboradores = () => {
 							</strong>{" "}
 							de <strong>{filteredColaboradores.length}</strong>
 						</div>
-						<div className='controls'>
+
+						{/* PAGINACIÓN ELEGANTE */}
+						<div
+							className='controls'
+							style={{ display: "flex", alignItems: "center", gap: "15px" }}
+						>
 							<button
-								onClick={() => paginate(currentPage - 1)}
+								onClick={() => setCurrentPage(currentPage - 1)}
 								disabled={currentPage === 1}
+								style={{
+									display: "flex",
+									alignItems: "center",
+									gap: "5px",
+									padding: "6px 12px",
+									borderRadius: "8px",
+									fontWeight: "600",
+									width: "auto",
+								}}
 							>
-								<ChevronLeft size={16} />
+								<ChevronLeft size={16} /> Anterior
 							</button>
-							{[...Array(totalPages)].map((_, i) => (
-								<button
-									key={i + 1}
-									onClick={() => paginate(i + 1)}
-									className={currentPage === i + 1 ? "active" : ""}
-									disabled={currentPage === i + 1}
-									style={
-										currentPage === i + 1
-											? { opacity: 1, cursor: "default" }
-											: {}
-									}
-								>
-									{i + 1}
-								</button>
-							))}
-							<button
-								onClick={() => paginate(currentPage + 1)}
-								disabled={currentPage === totalPages}
+
+							<span
+								style={{
+									fontSize: "0.9rem",
+									color: "#64748b",
+									fontWeight: "600",
+								}}
 							>
-								<ChevronRight size={16} />
+								Página {currentPage} de {totalPages}
+							</span>
+
+							<button
+								onClick={() => setCurrentPage(currentPage + 1)}
+								disabled={currentPage === totalPages}
+								style={{
+									display: "flex",
+									alignItems: "center",
+									gap: "5px",
+									padding: "6px 12px",
+									borderRadius: "8px",
+									fontWeight: "600",
+									width: "auto",
+								}}
+							>
+								Siguiente <ChevronRight size={16} />
 							</button>
 						</div>
 					</div>
 				)}
 			</div>
 
+			{/* MODALES */}
 			<Modal
 				isOpen={isFormModalOpen}
 				onClose={() => setIsFormModalOpen(false)}

@@ -30,17 +30,15 @@ const {
 	registrarPago,
 	anularPago,
 	getAuditoriaServicio,
-	getResponsables, // <--- IMPORTADO AQUÍ
+	getResponsables,
 } = require("../controllers/serviciosController");
 
 // --- RUTAS GENERALES ---
 router.get("/", verifyToken, getServicios);
 router.post("/", verifyToken, createServicio);
+router.get("/responsables", verifyToken, getResponsables);
 
-// --- RUTA NUEVA PARA EL SELECT DEL FORMULARIO ---
-router.get("/responsables", verifyToken, getResponsables); // <--- DEBE IR AQUÍ
-
-// --- RUTAS CON ID ---
+// --- RUTAS CON ID DE SERVICIO ---
 router.put("/:id", verifyToken, updateServicio);
 router.put("/:id/estado", verifyToken, cambiarEstadoServicio);
 router.get("/:id/auditoria", verifyToken, getAuditoriaServicio);

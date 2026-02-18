@@ -6,8 +6,10 @@ const registrarEntrega = async (req, res) => {
 	const adminId = req.user ? req.user.id : null;
 	const { equipo_id, empleado_id, fecha, cargador, observaciones } = req.body;
 	const client = await pool.connect();
+
 	try {
 		await client.query("BEGIN");
+
 		const checkEquipo = await client.query(
 			"SELECT disponible FROM equipos WHERE id = $1",
 			[equipo_id],
@@ -15,6 +17,29 @@ const registrarEntrega = async (req, res) => {
 		if (checkEquipo.rows.length === 0) throw new Error("Equipo no encontrado");
 		if (checkEquipo.rows[0].disponible === false)
 			throw new Error("El equipo ya está asignado");
+
+		// --- OBTENER NOMBRE Y GÉNERO DEL EMPLEADO PARA EL HISTORIAL ---
+		const empleadoQuery = await client.query(
+			"SELECT nombres, apellidos, genero FROM colaboradores WHERE id = $1",
+			[empleado_id],
+		);
+
+		let nombreEmpleado = "Desconocido";
+		let textoColaborador = "al colaborador"; // Por defecto masculino
+
+		if (empleadoQuery.rows.length > 0) {
+			const emp = empleadoQuery.rows[0];
+			nombreEmpleado = `${emp.nombres} ${emp.apellidos}`;
+
+			// Validación de género (igual que en los PDFs)
+			const rawGenero = (emp.genero || "").toLowerCase().trim();
+			const esMujer =
+				rawGenero === "f" || rawGenero === "mujer" || rawGenero === "femenino";
+
+			if (esMujer) {
+				textoColaborador = "a la colaboradora";
+			}
+		}
 
 		const insertMov = `INSERT INTO historial_movimientos (equipo_id, colaborador_id, tipo_movimiento, fecha_movimiento, cargador_incluido, observaciones, correo_enviado, usuario_creacion_id) VALUES ($1, $2, 'entrega', $3, $4, $5, NULL, $6) RETURNING id`;
 		const movResult = await client.query(insertMov, [
@@ -29,9 +54,16 @@ const registrarEntrega = async (req, res) => {
 		await client.query("UPDATE equipos SET disponible = false WHERE id = $1", [
 			equipo_id,
 		]);
+
+		// --- GUARDAMOS EL TEXTO DINÁMICO EN LA DESCRIPCIÓN ---
 		await client.query(
-			`INSERT INTO historial_equipos (equipo_id, disponible, observaciones_equipo, accion_realizada, descripcion_cambio, usuario_accion_id) VALUES ($1, false, $2, 'ENTREGA', 'Asignación a colaborador', $3)`,
-			[equipo_id, observaciones, adminId],
+			`INSERT INTO historial_equipos (equipo_id, disponible, observaciones_equipo, accion_realizada, descripcion_cambio, usuario_accion_id) VALUES ($1, false, $2, 'ENTREGA', $3, $4)`,
+			[
+				equipo_id,
+				observaciones,
+				`Asignado ${textoColaborador}: ${nombreEmpleado}`,
+				adminId,
+			],
 		);
 
 		await client.query("COMMIT");
@@ -63,6 +95,7 @@ const registrarEntregaConCorreo = async (req, res) => {
 
 	try {
 		await client.query("BEGIN");
+
 		const checkEquipo = await client.query(
 			"SELECT disponible FROM equipos WHERE id = $1",
 			[equipo_id],
@@ -72,6 +105,24 @@ const registrarEntregaConCorreo = async (req, res) => {
 			checkEquipo.rows[0].disponible === false
 		)
 			throw new Error("El equipo no está disponible");
+
+		// --- OBTENER GÉNERO DEL EMPLEADO PARA EL TEXTO ---
+		const empleadoQuery = await client.query(
+			"SELECT genero FROM colaboradores WHERE id = $1",
+			[empleado_id],
+		);
+		let textoColaborador = "al colaborador";
+
+		if (empleadoQuery.rows.length > 0) {
+			const rawGenero = (empleadoQuery.rows[0].genero || "")
+				.toLowerCase()
+				.trim();
+			const esMujer =
+				rawGenero === "f" || rawGenero === "mujer" || rawGenero === "femenino";
+			if (esMujer) {
+				textoColaborador = "a la colaboradora";
+			}
+		}
 
 		const cargadorBool = cargador === "true" || cargador === true;
 		const insertMov = `INSERT INTO historial_movimientos (equipo_id, colaborador_id, tipo_movimiento, fecha_movimiento, cargador_incluido, correo_enviado, usuario_creacion_id) VALUES ($1, $2, 'entrega', NOW(), $3, false, $4) RETURNING id`;
@@ -86,10 +137,17 @@ const registrarEntregaConCorreo = async (req, res) => {
 		await client.query("UPDATE equipos SET disponible = false WHERE id = $1", [
 			equipo_id,
 		]);
+
+		// --- GUARDAMOS EL TEXTO DINÁMICO ---
 		await client.query(
-			`INSERT INTO historial_equipos (equipo_id, disponible, accion_realizada, descripcion_cambio, usuario_accion_id) VALUES ($1, false, 'ENTREGA', 'Asignación a colaborador con envío de acta', $2)`,
-			[equipo_id, adminId],
+			`INSERT INTO historial_equipos (equipo_id, disponible, accion_realizada, descripcion_cambio, usuario_accion_id) VALUES ($1, false, 'ENTREGA', $2, $3)`,
+			[
+				equipo_id,
+				`Asignado ${textoColaborador}: ${nombreEmpleado} (Acta enviada por correo)`,
+				adminId,
+			],
 		);
+
 		await client.query("COMMIT");
 	} catch (dbError) {
 		await client.query("ROLLBACK");
@@ -105,7 +163,6 @@ const registrarEntregaConCorreo = async (req, res) => {
 				? "SÍ (Incluido)"
 				: "NO (Solo equipo)";
 
-		// --- DISEÑO RECUPERADO DE TU PROYECTO ANTERIOR ---
 		const htmlTemplate = `
         <!DOCTYPE html>
         <html>
@@ -293,7 +350,6 @@ const registrarDevolucionConCorreo = async (req, res) => {
 		const estaDisponible = parseInt(estado_fisico_id) === 1;
 		const colorEstado = estaDisponible ? "#16a34a" : "#dc2626";
 
-		// --- DISEÑO RECUPERADO DE TU PROYECTO ANTERIOR ---
 		const htmlTemplate = `
         <!DOCTYPE html>
         <html>
@@ -392,7 +448,6 @@ const obtenerHistorial = async (req, res) => {
                 u.nombres as admin_nombre, 
                 uc.email_login as admin_correo,
                 
-                -- LÓGICA PARA CALCULAR TIEMPO DE USO (Igual a tu proyecto anterior)
                 CASE 
                     WHEN m.tipo_movimiento = 'entrega' THEN 
                         AGE(
@@ -445,7 +500,6 @@ const reenviarCorreoActa = async (req, res) => {
 			? "Acta_Entrega.pdf"
 			: "Constancia_Devolucion.pdf";
 
-		// Diseñito básico pero limpio para el reenvío
 		const htmlTemplate = `
         <div style="font-family: Arial, sans-serif; color: #333; padding: 20px; border: 1px solid #e5e7eb; border-radius: 10px; max-width: 500px;">
             <h2>Hola, ${nombreEmpleado}</h2>

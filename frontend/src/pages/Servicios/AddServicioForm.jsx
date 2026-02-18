@@ -3,18 +3,19 @@ import api from "../../service/api";
 import { toast } from "react-toastify";
 import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
-import { CloudUpload, Save } from "lucide-react";
+import { CloudUpload, Save, Link } from "lucide-react"; // Añadido ícono Link
 import "./AddServicioForm.scss";
 
 const AddServicioForm = ({ onSuccess, servicioToEdit }) => {
 	const [loading, setLoading] = useState(false);
 	const [empresasOptions, setEmpresasOptions] = useState([]);
-	const [usuariosOptions, setUsuariosOptions] = useState([]); // NUEVO
+	const [usuariosOptions, setUsuariosOptions] = useState([]);
 
 	const [formData, setFormData] = useState({
 		nombre: "",
 		descripcion: "",
 		categoria_servicio: "Otros",
+		link_servicio: "", // <-- NUEVO ESTADO
 		precio: "",
 		moneda: "USD",
 		frecuencia_pago: "Mensual",
@@ -28,7 +29,7 @@ const AddServicioForm = ({ onSuccess, servicioToEdit }) => {
 		cci_cuenta_empresa_usuaria: "",
 		licencias_totales: 0,
 		licencias_usadas: 0,
-		usuario_id_responsable: "", // NUEVO
+		usuario_id_responsable: "",
 	});
 
 	const categoriasOptions = [
@@ -64,7 +65,7 @@ const AddServicioForm = ({ onSuccess, servicioToEdit }) => {
 			try {
 				const [resEmpresas, resUsuarios] = await Promise.all([
 					api.get("/empresas"),
-					api.get("/servicios/responsables"), // <--- RUTA CORREGIDA AQUÍ
+					api.get("/servicios/responsables"),
 				]);
 
 				setEmpresasOptions(
@@ -73,7 +74,6 @@ const AddServicioForm = ({ onSuccess, servicioToEdit }) => {
 						.map((emp) => ({ value: emp.id, label: emp.razon_social })),
 				);
 
-				// Mapeamos los usuarios para el select
 				setUsuariosOptions(
 					resUsuarios.data.map((u) => ({
 						value: u.id,
@@ -94,6 +94,7 @@ const AddServicioForm = ({ onSuccess, servicioToEdit }) => {
 				nombre: servicioToEdit.nombre ?? "",
 				descripcion: servicioToEdit.descripcion ?? "",
 				categoria_servicio: servicioToEdit.categoria_servicio ?? "Otros",
+				link_servicio: servicioToEdit.link_servicio ?? "", // <-- CARGAR AL EDITAR
 				precio: servicioToEdit.precio ?? "",
 				moneda: servicioToEdit.moneda ?? "USD",
 				frecuencia_pago: servicioToEdit.frecuencia_pago ?? "Mensual",
@@ -113,13 +114,14 @@ const AddServicioForm = ({ onSuccess, servicioToEdit }) => {
 					servicioToEdit.cci_cuenta_empresa_usuaria ?? "",
 				licencias_totales: servicioToEdit.licencias_totales ?? 0,
 				licencias_usadas: servicioToEdit.licencias_usadas ?? 0,
-				usuario_id_responsable: servicioToEdit.usuario_id_responsable ?? "", // Setear si existe
+				usuario_id_responsable: servicioToEdit.usuario_id_responsable ?? "",
 			});
 		}
 	}, [servicioToEdit]);
 
 	const handleChange = (e) =>
 		setFormData({ ...formData, [e.target.name]: e.target.value });
+
 	const handleSelectChange = (selectedOption, actionMeta) =>
 		setFormData({
 			...formData,
@@ -132,8 +134,10 @@ const AddServicioForm = ({ onSuccess, servicioToEdit }) => {
 			!formData.nombre ||
 			!formData.frecuencia_pago ||
 			!formData.categoria_servicio
-		)
+		) {
 			return toast.warning("Completa los campos obligatorios.");
+		}
+
 		setLoading(true);
 		try {
 			if (servicioToEdit) {
@@ -230,7 +234,19 @@ const AddServicioForm = ({ onSuccess, servicioToEdit }) => {
 				</div>
 			</div>
 
-			<div className='form-row-all'>
+			<div className='form-row'>
+				<div className='input-group'>
+					<label>
+						<Link size={14} style={{ marginRight: "4px" }} /> Link del Servicio
+						(URL)
+					</label>
+					<input
+						name='link_servicio'
+						value={formData.link_servicio}
+						onChange={handleChange}
+						placeholder='https://ejemplo.com/login'
+					/>
+				</div>
 				<div className='input-group'>
 					<label>Descripción</label>
 					<input

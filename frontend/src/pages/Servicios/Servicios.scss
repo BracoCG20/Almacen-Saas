@@ -5,11 +5,13 @@
 	max-width: 1600px;
 	margin: 0 auto;
 
+	// --- HEADER ---
 	.page-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		margin-bottom: 2rem;
+
 		h1 {
 			font-size: 1.8rem;
 			font-weight: 700;
@@ -20,6 +22,7 @@
 			display: flex;
 			gap: 12px;
 		}
+
 		.btn-action-header {
 			display: flex;
 			align-items: center;
@@ -32,6 +35,7 @@
 			cursor: pointer;
 			color: white;
 			transition: all 0.2s;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 			&:hover {
 				transform: translateY(-2px);
 				box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
@@ -51,6 +55,7 @@
 		}
 	}
 
+	// --- FILTROS ---
 	.filters-container {
 		display: flex;
 		gap: 1rem;
@@ -81,7 +86,7 @@
 				outline: none;
 				width: 100%;
 				font-size: 0.95rem;
-				color: v.$text-main;
+				color: #1e293b;
 				&::placeholder {
 					color: #94a3b8;
 				}
@@ -95,6 +100,7 @@
 		}
 	}
 
+	// --- TABLA ---
 	.table-container {
 		background: white;
 		border-radius: 16px;
@@ -157,6 +163,7 @@
 		}
 	}
 
+	// --- CELDAS ---
 	.device-icon-box {
 		width: 40px;
 		height: 40px;
@@ -168,6 +175,7 @@
 		color: #7c3aed;
 		margin: 0 auto;
 	}
+
 	.info-cell {
 		display: flex;
 		flex-direction: column;
@@ -184,6 +192,7 @@
 			align-items: center;
 		}
 	}
+
 	.email-cell {
 		display: flex;
 		align-items: center;
@@ -194,11 +203,7 @@
 			color: #94a3b8;
 		}
 	}
-	.empresa-text {
-		font-weight: 600;
-		color: #475569;
-		font-size: 0.85rem;
-	}
+
 	.license-badge {
 		display: inline-flex;
 		align-items: center;
@@ -216,6 +221,24 @@
 		}
 	}
 
+	// --- ESTILO DEL LINK WEB ---
+	.website-link {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		color: #3b82f6;
+		background-color: #eff6ff;
+		padding: 8px;
+		border-radius: 8px;
+		transition: all 0.2s;
+		&:hover {
+			background-color: #dbeafe;
+			color: #2563eb;
+			transform: translateY(-2px);
+		}
+	}
+
+	// --- BOTONES DE ACCIÓN ---
 	.actions-cell {
 		display: flex;
 		justify-content: center;
@@ -256,6 +279,7 @@
 		}
 	}
 
+	// --- PAGINACIÓN ---
 	.pagination-footer {
 		display: flex;
 		justify-content: space-between;
@@ -271,40 +295,25 @@
 				font-weight: 700;
 			}
 		}
-		.controls {
-			display: flex;
-			gap: 8px;
-			button {
-				width: 32px;
-				height: 32px;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				border: 1px solid #e2e8f0;
-				border-radius: 8px;
-				background-color: white;
-				cursor: pointer;
-				color: #64748b;
-				transition: all 0.2s;
-				&:disabled:not(.active) {
-					opacity: 0.5;
-					cursor: not-allowed;
-					background-color: #f8fafc;
-				}
-				&:hover:not(:disabled) {
-					background-color: v.$primary;
-					color: white;
-					border-color: v.$primary;
-				}
-				&.active {
-					background-color: v.$primary;
-					color: white;
-					border-color: v.$primary;
-					cursor: default;
-				}
+		.controls button {
+			border: 1px solid #e2e8f0;
+			background-color: white;
+			cursor: pointer;
+			color: #64748b;
+			transition: all 0.2s;
+			&:disabled {
+				opacity: 0.5;
+				cursor: not-allowed;
+				background-color: #f8fafc;
+			}
+			&:hover:not(:disabled) {
+				background-color: v.$primary;
+				color: white;
+				border-color: v.$primary;
 			}
 		}
 	}
+
 	.loading-state,
 	.no-data {
 		padding: 3rem;
@@ -314,6 +323,7 @@
 	}
 }
 
+// --- BADGES Y MODALES ---
 .status-badge {
 	display: inline-flex;
 	align-items: center;
@@ -400,6 +410,136 @@
 					box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);
 					&:hover {
 						background-color: #059669;
+					}
+				}
+			}
+		}
+	}
+}
+
+// --- MODAL DE AUDITORÍA (HISTORIAL MINIMALISTA) ---
+.audit-modal-content {
+	padding: 0.5rem 1rem 1rem 1rem;
+	max-height: 60vh;
+	overflow-y: auto;
+
+	.empty-audit {
+		text-align: center;
+		padding: 2rem;
+		color: #64748b;
+		font-style: italic;
+	}
+
+	.audit-timeline {
+		display: flex;
+		flex-direction: column;
+		list-style: none;
+		padding: 0;
+		margin: 0;
+
+		li {
+			position: relative;
+			padding-left: 25px; // Espacio para la línea y el punto
+			padding-bottom: 20px;
+
+			// Oculta la línea en el último elemento
+			&:last-child {
+				padding-bottom: 0;
+				&::before {
+					display: none;
+				}
+			}
+
+			// --- LA LÍNEA VERTICAL ---
+			&::before {
+				content: "";
+				position: absolute;
+				left: 5px;
+				top: 25px;
+				bottom: -5px;
+				width: 2px;
+				background-color: #e2e8f0;
+			}
+
+			// --- EL PUNTO INDICADOR ---
+			&::after {
+				content: "";
+				position: absolute;
+				left: 1px;
+				top: 10px;
+				width: 10px;
+				height: 10px;
+				border-radius: 50%;
+				background-color: v.$primary; // Color morado por defecto
+				border: 2px solid white;
+				box-shadow: 0 0 0 2px white;
+			}
+
+			// Si es un error o anulación, el punto se pone rojo
+			&.error-log::after {
+				background-color: #ef4444;
+			}
+
+			// --- LA TARJETA DE CONTENIDO ---
+			.audit-card {
+				background-color: white;
+				border: 1px solid #e2e8f0;
+				border-radius: 12px;
+				padding: 16px;
+				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+				transition: all 0.2s ease;
+
+				&:hover {
+					border-color: #cbd5e1;
+					box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+				}
+
+				.log-header {
+					display: flex;
+					justify-content: space-between;
+					align-items: center;
+					margin-bottom: 10px;
+
+					strong {
+						font-size: 0.9rem;
+						color: v.$primary;
+						text-transform: uppercase;
+						letter-spacing: 0.5px;
+						font-weight: 800;
+					}
+
+					.date-badge {
+						font-size: 0.75rem;
+						color: #64748b;
+						display: flex;
+						align-items: center;
+						gap: 4px;
+						background-color: #f1f5f9;
+						padding: 4px 8px;
+						border-radius: 6px;
+						font-weight: 600;
+					}
+				}
+
+				p {
+					font-size: 0.95rem;
+					color: #475569;
+					margin: 0 0 12px 0;
+					line-height: 1.5;
+				}
+
+				.log-footer {
+					border-top: 1px dashed #e2e8f0;
+					padding-top: 10px;
+					font-size: 0.8rem;
+					color: #94a3b8;
+					font-weight: 600;
+					display: flex;
+					align-items: center;
+					gap: 6px;
+
+					svg {
+						color: #cbd5e1;
 					}
 				}
 			}

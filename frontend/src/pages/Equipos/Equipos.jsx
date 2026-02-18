@@ -9,7 +9,6 @@ import {
 	Edit,
 	Laptop,
 	CalendarDays,
-	Barcode,
 	FileSpreadsheet,
 	Search,
 	ChevronLeft,
@@ -19,13 +18,12 @@ import {
 	Undo2,
 	X,
 	Check,
-	Handshake,
-	Building2,
-	Clock,
 	History,
 } from "lucide-react";
 import Modal from "../../components/Modal/Modal";
 import AddEquipoForm from "./AddEquipoForm";
+import EquipoHistorial from "./EquipoHistorial"; // COMPONENTE NUEVO
+import EquipoSpecs from "./EquipoSpecs"; // COMPONENTE NUEVO
 import "./Equipos.scss";
 
 const Equipos = () => {
@@ -79,7 +77,6 @@ const Equipos = () => {
 	useEffect(() => {
 		fetchData();
 	}, []);
-
 	useEffect(() => {
 		setCurrentPage(1);
 	}, [searchTerm, filterCondicion]);
@@ -94,27 +91,21 @@ const Equipos = () => {
 		});
 	};
 
-	// --- LÓGICA DE ANTIGÜEDAD DINÁMICA ---
 	const calcularAntiguedad = (fecha) => {
 		if (!fecha) return "Sin fecha";
 		const inicio = new Date(fecha);
 		const ahora = new Date();
-
 		let anios = ahora.getFullYear() - inicio.getFullYear();
 		let meses = ahora.getMonth() - inicio.getMonth();
-
 		if (meses < 0) {
 			anios--;
 			meses += 12;
 		}
-
 		if (anios === 0 && meses === 0) return "Reciente";
-
 		const partAnios =
 			anios > 0 ? `${anios} ${anios === 1 ? "año" : "años"}` : "";
 		const partMeses =
 			meses > 0 ? `${meses} ${meses === 1 ? "mes" : "meses"}` : "";
-
 		return [partAnios, partMeses].filter(Boolean).join(" y ");
 	};
 
@@ -140,8 +131,6 @@ const Equipos = () => {
 	const currentItems = filteredEquipos.slice(indexOfFirstItem, indexOfLastItem);
 	const totalPages = Math.ceil(filteredEquipos.length / itemsPerPage);
 
-	const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
 	const exportarExcel = () => {
 		const dataParaExcel = filteredEquipos.map((e) => ({
 			ID: e.id,
@@ -162,7 +151,6 @@ const Equipos = () => {
 				? formatDate(e.fecha_fin_alquiler)
 				: "-",
 		}));
-
 		const ws = XLSX.utils.json_to_sheet(dataParaExcel);
 		const wb = XLSX.utils.book_new();
 		XLSX.utils.book_append_sheet(wb, ws, "Inventario_Completo");
@@ -174,22 +162,32 @@ const Equipos = () => {
 		setSelectedEquipo(equipo);
 		setIsModalOpen(true);
 	};
-
 	const handleAddEquipo = () => {
 		setModalType("form");
 		setEquipoToEdit(null);
 		setIsModalOpen(true);
 	};
-
 	const handleEditEquipo = (equipo) => {
 		setModalType("form");
 		setEquipoToEdit(equipo);
 		setIsModalOpen(true);
 	};
-
 	const confirmDelete = (equipo) => {
 		setEquipoToDelete(equipo);
 		setIsDeleteModalOpen(true);
+	};
+
+	const handleViewHistory = async (equipo) => {
+		setSelectedEquipo(equipo);
+		setModalType("history");
+		setHistoryData([]);
+		setIsModalOpen(true);
+		try {
+			const res = await api.get(`/equipos/${equipo.id}/historial`);
+			setHistoryData(res.data);
+		} catch (error) {
+			toast.error("Error al cargar historial");
+		}
 	};
 
 	const toggleDisponibilidad = async (equipo, nuevaDisponibilidad) => {
@@ -243,20 +241,6 @@ const Equipos = () => {
 			color: state.isSelected ? "white" : "#334155",
 			cursor: "pointer",
 		}),
-	};
-
-	// --- FUNCIÓN PARA VER HISTORIAL ---
-	const handleViewHistory = async (equipo) => {
-		setSelectedEquipo(equipo);
-		setModalType("history");
-		setHistoryData([]);
-		setIsModalOpen(true);
-		try {
-			const res = await api.get(`/equipos/${equipo.id}/historial`);
-			setHistoryData(res.data);
-		} catch (error) {
-			toast.error("Error al cargar historial");
-		}
 	};
 
 	if (loading)
@@ -394,7 +378,6 @@ const Equipos = () => {
 									</td>
 									<td className='center'>
 										<div className='actions-cell'>
-											{/* BOTÓN HISTORIAL */}
 											<button
 												className='action-btn history'
 												onClick={() => handleViewHistory(item)}
@@ -456,35 +439,54 @@ const Equipos = () => {
 							</strong>{" "}
 							de <strong>{filteredEquipos.length}</strong>
 						</div>
-						<div className='controls'>
+						<div
+							className='controls'
+							style={{ display: "flex", alignItems: "center", gap: "15px" }}
+						>
 							<button
-								onClick={() => paginate(currentPage - 1)}
+								onClick={() => setCurrentPage(currentPage - 1)}
 								disabled={currentPage === 1}
+								style={{
+									display: "flex",
+									alignItems: "center",
+									gap: "5px",
+									padding: "6px 12px",
+									borderRadius: "8px",
+									fontWeight: "600",
+									width: "auto",
+								}}
 							>
-								<ChevronLeft size={16} />
+								<ChevronLeft size={16} /> Anterior
 							</button>
-							{[...Array(totalPages)].map((_, i) => (
-								<button
-									key={i + 1}
-									onClick={() => paginate(i + 1)}
-									className={currentPage === i + 1 ? "active" : ""}
-									disabled={currentPage === i + 1}
-								>
-									{i + 1}
-								</button>
-							))}
-							<button
-								onClick={() => paginate(currentPage + 1)}
-								disabled={currentPage === totalPages}
+							<span
+								style={{
+									fontSize: "0.9rem",
+									color: "#64748b",
+									fontWeight: "600",
+								}}
 							>
-								<ChevronRight size={16} />
+								Página {currentPage} de {totalPages}
+							</span>
+							<button
+								onClick={() => setCurrentPage(currentPage + 1)}
+								disabled={currentPage === totalPages}
+								style={{
+									display: "flex",
+									alignItems: "center",
+									gap: "5px",
+									padding: "6px 12px",
+									borderRadius: "8px",
+									fontWeight: "600",
+									width: "auto",
+								}}
+							>
+								Siguiente <ChevronRight size={16} />
 							</button>
 						</div>
 					</div>
 				)}
 			</div>
 
-			{/* MODALES DINÁMICOS SEGÚN EL ESTADO modalType */}
 			<Modal
 				isOpen={isModalOpen}
 				onClose={() => setIsModalOpen(false)}
@@ -498,215 +500,14 @@ const Equipos = () => {
 								: "Registrar Nuevo Equipo"
 				}
 			>
-				{/* --- RENDERIZADO DEL HISTORIAL --- */}
 				{modalType === "history" ? (
-					<div className='history-container'>
-						<div className='history-header'>
-							<div className='big-icon'>
-								<History size={36} color='#4f46e5' />
-							</div>
-							<div className='title-info-wrapper'>
-								<h3>
-									{selectedEquipo?.marca} {selectedEquipo?.modelo}
-								</h3>
-								<span style={{ fontFamily: "monospace", color: "#64748b" }}>
-									S/N: {selectedEquipo?.numero_serie} | Cód:{" "}
-									{selectedEquipo?.codigo_patrimonial || "N/A"}
-								</span>
-							</div>
-						</div>
-
-						{historyData.length === 0 ? (
-							<p className='no-history'>
-								No hay movimientos registrados para este equipo.
-							</p>
-						) : (
-							<div className='history-timeline'>
-								{historyData.map((hist) => (
-									<div key={hist.id} className='timeline-item'>
-										<div className='timeline-date'>
-											<strong>
-												{new Date(hist.fecha_accion).toLocaleDateString(
-													"es-PE",
-												)}
-											</strong>
-											<span>
-												{new Date(hist.fecha_accion).toLocaleTimeString(
-													"es-PE",
-													{ hour: "2-digit", minute: "2-digit" },
-												)}
-											</span>
-										</div>
-
-										<div className='timeline-content'>
-											<h5>{hist.accion_realizada}</h5>
-
-											<div className='hist-details-grid'>
-												<span
-													className={`hist-tag ${hist.es_propio ? "owned" : "rented"}`}
-												>
-													{hist.es_propio ? (
-														<Building2 size={10} />
-													) : (
-														<Handshake size={10} />
-													)}
-													{hist.es_propio
-														? hist.empresa_nombre
-														: hist.proveedor_nombre}
-												</span>
-
-												<span
-													className={`status-badge ${hist.estado_fisico_nombre?.toLowerCase() === "operativo" ? "operativo" : "mantenimiento"}`}
-												>
-													{hist.estado_fisico_nombre || "Estado Desconocido"}
-												</span>
-
-												<span
-													className={`status-badge ${hist.disponible ? "operativo" : "malogrado"}`}
-												>
-													{hist.disponible ? "DISPONIBLE" : "INACTIVO"}
-												</span>
-											</div>
-
-											{hist.observaciones_equipo && (
-												<div className='hist-observations'>
-													<AlertTriangle size={12} />
-													<span>
-														<strong>Obs:</strong> {hist.observaciones_equipo}
-													</span>
-												</div>
-											)}
-
-											<div className='timeline-footer'>
-												<small>
-													Responsable:{" "}
-													{hist.usuario_nombres
-														? `${hist.usuario_nombres} ${hist.usuario_apellidos}`
-														: hist.usuario_email || "Sistema"}
-												</small>
-											</div>
-										</div>
-									</div>
-								))}
-							</div>
-						)}
-					</div>
+					<EquipoHistorial equipo={selectedEquipo} historyData={historyData} />
 				) : modalType === "specs" ? (
-					selectedEquipo && (
-						<div className='specs-grid'>
-							<div className='header-specs'>
-								<div className='big-icon'>
-									<Laptop size={36} />
-								</div>
-								<div className='title-info-wrapper'>
-									<h3>
-										{selectedEquipo.marca} {selectedEquipo.modelo}
-									</h3>
-									<div className='badge-wrapper'>
-										<span
-											className={`status-badge ${selectedEquipo.disponible ? "operativo" : "malogrado"}`}
-										>
-											{selectedEquipo.disponible ? "DISPONIBLE" : "INACTIVO"}
-										</span>
-										<span
-											className={`ownership-badge ${selectedEquipo.es_propio ? "owned" : "rented"}`}
-										>
-											{selectedEquipo.es_propio ? (
-												<>
-													<Building2 size={12} /> PROPIO
-												</>
-											) : (
-												<>
-													<Handshake size={12} /> ALQUILADO
-												</>
-											)}
-										</span>
-									</div>
-									<div className='owner-info-text'>
-										{selectedEquipo.es_propio
-											? `Empresa: ${selectedEquipo.empresa_nombre}`
-											: `Proveedor: ${selectedEquipo.nombre_proveedor}`}
-									</div>
-								</div>
-							</div>
-
-							{selectedEquipo.observaciones && (
-								<div className='observation-alert'>
-									<h5>
-										<AlertTriangle size={14} /> Observaciones
-									</h5>
-									<p>"{selectedEquipo.observaciones}"</p>
-								</div>
-							)}
-
-							<h4>Identificación y Adquisición</h4>
-							<div className='grid-2-col'>
-								<div className='info-box light'>
-									<Barcode size={24} className='icon-barcode' />
-									<div>
-										<span className='label'>Código Patrimonial</span>
-										<span className='value'>
-											{selectedEquipo.codigo_patrimonial || "N/A"}
-										</span>
-									</div>
-								</div>
-								<div className='info-box'>
-									<span className='label'>Número de Serie (S/N)</span>
-									<span className='value'>{selectedEquipo.numero_serie}</span>
-								</div>
-							</div>
-
-							<div className='grid-2-col'>
-								<div className='info-box'>
-									<span className='label'>Fecha de Adquisición</span>
-									<span
-										className='value-text'
-										style={{
-											fontSize: "0.9rem",
-											color: "#334155",
-											fontWeight: "700",
-										}}
-									>
-										{formatDate(selectedEquipo.fecha_adquisicion)}
-									</span>
-								</div>
-								<div className='info-box'>
-									<span className='label'>Tiempo en la Empresa</span>
-									<span
-										className='value-text'
-										style={{
-											fontSize: "0.9rem",
-											color: "#4f46e5",
-											fontWeight: "700",
-										}}
-									>
-										<Clock size={12} />{" "}
-										{calcularAntiguedad(selectedEquipo.fecha_adquisicion)}
-									</span>
-								</div>
-							</div>
-
-							{selectedEquipo.especificaciones &&
-								Object.keys(selectedEquipo.especificaciones).length > 0 && (
-									<>
-										<h4 className='mt'>Especificaciones Técnicas</h4>
-										<div className='specs-list'>
-											{Object.entries(selectedEquipo.especificaciones).map(
-												([key, value], index) => (
-													<div
-														key={key}
-														className={`spec-item ${index % 2 !== 0 ? "odd" : ""}`}
-													>
-														<strong>{key}:</strong>{" "}
-														<span>{value || "N/A"}</span>
-													</div>
-												),
-											)}
-										</div>
-									</>
-								)}
-						</div>
-					)
+					<EquipoSpecs
+						equipo={selectedEquipo}
+						calcularAntiguedad={calcularAntiguedad}
+						formatDate={formatDate}
+					/>
 				) : (
 					<AddEquipoForm
 						onSuccess={handleFormSuccess}

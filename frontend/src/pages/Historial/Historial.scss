@@ -5,6 +5,7 @@
 	max-width: 1600px;
 	margin: 0 auto;
 
+	// --- HEADER ---
 	.page-header {
 		display: flex;
 		justify-content: space-between;
@@ -17,7 +18,6 @@
 			color: v.$primary;
 			margin: 0;
 		}
-
 		.header-actions {
 			display: flex;
 			gap: 12px;
@@ -36,12 +36,10 @@
 			color: white;
 			transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-
 			&:hover {
 				transform: translateY(-2px);
 				box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 			}
-
 			&.btn-excel {
 				background-color: #10b981;
 				&:hover {
@@ -57,7 +55,6 @@
 		gap: 1rem;
 		margin-bottom: 1.5rem;
 		align-items: center;
-
 		@media (max-width: 768px) {
 			flex-direction: column;
 			align-items: stretch;
@@ -74,12 +71,10 @@
 			align-items: center;
 			gap: 12px;
 			transition: all 0.2s ease;
-
 			&:focus-within {
 				border-color: v.$primary;
 				box-shadow: 0 0 0 3px rgba(v.$primary, 0.15);
 			}
-
 			input {
 				border: none;
 				outline: none;
@@ -108,11 +103,9 @@
 		box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
 		border: 1px solid #f1f5f9;
 		overflow: hidden;
-
 		table {
 			width: 100%;
 			border-collapse: collapse;
-
 			thead tr {
 				background-color: #eef2ff;
 				th {
@@ -128,7 +121,6 @@
 					}
 				}
 			}
-
 			tbody tr {
 				border-bottom: 1px solid #f1f5f9;
 				transition: all 0.2s ease;
@@ -239,8 +231,6 @@
 		font-size: 0.65rem;
 		font-weight: 700;
 		text-transform: uppercase;
-
-		// --- COLORES EXACTOS PARA CADA ESTADO ---
 		&.operativo {
 			background-color: #f0fdf4;
 			color: #16a34a;
@@ -250,7 +240,7 @@
 			background-color: #fef2f2;
 			color: #dc2626;
 			border: 1px solid #fecaca;
-		} // NUEVO
+		}
 		&.malogrado {
 			background-color: #fff7ed;
 			color: #ea580c;
@@ -284,40 +274,31 @@
 				font-weight: 700;
 			}
 		}
-		.controls {
-			display: flex;
-			gap: 8px;
-			button {
-				width: 32px;
-				height: 32px;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				border: 1px solid #e2e8f0;
-				border-radius: 8px;
-				background-color: white;
-				cursor: pointer;
-				color: #64748b;
-				transition: all 0.2s;
-				&:disabled:not(.active) {
-					opacity: 0.5;
-					cursor: not-allowed;
-					background-color: #f8fafc;
-				}
-				&:hover:not(:disabled) {
-					background-color: v.$primary;
-					color: white;
-					border-color: v.$primary;
-				}
-				&.active {
-					background-color: v.$primary;
-					color: white;
-					border-color: v.$primary;
-					cursor: default;
-				}
+		.controls button {
+			border: 1px solid #e2e8f0;
+			background-color: white;
+			cursor: pointer;
+			color: #64748b;
+			transition: all 0.2s;
+			&:disabled:not(.active) {
+				opacity: 0.5;
+				cursor: not-allowed;
+				background-color: #f8fafc;
+			}
+			&:hover:not(:disabled) {
+				background-color: v.$primary;
+				color: white;
+				border-color: v.$primary;
+			}
+			&.active {
+				background-color: v.$primary;
+				color: white;
+				border-color: v.$primary;
+				cursor: default;
 			}
 		}
 	}
+
 	.loading-state,
 	.no-data {
 		padding: 3rem;

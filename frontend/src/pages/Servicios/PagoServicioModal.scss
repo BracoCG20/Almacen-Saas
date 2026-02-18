@@ -29,124 +29,6 @@
 			}
 		}
 
-		.file-input-custom {
-			width: 100%;
-			height: 50px;
-			padding: 6px 12px;
-			background-color: #f8fafc;
-			border: 1px dashed #cbd5e1;
-			border-radius: 8px;
-			color: #64748b;
-			font-size: 0.95rem;
-			line-height: 36px;
-			cursor: pointer;
-			transition: all 0.2s ease;
-			box-sizing: border-box;
-			outline: none;
-
-			&:hover {
-				border-color: v.$primary;
-				background-color: #f1f5f9;
-			}
-
-			&::file-selector-button {
-				height: 36px;
-				margin: 0 15px 0 0;
-				padding: 0 16px;
-				background-color: white;
-				color: v.$primary;
-				border: 1px solid #c7d2fe;
-				border-radius: 6px;
-				font-weight: 600;
-				cursor: pointer;
-				transition: all 0.2s ease;
-				vertical-align: middle;
-				&:hover {
-					background-color: #eef2ff;
-					border-color: v.$primary;
-				}
-			}
-		}
-
-		.file-preview-box {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			padding: 0 15px;
-			background: #eff6ff;
-			border: 1px solid #bfdbfe;
-			border-radius: 8px;
-			height: 50px;
-			box-sizing: border-box;
-			.file-info {
-				display: flex;
-				align-items: center;
-				gap: 12px;
-				.icon {
-					font-size: 1.5rem;
-					&.pdf {
-						color: #ef4444;
-					}
-					&.img {
-						color: #3b82f6;
-					}
-				}
-				.details {
-					display: flex;
-					flex-direction: column;
-					justify-content: center;
-					.filename {
-						font-weight: 600;
-						color: #1e3a8a;
-						font-size: 0.85rem;
-						max-width: 150px;
-						overflow: hidden;
-						text-overflow: ellipsis;
-						white-space: nowrap;
-					}
-					.filesize {
-						font-size: 0.7rem;
-						color: #64748b;
-						margin-top: -2px;
-					}
-				}
-			}
-			.file-actions {
-				display: flex;
-				gap: 8px;
-				.action-btn {
-					width: 30px;
-					height: 30px;
-					border-radius: 6px;
-					border: none;
-					display: flex;
-					align-items: center;
-					justify-content: center;
-					cursor: pointer;
-					color: white;
-					transition: 0.2s;
-					&.view {
-						background: #3b82f6;
-						&:hover {
-							background: #2563eb;
-						}
-					}
-					&.download {
-						background: #10b981;
-						&:hover {
-							background: #059669;
-						}
-					}
-					&.remove {
-						background: #ef4444;
-						&:hover {
-							background: #dc2626;
-						}
-					}
-				}
-			}
-		}
-
 		.btn-submit {
 			width: 100%;
 			height: 50px;
@@ -254,7 +136,6 @@
 			}
 		}
 
-		// --- ESTILOS CORREGIDOS PARA LOS BOTONES DE LA TABLA ---
 		.table-actions {
 			display: flex;
 			justify-content: center;
@@ -283,7 +164,7 @@
 					}
 				}
 				&.remove {
-					background: #ef4444; // <-- AHORA SÍ SERÁ ROJO
+					background: #ef4444;
 					&:hover {
 						background: #dc2626;
 					}
@@ -292,7 +173,6 @@
 		}
 	}
 
-	// --- ESTILOS DEL MODAL DE ALERTA ---
 	.confirm-modal-content {
 		padding: 1rem;
 		text-align: center;

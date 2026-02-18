@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import api from "../../service/api"; // Ajusta la ruta a tu api
+import api from "../../service/api";
 import * as XLSX from "xlsx";
 import { toast } from "react-toastify";
 import {
@@ -20,25 +20,30 @@ import {
 	Laptop,
 	ChevronLeft,
 	ChevronRight,
+	ExternalLink,
+	FileDown,
 } from "lucide-react";
 import Modal from "../../components/Modal/Modal";
 import AddProveedorForm from "./AddProveedorForm";
 import "./Proveedores.scss";
 
 const Proveedores = () => {
+	// --- ESTADOS PRINCIPALES ---
 	const [proveedores, setProveedores] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [searchTerm, setSearchTerm] = useState("");
 
+	// --- ESTADOS DE PAGINACIÓN ---
 	const [currentPage, setCurrentPage] = useState(1);
 	const itemsPerPage = 8;
 
+	// --- ESTADOS DE MODALES ---
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-
 	const [providerToEdit, setProviderToEdit] = useState(null);
 	const [providerToAction, setProviderToAction] = useState(null);
 
+	// --- FETCH DE DATOS ---
 	const fetchProveedores = async () => {
 		setLoading(true);
 		try {
@@ -60,10 +65,12 @@ const Proveedores = () => {
 		fetchProveedores();
 	}, []);
 
+	// Reiniciar paginación al buscar
 	useEffect(() => {
 		setCurrentPage(1);
 	}, [searchTerm]);
 
+	// --- LÓGICA DE FILTRADO Y PAGINACIÓN ---
 	const filtered = proveedores.filter(
 		(p) =>
 			p.razon_social.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -74,41 +81,91 @@ const Proveedores = () => {
 	const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 	const currentItems = filtered.slice(indexOfFirstItem, indexOfLastItem);
 	const totalPages = Math.ceil(filtered.length / itemsPerPage);
-
 	const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+	// --- RUTAS DE ENLACES ---
+	const formatUrl = (url) => {
+		if (!url) return "#";
+		return url.startsWith("http") ? url : `https://${url}`;
+	};
+
+	const getBackendFileUrl = (path) => {
+		if (!path) return null;
+		if (path.startsWith("http")) return path;
+		const baseUrl = api.defaults.baseURL
+			? api.defaults.baseURL.replace(/\/api\/?$/, "")
+			: "http://localhost:5000";
+		return `${baseUrl}${path}`;
+	};
+
+	const formatLocalDate = (isoString) => {
+		if (!isoString) return "-";
+		const date = new Date(
+			isoString.includes("T") ? isoString : `${isoString}T12:00:00Z`,
+		);
+		return date.toLocaleDateString("es-PE");
+	};
+
+	// --- EXPORTAR EXCEL DETALLADO GERENCIAL ---
 	const exportarExcel = () => {
-		if (proveedores.length === 0) {
+		if (proveedores.length === 0)
 			return toast.info("No hay datos para exportar");
-		}
 
 		const dataParaExcel = filtered.map((p) => ({
-			Estado: p.estado ? "ACTIVO" : "INACTIVO",
+			"Estado Actual": p.estado ? "ACTIVO" : "INACTIVO",
 			"Razón Social": p.razon_social,
 			"Nombre Comercial": p.nombre_comercial || "-",
 			RUC: p.ruc,
-			"Equipos Alquilados": p.total_equipos || 0,
-			"Nombre de Contacto": p.nombre_contacto || "-",
-			Teléfono: p.telefono_contacto || "-",
-			Email: p.email_contacto || "-",
-			Dirección: p.direccion || "-",
-			Departamento: p.departamento || "-",
-			Provincia: p.provincia || "-",
-			Distrito: p.distrito || "-",
 			"Tipo de Servicio": p.tipo_servicio || "-",
+
+			// Cantidades
+			"Equipos Alquilados (Activos)": p.total_equipos || 0,
+
+			// Datos del Contrato
+			"Inicio de Contrato": formatLocalDate(p.fecha_inicio_contrato),
+			"Fin de Contrato": formatLocalDate(p.fecha_fin_contrato),
+			"Estado del Contrato": p.contrato_url ? "DOCUMENTO SUBIDO" : "PENDIENTE",
+			"Enlace al Contrato (PDF)": p.contrato_url
+				? getBackendFileUrl(p.contrato_url)
+				: "-",
+
+			// Contacto y Web
+			"Nombre de Contacto": p.nombre_contacto || "-",
+			"Teléfono de Contacto": p.telefono_contacto || "-",
+			"Correo Electrónico": p.email_contacto || "-",
+			"Sitio Web": p.sitio_web || "-",
+
+			// Ubicación
+			"Dirección Exacta": p.direccion || "-",
+			Distrito: p.distrito || "-",
+			Provincia: p.provincia || "-",
+			Departamento: p.departamento || "-",
+
+			// Auditoría
 			"Registrado Por": p.creador_nombre
 				? `${p.creador_nombre} ${p.creador_apellido}`
 				: "Sistema",
-			"Fecha Registro": p.fecha_creacion
-				? new Date(p.fecha_creacion).toLocaleString()
+			"Fecha de Registro": p.fecha_creacion
+				? new Date(p.fecha_creacion).toLocaleString("es-PE")
 				: "-",
 		}));
 
 		const ws = XLSX.utils.json_to_sheet(dataParaExcel);
 		const wb = XLSX.utils.book_new();
 		XLSX.utils.book_append_sheet(wb, ws, "Proveedores");
-		XLSX.writeFile(wb, "Reporte_Proveedores_Completo.xlsx");
-		toast.success("Excel con auditoría generado");
+		XLSX.writeFile(wb, "Reporte_Gerencial_Proveedores.xlsx");
+		toast.success("Reporte gerencial generado exitosamente");
+	};
+
+	// --- ACCIONES ---
+	const handleAdd = () => {
+		setProviderToEdit(null);
+		setIsModalOpen(true);
+	};
+
+	const handleEdit = (prov) => {
+		setProviderToEdit(prov);
+		setIsModalOpen(true);
 	};
 
 	const confirmDeactivate = (prov) => {
@@ -135,16 +192,6 @@ const Proveedores = () => {
 		} catch (error) {
 			toast.error("Error al activar");
 		}
-	};
-
-	const handleEdit = (prov) => {
-		setProviderToEdit(prov);
-		setIsModalOpen(true);
-	};
-
-	const handleAdd = () => {
-		setProviderToEdit(null);
-		setIsModalOpen(true);
 	};
 
 	const handleFormSuccess = () => {
@@ -194,7 +241,9 @@ const Proveedores = () => {
 								<th>RUC</th>
 								<th>Contacto</th>
 								<th>Teléfono</th>
-								<th>Correo Electrónico</th>
+								<th>Correo</th>
+								<th className='center'>Web</th>
+								<th className='center'>Contrato</th>
 								<th className='center'>Equipos</th>
 								<th className='center'>Acciones</th>
 							</tr>
@@ -253,7 +302,7 @@ const Proveedores = () => {
 												<Phone size={12} /> {prov.telefono_contacto}
 											</div>
 										) : (
-											"-"
+											<span style={{ color: "#cbd5e1" }}>-</span>
 										)}
 									</td>
 									<td>
@@ -262,7 +311,38 @@ const Proveedores = () => {
 												<Mail size={12} /> {prov.email_contacto}
 											</div>
 										) : (
-											"-"
+											<span style={{ color: "#cbd5e1" }}>-</span>
+										)}
+									</td>
+									<td className='center'>
+										{prov.sitio_web ? (
+											<a
+												href={formatUrl(prov.sitio_web)}
+												target='_blank'
+												rel='noopener noreferrer'
+												className='website-link'
+												title={`Visitar ${prov.sitio_web}`}
+											>
+												<ExternalLink size={16} />
+											</a>
+										) : (
+											<span style={{ color: "#cbd5e1" }}>-</span>
+										)}
+									</td>
+									<td className='center'>
+										{prov.contrato_url ? (
+											<a
+												href={getBackendFileUrl(prov.contrato_url)}
+												target='_blank'
+												rel='noopener noreferrer'
+												download
+												className='contract-link'
+												title='Descargar Contrato'
+											>
+												<FileDown size={16} />
+											</a>
+										) : (
+											<span style={{ color: "#cbd5e1" }}>-</span>
 										)}
 									</td>
 									<td className='center'>
@@ -326,35 +406,48 @@ const Proveedores = () => {
 							<strong>{Math.min(indexOfLastItem, filtered.length)}</strong> de{" "}
 							<strong>{filtered.length}</strong>
 						</div>
-						<div className='controls'>
+						<div
+							className='controls'
+							style={{ display: "flex", alignItems: "center", gap: "15px" }}
+						>
 							<button
 								onClick={() => paginate(currentPage - 1)}
 								disabled={currentPage === 1}
+								style={{
+									display: "flex",
+									alignItems: "center",
+									gap: "5px",
+									padding: "6px 12px",
+									borderRadius: "8px",
+									fontWeight: "600",
+									width: "auto",
+								}}
 							>
-								<ChevronLeft size={16} />
+								<ChevronLeft size={16} /> Anterior
 							</button>
-
-							{[...Array(totalPages)].map((_, i) => {
-								const pageNumber = i + 1;
-								const isActive = currentPage === pageNumber;
-								return (
-									<button
-										key={pageNumber}
-										onClick={() => paginate(pageNumber)}
-										className={isActive ? "active" : ""}
-										disabled={isActive}
-										style={isActive ? { opacity: 1, cursor: "default" } : {}}
-									>
-										{pageNumber}
-									</button>
-								);
-							})}
-
+							<span
+								style={{
+									fontSize: "0.9rem",
+									color: "#64748b",
+									fontWeight: "600",
+								}}
+							>
+								Página {currentPage} de {totalPages}
+							</span>
 							<button
 								onClick={() => paginate(currentPage + 1)}
 								disabled={currentPage === totalPages}
+								style={{
+									display: "flex",
+									alignItems: "center",
+									gap: "5px",
+									padding: "6px 12px",
+									borderRadius: "8px",
+									fontWeight: "600",
+									width: "auto",
+								}}
 							>
-								<ChevronRight size={16} />
+								Siguiente <ChevronRight size={16} />
 							</button>
 						</div>
 					</div>
@@ -384,8 +477,7 @@ const Proveedores = () => {
 					<h3>¿Desactivar Proveedor?</h3>
 					<p>
 						Estás a punto de dar de baja a{" "}
-						<strong>{providerToAction?.razon_social}</strong>.
-						<br />
+						<strong>{providerToAction?.razon_social}</strong>.<br />
 						Ya no aparecerá en la selección de nuevos equipos.
 					</p>
 					<div className='modal-actions'>

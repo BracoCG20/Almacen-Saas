@@ -37,12 +37,10 @@
 			color: white;
 			transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-
 			&:hover {
 				transform: translateY(-2px);
 				box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 			}
-
 			&.btn-excel {
 				background-color: #10b981;
 				&:hover {
@@ -58,14 +56,13 @@
 		}
 	}
 
-	// --- BARRA DE FILTROS (Buscador + React Select) ---
+	// --- BARRA DE FILTROS ---
 	.filters-bar {
 		display: flex;
 		gap: 15px;
 		margin-bottom: 24px;
 		flex-wrap: wrap;
 
-		// 1. Buscador de texto
 		.search-input {
 			flex: 1;
 			min-width: 250px;
@@ -77,34 +74,26 @@
 			align-items: center;
 			gap: 12px;
 			transition: all 0.3s ease;
-
 			&:focus-within {
 				border-color: v.$primary;
 				box-shadow: 0 0 0 3px rgba(v.$primary, 0.1);
 			}
-
 			input {
 				border: none;
 				outline: none;
 				width: 100%;
 				font-size: 0.95rem;
-				color: v.$text-main;
+				color: #1e293b;
 				&::placeholder {
 					color: #94a3b8;
 				}
 			}
-			svg {
-				font-size: 1.1rem;
-				color: #94a3b8;
-			}
 		}
 
-		// 2. Select de Empresa
 		.condition-filter {
 			min-width: 250px;
 			display: flex;
 			align-items: center;
-
 			> div {
 				width: 100%;
 			}
@@ -126,7 +115,6 @@
 			thead tr {
 				background-color: #eef2ff;
 				border-bottom: 1px solid #e2e8f0;
-
 				th {
 					padding: 16px 20px;
 					text-align: left;
@@ -135,7 +123,6 @@
 					text-transform: uppercase;
 					color: #4338ca;
 					letter-spacing: 0.8px;
-
 					&.center {
 						text-align: center;
 					}
@@ -146,11 +133,9 @@
 				border-bottom: 1px solid #f1f5f9;
 				transition: all 0.2s ease;
 				position: relative;
-
 				&:hover {
 					background-color: #f8fafc;
 				}
-
 				td:first-child {
 					position: relative;
 					&::before {
@@ -164,16 +149,13 @@
 						transition: background-color 0.2s ease;
 					}
 				}
-
 				&:hover:not(.inactive-row) td:first-child::before {
 					background-color: v.$primary;
 				}
-
 				&.inactive-row {
 					background-color: #fafafa;
 					opacity: 0.65;
 				}
-
 				td {
 					padding: 14px 20px;
 					vertical-align: middle;
@@ -181,13 +163,11 @@
 			}
 		}
 
-		// --- COMPONENTES INTERNOS DE LA TABLA ---
-
+		// ELEMENTOS DE LA TABLA
 		.user-avatar-cell {
 			display: flex;
 			align-items: center;
 			gap: 12px;
-
 			.avatar-circle {
 				width: 38px;
 				height: 38px;
@@ -197,7 +177,6 @@
 				justify-content: center;
 				font-size: 1rem;
 				flex-shrink: 0;
-
 				&.male {
 					background-color: #e0e7ff;
 					color: #4338ca;
@@ -211,18 +190,16 @@
 					color: #94a3b8;
 				}
 			}
-
 			.user-info {
 				display: flex;
 				flex-direction: column;
-
 				.name {
 					font-weight: 600;
 					color: #1e293b;
 					font-size: 0.9rem;
-				}
-				.name.inactive {
-					color: #94a3b8;
+					&.inactive {
+						color: #94a3b8;
+					}
 				}
 				.audit-text {
 					font-size: 0.65rem;
@@ -256,12 +233,8 @@
 			font-size: 0.8rem;
 			border: 1px solid #bbf7d0;
 			transition: transform 0.2s;
-
 			&:hover {
 				transform: scale(1.05);
-			}
-			svg {
-				font-size: 1rem;
 			}
 		}
 		.no-contact {
@@ -301,7 +274,6 @@
 			display: flex;
 			justify-content: center;
 			gap: 8px;
-
 			.action-btn {
 				width: 32px;
 				height: 32px;
@@ -314,7 +286,6 @@
 				justify-content: center;
 				font-size: 1rem;
 				transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-
 				&.edit {
 					color: #f59e0b;
 					&:hover {
@@ -349,7 +320,6 @@
 		padding: 16px 25px;
 		border-top: 1px solid #e2e8f0;
 		background-color: white;
-
 		.info {
 			color: #64748b;
 			font-size: 0.85rem;
@@ -358,40 +328,26 @@
 				font-weight: 700;
 			}
 		}
-
-		.controls {
-			display: flex;
-			gap: 8px;
-
-			button {
-				width: 30px;
-				height: 30px;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				border: 1px solid #e2e8f0;
-				border-radius: 8px;
-				background-color: white;
-				cursor: pointer;
-				color: #64748b;
-				transition: all 0.2s;
-
-				&:disabled {
-					opacity: 0.5;
-					cursor: not-allowed;
-					background-color: #f8fafc;
-				}
-
-				&:hover:not(:disabled) {
-					background-color: v.$primary;
-					color: white;
-					border-color: v.$primary;
-				}
+		.controls button {
+			border: 1px solid #e2e8f0;
+			background-color: white;
+			cursor: pointer;
+			color: #64748b;
+			transition: all 0.2s;
+			&:disabled {
+				opacity: 0.5;
+				cursor: not-allowed;
+				background-color: #f8fafc;
+			}
+			&:hover:not(:disabled) {
+				background-color: v.$primary;
+				color: white;
+				border-color: v.$primary;
 			}
 		}
 	}
 
-	// --- BADGES ESTADO ---
+	// --- BADGES Y MODAL ---
 	.status-badge {
 		display: inline-flex;
 		align-items: center;
@@ -404,7 +360,6 @@
 		letter-spacing: 0.5px;
 		line-height: 1;
 		white-space: nowrap;
-
 		&.operativo {
 			background-color: #dcfce7;
 			color: #166534;
@@ -417,11 +372,9 @@
 		}
 	}
 
-	// --- MODAL DE CONFIRMACIÓN ---
 	.confirm-modal-content {
 		padding: 1rem;
 		text-align: center;
-
 		.warning-icon {
 			font-size: 3rem;
 			color: #f59e0b;
@@ -435,7 +388,6 @@
 			justify-content: center;
 			margin: 0 auto 1rem auto;
 		}
-
 		h3 {
 			color: #1e293b;
 			margin-bottom: 0.5rem;
@@ -446,12 +398,10 @@
 			margin-bottom: 2rem;
 			font-size: 0.95rem;
 		}
-
 		.modal-actions {
 			display: flex;
 			gap: 1rem;
 			justify-content: center;
-
 			button {
 				padding: 10px 20px;
 				border-radius: 8px;
@@ -463,11 +413,9 @@
 				border: none;
 				font-size: 0.9rem;
 				transition: transform 0.2s;
-
 				&:hover {
 					transform: translateY(-1px);
 				}
-
 				&.btn-cancel {
 					background-color: white;
 					border: 1px solid #cbd5e1;
@@ -476,7 +424,6 @@
 						background-color: #f8fafc;
 					}
 				}
-
 				&.btn-confirm {
 					background-color: #ef4444;
 					color: white;
@@ -489,16 +436,11 @@
 		}
 	}
 
-	.no-data {
+	.no-data,
+	.loading-state {
 		padding: 3rem;
 		text-align: center;
 		color: #94a3b8;
 		font-size: 1.1rem;
-	}
-	.loading-state {
-		padding: 3rem;
-		text-align: center;
-		font-size: 1.2rem;
-		color: #94a3b8;
 	}
 }
