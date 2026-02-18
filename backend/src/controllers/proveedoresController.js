@@ -1,9 +1,15 @@
-const { pool } = require("../config/db");
+const { pool } = require('../config/db');
 
-// 1. Obtener proveedores
+/**
+ * ============================================================================
+ * 1. OBTENER PROVEEDORES
+ * ============================================================================
+ * Lista todos los proveedores, cruzando datos de auditoría (quién creó/editó)
+ * y contando cuántos equipos tiene asignados actualmente cada proveedor.
+ */
 const getProveedores = async (req, res) => {
-	try {
-		const query = `
+  try {
+    const query = `
             SELECT 
                 p.*, 
                 u1.nombres as creador_nombre, 
@@ -18,199 +24,244 @@ const getProveedores = async (req, res) => {
             LEFT JOIN colaboradores u2 ON uc2.colaborador_id = u2.id
             ORDER BY p.estado DESC, p.razon_social ASC
         `;
-		const response = await pool.query(query);
-		res.status(200).json(response.rows);
-	} catch (error) {
-		console.error("Error al obtener proveedores:", error);
-		res.status(500).json({ error: "Error al cargar proveedores" });
-	}
+    const response = await pool.query(query);
+    res.status(200).json(response.rows);
+  } catch (error) {
+    console.error('Error al obtener proveedores:', error);
+    res.status(500).json({ error: 'Error interno al cargar los proveedores.' });
+  }
 };
 
-// 2. Crear Proveedor
+/**
+ * ============================================================================
+ * 2. CREAR PROVEEDOR
+ * ============================================================================
+ * Registra un nuevo proveedor en la base de datos, verificando que el RUC
+ * no esté duplicado, y almacena el archivo de contrato si es proporcionado.
+ */
 const createProveedor = async (req, res) => {
-	const usuarioId = req.user ? req.user.id : null;
-	const {
-		razon_social,
-		nombre_comercial,
-		ruc,
-		direccion,
-		departamento,
-		provincia,
-		distrito,
-		nombre_contacto,
-		email_contacto,
-		telefono_contacto,
-		sitio_web,
-		tipo_servicio,
-		fecha_inicio_contrato,
-		fecha_fin_contrato,
-	} = req.body;
+  const usuarioId = req.user ? req.user.id : null;
+  const {
+    razon_social,
+    nombre_comercial,
+    ruc,
+    direccion,
+    departamento,
+    provincia,
+    distrito,
+    nombre_contacto,
+    email_contacto,
+    telefono_contacto,
+    sitio_web,
+    tipo_servicio,
+    fecha_inicio_contrato,
+    fecha_fin_contrato,
+  } = req.body;
 
-	// Manejo del archivo PDF
-	let contratoUrl = null;
-	if (req.file) {
-		contratoUrl = `/uploads/${req.file.filename}`;
-	}
+  let contratoUrl = null;
+  if (req.file) {
+    contratoUrl = `/uploads/${req.file.filename}`;
+  }
 
-	try {
-		const check = await pool.query("SELECT * FROM proveedores WHERE ruc = $1", [
-			ruc,
-		]);
-		if (check.rows.length > 0) {
-			return res.status(400).json({ error: "El RUC ya está registrado." });
-		}
+  try {
+    const check = await pool.query(
+      'SELECT id FROM proveedores WHERE ruc = $1',
+      [ruc],
+    );
+    if (check.rows.length > 0) {
+      return res
+        .status(400)
+        .json({ error: 'El RUC ingresado ya está registrado en el sistema.' });
+    }
 
-		const query = `
-            INSERT INTO proveedores 
-            (razon_social, nombre_comercial, ruc, direccion, departamento, provincia, distrito, 
-             nombre_contacto, email_contacto, telefono_contacto, sitio_web, tipo_servicio, 
-             fecha_inicio_contrato, fecha_fin_contrato, contrato_url, usuario_creacion_id)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
-            RETURNING *
+    const query = `
+            INSERT INTO proveedores (
+                razon_social, nombre_comercial, ruc, direccion, departamento, provincia, distrito, 
+                nombre_contacto, email_contacto, telefono_contacto, sitio_web, tipo_servicio, 
+                fecha_inicio_contrato, fecha_fin_contrato, contrato_url, usuario_creacion_id
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+            RETURNING *;
         `;
 
-		const values = [
-			razon_social,
-			nombre_comercial || null,
-			ruc,
-			direccion || null,
-			departamento || null,
-			provincia || null,
-			distrito || null,
-			nombre_contacto || null,
-			email_contacto || null,
-			telefono_contacto || null,
-			sitio_web || null,
-			tipo_servicio || null,
-			fecha_inicio_contrato || null,
-			fecha_fin_contrato || null,
-			contratoUrl,
-			usuarioId,
-		];
+    const values = [
+      razon_social,
+      nombre_comercial || null,
+      ruc,
+      direccion || null,
+      departamento || null,
+      provincia || null,
+      distrito || null,
+      nombre_contacto || null,
+      email_contacto || null,
+      telefono_contacto || null,
+      sitio_web || null,
+      tipo_servicio || null,
+      fecha_inicio_contrato || null,
+      fecha_fin_contrato || null,
+      contratoUrl,
+      usuarioId,
+    ];
 
-		const newProv = await pool.query(query, values);
-		res
-			.status(201)
-			.json({ message: "Proveedor registrado", proveedor: newProv.rows[0] });
-	} catch (error) {
-		console.error("Error al crear proveedor:", error);
-		res.status(500).json({ error: "Error interno al registrar proveedor" });
-	}
+    const newProv = await pool.query(query, values);
+    res.status(201).json({
+      message: 'Proveedor registrado exitosamente.',
+      proveedor: newProv.rows[0],
+    });
+  } catch (error) {
+    console.error('Error al crear proveedor:', error);
+    res.status(500).json({ error: 'Error interno al registrar el proveedor.' });
+  }
 };
 
-// 3. Actualizar Proveedor
+/**
+ * ============================================================================
+ * 3. ACTUALIZAR PROVEEDOR
+ * ============================================================================
+ * Edita la información del proveedor. Si se envía un nuevo PDF, sobrescribe el actual.
+ * Si se envía 'eliminar_contrato' = true, se borra el PDF actual.
+ */
 const updateProveedor = async (req, res) => {
-	const { id } = req.params;
-	const usuarioId = req.user ? req.user.id : null;
-	const {
-		razon_social,
-		nombre_comercial,
-		ruc,
-		direccion,
-		departamento,
-		provincia,
-		distrito,
-		nombre_contacto,
-		email_contacto,
-		telefono_contacto,
-		sitio_web,
-		tipo_servicio,
-		fecha_inicio_contrato,
-		fecha_fin_contrato,
-		eliminar_contrato, // <-- CAPTURAMOS ESTA VARIABLE DEL FRONTEND
-	} = req.body;
+  const { id } = req.params;
+  const usuarioId = req.user ? req.user.id : null;
+  const {
+    razon_social,
+    nombre_comercial,
+    ruc,
+    direccion,
+    departamento,
+    provincia,
+    distrito,
+    nombre_contacto,
+    email_contacto,
+    telefono_contacto,
+    sitio_web,
+    tipo_servicio,
+    fecha_inicio_contrato,
+    fecha_fin_contrato,
+    eliminar_contrato,
+  } = req.body;
 
-	try {
-		const currentProv = await pool.query(
-			"SELECT contrato_url FROM proveedores WHERE id = $1",
-			[id],
-		);
-		if (currentProv.rows.length === 0)
-			return res.status(404).json({ error: "Proveedor no encontrado" });
+  try {
+    const currentProv = await pool.query(
+      'SELECT contrato_url FROM proveedores WHERE id = $1',
+      [id],
+    );
+    if (currentProv.rows.length === 0) {
+      return res.status(404).json({ error: 'Proveedor no encontrado.' });
+    }
 
-		let contratoUrl = currentProv.rows[0].contrato_url;
+    let contratoUrl = currentProv.rows[0].contrato_url;
 
-		// Si el usuario le dio al tacho de basura en el frontend, borramos el contrato
-		if (eliminar_contrato === "true") {
-			contratoUrl = null;
-		}
+    // Lógica de archivo adjunto
+    if (eliminar_contrato === 'true') {
+      contratoUrl = null;
+    }
+    if (req.file) {
+      contratoUrl = `/uploads/${req.file.filename}`;
+    }
 
-		// Si subió un archivo nuevo, sobrescribe el actual
-		if (req.file) {
-			contratoUrl = `/uploads/${req.file.filename}`;
-		}
-
-		const query = `
+    const query = `
             UPDATE proveedores SET 
                 razon_social=$1, nombre_comercial=$2, ruc=$3, direccion=$4, 
                 departamento=$5, provincia=$6, distrito=$7, nombre_contacto=$8, 
                 email_contacto=$9, telefono_contacto=$10, sitio_web=$11, tipo_servicio=$12,
                 fecha_inicio_contrato=$13, fecha_fin_contrato=$14, contrato_url=$15,
                 fecha_modificacion=NOW(), usuario_modificacion_id=$16
-            WHERE id=$17 RETURNING *
+            WHERE id=$17 RETURNING *;
         `;
-		const values = [
-			razon_social,
-			nombre_comercial || null,
-			ruc,
-			direccion || null,
-			departamento || null,
-			provincia || null,
-			distrito || null,
-			nombre_contacto || null,
-			email_contacto || null,
-			telefono_contacto || null,
-			sitio_web || null,
-			tipo_servicio || null,
-			fecha_inicio_contrato || null,
-			fecha_fin_contrato || null,
-			contratoUrl,
-			usuarioId,
-			id,
-		];
+    const values = [
+      razon_social,
+      nombre_comercial || null,
+      ruc,
+      direccion || null,
+      departamento || null,
+      provincia || null,
+      distrito || null,
+      nombre_contacto || null,
+      email_contacto || null,
+      telefono_contacto || null,
+      sitio_web || null,
+      tipo_servicio || null,
+      fecha_inicio_contrato || null,
+      fecha_fin_contrato || null,
+      contratoUrl,
+      usuarioId,
+      id,
+    ];
 
-		const result = await pool.query(query, values);
-		res.json({ message: "Proveedor actualizado", proveedor: result.rows[0] });
-	} catch (error) {
-		console.error("Error al actualizar proveedor:", error);
-		res.status(500).json({ error: "Error al actualizar" });
-	}
+    const result = await pool.query(query, values);
+    res.json({
+      message: 'Proveedor actualizado correctamente.',
+      proveedor: result.rows[0],
+    });
+  } catch (error) {
+    console.error('Error al actualizar proveedor:', error);
+    res
+      .status(500)
+      .json({ error: 'Error interno al actualizar el proveedor.' });
+  }
 };
 
-// 4. Baja Lógica
+/**
+ * ============================================================================
+ * 4. DESACTIVAR PROVEEDOR (Baja Lógica)
+ * ============================================================================
+ */
 const deleteProveedor = async (req, res) => {
-	const { id } = req.params;
-	const usuarioId = req.user ? req.user.id : null;
-	try {
-		await pool.query(
-			"UPDATE proveedores SET estado = false, fecha_modificacion=NOW(), usuario_modificacion_id=$2 WHERE id = $1",
-			[id, usuarioId],
-		);
-		res.json({ message: "Proveedor desactivado" });
-	} catch (error) {
-		res.status(500).json({ error: "Error al eliminar" });
-	}
+  const { id } = req.params;
+  const usuarioId = req.user ? req.user.id : null;
+  try {
+    const query = `
+            UPDATE proveedores 
+            SET estado = false, fecha_modificacion = NOW(), usuario_modificacion_id = $2 
+            WHERE id = $1 RETURNING id;
+        `;
+    const result = await pool.query(query, [id, usuarioId]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Proveedor no encontrado.' });
+    }
+
+    res.json({ message: 'Proveedor desactivado correctamente.' });
+  } catch (error) {
+    console.error('Error al desactivar proveedor:', error);
+    res
+      .status(500)
+      .json({ error: 'Error interno al desactivar el proveedor.' });
+  }
 };
 
-// 5. Reactivar
+/**
+ * ============================================================================
+ * 5. REACTIVAR PROVEEDOR
+ * ============================================================================
+ */
 const activateProveedor = async (req, res) => {
-	const { id } = req.params;
-	const usuarioId = req.user ? req.user.id : null;
-	try {
-		await pool.query(
-			"UPDATE proveedores SET estado = true, fecha_modificacion=NOW(), usuario_modificacion_id=$2 WHERE id = $1",
-			[id, usuarioId],
-		);
-		res.json({ message: "Proveedor reactivado" });
-	} catch (error) {
-		res.status(500).json({ error: "Error al activar" });
-	}
+  const { id } = req.params;
+  const usuarioId = req.user ? req.user.id : null;
+  try {
+    const query = `
+            UPDATE proveedores 
+            SET estado = true, fecha_modificacion = NOW(), usuario_modificacion_id = $2 
+            WHERE id = $1 RETURNING id;
+        `;
+    const result = await pool.query(query, [id, usuarioId]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Proveedor no encontrado.' });
+    }
+
+    res.json({ message: 'Proveedor reactivado correctamente.' });
+  } catch (error) {
+    console.error('Error al reactivar proveedor:', error);
+    res.status(500).json({ error: 'Error interno al reactivar el proveedor.' });
+  }
 };
 
 module.exports = {
-	getProveedores,
-	createProveedor,
-	updateProveedor,
-	deleteProveedor,
-	activateProveedor,
+  getProveedores,
+  createProveedor,
+  updateProveedor,
+  deleteProveedor,
+  activateProveedor,
 };
