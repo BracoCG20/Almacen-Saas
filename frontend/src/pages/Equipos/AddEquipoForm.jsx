@@ -12,18 +12,18 @@ import {
   Barcode,
 } from 'lucide-react';
 import api from '../../service/api';
-import './AddEquipoForm.scss';
-
 import Select from 'react-select';
 import CreatableSelect from 'react-select/creatable';
+import './AddEquipoForm.scss';
 
 const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
+  // --- ESTADO PRINCIPAL DEL FORMULARIO ---
   const [formData, setFormData] = useState({
     empresa_id: '',
     marca: '',
     modelo: '',
     numero_serie: '',
-    codigo_patrimonial: '', // <-- AÑADIDO PARA EVITAR QUE SE BORRE AL CREAR O EDITAR
+    codigo_patrimonial: '', // Se mantiene oculto para que no se pierda al editar
     estado_fisico_id: '',
     es_propio: true,
     proveedor_id: '',
@@ -36,17 +36,22 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
     procesador: '',
   });
 
+  // --- ESTADOS PARA EL CONSTRUCTOR RÁPIDO DE PROCESADOR ---
   const [builderMarca, setBuilderMarca] = useState(null);
   const [builderModelo, setBuilderModelo] = useState(null);
   const [builderGen, setBuilderGen] = useState(null);
 
+  // --- ESTADOS DE LAS LISTAS DESPLEGABLES ---
   const [marcasOptions, setMarcasOptions] = useState([]);
   const [proveedoresOptions, setProveedoresOptions] = useState([]);
   const [empresasOptions, setEmpresasOptions] = useState([]);
   const [estadosFisicosOptions, setEstadosFisicosOptions] = useState([]);
   const [loadingData, setLoadingData] = useState(false);
+
+  // --- ESPECIFICACIONES EXTRAS (DINÁMICAS) ---
   const [specsList, setSpecsList] = useState([]);
 
+  // --- CONSTANTES DE OPCIONES ESTÁTICAS ---
   const condicionOptions = [
     { value: true, label: 'Equipo Propio' },
     { value: false, label: 'Equipo Alquilado / Leasing' },
@@ -63,6 +68,7 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
     { value: 'Apple', label: 'Apple' },
   ];
 
+  // --- FUNCIONES HELPERS PARA EL CONSTRUCTOR DE CPU ---
   const getModeloOptions = (marca) => {
     switch (marca) {
       case 'Intel':
@@ -124,6 +130,7 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
     }
   };
 
+  // --- CARGA INICIAL DE DATOS (CATÁLOGOS) ---
   useEffect(() => {
     const loadData = async () => {
       setLoadingData(true);
@@ -152,7 +159,7 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
             .map((p) => ({ value: p.id, label: p.razon_social })),
         );
       } catch (error) {
-        console.error('Error cargando datos');
+        console.error('Error cargando catálogos');
       } finally {
         setLoadingData(false);
       }
@@ -160,6 +167,7 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
     loadData();
   }, []);
 
+  // --- CARGAR DATOS SI ESTAMOS EN MODO EDICIÓN ---
   useEffect(() => {
     if (equipoToEdit) {
       let existingRam = '';
@@ -168,28 +176,37 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
       let existingProc = '';
       let otherSpecs = [];
 
-      if (equipoToEdit.especificaciones) {
-        Object.entries(equipoToEdit.especificaciones).forEach(([k, v]) => {
-          const keyLower = k.toLowerCase().trim();
-          if (keyLower === 'ram')
-            existingRam = String(v).replace(/[^\d.]/g, '');
-          else if (keyLower === 'procesador') existingProc = v;
-          else if (keyLower === 'almacenamiento') {
-            existingAlmacenamientoValor = String(v).replace(/[^\d.]/g, '');
-            if (String(v).toUpperCase().includes('TB'))
-              existingAlmacenamientoUnidad = 'TB';
-          } else {
-            otherSpecs.push({ key: k, value: v });
-          }
-        });
+      // Desestructuramos el JSON de especificaciones de manera segura
+      let parsedSpecs = {};
+      if (typeof equipoToEdit.especificaciones === 'string') {
+        try {
+          parsedSpecs = JSON.parse(equipoToEdit.especificaciones);
+        } catch (e) {}
+      } else if (typeof equipoToEdit.especificaciones === 'object') {
+        parsedSpecs = equipoToEdit.especificaciones || {};
       }
+
+      Object.entries(parsedSpecs).forEach(([k, v]) => {
+        const keyLower = k.toLowerCase().trim();
+        if (keyLower === 'ram') {
+          existingRam = String(v).replace(/[^\d.]/g, '');
+        } else if (keyLower === 'procesador') {
+          existingProc = v;
+        } else if (keyLower === 'almacenamiento') {
+          existingAlmacenamientoValor = String(v).replace(/[^\d.]/g, '');
+          if (String(v).toUpperCase().includes('TB'))
+            existingAlmacenamientoUnidad = 'TB';
+        } else {
+          otherSpecs.push({ key: k, value: v });
+        }
+      });
 
       setFormData({
         empresa_id: equipoToEdit.empresa_id || '',
         marca: equipoToEdit.marca || '',
         modelo: equipoToEdit.modelo || '',
         numero_serie: equipoToEdit.numero_serie || '',
-        codigo_patrimonial: equipoToEdit.codigo_patrimonial || '', // <-- AHORA CARGAMOS EL CÓDIGO
+        codigo_patrimonial: equipoToEdit.codigo_patrimonial || '', // Oculto visualmente, pero se mantiene en estado
         estado_fisico_id: equipoToEdit.estado_fisico_id || '',
         es_propio: equipoToEdit.es_propio !== false,
         proveedor_id: equipoToEdit.proveedor_id || '',
@@ -205,10 +222,12 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
         almacenamiento_unidad: existingAlmacenamientoUnidad,
         procesador: existingProc,
       });
+
       setSpecsList(otherSpecs);
     }
   }, [equipoToEdit]);
 
+  // --- EFECTO PARA ARMAR EL STRING DEL PROCESADOR ---
   useEffect(() => {
     if (builderMarca || builderModelo || builderGen) {
       const parts = [
@@ -216,11 +235,11 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
         builderModelo ? builderModelo.value : '',
         builderGen ? builderGen.value : '',
       ].filter(Boolean);
-
       setFormData((prev) => ({ ...prev, procesador: parts.join(' ') }));
     }
   }, [builderMarca, builderModelo, builderGen]);
 
+  // --- MANEJADORES DE INPUTS ---
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -249,10 +268,12 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
     newSpecs[index][field] = value;
     setSpecsList(newSpecs);
   };
+
   const addSpecRow = () => setSpecsList([...specsList, { key: '', value: '' }]);
   const removeSpecRow = (index) =>
     setSpecsList(specsList.filter((_, i) => i !== index));
 
+  // --- ENVÍO DEL FORMULARIO ---
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -265,18 +286,19 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
         'Debes seleccionar un Proveedor para equipos alquilados.',
       );
 
+    // 1. Armamos el JSON de Especificaciones
     const specsObject = specsList.reduce((acc, item) => {
       if (item.key && item.value) acc[item.key] = item.value;
       return acc;
     }, {});
 
-    if (formData.ram) specsObject['RAM'] = formData.ram + ' GB';
-    if (formData.almacenamiento_valor) {
+    if (formData.ram) specsObject['RAM'] = `${formData.ram} GB`;
+    if (formData.almacenamiento_valor)
       specsObject['Almacenamiento'] =
         `${formData.almacenamiento_valor} ${formData.almacenamiento_unidad}`;
-    }
     if (formData.procesador) specsObject['Procesador'] = formData.procesador;
 
+    // 2. Extraemos los campos temporales del formData
     const {
       ram,
       almacenamiento_valor,
@@ -301,6 +323,7 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
     }
   };
 
+  // --- ESTILOS DE SELECT ---
   const customSelectStyles = {
     control: (provided, state) => ({
       ...provided,
@@ -312,15 +335,8 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
       backgroundColor: state.isDisabled ? '#f8fafc' : '#fff',
       cursor: state.isDisabled ? 'not-allowed' : 'pointer',
     }),
-    valueContainer: (provided) => ({
-      ...provided,
-      padding: '0 14px',
-    }),
-    input: (provided) => ({
-      ...provided,
-      margin: '0px',
-      padding: '0px',
-    }),
+    valueContainer: (provided) => ({ ...provided, padding: '0 14px' }),
+    input: (provided) => ({ ...provided, margin: '0px', padding: '0px' }),
     indicatorSeparator: () => ({ display: 'none' }),
     singleValue: (provided) => ({
       ...provided,
@@ -351,6 +367,7 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
       className='equipo-form'
       onSubmit={handleSubmit}
     >
+      {/* SECCIÓN 1: DATOS ADMINISTRATIVOS */}
       <div className='form-row'>
         <div className='input-group'>
           <label style={{ color: '#4f46e5' }}>
@@ -386,6 +403,7 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
         </div>
       </div>
 
+      {/* RENDERIZADO CONDICIONAL: SI ES ALQUILADO */}
       {!formData.es_propio && (
         <div
           className='form-row'
@@ -427,6 +445,7 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
         </div>
       )}
 
+      {/* SECCIÓN 2: IDENTIFICACIÓN DEL EQUIPO */}
       <div className='form-row'>
         <div className='input-group'>
           <label>
@@ -461,6 +480,7 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
         </div>
       </div>
 
+      {/* CORRECCIÓN VISUAL: MODELO Y SERIE EN LA MISMA FILA */}
       <div className='form-row'>
         <div className='input-group'>
           <label>Modelo *</label>
@@ -486,6 +506,7 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
         </div>
       </div>
 
+      {/* SECCIÓN 3: ESTADO FÍSICO Y OBSERVACIONES */}
       <div className='form-row'>
         <div className='input-group'>
           <label style={{ color: '#f59e0b' }}>
@@ -505,16 +526,17 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
           />
         </div>
         <div className='input-group'>
-          <label>Observaciones</label>
+          <label>Observaciones Físicas</label>
           <input
             name='observaciones'
             value={formData.observaciones}
             onChange={handleChange}
-            placeholder='Detalles, golpes, etc.'
+            placeholder='Detalles, golpes, arañazos, etc.'
           />
         </div>
       </div>
 
+      {/* SECCIÓN 4: ESPECIFICACIONES TÉCNICAS */}
       <div className='specs-section'>
         <h4>Especificaciones Principales</h4>
         <div className='form-row'>
