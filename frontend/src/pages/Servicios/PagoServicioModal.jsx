@@ -12,6 +12,8 @@ import {
   AlertTriangle,
   X,
   Check,
+  ChevronLeft, // Para paginación
+  ChevronRight, // Para paginación
 } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
 import FileUploader from '../../components/FileUploader/FileUploader';
@@ -32,6 +34,10 @@ const PagoServicioModal = ({ servicio, onClose }) => {
     periodo_anio: new Date().getFullYear(),
     nueva_fecha_proximo_pago: '',
   });
+
+  // --- ESTADOS DE PAGINACIÓN DE PAGOS ---
+  const [currentPagoPage, setCurrentPagoPage] = useState(1);
+  const itemsPerPagoPage = 3; // Mostrar máximo 3 pagos a la vez
 
   // --- ESTADOS DE MODAL DE ANULACIÓN ---
   const [isAnularModalOpen, setIsAnularModalOpen] = useState(false);
@@ -77,7 +83,6 @@ const PagoServicioModal = ({ servicio, onClose }) => {
   useEffect(() => {
     fetchPagos();
 
-    // Auto-calcular la próxima fecha de pago (+1 mes)
     if (servicio?.fecha_proximo_pago) {
       const proxima = new Date(servicio.fecha_proximo_pago);
       proxima.setMonth(proxima.getMonth() + 1);
@@ -87,6 +92,13 @@ const PagoServicioModal = ({ servicio, onClose }) => {
       }));
     }
   }, [servicio]);
+
+  // --- LÓGICA DE PAGINACIÓN ---
+  const indexOfLastPago = currentPagoPage * itemsPerPagoPage;
+  const indexOfFirstPago = indexOfLastPago - itemsPerPagoPage;
+  const currentPagosList = pagos.slice(indexOfFirstPago, indexOfLastPago);
+  const totalPagoPages = Math.ceil(pagos.length / itemsPerPagoPage);
+  const paginatePagos = (pageNumber) => setCurrentPagoPage(pageNumber);
 
   // --- HELPERS ---
   const getBackendFileUrl = (path) => {
@@ -146,6 +158,7 @@ const PagoServicioModal = ({ servicio, onClose }) => {
       });
       toast.success('Pago registrado correctamente ✅');
       setArchivo(null);
+      setCurrentPagoPage(1); // Regresamos a la primera página tras subir
       fetchPagos();
     } catch (error) {
       toast.error('Error al registrar el pago ❌');
@@ -336,70 +349,138 @@ const PagoServicioModal = ({ servicio, onClose }) => {
             Aún no hay pagos registrados para este servicio.
           </div>
         ) : (
-          <div className='table-scroll'>
-            <table>
-              <thead>
-                <tr>
-                  <th>Fecha de Pago</th>
-                  <th>Período</th>
-                  <th>Monto</th>
-                  <th className='center'>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {pagos.map((pago) => {
-                  const urlCompleta = getBackendFileUrl(pago.url_factura);
-                  return (
-                    <tr key={pago.id}>
-                      <td className='date'>{formatDate(pago.fecha_pago)}</td>
-                      <td className='period'>
-                        {getMesNombre(pago.periodo_mes)} {pago.periodo_anio}
-                      </td>
-                      <td className='amount'>
-                        {pago.moneda} {Number(pago.monto_pagado).toFixed(2)}
-                      </td>
-                      <td className='center'>
-                        <div className='table-actions'>
-                          {pago.url_factura && (
-                            <>
-                              <button
-                                type='button'
-                                onClick={() =>
-                                  window.open(urlCompleta, '_blank')
-                                }
-                                className='btn-icon view'
-                                title='Ver Comprobante'
-                              >
-                                <Eye size={14} />
-                              </button>
-                              <a
-                                href={urlCompleta}
-                                download
-                                target='_blank'
-                                rel='noreferrer'
-                                className='btn-icon download'
-                                title='Descargar Comprobante'
-                              >
-                                <Download size={14} />
-                              </a>
-                            </>
-                          )}
-                          <button
-                            type='button'
-                            onClick={() => triggerAnularPago(pago.id)}
-                            className='btn-icon remove'
-                            title='Anular Pago'
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+          <>
+            <div className='table-scroll'>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Fecha de Pago</th>
+                    <th>Período</th>
+                    <th>Monto</th>
+                    <th className='center'>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentPagosList.map((pago) => {
+                    const urlCompleta = getBackendFileUrl(pago.url_factura);
+                    return (
+                      <tr key={pago.id}>
+                        <td className='date'>{formatDate(pago.fecha_pago)}</td>
+                        <td className='period'>
+                          {getMesNombre(pago.periodo_mes)} {pago.periodo_anio}
+                        </td>
+                        <td className='amount'>
+                          {pago.moneda} {Number(pago.monto_pagado).toFixed(2)}
+                        </td>
+                        <td className='center'>
+                          <div className='table-actions'>
+                            {pago.url_factura && (
+                              <>
+                                <button
+                                  type='button'
+                                  onClick={() =>
+                                    window.open(urlCompleta, '_blank')
+                                  }
+                                  className='btn-icon view'
+                                  title='Ver Comprobante'
+                                >
+                                  <Eye size={14} />
+                                </button>
+                                <a
+                                  href={urlCompleta}
+                                  download
+                                  target='_blank'
+                                  rel='noreferrer'
+                                  className='btn-icon download'
+                                  title='Descargar Comprobante'
+                                >
+                                  <Download size={14} />
+                                </a>
+                              </>
+                            )}
+                            <button
+                              type='button'
+                              onClick={() => triggerAnularPago(pago.id)}
+                              className='btn-icon remove'
+                              title='Anular Pago'
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* --- PAGINACIÓN COMPACTA --- */}
+            {pagos.length > itemsPerPagoPage && (
+              <div
+                className='pagination-footer'
+                style={{
+                  borderTop: 'none',
+                  padding: '15px 5px 0 5px',
+                  marginTop: '10px',
+                  background: 'transparent',
+                }}
+              >
+                <div
+                  className='info'
+                  style={{ fontSize: '0.8rem' }}
+                >
+                  Mostrando <strong>{indexOfFirstPago + 1}</strong> a{' '}
+                  <strong>{Math.min(indexOfLastPago, pagos.length)}</strong> de{' '}
+                  <strong>{pagos.length}</strong>
+                </div>
+                <div
+                  className='controls'
+                  style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
+                >
+                  <button
+                    onClick={() => paginatePagos(currentPagoPage - 1)}
+                    disabled={currentPagoPage === 1}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '3px',
+                      padding: '4px 10px',
+                      borderRadius: '6px',
+                      fontSize: '0.8rem',
+                      fontWeight: '600',
+                    }}
+                  >
+                    <ChevronLeft size={14} /> Ant
+                  </button>
+                  <span
+                    style={{
+                      fontSize: '0.8rem',
+                      color: '#64748b',
+                      fontWeight: '600',
+                    }}
+                  >
+                    {currentPagoPage} / {totalPagoPages}
+                  </span>
+                  <button
+                    onClick={() => paginatePagos(currentPagoPage + 1)}
+                    disabled={currentPagoPage === totalPagoPages}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '3px',
+                      padding: '4px 10px',
+                      borderRadius: '6px',
+                      fontSize: '0.8rem',
+                      fontWeight: '600',
+                    }}
+                  >
+                    Sig <ChevronRight size={14} />
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
 

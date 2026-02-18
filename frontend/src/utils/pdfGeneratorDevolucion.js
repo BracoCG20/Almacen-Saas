@@ -8,6 +8,7 @@ export const generarPDFDevolucion = (
   cargadorDevuelto,
   observaciones,
   estadoFinal,
+  motivo, // <-- NUEVO PARÁMETRO AÑADIDO
 ) => {
   const doc = new jsPDF();
   const margen = 25;
@@ -60,7 +61,7 @@ export const generarPDFDevolucion = (
   doc.text(lineasCuerpo, margen, y);
   y += lineasCuerpo.length * 5 + 5;
 
-  // 5. Detalles
+  // 5. Detalles del Equipo
   doc.setFont('helvetica', 'normal');
   const itemEquipo = `- ${equipo.marca} ${equipo.modelo} con Número de serie: ${equipo.serie}`;
   doc.text(itemEquipo, margen + 10, y);
@@ -70,15 +71,34 @@ export const generarPDFDevolucion = (
     doc.text('- CARGADOR', margen + 10, y);
     y += 7;
   }
+  y += 5;
+
+  // --- NUEVO: MOTIVO DE LA DEVOLUCIÓN ---
+  doc.setFont('helvetica', 'bold');
+  doc.text('Motivo de la devolución:', margen, y);
+  y += 6;
+  doc.setFont('helvetica', 'normal');
+  doc.text(`- ${motivo || 'Devolución regular'}`, margen + 10, y);
   y += 10;
 
   // 6. Observaciones
   if (
-    (estadoFinal === 'malogrado' || estadoFinal === 'robado') &&
+    (estadoFinal === 'malogrado' ||
+      estadoFinal === 'robado' ||
+      estadoFinal === 'inoperativo') &&
     observaciones
   ) {
     doc.setFont('helvetica', 'bold');
     doc.text('Observaciones sobre el estado del equipo:', margen, y);
+    y += 7;
+    doc.setFont('helvetica', 'normal');
+    const splitObservaciones = doc.splitTextToSize(observaciones, anchoUtil);
+    doc.text(splitObservaciones, margen, y);
+    y += splitObservaciones.length * 5 + 10;
+  } else if (observaciones) {
+    // Mostrar observaciones siempre que existan, independientemente del estado
+    doc.setFont('helvetica', 'bold');
+    doc.text('Observaciones Adicionales:', margen, y);
     y += 7;
     doc.setFont('helvetica', 'normal');
     const splitObservaciones = doc.splitTextToSize(observaciones, anchoUtil);
