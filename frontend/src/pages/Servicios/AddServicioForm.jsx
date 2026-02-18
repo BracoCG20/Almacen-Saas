@@ -232,7 +232,6 @@ const AddServicioForm = ({ onSuccess, servicioToEdit }) => {
     >
       <h4 className='form-section-title'>Información General</h4>
 
-      {/* --- FILA 1 --- */}
       <div className='form-row'>
         <div className='input-group'>
           <label>Nombre del Servicio *</label>
@@ -261,7 +260,6 @@ const AddServicioForm = ({ onSuccess, servicioToEdit }) => {
         </div>
       </div>
 
-      {/* --- FILA 2 --- */}
       <div className='form-row'>
         <div className='input-group'>
           <label>
@@ -314,7 +312,6 @@ const AddServicioForm = ({ onSuccess, servicioToEdit }) => {
       <hr className='divider' />
 
       <h4 className='form-section-title'>Finanzas y Facturación</h4>
-      {/* --- FILA 3 --- */}
       <div className='form-row'>
         <div className='input-group'>
           <label>Precio Estimado y Moneda</label>

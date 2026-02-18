@@ -23,7 +23,7 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
     marca: '',
     modelo: '',
     numero_serie: '',
-    codigo_patrimonial: '', // Se mantiene oculto para que no se pierda al editar
+    codigo_patrimonial: '',
     estado_fisico_id: '',
     es_propio: true,
     proveedor_id: '',
@@ -130,7 +130,6 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
     }
   };
 
-  // --- CARGA INICIAL DE DATOS (CATÁLOGOS) ---
   useEffect(() => {
     const loadData = async () => {
       setLoadingData(true);
@@ -167,7 +166,6 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
     loadData();
   }, []);
 
-  // --- CARGAR DATOS SI ESTAMOS EN MODO EDICIÓN ---
   useEffect(() => {
     if (equipoToEdit) {
       let existingRam = '';
@@ -175,8 +173,6 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
       let existingAlmacenamientoUnidad = 'GB';
       let existingProc = '';
       let otherSpecs = [];
-
-      // Desestructuramos el JSON de especificaciones de manera segura
       let parsedSpecs = {};
       if (typeof equipoToEdit.especificaciones === 'string') {
         try {
@@ -206,7 +202,7 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
         marca: equipoToEdit.marca || '',
         modelo: equipoToEdit.modelo || '',
         numero_serie: equipoToEdit.numero_serie || '',
-        codigo_patrimonial: equipoToEdit.codigo_patrimonial || '', // Oculto visualmente, pero se mantiene en estado
+        codigo_patrimonial: equipoToEdit.codigo_patrimonial || '',
         estado_fisico_id: equipoToEdit.estado_fisico_id || '',
         es_propio: equipoToEdit.es_propio !== false,
         proveedor_id: equipoToEdit.proveedor_id || '',
@@ -367,7 +363,6 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
       className='equipo-form'
       onSubmit={handleSubmit}
     >
-      {/* SECCIÓN 1: DATOS ADMINISTRATIVOS */}
       <div className='form-row'>
         <div className='input-group'>
           <label style={{ color: '#4f46e5' }}>
@@ -403,7 +398,6 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
         </div>
       </div>
 
-      {/* RENDERIZADO CONDICIONAL: SI ES ALQUILADO */}
       {!formData.es_propio && (
         <div
           className='form-row'
@@ -445,7 +439,6 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
         </div>
       )}
 
-      {/* SECCIÓN 2: IDENTIFICACIÓN DEL EQUIPO */}
       <div className='form-row'>
         <div className='input-group'>
           <label>
@@ -480,7 +473,6 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
         </div>
       </div>
 
-      {/* CORRECCIÓN VISUAL: MODELO Y SERIE EN LA MISMA FILA */}
       <div className='form-row'>
         <div className='input-group'>
           <label>Modelo *</label>
@@ -506,7 +498,6 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
         </div>
       </div>
 
-      {/* SECCIÓN 3: ESTADO FÍSICO Y OBSERVACIONES */}
       <div className='form-row'>
         <div className='input-group'>
           <label style={{ color: '#f59e0b' }}>
@@ -536,7 +527,6 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
         </div>
       </div>
 
-      {/* SECCIÓN 4: ESPECIFICACIONES TÉCNICAS */}
       <div className='specs-section'>
         <h4>Especificaciones Principales</h4>
         <div className='form-row'>

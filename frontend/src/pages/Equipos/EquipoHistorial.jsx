@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   History,
   Building2,
@@ -12,7 +12,7 @@ import './EquipoHistorial.scss';
 const EquipoHistorial = ({ equipo, historyData }) => {
   // --- ESTADOS DE PAGINACIÓN ---
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 2; // Mostrar máximo 3 registros por página
+  const itemsPerPage = 2;
 
   // Reiniciar la página a 1 si cambia el equipo seleccionado
   useEffect(() => {
@@ -91,7 +91,6 @@ const EquipoHistorial = ({ equipo, historyData }) => {
                         : hist.proveedor_nombre}
                     </span>
 
-                    {/* Ocultamos estados desconocidos */}
                     {hist.estado_fisico_nombre && (
                       <span
                         className={`status-badge ${hist.estado_fisico_nombre?.toLowerCase() === 'operativo' ? 'operativo' : 'mantenimiento'}`}
@@ -129,7 +128,6 @@ const EquipoHistorial = ({ equipo, historyData }) => {
             ))}
           </div>
 
-          {/* --- PAGINACIÓN COMPACTA --- */}
           {historyData.length > itemsPerPage && (
             <div
               className='pagination-footer'

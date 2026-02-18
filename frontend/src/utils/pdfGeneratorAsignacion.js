@@ -6,7 +6,7 @@ export const generarPDFBlob = (
   equipo,
   usuario,
   fechaOverride = null,
-  cargadorOverride = null, // Este valor viene del componente o del historial (true/false)
+  cargadorOverride = null,
 ) => {
   const doc = new jsPDF();
   const margenIzq = 25;
@@ -147,7 +147,6 @@ export const generarPDFBlob = (
   doc.setFont('helvetica', 'bold');
   doc.text(`DNI/PTP/C.E N° ${dni}`, margenIzq, yFirma + 5);
 
-  // --- APLICAMOS LA VARIABLE CORREGIDA AQUÍ TAMBIÉN ---
   doc.text(
     esMujer ? 'LA TRABAJADORA' : 'EL TRABAJADOR',
     margenIzq,

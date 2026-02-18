@@ -167,7 +167,6 @@ export const InventoryOriginChart = ({ data }) => {
           iconType='circle'
         />
 
-        {/* LAS TRES BARRAS APILADAS (stackId='a' las une en una sola columna) */}
         <Bar
           dataKey='Disponibles'
           stackId='a'

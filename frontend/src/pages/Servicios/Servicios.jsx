@@ -245,7 +245,7 @@ const Servicios = () => {
       const res = await api.get(`/servicios/${servicio.id}/auditoria`);
       setAuditoriaData(res.data);
       setServicioParaPago(servicio);
-      setCurrentAuditPage(1); // REINICIAR LA PÁGINA DEL MODAL AL ABRIRLO
+      setCurrentAuditPage(1);
       setIsAuditModalOpen(true);
     } catch (error) {
       toast.error('Error cargando auditoría');
@@ -655,7 +655,6 @@ const Servicios = () => {
                 ))}
               </ul>
 
-              {/* PAGINACIÓN INTERNA DEL MODAL DE AUDITORÍA */}
               {auditoriaData.length > itemsPerAuditPage && (
                 <div
                   className='pagination-footer'

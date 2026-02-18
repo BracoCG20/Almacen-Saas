@@ -18,7 +18,6 @@
     margin: 3rem 0;
   }
 
-  // --- GRID DE TARJETAS (4 KPIs) ---
   .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -103,9 +102,7 @@
     }
   }
 
-  // --- SECCIÓN DE GASTOS (SAAS) ---
   .cost-summary-card {
-    // Usamos la variable primaria para el degradado base
     background: linear-gradient(135deg, v.$primary 0%, #6d28d9 100%);
     border-radius: 16px;
     padding: 1.8rem 2.5rem;
@@ -211,7 +208,6 @@
     }
   }
 
-  // --- ESTILOS PARA EL TÍTULO DE GRÁFICAS FINANCIERAS ---
   .charts-section-title {
     display: flex;
     justify-content: space-between;
@@ -263,7 +259,6 @@
     }
   }
 
-  // --- LAYOUT DE GRÁFICOS ---
   .charts-row {
     display: grid;
     gap: 1.5rem;

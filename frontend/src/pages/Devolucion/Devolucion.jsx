@@ -28,14 +28,13 @@ const Devolucion = () => {
   const fileInputRef = useRef(null);
   const [selectedMovimientoId, setSelectedMovimientoId] = useState(null);
 
-  // --- ESTADO ACTUALIZADO CON "MOTIVO" ---
   const [formData, setFormData] = useState({
     equipo_id: '',
     empleado_id: '',
     cargador: true,
     observaciones: '',
     estado_fisico_id: '',
-    motivo: '', // <-- AÑADIDO
+    motivo: '',
   });
 
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
@@ -188,7 +187,7 @@ const Devolucion = () => {
           equipo_id: eq.id,
           estado_fisico_id: operativoId,
           observaciones: '',
-          motivo: '', // Reiniciar motivo
+          motivo: '',
         });
       } else {
         toast.error('Error de sincronización de datos.');
@@ -224,7 +223,7 @@ const Devolucion = () => {
       item.cargador,
       item.observaciones,
       item.estado_equipo_momento,
-      item.motivo, // <-- AÑADIDO
+      item.motivo,
     );
     setPdfUrl(url);
     setShowPdfModal(true);

@@ -1,117 +1,116 @@
-@use "../../styles/variables" as v;
+@use '../../styles/variables' as v;
 
 .usuario-form-grid {
-	display: flex;
-	flex-direction: column;
-	gap: 18px;
-	padding: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 5px;
 
-	.form-group {
-		display: flex;
-		flex-direction: column;
-		gap: 6px;
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 
-		label {
-			font-size: 0.85rem;
-			font-weight: 700;
-			color: #4b5563;
-			margin-left: 2px;
-		}
+    label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #4b5563;
+      margin-left: 2px;
+    }
 
-		// --- LOS INPUTS NATIVOS AHORA SON DE 50PX ---
-		input {
-			width: 100%;
-			height: 50px; // <-- Altura maestra igualada con React-Select
-			padding: 0 14px;
-			border-radius: 8px;
-			border: 1px solid #cbd5e1;
-			font-size: 0.95rem;
-			color: #1e293b;
-			background-color: #fff;
-			transition: all 0.2s;
-			outline: none;
-			font-family: inherit;
-			box-sizing: border-box;
+    input {
+      width: 100%;
+      height: 50px;
+      padding: 0 14px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      font-size: 0.95rem;
+      color: #1e293b;
+      background-color: #fff;
+      transition: all 0.2s;
+      outline: none;
+      font-family: inherit;
+      box-sizing: border-box;
 
-			// Aseguramos centrado vertical del texto interno
-			display: flex;
-			align-items: center;
+      // Aseguramos centrado vertical del texto interno
+      display: flex;
+      align-items: center;
 
-			&:focus {
-				border-color: v.$primary;
-				box-shadow: 0 0 0 3px rgba(v.$primary, 0.15);
-			}
+      &:focus {
+        border-color: v.$primary;
+        box-shadow: 0 0 0 3px rgba(v.$primary, 0.15);
+      }
 
-			&::placeholder {
-				color: #9ca3af;
-				opacity: 1; // Para que Firefox no lo aclare más
-			}
+      &::placeholder {
+        color: #9ca3af;
+        opacity: 1;
+      }
 
-			&:disabled {
-				background-color: #f8fafc;
-				color: #9ca3af;
-				cursor: not-allowed;
-			}
-		}
-	}
+      &:disabled {
+        background-color: #f8fafc;
+        color: #9ca3af;
+        cursor: not-allowed;
+      }
+    }
+  }
 
-	.form-row {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 16px;
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
 
-		@media (max-width: 600px) {
-			grid-template-columns: 1fr;
-		}
-	}
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+  }
 
-	.edit-warning {
-		margin-bottom: 10px;
-		font-size: 0.9rem;
-		color: #b45309;
-		background: #fffbeb;
-		padding: 12px;
-		border-radius: 8px;
-		border: 1px solid #fcd34d;
-		display: flex;
-		align-items: center;
-		gap: 8px;
-	}
+  .edit-warning {
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    color: #b45309;
+    background: #fffbeb;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #fcd34d;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
 
-	.form-actions {
-		display: flex;
-		justify-content: flex-end;
-		align-items: center;
-		gap: 12px;
-		margin-top: 15px;
-		padding-top: 20px;
-		padding-bottom: 10px;
-		border-top: 1px solid #e5e7eb;
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    margin-top: 15px;
+    padding-top: 20px;
+    padding-bottom: 10px;
+    border-top: 1px solid #e5e7eb;
 
-		button {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			gap: 8px;
-			padding: 10px 24px;
-			height: 50px; // <-- Igualamos el botón a los inputs
-			border-radius: 8px;
-			font-weight: 600;
-			border: none;
-			cursor: pointer;
-			font-size: 1rem; // Un poco más de presencia
-			transition: all 0.2s;
+    button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 24px;
+      height: 50px;
+      border-radius: 8px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.2s;
 
-			&.btn-submit {
-				background-color: v.$primary;
-				color: white;
-				flex: 1;
-				box-shadow: 0 4px 6px rgba(v.$primary, 0.2);
-				&:hover {
-					filter: brightness(1.1);
-					transform: translateY(-1px);
-				}
-			}
-		}
-	}
+      &.btn-submit {
+        background-color: v.$primary;
+        color: white;
+        flex: 1;
+        box-shadow: 0 4px 6px rgba(v.$primary, 0.2);
+        &:hover {
+          filter: brightness(1.1);
+          transform: translateY(-1px);
+        }
+      }
+    }
+  }
 }

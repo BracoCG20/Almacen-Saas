@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../../service/api';
 import { toast } from 'react-toastify';
 import Select from 'react-select';
@@ -12,8 +12,8 @@ import {
   AlertTriangle,
   X,
   Check,
-  ChevronLeft, // Para paginación
-  ChevronRight, // Para paginación
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
 import FileUploader from '../../components/FileUploader/FileUploader';
@@ -158,7 +158,7 @@ const PagoServicioModal = ({ servicio, onClose }) => {
       });
       toast.success('Pago registrado correctamente ✅');
       setArchivo(null);
-      setCurrentPagoPage(1); // Regresamos a la primera página tras subir
+      setCurrentPagoPage(1);
       fetchPagos();
     } catch (error) {
       toast.error('Error al registrar el pago ❌');
@@ -339,7 +339,6 @@ const PagoServicioModal = ({ servicio, onClose }) => {
         </form>
       </div>
 
-      {/* --- HISTORIAL DE PAGOS --- */}
       <div className='history-container'>
         <h4 className='history-header'>
           <History size={18} /> Historial de Pagos
@@ -415,7 +414,6 @@ const PagoServicioModal = ({ servicio, onClose }) => {
               </table>
             </div>
 
-            {/* --- PAGINACIÓN COMPACTA --- */}
             {pagos.length > itemsPerPagoPage && (
               <div
                 className='pagination-footer'
@@ -484,7 +482,6 @@ const PagoServicioModal = ({ servicio, onClose }) => {
         )}
       </div>
 
-      {/* --- MODAL CONFIRMACIÓN ANULAR --- */}
       <Modal
         isOpen={isAnularModalOpen}
         onClose={() => setIsAnularModalOpen(false)}

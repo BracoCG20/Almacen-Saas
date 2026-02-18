@@ -8,10 +8,10 @@ import {
   BatteryFull,
   CheckCircle,
   AlertTriangle,
-  HelpCircle, // <-- Nuevo icono
+  HelpCircle,
 } from 'lucide-react';
 import Select from 'react-select';
-import CreatableSelect from 'react-select/creatable'; // Permite escribir otro motivo si no está en la lista
+import CreatableSelect from 'react-select/creatable';
 
 const DevolucionForm = ({
   usuariosOptions,
@@ -201,7 +201,6 @@ const DevolucionForm = ({
           </div>
         )}
 
-        {/* --- NUEVO CAMPO: MOTIVO --- */}
         <div
           className='input-group'
           style={{ marginTop: '1.5rem' }}

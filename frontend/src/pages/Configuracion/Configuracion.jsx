@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../../service/api';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../context/AuthContext';
@@ -185,7 +185,6 @@ const Configuracion = () => {
           <span>Administra tu información personal y corporativa.</span>
         </div>
 
-        {/* BOTONES ADMINISTRATIVOS (Solo SuperAdmin) */}
         {isSuperAdmin && (
           <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
             <div className='button-group'>
@@ -234,7 +233,6 @@ const Configuracion = () => {
         onSubmit={handleSubmit}
         className='config-grid'
       >
-        {/* --- TARJETA IZQUIERDA: FOTO Y PERFIL --- */}
         <div className='card profile-card'>
           <div className='photo-wrapper'>
             <img
@@ -280,7 +278,6 @@ const Configuracion = () => {
           </div>
         </div>
 
-        {/* --- TARJETA DERECHA: DATOS EDITABLES --- */}
         <div className='card details-card'>
           <h3 className='section-title'>Información Personal</h3>
 
@@ -421,7 +418,6 @@ const Configuracion = () => {
         </div>
       </form>
 
-      {/* --- MODALES RENDERIZADOS --- */}
       {showUserModal && (
         <RegisterAdminModal onClose={() => setShowUserModal(false)} />
       )}
@@ -434,7 +430,6 @@ const Configuracion = () => {
           onSuccess={() => {
             setEmpresaToEdit(null);
             setShowEmpresaModal(false);
-            // Idealmente aquí recargas la lista de empresas si la estás viendo
           }}
         />
       )}

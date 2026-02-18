@@ -1,192 +1,192 @@
-@use "../../styles/variables" as v;
+@use '../../styles/variables' as v;
 
 .history-container {
-	.history-header {
-		display: flex;
-		align-items: center;
-		gap: 1.5rem;
-		padding-bottom: 1.5rem;
-		border-bottom: 1px solid #e2e8f0;
-		margin-bottom: 1.5rem;
+  .history-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 1.5rem;
 
-		.big-icon {
-			width: 70px;
-			height: 70px;
-			border-radius: 16px;
-			background-color: #f3f0ff;
-			color: v.$primary; // Fija el color morado del icono
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			flex-shrink: 0;
-		}
+    .big-icon {
+      width: 70px;
+      height: 70px;
+      border-radius: 16px;
+      background-color: #f3f0ff;
+      color: v.$primary;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
 
-		.title-info-wrapper {
-			h3 {
-				margin: 0;
-				color: #1e293b;
-				font-size: 1.4rem;
-				font-weight: 800;
-				margin-bottom: 4px;
-			}
-			.serial-info {
-				font-family: monospace;
-				color: #64748b;
-			}
-		}
-	}
+    .title-info-wrapper {
+      h3 {
+        margin: 0;
+        color: #1e293b;
+        font-size: 1.4rem;
+        font-weight: 800;
+        margin-bottom: 4px;
+      }
+      .serial-info {
+        font-family: monospace;
+        color: #64748b;
+      }
+    }
+  }
 
-	.no-history {
-		text-align: center;
-		padding: 2rem;
-		color: #94a3b8;
-		font-style: italic;
-	}
+  .no-history {
+    text-align: center;
+    padding: 2rem;
+    color: #94a3b8;
+    font-style: italic;
+  }
 
-	.history-timeline {
-		display: flex;
-		flex-direction: column;
-		max-height: 500px;
-		overflow-y: auto;
-		padding-right: 10px;
+  .history-timeline {
+    display: flex;
+    flex-direction: column;
+    max-height: 500px;
+    overflow-y: auto;
+    padding-right: 10px;
 
-		.timeline-item {
-			display: flex;
-			margin-bottom: 20px;
+    .timeline-item {
+      display: flex;
+      margin-bottom: 20px;
 
-			// Columna de la Fecha
-			.timeline-date {
-				flex: 0 0 90px; // Ancho fijo para las fechas
-				text-align: right;
-				padding-right: 25px;
-				position: relative;
-				display: flex;
-				flex-direction: column;
-				padding-top: 2px;
+      // Columna de la Fecha
+      .timeline-date {
+        flex: 0 0 90px;
+        text-align: right;
+        padding-right: 25px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        padding-top: 2px;
 
-				strong {
-					color: #334155;
-					font-size: 0.85rem;
-				}
-				span {
-					color: #94a3b8;
-					font-size: 0.75rem;
-				}
+        strong {
+          color: #334155;
+          font-size: 0.85rem;
+        }
+        span {
+          color: #94a3b8;
+          font-size: 0.75rem;
+        }
 
-				// --- LA LÍNEA VERTICAL INFALIBLE ---
-				&::before {
-					content: "";
-					position: absolute;
-					right: -1px; // Se posiciona justo en el medio del gap
-					top: 5px;
-					bottom: -35px; // Se extiende hasta el siguiente item
-					width: 2px;
-					background-color: #e2e8f0;
-					z-index: 1;
-				}
+        // --- LA LÍNEA VERTICAL INFALIBLE ---
+        &::before {
+          content: '';
+          position: absolute;
+          right: -1px;
+          top: 5px;
+          bottom: -35px;
+          width: 2px;
+          background-color: #e2e8f0;
+          z-index: 1;
+        }
 
-				// --- EL PUNTO MORADO ---
-				&::after {
-					content: "";
-					position: absolute;
-					right: -5px; // Centra el punto exacto sobre la línea
-					top: 5px;
-					width: 10px;
-					height: 10px;
-					border-radius: 50%;
-					background-color: v.$primary;
-					border: 2px solid white;
-					z-index: 2;
-					box-shadow: 0 0 0 2px white;
-				}
-			}
+        // --- EL PUNTO MORADO ---
+        &::after {
+          content: '';
+          position: absolute;
+          right: -5px;
+          top: 5px;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          background-color: v.$primary;
+          border: 2px solid white;
+          z-index: 2;
+          box-shadow: 0 0 0 2px white;
+        }
+      }
 
-			// Ocultar la línea en el último elemento
-			&:last-child .timeline-date::before {
-				display: none;
-			}
+      // Ocultar la línea en el último elemento
+      &:last-child .timeline-date::before {
+        display: none;
+      }
 
-			// Columna de la Tarjeta de Contenido
-			.timeline-content {
-				flex: 1;
-				background-color: #f8fafc;
-				border: 1px solid #e2e8f0;
-				padding: 15px;
-				border-radius: 12px;
-				margin-left: 10px;
+      // Columna de la Tarjeta de Contenido
+      .timeline-content {
+        flex: 1;
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        padding: 15px;
+        border-radius: 12px;
+        margin-left: 10px;
 
-				h5 {
-					margin: 0 0 6px 0;
-					color: v.$primary;
-					font-size: 0.95rem;
-					text-transform: uppercase;
-					font-weight: 800;
-				}
+        h5 {
+          margin: 0 0 6px 0;
+          color: v.$primary;
+          font-size: 0.95rem;
+          text-transform: uppercase;
+          font-weight: 800;
+        }
 
-				.change-desc {
-					margin: 0 0 12px 0;
-					color: #475569;
-					font-size: 0.9rem;
-				}
+        .change-desc {
+          margin: 0 0 12px 0;
+          color: #475569;
+          font-size: 0.9rem;
+        }
 
-				.hist-details-grid {
-					display: flex;
-					flex-wrap: wrap;
-					gap: 8px;
-					margin-bottom: 12px;
+        .hist-details-grid {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          margin-bottom: 12px;
 
-					.hist-tag {
-						display: inline-flex;
-						align-items: center;
-						gap: 4px;
-						padding: 3px 8px;
-						border-radius: 6px;
-						font-size: 0.7rem;
-						font-weight: 700;
-						background: #fff;
-						border: 1px solid #cbd5e1;
-						color: #475569;
+          .hist-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            background: #fff;
+            border: 1px solid #cbd5e1;
+            color: #475569;
 
-						&.owned {
-							border-color: #c7d2fe;
-							color: #4f46e5;
-						}
-						&.rented {
-							border-color: #fdba74;
-							color: #ea580c;
-						}
-					}
-				}
+            &.owned {
+              border-color: #c7d2fe;
+              color: #4f46e5;
+            }
+            &.rented {
+              border-color: #fdba74;
+              color: #ea580c;
+            }
+          }
+        }
 
-				.hist-observations {
-					background-color: #fff7ed;
-					border: 1px solid #fdba74;
-					padding: 8px 12px;
-					border-radius: 8px;
-					margin-bottom: 12px;
-					display: flex;
-					align-items: flex-start;
-					gap: 8px;
-					color: #c2410c;
-					font-size: 0.8rem;
-					strong {
-						color: #9a3412;
-					}
-				}
+        .hist-observations {
+          background-color: #fff7ed;
+          border: 1px solid #fdba74;
+          padding: 8px 12px;
+          border-radius: 8px;
+          margin-bottom: 12px;
+          display: flex;
+          align-items: flex-start;
+          gap: 8px;
+          color: #c2410c;
+          font-size: 0.8rem;
+          strong {
+            color: #9a3412;
+          }
+        }
 
-				.timeline-footer {
-					display: flex;
-					justify-content: space-between;
-					align-items: center;
-					border-top: 1px dashed #cbd5e1;
-					padding-top: 10px;
-					small {
-						color: #64748b;
-						font-weight: 600;
-						font-size: 0.75rem;
-					}
-				}
-			}
-		}
-	}
+        .timeline-footer {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-top: 1px dashed #cbd5e1;
+          padding-top: 10px;
+          small {
+            color: #64748b;
+            font-weight: 600;
+            font-size: 0.75rem;
+          }
+        }
+      }
+    }
+  }
 }

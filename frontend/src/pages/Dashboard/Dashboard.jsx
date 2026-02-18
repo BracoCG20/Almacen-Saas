@@ -93,7 +93,7 @@ const Dashboard = () => {
         .slice(-6),
     );
 
-    // 2. ESTADO DEL INVENTARIO (PARA DONA GENERAL)
+    // 2. ESTADO DEL INVENTARIO
     const statusCounts = { operativo: 0, mantenimiento: 0, inoperativo: 0 };
     equipos.forEach((e) => {
       const estadoFisico = (e.estado_fisico || '').toLowerCase().trim();
@@ -378,7 +378,6 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* --- TARJETA DE INVERSIÓN EN SERVICIOS --- */}
       <div className='cost-summary-card'>
         <div className='cost-header'>
           <h3 className='title'>
@@ -421,7 +420,6 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* --- SECCIÓN DE GRÁFICAS DE GASTOS --- */}
       <div className='charts-section-title'>
         <div>
           <h2>Análisis de Gastos</h2>
@@ -475,7 +473,6 @@ const Dashboard = () => {
 
       <div className='divider-line'></div>
 
-      {/* --- SECCIÓN DE GRÁFICOS DE EQUIPOS --- */}
       <h2
         style={{ marginTop: '2rem', marginBottom: '1.5rem', color: '#1e293b' }}
       >
