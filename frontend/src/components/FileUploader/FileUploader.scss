@@ -1,121 +1,120 @@
-@use "../../styles/variables" as v;
+@use '../../styles/variables' as v;
 
 .file-upload-wrapper {
-	width: 100%;
+  width: 100%;
 
-	// --- ESTADO VACÍO (BOTÓN CUSTOM) ---
-	&.empty-state {
-		.custom-upload-btn {
-			width: 100%;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			gap: 10px;
-			padding: 14px;
-			background-color: #f8fafc;
-			border: 2px dashed #cbd5e1;
-			border-radius: 10px;
-			color: #64748b;
-			font-weight: 600;
-			font-size: 0.95rem;
-			cursor: pointer;
-			transition: all 0.2s ease;
-			outline: none;
+  &.empty-state {
+    .custom-upload-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px;
+      background-color: #f8fafc;
+      border: 2px dashed #cbd5e1;
+      border-radius: 10px;
+      color: #64748b;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      outline: none;
 
-			svg {
-				color: v.$primary;
-				transition: transform 0.2s ease;
-			}
+      svg {
+        color: v.$primary;
+        transition: transform 0.2s ease;
+      }
 
-			&:hover {
-				background-color: #f1f5f9;
-				border-color: v.$primary;
-				color: v.$primary;
+      &:hover {
+        background-color: #f1f5f9;
+        border-color: v.$primary;
+        color: v.$primary;
 
-				svg {
-					transform: translateY(-2px);
-				}
-			}
-		}
-	}
+        svg {
+          transform: translateY(-2px);
+        }
+      }
+    }
+  }
 
-	// --- TARJETA DE VISTA PREVIA ---
-	.file-preview-card {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		background-color: #f8fafc;
-		border: 1px solid #e2e8f0;
-		padding: 12px 18px;
-		border-radius: 10px;
-		transition: all 0.2s ease;
+  // --- TARJETA DE VISTA PREVIA ---
+  .file-preview-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 12px 18px;
+    border-radius: 10px;
+    transition: all 0.2s ease;
 
-		&:hover {
-			border-color: #cbd5e1;
-			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-		}
+    &:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
 
-		.file-info {
-			display: flex;
-			align-items: center;
-			gap: 10px;
-			color: #334155;
-			font-weight: 600;
-			font-size: 0.9rem;
-			flex: 1;
-			min-width: 0; // Ayuda a que el texto largo no rompa la caja
+    .file-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #334155;
+      font-weight: 600;
+      font-size: 0.9rem;
+      flex: 1;
+      min-width: 0; //se coloco para que no rompa la caja
 
-			span {
-				display: inline-block;
-				max-width: 85%;
-				white-space: nowrap;
-				overflow: hidden;
-				text-overflow: ellipsis;
-			}
-		}
+      span {
+        display: inline-block;
+        max-width: 85%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
 
-		.file-actions {
-			display: flex;
-			gap: 8px;
-			flex-shrink: 0;
+    .file-actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
 
-			.btn-icon {
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				width: 36px;
-				height: 36px;
-				border-radius: 8px;
-				border: none;
-				cursor: pointer;
-				transition: all 0.2s;
-				text-decoration: none;
+      .btn-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
 
-				&.preview {
-					background-color: #e0f2fe;
-					color: #0ea5e9;
-					&:hover {
-						background-color: #bae6fd;
-						transform: translateY(-2px);
-					}
-				}
-				&.download {
-					background-color: #dcfce7;
-					color: #10b981;
-					&:hover {
-						background-color: #bbf7d0;
-						transform: translateY(-2px);
-					}
-				}
-				&.delete {
-					background-color: #fee2e2;
-					color: #ef4444;
-					&:hover {
-						background-color: #fecaca;
-						transform: translateY(-2px);
-					}
-				}
-			}
-		}
-	}
+        &.preview {
+          background-color: #e0f2fe;
+          color: #0ea5e9;
+          &:hover {
+            background-color: #bae6fd;
+            transform: translateY(-2px);
+          }
+        }
+        &.download {
+          background-color: #dcfce7;
+          color: #10b981;
+          &:hover {
+            background-color: #bbf7d0;
+            transform: translateY(-2px);
+          }
+        }
+        &.delete {
+          background-color: #fee2e2;
+          color: #ef4444;
+          &:hover {
+            background-color: #fecaca;
+            transform: translateY(-2px);
+          }
+        }
+      }
+    }
+  }
 }

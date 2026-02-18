@@ -1,266 +1,266 @@
-@use "../../styles/variables" as v;
+@use '../../styles/variables' as v;
 
 $smooth-transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 
 .sidebar {
-	width: 260px;
-	height: 100vh;
-	background: rgba(v.$white, 0.98); // Usando variable
-	backdrop-filter: blur(10px);
-	border-right: 1px solid rgba(0, 0, 0, 0.08);
-	display: flex;
-	flex-direction: column;
-	padding: 1.5rem 1rem;
-	transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-	position: relative;
-	z-index: 1000;
-	box-shadow: 4px 0 24px rgba(0, 0, 0, 0.02);
-	overflow: hidden;
+  width: 260px;
+  height: 100vh;
+  background: rgba(v.$white, 0.98);
+  backdrop-filter: blur(10px);
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 1rem;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 1000;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.02);
+  overflow: hidden;
 
-	&.collapsed {
-		width: 80px;
+  &.collapsed {
+    width: 80px;
 
-		.logo-container img {
-			max-width: 40px;
-		}
+    .logo-container img {
+      max-width: 40px;
+    }
 
-		.nav-item {
-			justify-content: center;
-			.label {
-				opacity: 0;
-				width: 0;
-				margin-left: 0;
-			}
-		}
+    .nav-item {
+      justify-content: center;
+      .label {
+        opacity: 0;
+        width: 0;
+        margin-left: 0;
+      }
+    }
 
-		.footer-actions {
-			.user-mini-card {
-				justify-content: center;
-				background: transparent;
-				border-color: transparent;
-				padding: 8px 0;
+    .footer-actions {
+      .user-mini-card {
+        justify-content: center;
+        background: transparent;
+        border-color: transparent;
+        padding: 8px 0;
 
-				.info {
-					opacity: 0;
-					width: 0;
-					margin-left: 0;
-				}
-			}
+        .info {
+          opacity: 0;
+          width: 0;
+          margin-left: 0;
+        }
+      }
 
-			.logout-btn {
-				justify-content: center;
-				padding: 10px 0;
-				.label {
-					opacity: 0;
-					width: 0;
-					margin-left: 0;
-				}
-			}
+      .logout-btn {
+        justify-content: center;
+        padding: 10px 0;
+        .label {
+          opacity: 0;
+          width: 0;
+          margin-left: 0;
+        }
+      }
 
-			.copyright {
-				opacity: 0;
-				height: 0;
-				margin: 0;
-			}
-		}
-	}
+      .copyright {
+        opacity: 0;
+        height: 0;
+        margin: 0;
+      }
+    }
+  }
 
-	.logo-container {
-		margin-bottom: 2rem;
-		height: 50px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		img {
-			max-width: 140px;
-			transition: $smooth-transition;
-			object-fit: contain;
-		}
-	}
+  .logo-container {
+    margin-bottom: 2rem;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    img {
+      max-width: 140px;
+      transition: $smooth-transition;
+      object-fit: contain;
+    }
+  }
 
-	nav {
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
-		flex: 1;
+  nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
 
-		.nav-item {
-			display: flex;
-			align-items: center;
-			padding: 12px 16px;
-			color: v.$text-muted; // Usando variable
-			text-decoration: none;
-			border-radius: 12px;
-			font-weight: 600;
-			font-size: 0.95rem;
-			transition:
-				all 0.2s ease,
-				justify-content 0.4s ease;
-			height: 48px;
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      color: v.$text-muted;
+      text-decoration: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition:
+        all 0.2s ease,
+        justify-content 0.4s ease;
+      height: 48px;
 
-			.icon-wrapper {
-				min-width: 24px;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				font-size: 1.25rem;
-			}
+      .icon-wrapper {
+        min-width: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+      }
 
-			.label {
-				margin-left: 12px;
-				white-space: nowrap;
-				overflow: hidden;
-				opacity: 1;
-				transition:
-					width 0.4s ease,
-					margin-left 0.4s ease,
-					opacity 0.3s ease;
-			}
+      .label {
+        margin-left: 12px;
+        white-space: nowrap;
+        overflow: hidden;
+        opacity: 1;
+        transition:
+          width 0.4s ease,
+          margin-left 0.4s ease,
+          opacity 0.3s ease;
+      }
 
-			&:hover {
-				background: v.$bg-body;
-				color: v.$text-main;
-				transform: translateX(3px);
-			}
+      &:hover {
+        background: v.$bg-body;
+        color: v.$text-main;
+        transform: translateX(3px);
+      }
 
-			&.active {
-				background: rgba(v.$primary, 0.1); // Fondo principal con opacidad
-				color: v.$primary;
-				box-shadow: 0 2px 10px rgba(v.$primary, 0.15);
-			}
-			&.entrega.active {
-				background: rgba(v.$success, 0.15);
-				color: darken(v.$success, 10%);
-			}
-			&.devolucion.active {
-				background: rgba(v.$danger, 0.15);
-				color: darken(v.$danger, 10%);
-			}
-		}
-	}
+      &.active {
+        background: rgba(v.$primary, 0.1);
+        color: v.$primary;
+        box-shadow: 0 2px 10px rgba(v.$primary, 0.15);
+      }
+      &.entrega.active {
+        background: rgba(v.$success, 0.15);
+        color: darken(v.$success, 10%);
+      }
+      &.devolucion.active {
+        background: rgba(v.$danger, 0.15);
+        color: darken(v.$danger, 10%);
+      }
+    }
+  }
 
-	.footer-actions {
-		margin-top: auto;
-		border-top: 1px solid v.$bg-body;
-		padding-top: 1.5rem;
-		display: flex;
-		flex-direction: column;
-		gap: 12px;
+  .footer-actions {
+    margin-top: auto;
+    border-top: 1px solid v.$bg-body;
+    padding-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 
-		.user-mini-card {
-			display: flex;
-			align-items: center;
-			padding: 10px;
-			background: v.$bg-body;
-			border-radius: 12px;
-			border: 1px solid darken(v.$bg-body, 5%);
-			transition: $smooth-transition;
-			overflow: hidden;
-			min-height: 60px;
+    .user-mini-card {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      background: v.$bg-body;
+      border-radius: 12px;
+      border: 1px solid darken(v.$bg-body, 5%);
+      transition: $smooth-transition;
+      overflow: hidden;
+      min-height: 60px;
 
-			.avatar {
-				width: 36px;
-				height: 36px;
-				border-radius: 50%;
-				background: darken(v.$bg-body, 10%);
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				color: v.$text-muted;
-				font-size: 1.5rem;
-				flex-shrink: 0;
-				transition: $smooth-transition;
-				img {
-					width: 100%;
-					height: 100%;
-					border-radius: 50%;
-					object-fit: cover;
-				}
-			}
+      .avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: darken(v.$bg-body, 10%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: v.$text-muted;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+        transition: $smooth-transition;
+        img {
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+          object-fit: cover;
+        }
+      }
 
-			.info {
-				margin-left: 12px;
-				display: flex;
-				flex-direction: column;
-				justify-content: center;
-				overflow: hidden;
-				white-space: nowrap;
-				opacity: 1;
-				transition:
-					width 0.4s ease,
-					margin-left 0.4s ease,
-					opacity 0.3s ease;
+      .info {
+        margin-left: 12px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        overflow: hidden;
+        white-space: nowrap;
+        opacity: 1;
+        transition:
+          width 0.4s ease,
+          margin-left 0.4s ease,
+          opacity 0.3s ease;
 
-				.name {
-					font-size: 0.85rem;
-					font-weight: 700;
-					color: v.$text-main;
-					line-height: 1.2;
-				}
+        .name {
+          font-size: 0.85rem;
+          font-weight: 700;
+          color: v.$text-main;
+          line-height: 1.2;
+        }
 
-				.email {
-					font-size: 0.75rem;
-					color: v.$text-muted;
-					margin-top: 2px;
-					text-overflow: ellipsis;
-					overflow: hidden;
-					max-width: 140px;
-					display: block;
-				}
-			}
-		}
+        .email {
+          font-size: 0.75rem;
+          color: v.$text-muted;
+          margin-top: 2px;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          max-width: 140px;
+          display: block;
+        }
+      }
+    }
 
-		.logout-btn {
-			width: 100%;
-			height: 45px;
-			background: v.$white;
-			border: 1px solid rgba(v.$danger, 0.3);
-			color: v.$danger;
-			border-radius: 12px;
-			cursor: pointer;
-			display: flex;
-			align-items: center;
-			padding: 0 16px;
-			font-weight: 600;
-			transition:
-				all 0.2s ease,
-				justify-content 0.4s ease,
-				width 0.4s ease;
-			white-space: nowrap;
-			overflow: hidden;
+    .logout-btn {
+      width: 100%;
+      height: 45px;
+      background: v.$white;
+      border: 1px solid rgba(v.$danger, 0.3);
+      color: v.$danger;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      font-weight: 600;
+      transition:
+        all 0.2s ease,
+        justify-content 0.4s ease,
+        width 0.4s ease;
+      white-space: nowrap;
+      overflow: hidden;
 
-			.icon-wrapper {
-				font-size: 1.1rem;
-				display: flex;
-				align-items: center;
-				flex-shrink: 0;
-			}
+      .icon-wrapper {
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+      }
 
-			.label {
-				margin-left: 10px;
-				white-space: nowrap;
-				overflow: hidden;
-				opacity: 1;
-				transition:
-					width 0.4s ease,
-					margin-left 0.4s ease,
-					opacity 0.3s ease;
-			}
+      .label {
+        margin-left: 10px;
+        white-space: nowrap;
+        overflow: hidden;
+        opacity: 1;
+        transition:
+          width 0.4s ease,
+          margin-left 0.4s ease,
+          opacity 0.3s ease;
+      }
 
-			&:hover {
-				background: rgba(v.$danger, 0.1);
-				color: darken(v.$danger, 10%);
-			}
-		}
+      &:hover {
+        background: rgba(v.$danger, 0.1);
+        color: darken(v.$danger, 10%);
+      }
+    }
 
-		.copyright {
-			text-align: center;
-			font-size: 0.7rem;
-			color: lighten(v.$text-muted, 15%);
-			margin-top: 5px;
-			white-space: nowrap;
-			overflow: hidden;
-			transition: $smooth-transition;
-		}
-	}
+    .copyright {
+      text-align: center;
+      font-size: 0.7rem;
+      color: lighten(v.$text-muted, 15%);
+      margin-top: 5px;
+      white-space: nowrap;
+      overflow: hidden;
+      transition: $smooth-transition;
+    }
+  }
 }

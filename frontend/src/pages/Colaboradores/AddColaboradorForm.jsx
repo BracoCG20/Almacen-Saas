@@ -101,7 +101,6 @@ const AddColaboradorForm = ({ onSuccess, colaboradorToEdit }) => {
         [name]: selectedOption ? selectedOption.value : '',
       };
 
-      // Si cambia a Planilla, limpiamos la fecha de fin porque es indefinido
       if (name === 'tipo_vinculo' && selectedOption?.value === 'Planilla') {
         newData.fecha_fin_proyecto = '';
       }
@@ -110,11 +109,9 @@ const AddColaboradorForm = ({ onSuccess, colaboradorToEdit }) => {
     });
   };
 
-  // --- ENVÍO DEL FORMULARIO ---
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validaciones Front-End de negocio
     if (formData.dni.length !== 8) {
       return toast.warning('El DNI debe tener exactamente 8 dígitos.');
     }
@@ -145,7 +142,6 @@ const AddColaboradorForm = ({ onSuccess, colaboradorToEdit }) => {
     }
   };
 
-  // --- ESTILOS REACT-SELECT Y ESTADOS DESHABILITADOS ---
   const disabledStyle = {
     background: '#f8fafc',
     color: '#94a3b8',
@@ -208,7 +204,6 @@ const AddColaboradorForm = ({ onSuccess, colaboradorToEdit }) => {
       className='usuario-form-grid'
       onSubmit={handleSubmit}
     >
-      {/* Aviso en modo edición para explicar por qué ciertos campos están bloqueados */}
       {isEdit && (
         <div className='edit-warning'>
           <Lock size={16} /> Por seguridad, los datos de identidad (DNI,
@@ -216,7 +211,6 @@ const AddColaboradorForm = ({ onSuccess, colaboradorToEdit }) => {
         </div>
       )}
 
-      {/* --- FILA 1: Identidad --- */}
       <div className='form-row'>
         <div className='form-group'>
           <label>DNI / Documento *</label>
@@ -244,7 +238,6 @@ const AddColaboradorForm = ({ onSuccess, colaboradorToEdit }) => {
         </div>
       </div>
 
-      {/* --- FILA 2: Nombres --- */}
       <div className='form-row'>
         <div className='form-group'>
           <label>Nombres *</label>
@@ -272,7 +265,6 @@ const AddColaboradorForm = ({ onSuccess, colaboradorToEdit }) => {
         </div>
       </div>
 
-      {/* --- FILA 3: Contacto --- */}
       <div className='form-row'>
         <div className='form-group'>
           <label>Correo Electrónico *</label>
@@ -298,7 +290,6 @@ const AddColaboradorForm = ({ onSuccess, colaboradorToEdit }) => {
         </div>
       </div>
 
-      {/* --- FILA 4: Empresa y Cargo --- */}
       <div className='form-row'>
         <div className='form-group'>
           <label>Empresa Asignada *</label>
@@ -328,8 +319,6 @@ const AddColaboradorForm = ({ onSuccess, colaboradorToEdit }) => {
           />
         </div>
       </div>
-
-      {/* --- FILA 5: Tipo de Contrato --- */}
       <div className='form-row'>
         <div className='form-group'>
           <label>Tipo de Vínculo *</label>
@@ -344,8 +333,6 @@ const AddColaboradorForm = ({ onSuccess, colaboradorToEdit }) => {
             menuPosition={'fixed'}
           />
         </div>
-
-        {/* Mostrar fecha de fin SOLO si NO está en Planilla */}
         {formData.tipo_vinculo !== 'Planilla' ? (
           <div className='form-group'>
             <label>Fecha de Fin (Contrato) *</label>
@@ -358,11 +345,10 @@ const AddColaboradorForm = ({ onSuccess, colaboradorToEdit }) => {
             />
           </div>
         ) : (
-          <div className='form-group'></div> // Espaciador para mantener el layout grid
+          <div className='form-group'></div>
         )}
       </div>
 
-      {/* --- BOTÓN SUBMIT --- */}
       <div className='form-actions'>
         <button
           type='submit'

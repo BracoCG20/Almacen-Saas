@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   History,
   Check,
@@ -77,7 +76,7 @@ const DevolucionTable = ({
             <th>Fecha y Hora</th>
             <th>Equipo Devuelto</th>
             <th>Usuario</th>
-            <th>Motivo</th> {/* <-- NUEVA COLUMNA */}
+            <th>Motivo</th>
             <th className='center'>Estado</th>
             <th className='center'>Carg.</th>
             <th className='center'>Correo</th>
@@ -94,7 +93,7 @@ const DevolucionTable = ({
               <tr key={h.id}>
                 <td>
                   <div className='email-cell'>
-                    <CalendarDays size={14} />{' '}
+                    <CalendarDays size={14} />
                     {formatDateTime(h.fecha_movimiento)}
                   </div>
                 </td>
@@ -111,7 +110,6 @@ const DevolucionTable = ({
                     </span>
                   </div>
                 </td>
-                {/* --- CELDA DEL MOTIVO --- */}
                 <td>
                   <span style={{ fontSize: '0.85rem', color: '#475569' }}>
                     {h.motivo || 'No especificado'}
