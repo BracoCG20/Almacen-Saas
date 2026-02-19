@@ -1,266 +1,287 @@
-@use '../../styles/variables' as v;
+@use "../../styles/variables" as v;
 
-$smooth-transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+$sidebar-width-open: 260px;
+$sidebar-width-collapsed: 84px;
+// Transición optimizada para evitar el lag
+$smooth-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 
 .sidebar {
-  width: 260px;
-  height: 100vh;
-  background: rgba(v.$white, 0.98);
-  backdrop-filter: blur(10px);
-  border-right: 1px solid rgba(0, 0, 0, 0.08);
-  display: flex;
-  flex-direction: column;
-  padding: 1.5rem 1rem;
-  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  z-index: 1000;
-  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.02);
-  overflow: hidden;
+	width: $sidebar-width-open;
+	height: 100vh;
+	background: rgba(v.$white, 0.98);
+	backdrop-filter: blur(10px);
+	border-right: 1px solid rgba(0, 0, 0, 0.08);
+	display: flex;
+	flex-direction: column;
+	padding: 1.5rem 1rem;
+	transition: width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+	position: relative;
+	z-index: 1000;
+	box-shadow: 4px 0 24px rgba(0, 0, 0, 0.02);
+	overflow: hidden; // Vital para evitar scrollbars fantasma al achicarse
 
-  &.collapsed {
-    width: 80px;
+	// ==========================================
+	// ESTADO COLAPSADO
+	// ==========================================
+	&.collapsed {
+		width: $sidebar-width-collapsed;
 
-    .logo-container img {
-      max-width: 40px;
-    }
+		.logo-container img {
+			max-width: 45px;
+		}
 
-    .nav-item {
-      justify-content: center;
-      .label {
-        opacity: 0;
-        width: 0;
-        margin-left: 0;
-      }
-    }
+		nav .nav-item {
+			padding: 12px;
+			justify-content: center;
 
-    .footer-actions {
-      .user-mini-card {
-        justify-content: center;
-        background: transparent;
-        border-color: transparent;
-        padding: 8px 0;
+			.icon-wrapper {
+				margin: 0;
+			}
 
-        .info {
-          opacity: 0;
-          width: 0;
-          margin-left: 0;
-        }
-      }
+			.label {
+				opacity: 0;
+				width: 0;
+				margin-left: 0;
+				visibility: hidden;
+			}
+		}
 
-      .logout-btn {
-        justify-content: center;
-        padding: 10px 0;
-        .label {
-          opacity: 0;
-          width: 0;
-          margin-left: 0;
-        }
-      }
+		.footer-actions {
+			.user-mini-card {
+				padding: 8px;
+				justify-content: center;
+				background: transparent;
+				border-color: transparent;
 
-      .copyright {
-        opacity: 0;
-        height: 0;
-        margin: 0;
-      }
-    }
-  }
+				.info {
+					opacity: 0;
+					width: 0;
+					margin-left: 0;
+					visibility: hidden;
+				}
+			}
 
-  .logo-container {
-    margin-bottom: 2rem;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    img {
-      max-width: 140px;
-      transition: $smooth-transition;
-      object-fit: contain;
-    }
-  }
+			.logout-btn {
+				padding: 12px;
+				justify-content: center;
 
-  nav {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    flex: 1;
+				.icon-wrapper {
+					margin: 0;
+				}
 
-    .nav-item {
-      display: flex;
-      align-items: center;
-      padding: 12px 16px;
-      color: v.$text-muted;
-      text-decoration: none;
-      border-radius: 12px;
-      font-weight: 600;
-      font-size: 0.95rem;
-      transition:
-        all 0.2s ease,
-        justify-content 0.4s ease;
-      height: 48px;
+				.label {
+					opacity: 0;
+					width: 0;
+					margin-left: 0;
+					visibility: hidden;
+				}
+			}
 
-      .icon-wrapper {
-        min-width: 24px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.25rem;
-      }
+			.copyright {
+				opacity: 0;
+				height: 0;
+				margin: 0;
+				visibility: hidden;
+			}
+		}
+	}
 
-      .label {
-        margin-left: 12px;
-        white-space: nowrap;
-        overflow: hidden;
-        opacity: 1;
-        transition:
-          width 0.4s ease,
-          margin-left 0.4s ease,
-          opacity 0.3s ease;
-      }
+	// ==========================================
+	// ESTADO ABIERTO (Default styles)
+	// ==========================================
 
-      &:hover {
-        background: v.$bg-body;
-        color: v.$text-main;
-        transform: translateX(3px);
-      }
+	.logo-container {
+		margin-bottom: 2rem;
+		height: 50px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 
-      &.active {
-        background: rgba(v.$primary, 0.1);
-        color: v.$primary;
-        box-shadow: 0 2px 10px rgba(v.$primary, 0.15);
-      }
-      &.entrega.active {
-        background: rgba(v.$success, 0.15);
-        color: darken(v.$success, 10%);
-      }
-      &.devolucion.active {
-        background: rgba(v.$danger, 0.15);
-        color: darken(v.$danger, 10%);
-      }
-    }
-  }
+		img {
+			max-width: 140px;
+			transition: max-width 0.3s ease;
+			object-fit: contain;
+		}
+	}
 
-  .footer-actions {
-    margin-top: auto;
-    border-top: 1px solid v.$bg-body;
-    padding-top: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+	nav {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		flex: 1;
 
-    .user-mini-card {
-      display: flex;
-      align-items: center;
-      padding: 10px;
-      background: v.$bg-body;
-      border-radius: 12px;
-      border: 1px solid darken(v.$bg-body, 5%);
-      transition: $smooth-transition;
-      overflow: hidden;
-      min-height: 60px;
+		.nav-item {
+			display: flex;
+			align-items: center;
+			padding: 12px 16px;
+			color: v.$text-muted;
+			text-decoration: none;
+			border-radius: 12px;
+			font-weight: 600;
+			font-size: 0.95rem;
+			transition: $smooth-transition;
+			height: 48px;
+			white-space: nowrap; // Evita que el texto baje de línea
+			overflow: hidden;
 
-      .avatar {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        background: darken(v.$bg-body, 10%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: v.$text-muted;
-        font-size: 1.5rem;
-        flex-shrink: 0;
-        transition: $smooth-transition;
-        img {
-          width: 100%;
-          height: 100%;
-          border-radius: 50%;
-          object-fit: cover;
-        }
-      }
+			.icon-wrapper {
+				min-width: 24px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				transition: margin 0.3s ease;
+			}
 
-      .info {
-        margin-left: 12px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        overflow: hidden;
-        white-space: nowrap;
-        opacity: 1;
-        transition:
-          width 0.4s ease,
-          margin-left 0.4s ease,
-          opacity 0.3s ease;
+			.label {
+				margin-left: 14px;
+				opacity: 1;
+				transition:
+					opacity 0.2s ease,
+					width 0.3s ease,
+					margin 0.3s ease;
+				visibility: visible;
+			}
 
-        .name {
-          font-size: 0.85rem;
-          font-weight: 700;
-          color: v.$text-main;
-          line-height: 1.2;
-        }
+			&:hover {
+				background: v.$bg-body;
+				color: v.$text-main;
+			}
 
-        .email {
-          font-size: 0.75rem;
-          color: v.$text-muted;
-          margin-top: 2px;
-          text-overflow: ellipsis;
-          overflow: hidden;
-          max-width: 140px;
-          display: block;
-        }
-      }
-    }
+			&.active {
+				background: rgba(v.$primary, 0.1);
+				color: v.$primary;
+			}
 
-    .logout-btn {
-      width: 100%;
-      height: 45px;
-      background: v.$white;
-      border: 1px solid rgba(v.$danger, 0.3);
-      color: v.$danger;
-      border-radius: 12px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      padding: 0 16px;
-      font-weight: 600;
-      transition:
-        all 0.2s ease,
-        justify-content 0.4s ease,
-        width 0.4s ease;
-      white-space: nowrap;
-      overflow: hidden;
+			&.entrega.active {
+				background: rgba(v.$success, 0.15);
+				color: darken(v.$success, 10%);
+			}
 
-      .icon-wrapper {
-        font-size: 1.1rem;
-        display: flex;
-        align-items: center;
-        flex-shrink: 0;
-      }
+			&.devolucion.active {
+				background: rgba(v.$danger, 0.15);
+				color: darken(v.$danger, 10%);
+			}
+		}
+	}
 
-      .label {
-        margin-left: 10px;
-        white-space: nowrap;
-        overflow: hidden;
-        opacity: 1;
-        transition:
-          width 0.4s ease,
-          margin-left 0.4s ease,
-          opacity 0.3s ease;
-      }
+	.footer-actions {
+		margin-top: auto;
+		border-top: 1px solid v.$bg-body;
+		padding-top: 1.5rem;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
 
-      &:hover {
-        background: rgba(v.$danger, 0.1);
-        color: darken(v.$danger, 10%);
-      }
-    }
+		.user-mini-card {
+			display: flex;
+			align-items: center;
+			padding: 10px 14px;
+			background: v.$bg-body;
+			border-radius: 12px;
+			border: 1px solid darken(v.$bg-body, 5%);
+			transition: $smooth-transition;
+			white-space: nowrap;
+			overflow: hidden;
 
-    .copyright {
-      text-align: center;
-      font-size: 0.7rem;
-      color: lighten(v.$text-muted, 15%);
-      margin-top: 5px;
-      white-space: nowrap;
-      overflow: hidden;
-      transition: $smooth-transition;
-    }
-  }
+			.avatar {
+				width: 36px;
+				height: 36px;
+				border-radius: 50%;
+				background: darken(v.$bg-body, 10%);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: v.$text-muted;
+				flex-shrink: 0;
+
+				img {
+					width: 100%;
+					height: 100%;
+					border-radius: 50%;
+					object-fit: cover;
+				}
+			}
+
+			.info {
+				margin-left: 12px;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				opacity: 1;
+				transition:
+					opacity 0.2s ease,
+					width 0.3s ease,
+					margin 0.3s ease;
+				visibility: visible;
+
+				.name {
+					font-size: 0.85rem;
+					font-weight: 700;
+					color: v.$text-main;
+					line-height: 1.2;
+				}
+
+				.email {
+					font-size: 0.75rem;
+					color: v.$text-muted;
+					margin-top: 2px;
+					text-overflow: ellipsis;
+					overflow: hidden;
+					max-width: 130px;
+				}
+			}
+		}
+
+		.logout-btn {
+			width: 100%;
+			height: 48px;
+			background: v.$white;
+			border: 1px solid rgba(v.$danger, 0.3);
+			color: v.$danger;
+			border-radius: 12px;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			padding: 0 16px;
+			font-weight: 600;
+			transition: $smooth-transition;
+			white-space: nowrap;
+			overflow: hidden;
+
+			.icon-wrapper {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				transition: margin 0.3s ease;
+			}
+
+			.label {
+				margin-left: 12px;
+				opacity: 1;
+				transition:
+					opacity 0.2s ease,
+					width 0.3s ease,
+					margin 0.3s ease;
+				visibility: visible;
+			}
+
+			&:hover {
+				background: rgba(v.$danger, 0.1);
+				color: darken(v.$danger, 10%);
+			}
+		}
+
+		.copyright {
+			text-align: center;
+			font-size: 0.7rem;
+			color: lighten(v.$text-muted, 15%);
+			margin: 5px 0 0 0;
+			white-space: nowrap;
+			opacity: 1;
+			transition:
+				opacity 0.2s ease,
+				height 0.3s ease;
+			visibility: visible;
+		}
+	}
 }
