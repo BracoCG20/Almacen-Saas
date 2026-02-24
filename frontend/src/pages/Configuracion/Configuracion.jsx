@@ -351,11 +351,13 @@ const Configuracion = () => {
             </div>
             <div className='input-group'>
               <label>
-                <Phone size={16} /> Teléfono / WhatsApp
+                <Phone size={16} /> Celular / WhatsApp
               </label>
               <input
                 type='tel'
                 name='telefono'
+                inputMode='numeric'
+                pattern='[0-9]*'
                 value={formData.telefono}
                 onChange={handlePhoneChange}
                 placeholder='Ej: 999888777'

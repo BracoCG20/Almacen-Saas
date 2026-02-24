@@ -216,6 +216,8 @@ const AddColaboradorForm = ({ onSuccess, colaboradorToEdit }) => {
           <label>DNI / Documento *</label>
           <input
             name='dni'
+            inputMode='numeric'
+            pattern='[0-9]*'
             value={formData.dni}
             onChange={handleDniChange}
             required
@@ -281,6 +283,8 @@ const AddColaboradorForm = ({ onSuccess, colaboradorToEdit }) => {
           <label>WhatsApp / Celular *</label>
           <input
             name='telefono'
+            inputMode='numeric'
+            pattern='[0-9]*'
             type='tel'
             value={formData.telefono}
             onChange={handlePhoneChange}

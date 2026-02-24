@@ -534,6 +534,8 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
             <label>Memoria RAM (GB)</label>
             <input
               type='number'
+              inputMode='numeric'
+              pattern='[0-9]*'
               name='ram'
               value={formData.ram}
               onChange={handleChange}
@@ -545,6 +547,8 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
             <div className='almacenamiento-row'>
               <input
                 type='number'
+                inputMode='numeric'
+                pattern='[0-9]*'
                 name='almacenamiento_valor'
                 value={formData.almacenamiento_valor}
                 onChange={handleChange}

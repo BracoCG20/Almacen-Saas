@@ -330,6 +330,8 @@ const AddServicioForm = ({ onSuccess, servicioToEdit }) => {
             <input
               type='number'
               step='0.01'
+              inputMode='numeric'
+              pattern='[0-9]*'
               min='0'
               name='precio'
               value={formData.precio}
@@ -411,6 +413,8 @@ const AddServicioForm = ({ onSuccess, servicioToEdit }) => {
               <label>N° de Tarjeta / Cuenta de cargo</label>
               <input
                 name='numero_tarjeta_empresa_factura'
+                inputMode='numeric'
+                pattern='[0-9]*'
                 value={formData.numero_tarjeta_empresa_factura}
                 onChange={handleChange}
                 placeholder='Ej: 4550 1234 ....'
@@ -420,6 +424,8 @@ const AddServicioForm = ({ onSuccess, servicioToEdit }) => {
               <label>CCI (Interbancaria)</label>
               <input
                 name='cci_cuenta_empresa_factura'
+                inputMode='numeric'
+                pattern='[0-9]*'
                 value={formData.cci_cuenta_empresa_factura}
                 onChange={handleChange}
                 placeholder='Ej: 002-191-123...'
@@ -449,6 +455,8 @@ const AddServicioForm = ({ onSuccess, servicioToEdit }) => {
               <label>N° de Tarjeta / Cuenta interna</label>
               <input
                 name='numero_tarjeta_empresa_usuaria'
+                inputMode='numeric'
+                pattern='[0-9]*'
                 value={formData.numero_tarjeta_empresa_usuaria}
                 onChange={handleChange}
                 placeholder='Ej: 4550 1234 ....'
@@ -458,6 +466,8 @@ const AddServicioForm = ({ onSuccess, servicioToEdit }) => {
               <label>CCI (Interbancaria) interna</label>
               <input
                 name='cci_cuenta_empresa_usuaria'
+                inputMode='numeric'
+                pattern='[0-9]*'
                 value={formData.cci_cuenta_empresa_usuaria}
                 onChange={handleChange}
                 placeholder='Ej: 002-191-123...'

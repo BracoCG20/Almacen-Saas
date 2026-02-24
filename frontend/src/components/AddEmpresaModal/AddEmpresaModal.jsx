@@ -125,6 +125,8 @@ const AddEmpresaModal = ({ onClose, onSuccess, empresaToEdit }) => {
               <label>RUC *</label>
               <input
                 name='ruc'
+                inputMode='numeric'
+                pattern='[0-9]*'
                 required
                 value={empresa.ruc}
                 onChange={handleRucChange}
@@ -136,6 +138,8 @@ const AddEmpresaModal = ({ onClose, onSuccess, empresaToEdit }) => {
               <input
                 name='telefono_contacto'
                 type='tel'
+                inputMode='numeric'
+                pattern='[0-9]*'
                 value={empresa.telefono_contacto}
                 onChange={handleChange}
                 placeholder='+51...'

@@ -153,6 +153,8 @@ const AddProveedorForm = ({ onSuccess, providerToEdit }) => {
           </label>
           <input
             name='ruc'
+            inputMode='numeric'
+            pattern='[0-9]*'
             value={formData.ruc}
             onChange={handleChange}
             placeholder='201000...'
