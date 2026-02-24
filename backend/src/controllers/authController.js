@@ -119,6 +119,7 @@ const updatePerfil = async (req, res) => {
   const file = req.file;
 
   const client = await pool.connect();
+  let newFotoUrl = null; // <-- NUEVO: Variable para guardar la ruta
 
   try {
     await client.query('BEGIN');
@@ -144,6 +145,7 @@ const updatePerfil = async (req, res) => {
       const fileUrl = `/uploads/FotoPerfil/${file.filename}`;
       userFields.push(`foto_perfil_url = $${userIdx++}`);
       userValues.push(fileUrl);
+      newFotoUrl = fileUrl; // <-- NUEVO: Guardamos la ruta generada
     }
 
     let colaborador_id = null;
@@ -198,7 +200,11 @@ const updatePerfil = async (req, res) => {
     }
 
     await client.query('COMMIT');
-    res.json({ message: 'Perfil actualizado correctamente.' });
+    // NUEVO: Retornamos la URL de la foto al frontend
+    res.json({
+      message: 'Perfil actualizado correctamente.',
+      foto_url: newFotoUrl,
+    });
   } catch (error) {
     await client.query('ROLLBACK');
     console.error('Error actualizando perfil:', error);
@@ -207,7 +213,6 @@ const updatePerfil = async (req, res) => {
     client.release();
   }
 };
-
 /**
  * ============================================================================
  * 4. CREAR ACCESO PARA UN COLABORADOR

@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
   Home,
-  Laptop,
+  Package,
   Users,
   Truck,
   Cloud,
@@ -60,7 +60,7 @@ const Sidebar = () => {
 
   const routes = [
     { path: '/', name: 'Dashboard', icon: <Home size={22} /> },
-    { path: '/equipos', name: 'Equipos', icon: <Laptop size={22} /> },
+    { path: '/equipos', name: 'Inventario', icon: <Package size={22} /> },
     {
       path: '/colaboradores',
       name: 'Colaboradores',
@@ -87,10 +87,12 @@ const Sidebar = () => {
       icon: <Settings size={22} />,
     },
   ];
-
-  const avatarUrl = user?.foto_url
-    ? `http://localhost:4000${user.foto_url}`
-    : null;
+  const getAvatarUrl = (path) => {
+    if (!path) return null;
+    if (path.startsWith('http') || path.startsWith('blob:')) return path;
+    return `http://localhost:4000${path}`;
+  };
+  const avatarUrl = getAvatarUrl(user?.foto_url);
 
   return (
     <>

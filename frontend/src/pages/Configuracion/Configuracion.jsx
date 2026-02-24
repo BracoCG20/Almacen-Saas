@@ -139,14 +139,14 @@ const Configuracion = () => {
     }
 
     try {
-      await api.put('/auth/perfil', data, {
+      const res = await api.put('/auth/perfil', data, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
       // Actualizamos el contexto global para que el Navbar reaccione
       if (fotoFile || isSuperAdmin) {
         updateUser({
-          foto_url: preview,
+          foto_url: res.data.foto_url || userRole.foto_url,
           nombre: `${formData.nombres} ${formData.apellidos}`,
           email: formData.email_login,
         });
