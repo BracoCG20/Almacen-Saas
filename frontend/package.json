@@ -21,6 +21,7 @@
     "react-toastify": "^11.0.5",
     "recharts": "^3.7.0",
     "sass": "^1.97.3",
+    "socket.io-client": "^4.8.3",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {

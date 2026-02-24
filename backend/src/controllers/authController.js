@@ -306,6 +306,16 @@ const toggleUserStatus = async (req, res) => {
       'UPDATE usuarios SET estado = $1, fecha_modificacion = NOW(), usuario_modificacion_id = $2 WHERE id = $3',
       [activo, modificador_id, id],
     );
+
+    // Si el usuario fue DESACTIVADO (activo === false), emitimos un evento por Socket.io
+    if (activo === false) {
+      const io = req.app.get('io');
+      // Emitimos el evento 'force_logout' solo a la sala personal de ese usuario
+      io.to(`user_${id}`).emit('force_logout', {
+        message: 'Un administrador ha revocado tu acceso al sistema.',
+      });
+    }
+
     res.json({ message: 'Estado de acceso actualizado correctamente.' });
   } catch (error) {
     console.error(error);

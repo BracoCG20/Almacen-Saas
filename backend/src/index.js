@@ -5,12 +5,28 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const path = require('path');
+const http = require('http'); // Importamos http para Socket.io
+const { Server } = require('socket.io'); // Importamos Socket.io
 
 const { pool } = require('./config/db');
 const mailer = require('./config/mailer');
 
 // Inicializar Express
 const app = express();
+
+// Crear servidor HTTP usando Express
+const server = http.createServer(app);
+
+// Inicializar Socket.io sobre el servidor HTTP
+const io = new Server(server, {
+  cors: {
+    origin: '*', // En producción, pon aquí la URL de tu frontend (ej. 'http://localhost:5173')
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  },
+});
+
+// Hacemos que la instancia 'io' sea accesible desde cualquier controlador usando req.app.get('io')
+app.set('io', io);
 
 // ==========================================
 // MIDDLEWARES
@@ -24,6 +40,23 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // ==========================================
+// EVENTOS DE SOCKET.IO
+// ==========================================
+io.on('connection', (socket) => {
+  console.log('🟢 Cliente conectado a WebSocket:', socket.id);
+
+  // Cuando un usuario se loguea en el frontend, se unirá a una "sala" personal con su ID
+  socket.on('join_user_room', (userId) => {
+    socket.join(`user_${userId}`);
+    console.log(`👤 Usuario ${userId} se unió a su sala personal`);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('🔴 Cliente desconectado:', socket.id);
+  });
+});
+
+// ==========================================
 // RUTAS DE LA API
 // ==========================================
 app.get('/api/health', (req, res) => {
@@ -34,46 +67,38 @@ app.get('/api/health', (req, res) => {
 });
 
 // --- MÓDULOS DEL SISTEMA ---
-
-// 1. Autenticación (Login, Perfil, Registro inicial)
 const authRoutes = require('./routes/authRoutes');
 app.use('/api/auth', authRoutes);
 
-// 2. Gestión de Colaboradores
 const colaboradoresRoutes = require('./routes/colaboradoresRoutes');
 app.use('/api/colaboradores', colaboradoresRoutes);
 
-// 3. Gestión de Empresas
 const empresasRoutes = require('./routes/empresasRoutes');
 app.use('/api/empresas', empresasRoutes);
 
-// 4. Gestión de Equipos e Inventario
 const equiposRoutes = require('./routes/equiposRoutes');
 app.use('/api/equipos', equiposRoutes);
 
-// 5. Gestión de Proveedores
 const proveedoresRoutes = require('./routes/proveedoresRoutes');
 app.use('/api/proveedores', proveedoresRoutes);
 
-// 6. Gestión de Movimientos (Entregas y Devoluciones)
 const movimientosRoutes = require('./routes/movimientosRoutes');
 app.use('/api/movimientos', movimientosRoutes);
 
-// 7. Gestión de Servicios (SaaS, Licencias y Pagos)
 const serviciosRoutes = require('./routes/serviciosRoutes');
 app.use('/api/servicios', serviciosRoutes);
 
-// 8. Dashboard
 const dashboardRoutes = require('./routes/dashboardRoutes');
 app.use('/api/dashboard', dashboardRoutes);
 
 // ==========================================
-// INICIAR EL SERVIDOR
+// INICIAR EL SERVIDOR (Usamos 'server.listen' en lugar de 'app.listen')
 // ==========================================
 const PORT = process.env.PORT || 4000;
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`===========================================`);
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`🔌 WebSockets habilitados y escuchando`);
   console.log(`===========================================`);
 });

@@ -67,6 +67,44 @@
       }
     }
 
+    // --- BUSCADOR ESTILO MODERNO ---
+    .search-bar {
+      background: white;
+      padding: 0 16px;
+      height: 48px;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1.5rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+
+      &:focus-within {
+        border-color: v.$primary;
+        box-shadow: 0 0 0 3px rgba(v.$primary, 0.1);
+      }
+      input {
+        border: none;
+        outline: none;
+        width: 100%;
+        font-size: 0.95rem;
+        color: #1e293b;
+        background: transparent;
+        &::placeholder {
+          color: #94a3b8;
+        }
+      }
+    }
+
+    .loading-state {
+      text-align: center;
+      padding: 3rem;
+      color: #94a3b8;
+      font-size: 1.1rem;
+    }
+
     .table-wrapper {
       overflow-x: auto;
       width: 100%;
@@ -94,13 +132,12 @@
         padding: 14px 12px;
         text-align: left;
         border-bottom: 1px solid #e2e8f0;
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         vertical-align: middle;
         &.center {
           text-align: center;
         }
       }
-
       th {
         background: #f8fafc;
         color: #64748b;
@@ -109,7 +146,6 @@
         font-size: 0.75rem;
         letter-spacing: 0.5px;
       }
-
       tr {
         &:hover {
           background-color: #f8fafc;
@@ -153,7 +189,6 @@
           align-items: center;
           justify-content: center;
           gap: 5px;
-
           &.btn-key {
             background: #e0e7ff;
             color: v.$primary;
@@ -179,10 +214,63 @@
         }
       }
     }
+
+    // --- PAGINACIÓN ---
+    .pagination-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 5px 0 5px;
+      margin-top: 10px;
+      border-top: 1px solid #e2e8f0;
+      flex-wrap: wrap;
+      gap: 15px;
+
+      @media (max-width: 600px) {
+        justify-content: center;
+      }
+      .info {
+        color: #64748b;
+        font-size: 0.85rem;
+        strong {
+          color: #1e293b;
+          font-weight: 700;
+        }
+      }
+      .controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        button {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          padding: 6px 12px;
+          border-radius: 8px;
+          font-weight: 600;
+          font-size: 0.85rem;
+          border: 1px solid #e2e8f0;
+          background-color: white;
+          cursor: pointer;
+          color: #64748b;
+          transition: all 0.2s;
+          &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: #f8fafc;
+          }
+          &:hover:not(:disabled) {
+            background-color: v.$primary;
+            color: white;
+            border-color: v.$primary;
+          }
+        }
+      }
+    }
   }
 }
 
-// Modal Cambio Pass
+// Modal Cambio Pass (Mantenemos igual pero aseguramos el box-sizing)
 .password-modal-overlay {
   position: fixed;
   top: 0;
@@ -216,7 +304,6 @@
       font-size: 1.2rem;
       font-weight: 800;
     }
-
     input {
       width: 100%;
       height: 50px;
@@ -233,12 +320,10 @@
         box-shadow: 0 0 0 3px rgba(v.$primary, 0.1);
       }
     }
-
     .modal-actions {
       display: flex;
       gap: 10px;
       justify-content: center;
-
       button {
         padding: 0 16px;
         height: 45px;
@@ -249,7 +334,6 @@
         transition: all 0.2s;
         font-size: 0.95rem;
         flex: 1;
-
         &.btn-cancel {
           background: #f1f5f9;
           color: #64748b;

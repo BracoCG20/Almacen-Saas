@@ -8,12 +8,20 @@ import {
   ToggleLeft,
   ToggleRight,
   ShieldCheck,
+  Search,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import './UserListModal.scss';
 
 const UserListModal = ({ onClose }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // --- NUEVOS ESTADOS PARA BÚSQUEDA Y PAGINACIÓN ---
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5; // Máximo 5 por página
 
   const [passModal, setPassModal] = useState({
     show: false,
@@ -35,6 +43,11 @@ const UserListModal = ({ onClose }) => {
   useEffect(() => {
     fetchUsers();
   }, []);
+
+  // Volver a la página 1 cuando el usuario busca algo
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
 
   const handleToggleStatus = async (user) => {
     try {
@@ -69,6 +82,22 @@ const UserListModal = ({ onClose }) => {
     }
   };
 
+  // --- LÓGICA DE FILTRADO Y PAGINACIÓN ---
+  const filteredUsers = users.filter((u) => {
+    const term = searchTerm.toLowerCase();
+    return (
+      (u.nombres && u.nombres.toLowerCase().includes(term)) ||
+      (u.apellidos && u.apellidos.toLowerCase().includes(term)) ||
+      (u.email_login && u.email_login.toLowerCase().includes(term)) ||
+      (u.empresa_nombre && u.empresa_nombre.toLowerCase().includes(term))
+    );
+  });
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+
   return (
     <div
       className='list-modal-overlay'
@@ -90,100 +119,154 @@ const UserListModal = ({ onClose }) => {
           </button>
         </div>
 
+        {/* --- BARRA DE BÚSQUEDA --- */}
+        <div className='search-bar'>
+          <Search
+            size={20}
+            color='#94a3b8'
+          />
+          <input
+            type='text'
+            placeholder='Buscar por nombre, correo o empresa...'
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+
         {loading ? (
           <p className='loading-state'>Cargando usuarios...</p>
+        ) : filteredUsers.length === 0 ? (
+          <p className='loading-state'>No se encontraron accesos.</p>
         ) : (
-          <div className='table-wrapper'>
-            <table>
-              <thead>
-                <tr>
-                  <th>Colaborador</th>
-                  <th>Email (Login)</th>
-                  <th>Rol</th>
-                  <th>Empresa</th>
-                  <th className='center'>Estado</th>
-                  <th className='center'>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((u) => (
-                  <tr
-                    key={u.usuario_id}
-                    style={{ opacity: u.activo ? 1 : 0.6 }}
-                  >
-                    <td>
-                      <strong>
-                        {u.nombres} {u.apellidos}
-                      </strong>
-                      <br />
-                      <small style={{ color: '#64748b' }}>{u.cargo}</small>
-                    </td>
-                    <td>{u.email_login}</td>
-                    <td>
-                      {u.rol_id === 1 ? (
-                        <span
-                          style={{
-                            color: '#7c3aed',
-                            fontWeight: 'bold',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '5px',
-                          }}
-                        >
-                          <ShieldCheck size={16} /> {u.nombre_rol}
-                        </span>
-                      ) : (
-                        <span style={{ color: '#334155', fontWeight: '500' }}>
-                          {u.nombre_rol || 'Admin'}
-                        </span>
-                      )}
-                    </td>
-                    <td>{u.empresa_nombre || '-'}</td>
-                    <td className='center'>
-                      <span
-                        className={`status-badge ${u.activo ? 'active' : 'inactive'}`}
-                      >
-                        {u.activo ? 'Activo' : 'Inactivo'}
-                      </span>
-                    </td>
-                    <td className='center'>
-                      <div className='actions-cell'>
-                        <button
-                          className={`btn-toggle ${u.activo ? 'danger' : 'success'}`}
-                          onClick={() => handleToggleStatus(u)}
-                          title={
-                            u.activo ? 'Inactivar Acceso' : 'Activar Acceso'
-                          }
-                        >
-                          {u.activo ? (
-                            <ToggleRight size={22} />
-                          ) : (
-                            <ToggleLeft size={22} />
-                          )}
-                        </button>
-
-                        <button
-                          className='btn-key'
-                          onClick={() =>
-                            setPassModal({
-                              show: true,
-                              userId: u.usuario_id,
-                              newPass: '',
-                            })
-                          }
-                          title='Forzar Cambio de Contraseña'
-                        >
-                          <KeyRound size={18} />
-                        </button>
-                      </div>
-                    </td>
+          <>
+            <div className='table-wrapper'>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Colaborador</th>
+                    <th>Email (Login)</th>
+                    <th>Rol</th>
+                    <th>Empresa</th>
+                    <th className='center'>Estado</th>
+                    <th className='center'>Acciones</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {currentItems.map((u) => (
+                    <tr
+                      key={u.usuario_id}
+                      style={{ opacity: u.activo ? 1 : 0.6 }}
+                    >
+                      <td>
+                        <strong>
+                          {u.nombres} {u.apellidos}
+                        </strong>
+                        <br />
+                        <small style={{ color: '#64748b' }}>{u.cargo}</small>
+                      </td>
+                      <td>{u.email_login}</td>
+                      <td>
+                        {u.rol_id === 1 ? (
+                          <span
+                            style={{
+                              color: '#7c3aed',
+                              fontWeight: 'bold',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '5px',
+                            }}
+                          >
+                            <ShieldCheck size={16} /> {u.nombre_rol}
+                          </span>
+                        ) : (
+                          <span style={{ color: '#334155', fontWeight: '500' }}>
+                            {u.nombre_rol || 'Admin'}
+                          </span>
+                        )}
+                      </td>
+                      <td>{u.empresa_nombre || '-'}</td>
+                      <td className='center'>
+                        <span
+                          className={`status-badge ${u.activo ? 'active' : 'inactive'}`}
+                        >
+                          {u.activo ? 'Activo' : 'Inactivo'}
+                        </span>
+                      </td>
+                      <td className='center'>
+                        <div className='actions-cell'>
+                          <button
+                            className={`btn-toggle ${u.activo ? 'danger' : 'success'}`}
+                            onClick={() => handleToggleStatus(u)}
+                            title={
+                              u.activo ? 'Inactivar Acceso' : 'Activar Acceso'
+                            }
+                          >
+                            {u.activo ? (
+                              <ToggleRight size={22} />
+                            ) : (
+                              <ToggleLeft size={22} />
+                            )}
+                          </button>
+                          <button
+                            className='btn-key'
+                            onClick={() =>
+                              setPassModal({
+                                show: true,
+                                userId: u.usuario_id,
+                                newPass: '',
+                              })
+                            }
+                            title='Forzar Cambio de Contraseña'
+                          >
+                            <KeyRound size={18} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* --- PAGINACIÓN --- */}
+            {filteredUsers.length > itemsPerPage && (
+              <div className='pagination-footer'>
+                <div className='info'>
+                  Mostrando <strong>{indexOfFirstItem + 1}</strong> a{' '}
+                  <strong>
+                    {Math.min(indexOfLastItem, filteredUsers.length)}
+                  </strong>{' '}
+                  de <strong>{filteredUsers.length}</strong>
+                </div>
+                <div className='controls'>
+                  <button
+                    onClick={() => setCurrentPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  >
+                    <ChevronLeft size={16} /> Anterior
+                  </button>
+                  <span
+                    style={{
+                      fontSize: '0.85rem',
+                      color: '#64748b',
+                      fontWeight: '600',
+                    }}
+                  >
+                    {currentPage} / {totalPages}
+                  </span>
+                  <button
+                    onClick={() => setCurrentPage(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                  >
+                    Siguiente <ChevronRight size={16} />
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
         )}
 
+        {/* MODAL CAMBIAR CONTRASEÑA */}
         {passModal.show && (
           <div
             className='password-modal-overlay'

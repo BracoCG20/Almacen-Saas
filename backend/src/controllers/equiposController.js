@@ -1,11 +1,7 @@
 const { pool } = require('../config/db');
 
 /**
- * ============================================================================
  * 1. OBTENER TODOS LOS EQUIPOS (INVENTARIO)
- * ============================================================================
- * Lista todo el inventario cruzando datos con empresas, proveedores,
- * estados físicos y el usuario que registró cada equipo.
  */
 const getEquipos = async (req, res) => {
   try {
@@ -26,20 +22,17 @@ const getEquipos = async (req, res) => {
     res.status(200).json(response.rows);
   } catch (error) {
     console.error('Error obteniendo equipos:', error.message);
-    res.status(500).json({ error: 'Error interno al obtener los equipos.' });
+    res.status(500).json({ error: 'Error interno al obtener el inventario.' });
   }
 };
 
 /**
- * ============================================================================
- * 2. CREAR EQUIPO NUEVO (Autogeneración de Código Patrimonial)
- * ============================================================================
- * Registra el equipo y genera automáticamente su código patrimonial (EQP- / EQAL-)
- * Además, determina si entra "Disponible" en base a su estado físico inicial.
+ * 2. CREAR EQUIPO NUEVO (INVENTARIO)
  */
 const createEquipo = async (req, res) => {
   const creadorId = req.user.id;
   const {
+    categoria, // <-- NUEVO CAMPO
     empresa_id,
     marca,
     modelo,
@@ -81,19 +74,19 @@ const createEquipo = async (req, res) => {
     }
     const codigoAutogenerado = `${prefijo}${String(nuevoCorrelativo).padStart(4, '0')}`;
 
-    // 3. Determinar disponibilidad (Estado 1 = Operativo = Disponible)
     const esDisponible = Number(estado_fisico_id) === 1;
 
-    // 4. Insertar el Equipo
+    // 3. Insertar el Equipo incluyendo la CATEGORÍA
     const eqQuery = `
       INSERT INTO equipos (
-        empresa_id, marca, modelo, numero_serie, codigo_patrimonial, estado_fisico_id, 
+        categoria, empresa_id, marca, modelo, numero_serie, codigo_patrimonial, estado_fisico_id, 
         disponible, es_propio, proveedor_id, fecha_adquisicion, fecha_fin_alquiler, 
         observaciones, especificaciones, usuario_creacion_id
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) 
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) 
       RETURNING *
     `;
     const eqValues = [
+      categoria || 'Laptop/PC', // Valor por defecto por si acaso
       empresa_id,
       marca,
       modelo,
@@ -112,7 +105,7 @@ const createEquipo = async (req, res) => {
 
     const newEquipo = await client.query(eqQuery, eqValues);
 
-    // 5. Registrar en la auditoría (Historial)
+    // 4. Registrar en la auditoría (Historial)
     await client.query(
       `INSERT INTO historial_equipos (
         equipo_id, empresa_id, estado_fisico_id, disponible, es_propio, proveedor_id, 
@@ -133,7 +126,7 @@ const createEquipo = async (req, res) => {
 
     await client.query('COMMIT');
     res.status(201).json({
-      message: 'Equipo registrado exitosamente.',
+      message: 'Ítem registrado exitosamente en el inventario.',
       equipo: newEquipo.rows[0],
     });
   } catch (error) {
@@ -145,14 +138,13 @@ const createEquipo = async (req, res) => {
 };
 
 /**
- * ============================================================================
  * 3. ACTUALIZAR FICHA DEL EQUIPO
- * ============================================================================
  */
 const updateEquipo = async (req, res) => {
   const { id } = req.params;
   const modificadorId = req.user.id;
   const {
+    categoria, // <-- NUEVO CAMPO
     empresa_id,
     marca,
     modelo,
@@ -172,18 +164,18 @@ const updateEquipo = async (req, res) => {
   try {
     await client.query('BEGIN');
 
-    // Mantenemos la lógica inteligente de disponibilidad
     const esDisponible = Number(estado_fisico_id) === 1;
 
     const eqQuery = `
       UPDATE equipos SET 
-        empresa_id=$1, marca=$2, modelo=$3, numero_serie=$4, codigo_patrimonial=$5, 
-        estado_fisico_id=$6, disponible=$7, es_propio=$8, proveedor_id=$9, fecha_adquisicion=$10, 
-        fecha_fin_alquiler=$11, observaciones=$12, especificaciones=$13, 
-        fecha_modificacion=NOW(), usuario_modificacion_id=$14
-      WHERE id=$15 RETURNING *
+        categoria=$1, empresa_id=$2, marca=$3, modelo=$4, numero_serie=$5, codigo_patrimonial=$6, 
+        estado_fisico_id=$7, disponible=$8, es_propio=$9, proveedor_id=$10, fecha_adquisicion=$11, 
+        fecha_fin_alquiler=$12, observaciones=$13, especificaciones=$14, 
+        fecha_modificacion=NOW(), usuario_modificacion_id=$15
+      WHERE id=$16 RETURNING *
     `;
     const eqValues = [
+      categoria || 'Laptop/PC',
       empresa_id,
       marca,
       modelo,
@@ -202,9 +194,8 @@ const updateEquipo = async (req, res) => {
     ];
 
     const result = await client.query(eqQuery, eqValues);
-    if (result.rowCount === 0) throw new Error('Equipo no encontrado.');
+    if (result.rowCount === 0) throw new Error('Ítem no encontrado.');
 
-    // Registro de Auditoría
     await client.query(
       `INSERT INTO historial_equipos (
         equipo_id, empresa_id, estado_fisico_id, disponible, es_propio, proveedor_id, 
@@ -223,12 +214,10 @@ const updateEquipo = async (req, res) => {
     );
 
     await client.query('COMMIT');
-    res.json({ message: 'Equipo actualizado correctamente.' });
+    res.json({ message: 'Ítem actualizado correctamente.' });
   } catch (error) {
     await client.query('ROLLBACK');
-    res
-      .status(400)
-      .json({ error: error.message || 'Error al actualizar el equipo.' });
+    res.status(400).json({ error: error.message || 'Error al actualizar.' });
   } finally {
     client.release();
   }

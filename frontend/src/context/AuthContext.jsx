@@ -1,7 +1,19 @@
 import { createContext, useState, useEffect, useContext } from 'react';
 import api from '../service/api';
+import { io } from 'socket.io-client';
 
 export const AuthContext = createContext();
+
+// Inicializamos el socket apuntando al backend
+// (En producción, cambia esta URL por la de tu servidor)
+const socket = io(
+  api.defaults.baseURL
+    ? api.defaults.baseURL.replace(/\/api\/?$/, '')
+    : 'http://localhost:4000',
+  {
+    autoConnect: false, // No conecta automáticamente hasta que haya un usuario
+  },
+);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -15,6 +27,9 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Estado para controlar la aparición del modal de expulsión
+  const [isForceLogout, setIsForceLogout] = useState(false);
+
   // 1. Cargar sesión al iniciar la app
   useEffect(() => {
     const checkUser = () => {
@@ -23,10 +38,13 @@ export const AuthProvider = ({ children }) => {
         const userData = localStorage.getItem('user_data');
 
         if (token && userData) {
-          // Si hay datos, restauramos la sesión
-          setUser(JSON.parse(userData));
+          const parsedUser = JSON.parse(userData);
+          setUser(parsedUser);
+
+          // Conectar Socket.io y unirse a la sala personal
+          socket.connect();
+          socket.emit('join_user_room', parsedUser.id);
         } else {
-          // Si no hay datos, aseguramos que el usuario sea null
           setUser(null);
         }
       } catch (error) {
@@ -41,6 +59,21 @@ export const AuthProvider = ({ children }) => {
     checkUser();
   }, []);
 
+  // Efecto para escuchar eventos de expulsión del servidor
+  useEffect(() => {
+    const handleForceLogout = (data) => {
+      console.log('Evento de expulsión recibido:', data);
+      setIsForceLogout(true); // Mostramos el modal de expulsión
+    };
+
+    socket.on('force_logout', handleForceLogout);
+
+    // Limpiamos el evento al desmontar
+    return () => {
+      socket.off('force_logout', handleForceLogout);
+    };
+  }, []);
+
   // 2. Función de Login
   const login = async (email, password) => {
     try {
@@ -52,6 +85,11 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('token', token);
         localStorage.setItem('user_data', JSON.stringify(user));
         setUser(user);
+
+        // Conectar Socket.io y unirse a la sala
+        socket.connect();
+        socket.emit('join_user_room', user.id);
+
         return { success: true };
       }
 
@@ -70,7 +108,15 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token');
     localStorage.removeItem('user_data');
     setUser(null);
+    socket.disconnect(); // Desconectamos del WebSocket
   };
+
+  // 4. Función de Logout Forzado (Se llama cuando el usuario da click en "Aceptar" en el modal)
+  const executeForceLogout = () => {
+    setIsForceLogout(false);
+    logout();
+  };
+
   const updateUser = (newUserData) => {
     const updatedUser = { ...user, ...newUserData };
     setUser(updatedUser);
@@ -78,7 +124,17 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading, updateUser }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        login,
+        logout,
+        loading,
+        updateUser,
+        isForceLogout,
+        executeForceLogout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
