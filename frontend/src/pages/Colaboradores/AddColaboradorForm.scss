@@ -3,31 +3,40 @@
 .usuario-form-grid {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 1.5rem;
   padding: 5px;
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+
+    @media (max-width: 650px) {
+      grid-template-columns: 1fr; // Se apilan en pantallas pequeñas
+    }
+  }
 
   .form-group {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 0.5rem;
 
     label {
       font-size: 0.85rem;
       font-weight: 700;
       color: #4b5563;
-      margin-left: 2px;
     }
 
     input {
       width: 100%;
       height: 50px;
       padding: 0 14px;
-      border-radius: 8px;
+      border-radius: 10px; // Bordes más modernos
       border: 1px solid #cbd5e1;
       font-size: 0.95rem;
       color: #1e293b;
       background-color: #fff;
-      transition: all 0.2s;
+      transition: all 0.2s ease;
       outline: none;
       font-family: inherit;
       box-sizing: border-box;
@@ -42,73 +51,70 @@
       }
 
       &::placeholder {
-        color: #9ca3af;
-        opacity: 1;
+        color: #94a3b8;
+        font-weight: 400;
       }
 
       &:disabled {
         background-color: #f8fafc;
-        color: #9ca3af;
+        color: #94a3b8;
         cursor: not-allowed;
       }
     }
   }
 
-  .form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-
-    @media (max-width: 600px) {
-      grid-template-columns: 1fr;
-    }
-  }
-
   .edit-warning {
-    margin-bottom: 10px;
+    margin-bottom: 0.5rem;
     font-size: 0.9rem;
     color: #b45309;
     background: #fffbeb;
-    padding: 12px;
-    border-radius: 8px;
+    padding: 12px 16px;
+    border-radius: 10px;
     border: 1px solid #fcd34d;
     display: flex;
     align-items: center;
     gap: 8px;
+    font-weight: 500;
+    line-height: 1.4;
+
+    svg {
+      flex-shrink: 0; // Evita que el candado se aplaste en móvil
+    }
   }
 
   .form-actions {
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    gap: 12px;
-    margin-top: 15px;
+    margin-top: 1.5rem;
     padding-top: 20px;
     padding-bottom: 10px;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid #e2e8f0;
 
     button {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      padding: 10px 24px;
+      padding: 0 24px;
       height: 50px;
-      border-radius: 8px;
+      border-radius: 12px;
       font-weight: 600;
       border: none;
       cursor: pointer;
       font-size: 1rem;
-      transition: all 0.2s;
+      transition: all 0.2s ease;
 
       &.btn-submit {
         background-color: v.$primary;
         color: white;
         flex: 1;
         box-shadow: 0 4px 6px rgba(v.$primary, 0.2);
+
         &:hover {
           filter: brightness(1.1);
-          transform: translateY(-1px);
+          transform: translateY(-2px);
+          box-shadow: 0 6px 12px rgba(v.$primary, 0.3);
         }
       }
     }

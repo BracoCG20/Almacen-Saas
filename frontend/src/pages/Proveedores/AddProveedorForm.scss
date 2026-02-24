@@ -1,107 +1,119 @@
-@use "../../styles/variables" as v;
+@use '../../styles/variables' as v;
 
 .equipo-form {
-	display: flex;
-	flex-direction: column;
-	gap: 1.2rem;
-	padding: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 5px;
 
-	.form-row {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 1.2rem;
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
 
-		@media (max-width: 600px) {
-			grid-template-columns: 1fr;
-		}
-	}
+    @media (max-width: 650px) {
+      grid-template-columns: 1fr; // Se apilan en pantallas pequeñas
+    }
+  }
 
-	.divider {
-		border: none;
-		border-top: 1px solid rgba(0, 0, 0, 0.08);
-		margin: 0.5rem 0;
-	}
+  .divider {
+    border: none;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    margin: 0.5rem 0;
+  }
 
-	.input-group {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 
-		label {
-			font-size: 0.85rem;
-			font-weight: 700;
-			color: #4b5563;
-			display: flex;
-			align-items: center;
-			gap: 0.4rem;
-		}
+    label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #4b5563;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
 
-		input {
-			width: 100%;
-			height: 50px;
-			padding: 0 14px;
-			border-radius: 8px;
-			border: 1px solid #cbd5e1;
-			font-size: 0.95rem;
-			color: #1e293b;
-			background-color: #fff;
-			transition: all 0.2s;
-			outline: none;
-			font-family: inherit;
-			box-sizing: border-box;
+    input {
+      width: 100%;
+      height: 50px;
+      padding: 0 14px;
+      border-radius: 10px; // Bordes más modernos
+      border: 1px solid #cbd5e1;
+      font-size: 0.95rem;
+      color: #1e293b;
+      background-color: #fff;
+      transition: all 0.2s ease;
+      outline: none;
+      font-family: inherit;
+      box-sizing: border-box;
 
-			&:focus {
-				border-color: v.$primary;
-				box-shadow: 0 0 0 3px rgba(v.$primary, 0.15);
-			}
+      // Aseguramos centrado vertical del texto interno
+      display: flex;
+      align-items: center;
 
-			&::placeholder {
-				color: #9ca3af;
-			}
-			&:disabled {
-				background-color: #f8fafc;
-				color: #9ca3af;
-				cursor: not-allowed;
-			}
-		}
-	}
+      &:focus {
+        border-color: v.$primary;
+        box-shadow: 0 0 0 3px rgba(v.$primary, 0.15);
+      }
 
-	.form-actions {
-		display: flex;
-		justify-content: flex-end;
-		margin-top: 1.5rem;
-		padding-top: 20px;
-		padding-bottom: 10px;
-		border-top: 1px solid #e5e7eb;
+      &::placeholder {
+        color: #94a3b8;
+        font-weight: 400;
+      }
 
-		.btn-submit {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			gap: 8px;
-			padding: 0 24px;
-			height: 50px;
-			border-radius: 8px;
-			font-weight: 600;
-			border: none;
-			cursor: pointer;
-			font-size: 1rem;
-			transition: all 0.2s;
-			background-color: v.$primary;
-			color: white;
-			flex: 1;
-			box-shadow: 0 4px 6px rgba(v.$primary, 0.2);
+      &:disabled {
+        background-color: #f8fafc;
+        color: #94a3b8;
+        cursor: not-allowed;
+      }
+    }
+  }
 
-			&:hover:not(:disabled) {
-				filter: brightness(1.1);
-				transform: translateY(-2px);
-			}
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 1.5rem;
+    padding-top: 20px;
+    padding-bottom: 10px;
+    border-top: 1px solid #e2e8f0;
 
-			&:disabled {
-				background-color: #94a3b8;
-				cursor: not-allowed;
-				box-shadow: none;
-			}
-		}
-	}
+    button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 24px;
+      height: 50px;
+      border-radius: 12px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+
+      &.btn-submit {
+        background-color: v.$primary;
+        color: white;
+        flex: 1;
+        box-shadow: 0 4px 6px rgba(v.$primary, 0.2);
+
+        &:hover:not(:disabled) {
+          filter: brightness(1.1);
+          transform: translateY(-2px);
+          box-shadow: 0 6px 12px rgba(v.$primary, 0.3);
+        }
+
+        &:disabled {
+          background-color: #94a3b8;
+          cursor: not-allowed;
+          box-shadow: none;
+          transform: none;
+        }
+      }
+    }
+  }
 }

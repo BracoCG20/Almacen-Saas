@@ -1,367 +1,418 @@
-@use "../../styles/variables" as v;
+@use '../../styles/variables' as v;
 
-// --- VARIABLES DE ESTILO MODERNO ---
 $card-bg: #ffffff;
 $text-dark: #1e293b;
 $text-muted: #64748b;
 $purple-accent: v.$primary;
 $purple-light: #f3f0ff;
 $shadow-sm:
-	0 2px 8px rgba(0, 0, 0, 0.04),
-	0 1px 2px rgba(0, 0, 0, 0.02);
+  0 2px 8px rgba(0, 0, 0, 0.04),
+  0 1px 2px rgba(0, 0, 0, 0.02);
 $shadow-md:
-	0 8px 24px rgba(149, 157, 165, 0.1),
-	0 2px 6px rgba(0, 0, 0, 0.04);
+  0 8px 24px rgba(149, 157, 165, 0.1),
+  0 2px 6px rgba(0, 0, 0, 0.04);
 $card-radius: 24px;
 
 .dashboard-container {
-	// NOTA: Eliminamos padding, background y max-width porque MainLayout ya lo hace.
+  // --- SECCIÓN DE BIENVENIDA ---
+  .welcome-section {
+    margin-bottom: 3rem;
 
-	// --- SECCIÓN DE BIENVENIDA ---
-	.welcome-section {
-		margin-bottom: 3rem;
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: $text-dark;
+      margin: 0 0 0.5rem 0;
+      letter-spacing: -0.03em;
 
-		h1 {
-			font-size: 2.2rem;
-			font-weight: 800;
-			color: $text-dark;
-			margin: 0 0 0.5rem 0;
-			letter-spacing: -0.03em;
+      .user-name {
+        color: $purple-accent;
+      }
 
-			.user-name {
-				color: $purple-accent;
-			}
-		}
+      @media (max-width: 768px) {
+        font-size: 1.6rem; // Más pequeño en móvil
+      }
+    }
 
-		p {
-			color: $text-muted;
-			font-size: 1.05rem;
-			margin: 0;
-		}
-	}
+    p {
+      color: $text-muted;
+      font-size: 1.05rem;
+      margin: 0;
 
-	.divider-line {
-		height: 1px;
-		background: linear-gradient(to right, transparent, #e2e8f0, transparent);
-		margin: 3.5rem 0;
-	}
+      @media (max-width: 768px) {
+        font-size: 0.95rem;
+      }
+    }
+  }
 
-	// --- TARJETAS SUPERIORES ---
-	.stats-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-		gap: 2rem;
-		margin-bottom: 3rem;
+  .divider-line {
+    height: 1px;
+    background: linear-gradient(to right, transparent, #e2e8f0, transparent);
+    margin: 3.5rem 0;
 
-		.stat-card {
-			background: $card-bg;
-			border-radius: $card-radius;
-			padding: 1.8rem;
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			box-shadow: $shadow-sm;
-			border: 1px solid transparent;
-			transition: all 0.3s ease;
+    @media (max-width: 768px) {
+      margin: 2rem 0;
+    }
+  }
 
-			&:hover {
-				transform: translateY(-5px);
-				box-shadow: $shadow-md;
-				border-color: rgba($purple-accent, 0.1);
-			}
+  // --- TARJETAS SUPERIORES ---
+  .stats-grid {
+    display: grid;
+    // Auto-fit permite que si no caben, bajen a la siguiente línea
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
 
-			.info {
-				h3 {
-					font-size: 0.9rem;
-					color: $text-muted;
-					margin-bottom: 0.8rem;
-					font-weight: 600;
-				}
-				.number {
-					font-size: 2.6rem;
-					font-weight: 700;
-					color: $text-dark;
-					letter-spacing: -0.02em;
-					line-height: 1;
-				}
-			}
+    @media (max-width: 768px) {
+      gap: 1rem; // Menos espacio entre tarjetas en móvil
+    }
 
-			.icon-box {
-				width: 64px;
-				height: 64px;
-				border-radius: 20px;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				background: $purple-light;
-				color: $purple-accent;
+    .stat-card {
+      background: $card-bg;
+      border-radius: $card-radius;
+      padding: 1.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: $shadow-sm;
+      border: 1px solid transparent;
+      transition: all 0.3s ease;
 
-				svg {
-					width: 32px;
-					height: 32px;
-					stroke-width: 2px;
-				}
-			}
-		}
-	}
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: $shadow-md;
+        border-color: rgba($purple-accent, 0.1);
+      }
 
-	// --- TARJETA DE INVERSIÓN ---
-	.cost-summary-card {
-		background: $card-bg;
-		border-radius: $card-radius;
-		padding: 2.5rem;
-		margin-bottom: 3rem;
-		box-shadow: $shadow-sm;
-		border: 1px solid transparent;
-		transition: all 0.3s ease;
+      @media (max-width: 768px) {
+        padding: 1.2rem;
+        border-radius: 16px;
+      }
 
-		&:hover {
-			box-shadow: $shadow-md;
-			border-color: rgba($purple-accent, 0.1);
-		}
+      .info {
+        h3 {
+          font-size: 0.9rem;
+          color: $text-muted;
+          margin-bottom: 0.8rem;
+          font-weight: 600;
 
-		.cost-header {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			margin-bottom: 2.5rem;
-			flex-wrap: wrap;
-			gap: 1.5rem;
+          @media (max-width: 768px) {
+            font-size: 0.8rem;
+            margin-bottom: 0.4rem;
+          }
+        }
+        .number {
+          font-size: 2.6rem;
+          font-weight: 700;
+          color: $text-dark;
+          line-height: 1;
 
-			.title-group {
-				display: flex;
-				align-items: center;
-				gap: 16px;
+          @media (max-width: 768px) {
+            font-size: 2rem;
+          }
+        }
+      }
 
-				.icon-wrapper {
-					width: 50px;
-					height: 50px;
-					background: $purple-light;
-					border-radius: 16px;
-					display: flex;
-					align-items: center;
-					justify-content: center;
-					color: $purple-accent;
-				}
+      .icon-box {
+        width: 64px;
+        height: 64px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: $purple-light;
+        color: $purple-accent;
 
-				h2 {
-					margin: 0;
-					font-size: 1.5rem;
-					font-weight: 700;
-					color: $text-dark;
-				}
-			}
+        svg {
+          width: 32px;
+          height: 32px;
+        }
 
-			.filter-tabs {
-				display: flex;
-				background: #f1f5f9;
-				padding: 6px;
-				border-radius: 14px;
-				gap: 4px;
+        @media (max-width: 768px) {
+          width: 50px;
+          height: 50px;
+          border-radius: 14px;
+          svg {
+            width: 24px;
+            height: 24px;
+          }
+        }
+      }
+    }
+  }
 
-				.filter-btn {
-					background: transparent;
-					color: $text-muted;
-					border: none;
-					padding: 10px 20px;
-					border-radius: 10px;
-					font-size: 0.9rem;
-					font-weight: 600;
-					cursor: pointer;
-					transition: all 0.2s ease;
+  // --- TARJETA DE INVERSIÓN ---
+  .cost-summary-card {
+    background: $card-bg;
+    border-radius: $card-radius;
+    padding: 2.5rem;
+    margin-bottom: 3rem;
+    box-shadow: $shadow-sm;
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
 
-					&:hover:not(.active) {
-						color: $text-dark;
-						background: rgba(255, 255, 255, 0.5);
-					}
-					&.active {
-						background: $card-bg;
-						color: $purple-accent;
-						box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-					}
-				}
-			}
-		}
+    @media (max-width: 768px) {
+      padding: 1.5rem;
+      border-radius: 16px;
+    }
 
-		.cost-body {
-			display: flex;
-			gap: 2rem;
-			flex-wrap: wrap;
+    .cost-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
+      gap: 1.5rem;
 
-			.no-costs {
-				font-size: 1.1rem;
-				color: $text-muted;
-				font-style: italic;
-				padding: 2rem;
-			}
+      .title-group {
+        display: flex;
+        align-items: center;
+        gap: 16px;
 
-			.currency-block {
-				flex: 1;
-				min-width: 220px;
-				background: linear-gradient(145deg, #ffffff, #f8fafc);
-				padding: 2rem;
-				border-radius: 20px;
-				border: 1px solid #eef2f6;
-				display: flex;
-				flex-direction: column;
-				gap: 10px;
-				transition: all 0.3s ease;
-				position: relative;
-				overflow: hidden;
+        .icon-wrapper {
+          width: 50px;
+          height: 50px;
+          background: $purple-light;
+          border-radius: 16px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: $purple-accent;
+        }
 
-				&::after {
-					content: "";
-					position: absolute;
-					top: -20%;
-					right: -20%;
-					width: 150px;
-					height: 150px;
-					background: radial-gradient(
-						circle,
-						rgba($purple-accent, 0.08) 0%,
-						transparent 70%
-					);
-					border-radius: 50%;
-					z-index: 0;
-				}
+        h2 {
+          margin: 0;
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: $text-dark;
 
-				&:hover {
-					transform: translateY(-5px);
-					box-shadow: $shadow-sm;
-					border-color: rgba($purple-accent, 0.2);
-				}
+          @media (max-width: 768px) {
+            font-size: 1.2rem;
+          }
+        }
+      }
 
-				.currency-label {
-					font-size: 0.85rem;
-					text-transform: uppercase;
-					letter-spacing: 1.2px;
-					color: $text-muted;
-					font-weight: 700;
-					z-index: 1;
-				}
-				.currency-value {
-					font-size: 2.8rem;
-					font-weight: 700;
-					color: $purple-accent;
-					letter-spacing: -1.5px;
-					z-index: 1;
-					line-height: 1.1;
-				}
-			}
-		}
-	}
+      .filter-tabs {
+        display: flex;
+        background: #f1f5f9;
+        padding: 6px;
+        border-radius: 14px;
+        gap: 4px;
+        flex-wrap: wrap; // Permite que los botones bajen si no caben
+        width: 100%;
 
-	// --- SECCIÓN DE GRÁFICOS ---
-	.charts-section-title {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-end;
-		margin-bottom: 2rem;
-		flex-wrap: wrap;
-		gap: 1.5rem;
+        @media (min-width: 768px) {
+          width: auto; // Solo ocupa el 100% en móviles
+        }
 
-		h2 {
-			font-size: 1.6rem;
-			color: $text-dark;
-			font-weight: 800;
-			margin: 0 0 0.5rem 0;
-			letter-spacing: -0.02em;
-		}
+        .filter-btn {
+          flex: 1; // En móviles ocupan todo el espacio proporcional
+          text-align: center;
+          background: transparent;
+          color: $text-muted;
+          border: none;
+          padding: 10px 15px;
+          border-radius: 10px;
+          font-size: 0.85rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s ease;
 
-		.subtitle {
-			margin: 0;
-			font-size: 1rem;
-			color: $text-muted;
-		}
+          &.active {
+            background: $card-bg;
+            color: $purple-accent;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+          }
+        }
+      }
+    }
 
-		.currency-toggle {
-			display: flex;
-			background: #f1f5f9;
-			border-radius: 12px;
-			padding: 5px;
+    .cost-body {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
 
-			button {
-				border: none;
-				background: transparent;
-				padding: 8px 18px;
-				border-radius: 10px;
-				font-weight: 600;
-				font-size: 0.9rem;
-				color: $text-muted;
-				cursor: pointer;
-				transition: all 0.2s ease;
+      .currency-block {
+        flex: 1;
+        min-width: 200px;
+        background: linear-gradient(145deg, #ffffff, #f8fafc);
+        padding: 2rem;
+        border-radius: 20px;
+        border: 1px solid #eef2f6;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        position: relative;
+        overflow: hidden;
 
-				&.active {
-					background: $card-bg;
-					color: $purple-accent;
-					box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-				}
-				&:hover:not(.active) {
-					color: $text-dark;
-				}
-			}
-		}
-	}
+        @media (max-width: 768px) {
+          min-width: 100%; // 100% de ancho en móvil
+          padding: 1.5rem;
+        }
 
-	.charts-row {
-		display: grid;
-		gap: 2rem;
-		margin-bottom: 2rem;
+        &::after {
+          content: '';
+          position: absolute;
+          top: -20%;
+          right: -20%;
+          width: 150px;
+          height: 150px;
+          background: radial-gradient(
+            circle,
+            rgba($purple-accent, 0.08) 0%,
+            transparent 70%
+          );
+          border-radius: 50%;
+        }
 
-		&.main-row {
-			grid-template-columns: 1.6fr 1fr;
-			@media (max-width: 1100px) {
-				grid-template-columns: 1fr;
-			}
-		}
+        .currency-label {
+          font-size: 0.85rem;
+          text-transform: uppercase;
+          letter-spacing: 1.2px;
+          color: $text-muted;
+          font-weight: 700;
+          z-index: 1;
+        }
+        .currency-value {
+          font-size: 2.8rem;
+          font-weight: 700;
+          color: $purple-accent;
+          letter-spacing: -1px;
+          z-index: 1;
 
-		&.secondary-row {
-			grid-template-columns: repeat(2, 1fr);
-			@media (max-width: 1024px) {
-				grid-template-columns: 1fr;
-			}
-		}
+          @media (max-width: 768px) {
+            font-size: 2.2rem;
+          }
+        }
+      }
+    }
+  }
 
-		.chart-card {
-			background: $card-bg;
-			border-radius: $card-radius;
-			padding: 2rem;
-			box-shadow: $shadow-sm;
-			border: 1px solid transparent;
-			display: flex;
-			flex-direction: column;
-			transition: all 0.3s ease;
+  // --- SECCIÓN DE GRÁFICOS ---
+  .charts-section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
 
-			&:hover {
-				box-shadow: $shadow-md;
-			}
+    h2 {
+      font-size: 1.6rem;
+      color: $text-dark;
+      font-weight: 800;
+      margin: 0 0 0.5rem 0;
 
-			h3 {
-				margin: 0 0 2rem 0;
-				font-size: 1.15rem;
-				color: $text-dark;
-				font-weight: 700;
-			}
+      @media (max-width: 768px) {
+        font-size: 1.3rem;
+      }
+    }
 
-			.chart-wrapper {
-				flex: 1;
-				min-height: 300px;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				font-size: 1rem;
-				color: $text-muted;
-			}
-		}
-	}
+    .subtitle {
+      margin: 0;
+      font-size: 1rem;
+      color: $text-muted;
+    }
 
-	.loading-state {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		min-height: 60vh;
-		font-size: 1.5rem;
-		color: $purple-accent;
-		font-weight: 600;
-	}
+    .currency-toggle {
+      display: flex;
+      background: #f1f5f9;
+      border-radius: 12px;
+      padding: 5px;
+      width: 100%;
+
+      @media (min-width: 768px) {
+        width: auto;
+      }
+
+      button {
+        flex: 1;
+        border: none;
+        background: transparent;
+        padding: 8px 18px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: $text-muted;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &.active {
+          background: $card-bg;
+          color: $purple-accent;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+      }
+    }
+  }
+
+  .charts-row {
+    display: grid;
+    gap: 2rem;
+    margin-bottom: 2rem;
+
+    @media (max-width: 768px) {
+      gap: 1rem;
+    }
+
+    &.main-row {
+      grid-template-columns: 1.6fr 1fr;
+      @media (max-width: 1100px) {
+        grid-template-columns: 1fr;
+      } // Apila gráficos en tablet/celular
+    }
+
+    &.secondary-row {
+      grid-template-columns: repeat(2, 1fr);
+      @media (max-width: 1024px) {
+        grid-template-columns: 1fr;
+      } // Apila gráficos en tablet/celular
+    }
+
+    .chart-card {
+      background: $card-bg;
+      border-radius: $card-radius;
+      padding: 2rem;
+      box-shadow: $shadow-sm;
+      border: 1px solid transparent;
+      display: flex;
+      flex-direction: column;
+
+      @media (max-width: 768px) {
+        padding: 1rem;
+        border-radius: 16px;
+      }
+
+      h3 {
+        margin: 0 0 2rem 0;
+        font-size: 1.15rem;
+        color: $text-dark;
+        font-weight: 700;
+
+        @media (max-width: 768px) {
+          font-size: 1rem;
+          margin-bottom: 1rem;
+        }
+      }
+
+      .chart-wrapper {
+        flex: 1;
+        min-height: 280px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+      }
+    }
+  }
+
+  .loading-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    font-size: 1.5rem;
+    color: $purple-accent;
+    font-weight: 600;
+  }
 }

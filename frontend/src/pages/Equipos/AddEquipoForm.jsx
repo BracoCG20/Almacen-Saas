@@ -542,16 +542,16 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
           </div>
           <div className='input-group'>
             <label>Almacenamiento</label>
-            <div style={{ display: 'flex', gap: '8px' }}>
+            <div className='almacenamiento-row'>
               <input
                 type='number'
                 name='almacenamiento_valor'
                 value={formData.almacenamiento_valor}
                 onChange={handleChange}
                 placeholder='Ej: 512'
-                style={{ flex: 1 }}
+                className='almacenamiento-input'
               />
-              <div style={{ width: '100px' }}>
+              <div className='almacenamiento-select'>
                 <Select
                   name='almacenamiento_unidad'
                   options={unidadAlmacenamientoOptions}

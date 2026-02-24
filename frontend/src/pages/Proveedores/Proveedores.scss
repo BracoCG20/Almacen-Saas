@@ -1,9 +1,7 @@
 @use '../../styles/variables' as v;
 
 .proveedores-container {
-  padding: 2rem;
-  max-width: 1600px;
-  margin: 0 auto;
+  // El padding general fue removido porque lo maneja MainLayout
 
   // --- HEADER ---
   .page-header {
@@ -11,46 +9,70 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
+    flex-wrap: wrap; // Permite salto de línea en móviles
+    gap: 1rem;
 
     h1 {
       font-size: 1.8rem;
       font-weight: 700;
       color: v.$primary;
       margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      @media (max-width: 768px) {
+        font-size: 1.5rem;
+      }
     }
 
     .header-actions {
       display: flex;
       gap: 12px;
-    }
+      flex-wrap: wrap; // Botones apilables en móvil
+      width: auto;
 
-    .btn-action-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 20px;
-      border-radius: 10px;
-      font-weight: 600;
-      font-size: 0.95rem;
-      border: none;
-      cursor: pointer;
-      color: white;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-      &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      @media (max-width: 600px) {
+        width: 100%;
       }
-      &.btn-add {
-        background-color: v.$primary;
-        &:hover {
-          filter: brightness(0.9);
+
+      .btn-action-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 0 20px;
+        height: 45px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        border: none;
+        cursor: pointer;
+        color: white;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+
+        @media (max-width: 600px) {
+          flex: 1; // Ocupan todo el ancho proporcionalmente en móviles
+          padding: 0 10px;
+          font-size: 0.85rem;
         }
-      }
-      &.btn-excel {
-        background-color: #10b981;
+
         &:hover {
-          background-color: #059669;
+          transform: translateY(-2px);
+          box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        &.btn-add {
+          background-color: v.$primary;
+          &:hover {
+            filter: brightness(0.9);
+          }
+        }
+        &.btn-excel {
+          background-color: #10b981;
+          &:hover {
+            background-color: #059669;
+          }
         }
       }
     }
@@ -68,6 +90,7 @@
     gap: 12px;
     transition: all 0.3s ease;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+
     &:focus-within {
       border-color: v.$primary;
       box-shadow: 0 0 0 3px rgba(v.$primary, 0.1);
@@ -88,16 +111,34 @@
   .table-container {
     background: white;
     border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
     border: 1px solid #f1f5f9;
-    overflow: hidden;
+    overflow-x: auto; // ESENCIAL: Permite scroll horizontal en móviles
+
+    // Estilo del scrollbar de la tabla para que se vea limpio
+    &::-webkit-scrollbar {
+      height: 8px;
+    }
+    &::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 4px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    &::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
 
     table {
       width: 100%;
       border-collapse: collapse;
+      min-width: 1000px; // Fuerza a que la tabla no se aplaste en móviles
+
       thead tr {
         background-color: #eef2ff;
-        border-bottom: 1px solid #e2e8f0;
+        border-bottom: 2px solid #e2e8f0;
         th {
           padding: 16px 20px;
           text-align: left;
@@ -105,7 +146,7 @@
           font-size: 0.75rem;
           text-transform: uppercase;
           color: #4338ca;
-          letter-spacing: 0.8px;
+          letter-spacing: 0.5px;
           &.center {
             text-align: center;
           }
@@ -119,9 +160,11 @@
         border-bottom: 1px solid #f1f5f9;
         transition: all 0.2s ease;
         position: relative;
+
         &:hover {
           background-color: #f8fafc;
         }
+
         td:first-child {
           position: relative;
           &::before {
@@ -149,7 +192,7 @@
       }
     }
 
-    // --- CELDAS ---
+    // --- CELDAS INTERNAS ---
     .user-avatar-cell {
       display: flex;
       align-items: center;
@@ -164,11 +207,11 @@
         font-size: 1rem;
         flex-shrink: 0;
         &.male {
-          background-color: #e0e7ff;
-          color: #4338ca;
+          background-color: #eef2ff;
+          color: #4f46e5;
         }
         &.inactive {
-          background-color: #e2e8f0;
+          background-color: #f1f5f9;
           color: #94a3b8;
         }
       }
@@ -184,8 +227,8 @@
           }
         }
         .audit-text {
-          font-size: 0.65rem;
-          color: #94a3b8;
+          font-size: 0.75rem;
+          color: #64748b;
           margin-top: 2px;
         }
       }
@@ -210,7 +253,7 @@
       font-weight: 600;
       color: #64748b;
       font-family: monospace;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
     }
 
     .website-link {
@@ -229,7 +272,6 @@
       }
     }
 
-    // --- NUEVO: ESTILO PARA EL BOTÓN DESCARGAR CONTRATO ---
     .contract-link {
       display: inline-flex;
       align-items: center;
@@ -296,6 +338,13 @@
     padding: 16px 25px;
     border-top: 1px solid #e2e8f0;
     background-color: white;
+    flex-wrap: wrap; // Permite salto de línea en móvil
+    gap: 15px;
+
+    @media (max-width: 600px) {
+      justify-content: center; // Centra en móvil
+    }
+
     .info {
       color: #64748b;
       font-size: 0.85rem;
@@ -323,14 +372,14 @@
     }
   }
 
-  // --- BADGES ---
+  // --- BADGES GLOBALES ---
   .status-badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     padding: 4px 10px;
     border-radius: 20px;
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -348,97 +397,88 @@
     }
   }
 
+  // --- MODAL DE CONFIRMACIÓN ---
+  .confirm-modal-content {
+    padding: 1rem;
+    text-align: center;
+    .warning-icon {
+      font-size: 3.5rem;
+      color: #f59e0b;
+      margin-bottom: 1.2rem;
+      background-color: #fffbeb;
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.2rem auto;
+    }
+    h3 {
+      color: #1e293b;
+      margin-bottom: 0.8rem;
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+    p {
+      color: #64748b;
+      margin-bottom: 2.5rem;
+      font-size: 1rem;
+      line-height: 1.5;
+      strong {
+        color: #334155;
+      }
+    }
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap; // Móvil
+
+      button {
+        padding: 12px 20px;
+        border-radius: 10px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: none;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+        flex: 1; // Ocupan 50/50
+        min-width: 140px;
+
+        &:hover {
+          transform: translateY(-1px);
+        }
+        &.btn-cancel {
+          background-color: #f1f5f9;
+          color: #64748b;
+          &:hover {
+            background-color: #e2e8f0;
+          }
+        }
+        &.btn-confirm {
+          background-color: #ef4444;
+          color: white;
+          box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+          &:hover {
+            background-color: #dc2626;
+            box-shadow: 0 6px 15px rgba(239, 68, 68, 0.3);
+          }
+        }
+      }
+    }
+  }
+
   .loading-state,
   .no-data {
-    padding: 3rem;
+    padding: 4rem;
     text-align: center;
     color: #94a3b8;
     font-size: 1.1rem;
-  }
-}
-
-.confirm-modal-content {
-  padding: 1rem;
-  text-align: center;
-  .warning-icon {
-    font-size: 3.5rem;
-    color: #f59e0b;
-    margin-bottom: 1.2rem;
-    background-color: #fffbeb;
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1.2rem auto;
-    animation: pulseWarning 2s infinite;
-  }
-  h3 {
-    color: #1e293b;
-    margin-bottom: 0.8rem;
-    font-size: 1.4rem;
-    font-weight: 700;
-  }
-  p {
-    color: #64748b;
-    margin-bottom: 2.5rem;
-    font-size: 1rem;
-    line-height: 1.5;
-    strong {
-      color: #334155;
-    }
-  }
-  .modal-actions {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    button {
-      padding: 12px 24px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      border: none;
-      font-size: 0.95rem;
-      transition: all 0.2s ease;
-      &:hover {
-        transform: translateY(-1px);
-      }
-      &.btn-cancel {
-        background-color: #f1f5f9;
-        color: #64748b;
-        &:hover {
-          background-color: #e2e8f0;
-        }
-      }
-      &.btn-confirm {
-        background-color: #ef4444;
-        color: white;
-        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
-        &:hover {
-          background-color: #dc2626;
-          transform: translateY(-2px);
-          box-shadow: 0 6px 15px rgba(239, 68, 68, 0.3);
-        }
-      }
-    }
-  }
-}
-
-@keyframes pulseWarning {
-  0% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
-  }
-  70% {
-    transform: scale(1.05);
-    box-shadow: 0 0 0 10px rgba(245, 158, 11, 0);
-  }
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+    background: white;
+    border-radius: 16px;
   }
 }

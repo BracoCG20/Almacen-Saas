@@ -1,9 +1,7 @@
 @use '../../styles/variables' as v;
 
 .servicios-container {
-  padding: 2rem;
-  max-width: 1600px;
-  margin: 0 auto;
+  // El padding lo maneja MainLayout
 
   // --- HEADER ---
   .page-header {
@@ -11,45 +9,67 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
+    flex-wrap: wrap; // Permite salto de línea en móviles
+    gap: 1rem;
 
     h1 {
       font-size: 1.8rem;
-      font-weight: 700;
-      color: v.$primary;
+      font-weight: 800;
+      color: #1e293b;
       margin: 0;
+
+      @media (max-width: 768px) {
+        font-size: 1.5rem;
+      }
     }
+
     .header-actions {
       display: flex;
       gap: 12px;
-    }
+      flex-wrap: wrap; // Botones apilables en móvil
+      width: auto;
 
-    .btn-action-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 20px;
-      border-radius: 10px;
-      font-weight: 600;
-      font-size: 0.95rem;
-      border: none;
-      cursor: pointer;
-      color: white;
-      transition: all 0.2s;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-      &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      @media (max-width: 600px) {
+        width: 100%;
       }
-      &.btn-excel {
-        background-color: #10b981;
-        &:hover {
-          background-color: #059669;
+
+      .btn-action-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 0 20px;
+        height: 45px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        border: none;
+        cursor: pointer;
+        color: white;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+
+        @media (max-width: 600px) {
+          flex: 1; // Ocupan todo el ancho proporcionalmente en móviles
+          padding: 0 10px;
+          font-size: 0.85rem;
         }
-      }
-      &.btn-add {
-        background-color: v.$primary;
+
         &:hover {
-          filter: brightness(0.9);
+          transform: translateY(-2px);
+          box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        &.btn-excel {
+          background-color: #10b981;
+          &:hover {
+            background-color: #059669;
+          }
+        }
+        &.btn-add {
+          background-color: v.$primary;
+          &:hover {
+            filter: brightness(0.9);
+          }
         }
       }
     }
@@ -61,22 +81,26 @@
     gap: 1rem;
     margin-bottom: 1.5rem;
     align-items: center;
-    @media (max-width: 768px) {
-      flex-direction: column;
-      align-items: stretch;
-    }
+    flex-wrap: wrap;
 
     .search-bar {
       flex: 1;
+      min-width: 250px;
       background: white;
       padding: 0 18px;
-      height: 50px;
+      height: 48px;
       border-radius: 12px;
-      border: 1px solid #cbd5e1;
+      border: 1px solid #e2e8f0;
       display: flex;
       align-items: center;
       gap: 12px;
       transition: all 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+
+      @media (max-width: 600px) {
+        min-width: 100%;
+      }
+
       &:focus-within {
         border-color: v.$primary;
         box-shadow: 0 0 0 3px rgba(v.$primary, 0.1);
@@ -93,9 +117,9 @@
       }
     }
     .select-filter {
-      width: 300px;
-      @media (max-width: 768px) {
-        width: 100%;
+      min-width: 250px;
+      @media (max-width: 600px) {
+        min-width: 100%;
       }
     }
   }
@@ -104,14 +128,34 @@
   .table-container {
     background: white;
     border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
     border: 1px solid #f1f5f9;
-    overflow: hidden;
+    overflow-x: auto; // ESENCIAL: Permite scroll horizontal en móviles
+
+    // Estilo del scrollbar de la tabla para que se vea limpio
+    &::-webkit-scrollbar {
+      height: 8px;
+    }
+    &::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 4px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    &::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
+      min-width: 1100px; // Fuerza a que la tabla no se aplaste en móviles
+
       thead tr {
         background-color: #eef2ff;
+        border-bottom: 2px solid #e2e8f0;
         th {
           padding: 16px 20px;
           text-align: left;
@@ -119,7 +163,7 @@
           font-size: 0.75rem;
           text-transform: uppercase;
           color: #4338ca;
-          letter-spacing: 0.8px;
+          letter-spacing: 0.5px;
           &.center {
             text-align: center;
           }
@@ -129,9 +173,11 @@
         border-bottom: 1px solid #f1f5f9;
         transition: all 0.2s ease;
         position: relative;
+
         &:hover {
           background-color: #f8fafc;
         }
+
         td:first-child {
           position: relative;
           &::before {
@@ -163,7 +209,7 @@
     }
   }
 
-  // --- CELDAS ---
+  // --- CELDAS INTERNAS ---
   .device-icon-box {
     width: 40px;
     height: 40px;
@@ -172,7 +218,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #7c3aed;
+    color: v.$primary;
     margin: 0 auto;
   }
 
@@ -185,7 +231,7 @@
       font-size: 0.9rem;
     }
     .audit-text {
-      font-size: 0.7rem;
+      font-size: 0.8rem;
       color: #64748b;
       margin-top: 2px;
       display: flex;
@@ -221,7 +267,6 @@
     }
   }
 
-  // --- ESTILO DEL LINK WEB ---
   .website-link {
     display: inline-flex;
     align-items: center;
@@ -253,19 +298,23 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.2s;
+      font-size: 1rem;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+      &:hover {
+        background-color: #f1f5f9;
+        transform: translateY(-2px);
+      }
       &.edit {
         color: #f59e0b;
         &:hover {
-          background: #fffbeb;
-          transform: translateY(-2px);
+          background-color: #fffbeb;
         }
       }
       &.delete {
         color: #ef4444;
         &:hover {
-          background: #fef2f2;
-          transform: translateY(-2px);
+          background-color: #fef2f2;
         }
       }
       &.activate {
@@ -287,6 +336,13 @@
     padding: 16px 25px;
     border-top: 1px solid #e2e8f0;
     background-color: white;
+    flex-wrap: wrap; // Permite salto de línea en móvil
+    gap: 15px;
+
+    @media (max-width: 600px) {
+      justify-content: center; // Centra en móvil
+    }
+
     .info {
       color: #64748b;
       font-size: 0.85rem;
@@ -316,14 +372,16 @@
 
   .loading-state,
   .no-data {
-    padding: 3rem;
+    padding: 4rem;
     text-align: center;
     color: #94a3b8;
     font-size: 1.1rem;
+    background: white;
+    border-radius: 16px;
   }
 }
 
-// --- BADGES Y MODALES ---
+// --- BADGES Y MODALES GLOBALES ---
 .status-badge {
   display: inline-flex;
   align-items: center;
@@ -334,6 +392,8 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  line-height: 1;
+  white-space: nowrap;
   &.activo {
     background-color: #dcfce7;
     color: #166534;
@@ -366,36 +426,43 @@
     color: #1e293b;
     margin-bottom: 0.5rem;
     font-size: 1.25rem;
+    font-weight: 800;
   }
   p {
     color: #64748b;
     margin-bottom: 2rem;
     font-size: 0.95rem;
   }
+
   .modal-actions {
     display: flex;
     gap: 1rem;
     justify-content: center;
+    flex-wrap: wrap;
+
     button {
-      padding: 10px 20px;
-      border-radius: 8px;
+      padding: 12px 20px;
+      border-radius: 10px;
       cursor: pointer;
       font-weight: 600;
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
       border: none;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       transition: transform 0.2s;
+      flex: 1;
+      min-width: 140px;
+
       &:hover {
         transform: translateY(-1px);
       }
       &.btn-cancel {
-        background-color: white;
-        border: 1px solid #cbd5e1;
+        background-color: #f1f5f9;
         color: #64748b;
         &:hover {
-          background-color: #f8fafc;
+          background-color: #e2e8f0;
         }
       }
       &.btn-confirm {
@@ -442,7 +509,6 @@
       padding-left: 25px;
       padding-bottom: 20px;
 
-      // Oculta la línea en el último elemento
       &:last-child {
         padding-bottom: 0;
         &::before {
@@ -450,7 +516,6 @@
         }
       }
 
-      // --- LA LÍNEA VERTICAL ---
       &::before {
         content: '';
         position: absolute;
@@ -461,7 +526,6 @@
         background-color: #e2e8f0;
       }
 
-      // --- EL PUNTO INDICADOR ---
       &::after {
         content: '';
         position: absolute;
@@ -479,7 +543,6 @@
         background-color: #ef4444;
       }
 
-      // --- LA TARJETA DE CONTENIDO ---
       .audit-card {
         background-color: white;
         border: 1px solid #e2e8f0;
@@ -498,15 +561,16 @@
           justify-content: space-between;
           align-items: center;
           margin-bottom: 10px;
+          flex-wrap: wrap;
+          gap: 5px;
 
           strong {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: v.$primary;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             font-weight: 800;
           }
-
           .date-badge {
             font-size: 0.75rem;
             color: #64748b;
@@ -527,7 +591,6 @@
           line-height: 1.5;
         }
 
-        // --- NUEVA GRILLA PARA EL FOOTER (Responsable y Autor) ---
         .log-footer-grid {
           border-top: 1px dashed #e2e8f0;
           padding-top: 12px;
@@ -535,13 +598,16 @@
           grid-template-columns: 1fr 1fr;
           gap: 10px;
 
+          @media (max-width: 500px) {
+            grid-template-columns: 1fr;
+          } // Apila el footer en celular
+
           .footer-item {
             display: flex;
             align-items: center;
             gap: 6px;
             font-size: 0.8rem;
             color: #64748b;
-
             strong {
               color: #1e293b;
               font-weight: 600;

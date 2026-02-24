@@ -285,7 +285,7 @@ const AddColaboradorForm = ({ onSuccess, colaboradorToEdit }) => {
             value={formData.telefono}
             onChange={handlePhoneChange}
             required
-            placeholder='Ej: 999888777'
+            placeholder='Ej: 987654321'
           />
         </div>
       </div>
