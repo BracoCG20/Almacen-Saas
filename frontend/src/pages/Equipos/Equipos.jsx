@@ -390,7 +390,7 @@ const Equipos = () => {
           <table>
             <thead>
               <tr>
-                <th className='center'>Cat.</th>
+                <th className='center'></th>
                 <th>Ítem</th>
                 <th>S/N & Código</th>
                 <th>Condición</th>

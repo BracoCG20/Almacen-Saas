@@ -182,17 +182,17 @@
       min-width: 900px; // Fuerza a la tabla a no aplastarse en móviles
 
       thead tr {
-        background-color: #eef2ff;
-        border-bottom: 2px solid #e2e8f0;
+        background-color: #f1e9fe;
+        border-bottom: 2px solid #e5d6fe;
         th {
           padding: 16px 20px;
           text-align: left;
           font-weight: 700;
           font-size: 0.75rem;
           text-transform: uppercase;
-          color: #4338ca;
+          color: #7c3aed;
           letter-spacing: 0.5px;
-          border-bottom: 1px solid #e2e8f0;
+          border-bottom: 1px solid #e5d6fe;
           &.center {
             text-align: center;
           }
