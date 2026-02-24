@@ -15,6 +15,7 @@ import {
   LogOut,
   ChevronRight,
   ChevronLeft,
+  Menu, // <-- Importamos Menu
 } from 'lucide-react';
 
 import './Sidebar.scss';
@@ -93,6 +94,14 @@ const Sidebar = () => {
 
   return (
     <>
+      {/* BOTÓN HAMBURGUESA (Solo visible en móviles cuando el menú está cerrado) */}
+      <button
+        className={`mobile-hamburger ${isOpen ? 'hidden' : ''}`}
+        onClick={toggleSidebar}
+      >
+        <Menu size={24} />
+      </button>
+
       {/* Fondo oscuro semi-transparente solo visible en móviles cuando está abierto */}
       {isOpen && (
         <div
@@ -102,6 +111,7 @@ const Sidebar = () => {
       )}
 
       <div className={`sidebar ${isOpen ? 'open' : 'collapsed'}`}>
+        {/* Botón clásico de PC para expandir/colapsar (se ocultará en móvil mediante SCSS) */}
         <button
           className='toggle-btn'
           onClick={toggleSidebar}

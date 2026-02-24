@@ -7,7 +7,7 @@
   overflow: hidden;
   background-color: #f8fafc;
   font-family: 'Inter', system-ui, sans-serif;
-  position: relative; // Fundamental para que el sidebar flote sobre él en celular
+  position: relative;
 }
 
 .main-content {
@@ -15,17 +15,17 @@
   overflow-y: auto;
   padding: 2.5rem 3rem;
   transition: padding 0.3s ease;
-  min-width: 0; // Evita que el contenido rompa el layout si es muy grande
+  min-width: 0;
 
   // RESPONSIVE: En tablets
   @media (max-width: 1024px) {
     padding: 2rem 1.5rem;
   }
 
-  // RESPONSIVE: En celulares (LA MAGIA ESTÁ AQUÍ)
+  // RESPONSIVE: En celulares (La pantalla ahora toma el 100% del ancho)
   @media (max-width: 768px) {
-    // Arriba: 1.5rem | Derecha: 1rem | Abajo: 1.5rem | Izquierda: 84px(sidebar) + 1rem(espacio)
-    padding: 1.5rem 1rem 1.5rem calc(84px + 1rem);
+    // Aumentamos el padding 'Top' a 4.5rem para dejarle espacio libre al botón hamburguesa
+    padding: 4.5rem 1rem 1.5rem 1rem;
   }
 }
 

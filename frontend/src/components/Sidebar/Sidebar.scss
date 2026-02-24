@@ -4,9 +4,41 @@ $sidebar-width-open: 260px;
 $sidebar-width-collapsed: 84px;
 $smooth-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 
-// Fondo oscuro para celular
+// --- BOTÓN HAMBURGUESA PARA MÓVILES ---
+.mobile-hamburger {
+  display: none; // Oculto por defecto en PC
+
+  @media (max-width: 768px) {
+    display: flex;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 995;
+    background-color: white;
+    color: v.$primary;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    width: 45px;
+    height: 45px;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+
+    &:active {
+      transform: scale(0.95);
+    }
+
+    &.hidden {
+      display: none;
+    }
+  }
+}
+
+// --- OVERLAY OSCURO (MÓVILES) ---
 .mobile-overlay {
-  display: none; // Por defecto oculto en PC
+  display: none;
 
   @media (max-width: 768px) {
     display: block;
@@ -17,7 +49,7 @@ $smooth-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(2px);
-    z-index: 990; // Justo por debajo del sidebar
+    z-index: 998; // Justo por debajo del sidebar
     animation: fadeIn 0.3s ease;
   }
 }
@@ -41,25 +73,39 @@ $smooth-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   flex-direction: column;
   padding: 1.5rem 1rem;
   transition:
+    transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
     width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
     box-shadow 0.3s ease;
   position: relative;
   z-index: 1000;
   box-shadow: 4px 0 24px rgba(0, 0, 0, 0.02);
   overflow: visible;
-  flex-shrink: 0; // Evita que se encoja en flexbox
+  flex-shrink: 0;
 
-  // --- LA MAGIA RESPONSIVE ---
+  // --- COMPORTAMIENTO MÓVIL (SE OCULTA TOTALMENTE HACIA LA IZQUIERDA) ---
   @media (max-width: 768px) {
-    position: absolute; // Lo saca del flujo normal para no aplastar nada
+    position: fixed;
     left: 0;
     top: 0;
     bottom: 0;
+    transform: translateX(0); // Posición abierta por defecto en el código
   }
 
   &.open {
     @media (max-width: 768px) {
-      box-shadow: 15px 0 40px rgba(0, 0, 0, 0.15); // Sombra más fuerte cuando se abre
+      width: $sidebar-width-open; // Se asegura de que se vea completo al abrir en móvil
+      box-shadow: 15px 0 40px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  &.collapsed {
+    width: $sidebar-width-collapsed;
+
+    @media (max-width: 768px) {
+      transform: translateX(
+        -100%
+      ); // SE ESCONDE TOTALMENTE FUERA DE LA PANTALLA
+      width: $sidebar-width-open; // Mantiene el ancho listo para cuando regrese
     }
   }
 
@@ -74,6 +120,7 @@ $smooth-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     pointer-events: none;
   }
 
+  // --- BOTÓN TOGGLE DE PC (LA FLECHITA) ---
   .toggle-btn {
     position: absolute;
     top: 50px;
@@ -92,6 +139,10 @@ $smooth-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     transition: all 0.2s ease;
 
+    @media (max-width: 768px) {
+      display: none; // En móvil se oculta porque usamos el Overlay o la Hamburguesa
+    }
+
     &:hover {
       background-color: v.$primary;
       color: v.$white;
@@ -101,49 +152,18 @@ $smooth-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   }
 
   // ==========================================
-  // ESTADO COLAPSADO
+  // ESTILO INTERNO PC COLAPSADO
   // ==========================================
   &.collapsed {
-    width: $sidebar-width-collapsed;
-
-    .logo-container img {
-      max-width: 45px;
-    }
-
-    nav .nav-item {
-      padding: 12px;
-      justify-content: center;
-
-      .icon-wrapper {
-        margin: 0;
-      }
-      .label {
-        opacity: 0;
-        width: 0;
-        margin-left: 0;
-        visibility: hidden;
-      }
-    }
-
-    .footer-actions {
-      .user-mini-card {
-        padding: 8px;
-        justify-content: center;
-        background: transparent;
-        border-color: transparent;
-
-        .info {
-          opacity: 0;
-          width: 0;
-          margin-left: 0;
-          visibility: hidden;
-        }
+    // Si no estamos en móvil, aplicamos los estilos para achicar el contenido
+    @media (min-width: 769px) {
+      .logo-container img {
+        max-width: 45px;
       }
 
-      .logout-btn {
+      nav .nav-item {
         padding: 12px;
         justify-content: center;
-
         .icon-wrapper {
           margin: 0;
         }
@@ -155,11 +175,38 @@ $smooth-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
       }
 
-      .copyright {
-        opacity: 0;
-        height: 0;
-        margin: 0;
-        visibility: hidden;
+      .footer-actions {
+        .user-mini-card {
+          padding: 8px;
+          justify-content: center;
+          background: transparent;
+          border-color: transparent;
+          .info {
+            opacity: 0;
+            width: 0;
+            margin-left: 0;
+            visibility: hidden;
+          }
+        }
+        .logout-btn {
+          padding: 12px;
+          justify-content: center;
+          .icon-wrapper {
+            margin: 0;
+          }
+          .label {
+            opacity: 0;
+            width: 0;
+            margin-left: 0;
+            visibility: hidden;
+          }
+        }
+        .copyright {
+          opacity: 0;
+          height: 0;
+          margin: 0;
+          visibility: hidden;
+        }
       }
     }
   }
