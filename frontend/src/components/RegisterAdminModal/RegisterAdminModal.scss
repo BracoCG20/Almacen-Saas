@@ -13,18 +13,27 @@
   align-items: center;
   z-index: 2000;
   animation: fadeIn 0.3s ease;
+  padding: 10px; // Evita que toque los bordes del teléfono
+  box-sizing: border-box;
 
   .modal-content {
     background: white;
     padding: 2.5rem;
     border-radius: 16px;
-    width: 90%;
+    width: 100%;
     max-width: 600px;
+    max-height: 90vh; // No dejar que se salga de la pantalla verticalmente
+    overflow-y: auto; // Permite scroll interno si el form es muy largo en móvil
     box-shadow:
       0 20px 25px -5px rgba(0, 0, 0, 0.1),
       0 10px 10px -5px rgba(0, 0, 0, 0.04);
     animation: slideUp 0.3s ease;
     position: relative;
+    box-sizing: border-box;
+
+    @media (max-width: 600px) {
+      padding: 1.5rem;
+    }
 
     .modal-header {
       display: flex;
@@ -41,6 +50,10 @@
         display: flex;
         align-items: center;
         gap: 10px;
+
+        @media (max-width: 600px) {
+          font-size: 1.1rem;
+        }
       }
 
       .btn-close {
@@ -51,6 +64,7 @@
         transition: color 0.2s;
         display: flex;
         align-items: center;
+        padding: 0; // Remueve padding por defecto para alinear bien
         &:hover {
           color: v.$danger;
         }
@@ -61,8 +75,10 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1.5rem;
-      @media (max-width: 500px) {
-        grid-template-columns: 1fr;
+
+      @media (max-width: 600px) {
+        grid-template-columns: 1fr; // Apilado en móvil
+        gap: 1rem;
       }
     }
 
@@ -73,22 +89,24 @@
       gap: 0.5rem;
 
       label {
-        font-size: 0.9rem;
-        font-weight: 600;
+        font-size: 0.85rem;
+        font-weight: 700;
         color: #475569;
       }
 
       input {
+        width: 100%;
         padding: 0 14px;
         height: 50px;
         border: 1px solid #cbd5e1;
-        border-radius: 8px;
+        border-radius: 10px;
         outline: none;
         transition: border-color 0.2s;
         font-size: 0.95rem;
         color: #1e293b;
         display: flex;
         align-items: center;
+        box-sizing: border-box;
 
         &:focus {
           border-color: v.$primary;
@@ -99,22 +117,31 @@
 
     .modal-actions {
       display: flex;
-      justify-content: center;
+      justify-content: flex-end; // Mejor a la derecha
       gap: 1rem;
       margin-top: 2rem;
+
+      @media (max-width: 600px) {
+        flex-direction: column-reverse; // Cancela abajo, Confirmar arriba en móvil
+      }
 
       button {
         padding: 0 24px;
         height: 50px;
-        border-radius: 8px;
+        border-radius: 10px;
         font-weight: 600;
         cursor: pointer;
         border: none;
         transition: all 0.2s;
-        font-size: 1rem;
+        font-size: 0.95rem;
         display: flex;
         align-items: center;
+        justify-content: center;
         gap: 8px;
+
+        @media (max-width: 600px) {
+          width: 100%;
+        } // Ancho completo en móvil
 
         &.btn-cancel {
           background: #f1f5f9;
@@ -127,6 +154,7 @@
         &.btn-confirm {
           background: v.$primary;
           color: white;
+          box-shadow: 0 4px 6px rgba(v.$primary, 0.2);
           &:hover {
             filter: brightness(1.1);
             transform: translateY(-2px);
