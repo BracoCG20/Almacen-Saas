@@ -10,6 +10,7 @@ import {
   CalendarDays,
   Cpu,
   Barcode,
+  Package,
 } from 'lucide-react';
 import api from '../../service/api';
 import Select from 'react-select';
@@ -17,13 +18,12 @@ import CreatableSelect from 'react-select/creatable';
 import './AddEquipoForm.scss';
 
 const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
-  // --- ESTADO PRINCIPAL DEL FORMULARIO ---
   const [formData, setFormData] = useState({
+    categoria: 'Laptop/PC', // Categoría por defecto
     empresa_id: '',
     marca: '',
     modelo: '',
     numero_serie: '',
-    codigo_patrimonial: '',
     estado_fisico_id: '',
     es_propio: true,
     proveedor_id: '',
@@ -36,22 +36,31 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
     procesador: '',
   });
 
-  // --- ESTADOS PARA EL CONSTRUCTOR RÁPIDO DE PROCESADOR ---
   const [builderMarca, setBuilderMarca] = useState(null);
   const [builderModelo, setBuilderModelo] = useState(null);
   const [builderGen, setBuilderGen] = useState(null);
 
-  // --- ESTADOS DE LAS LISTAS DESPLEGABLES ---
   const [marcasOptions, setMarcasOptions] = useState([]);
   const [proveedoresOptions, setProveedoresOptions] = useState([]);
   const [empresasOptions, setEmpresasOptions] = useState([]);
   const [estadosFisicosOptions, setEstadosFisicosOptions] = useState([]);
   const [loadingData, setLoadingData] = useState(false);
 
-  // --- ESPECIFICACIONES EXTRAS (DINÁMICAS) ---
   const [specsList, setSpecsList] = useState([]);
 
-  // --- CONSTANTES DE OPCIONES ESTÁTICAS ---
+  const categoriasOptions = [
+    { value: 'Laptop/PC', label: 'Laptop / PC' },
+    { value: 'Celular/Tablet', label: 'Celular / Tablet' },
+    { value: 'Monitor/Pantalla', label: 'Monitor / Pantalla' },
+    { value: 'Periférico', label: 'Periférico (Teclado, Mouse, Auricular)' },
+    {
+      value: 'Audiovisual',
+      label: 'Equipo Audiovisual (Cámara, Mic, Parante)',
+    },
+    { value: 'Redes/Cables', label: 'Redes, Routers y Cables' },
+    { value: 'Otros', label: 'Otros Materiales' },
+  ];
+
   const condicionOptions = [
     { value: true, label: 'Equipo Propio' },
     { value: false, label: 'Equipo Alquilado / Leasing' },
@@ -68,7 +77,6 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
     { value: 'Apple', label: 'Apple' },
   ];
 
-  // --- FUNCIONES HELPERS PARA EL CONSTRUCTOR DE CPU ---
   const getModeloOptions = (marca) => {
     switch (marca) {
       case 'Intel':
@@ -174,12 +182,16 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
       let existingProc = '';
       let otherSpecs = [];
       let parsedSpecs = {};
+
       if (typeof equipoToEdit.especificaciones === 'string') {
         try {
           parsedSpecs = JSON.parse(equipoToEdit.especificaciones);
         } catch (e) {}
-      } else if (typeof equipoToEdit.especificaciones === 'object') {
-        parsedSpecs = equipoToEdit.especificaciones || {};
+      } else if (
+        typeof equipoToEdit.especificaciones === 'object' &&
+        equipoToEdit.especificaciones !== null
+      ) {
+        parsedSpecs = equipoToEdit.especificaciones;
       }
 
       Object.entries(parsedSpecs).forEach(([k, v]) => {
@@ -198,6 +210,7 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
       });
 
       setFormData({
+        categoria: equipoToEdit.categoria || 'Laptop/PC',
         empresa_id: equipoToEdit.empresa_id || '',
         marca: equipoToEdit.marca || '',
         modelo: equipoToEdit.modelo || '',
@@ -223,7 +236,6 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
     }
   }, [equipoToEdit]);
 
-  // --- EFECTO PARA ARMAR EL STRING DEL PROCESADOR ---
   useEffect(() => {
     if (builderMarca || builderModelo || builderGen) {
       const parts = [
@@ -235,13 +247,10 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
     }
   }, [builderMarca, builderModelo, builderGen]);
 
-  // --- MANEJADORES DE INPUTS ---
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
-
-  const handleSelectChange = (name, newValue) => {
+  const handleSelectChange = (name, newValue) =>
     setFormData({ ...formData, [name]: newValue ? newValue.value : '' });
-  };
 
   const handleCondicionChange = (newValue) => {
     const esPropio = newValue.value;
@@ -269,32 +278,35 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
   const removeSpecRow = (index) =>
     setSpecsList(specsList.filter((_, i) => i !== index));
 
-  // --- ENVÍO DEL FORMULARIO ---
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!formData.empresa_id)
-      return toast.warning('Debes seleccionar la Empresa a cargo del equipo.');
+      return toast.warning('Debes seleccionar la Empresa a cargo del ítem.');
     if (!formData.estado_fisico_id)
-      return toast.warning('Debes indicar el Estado Físico del equipo.');
+      return toast.warning('Debes indicar el Estado Físico.');
     if (!formData.es_propio && !formData.proveedor_id)
       return toast.warning(
-        'Debes seleccionar un Proveedor para equipos alquilados.',
+        'Debes seleccionar un Proveedor para ítems alquilados.',
       );
 
-    // 1. Armamos el JSON de Especificaciones
     const specsObject = specsList.reduce((acc, item) => {
       if (item.key && item.value) acc[item.key] = item.value;
       return acc;
     }, {});
 
-    if (formData.ram) specsObject['RAM'] = `${formData.ram} GB`;
-    if (formData.almacenamiento_valor)
-      specsObject['Almacenamiento'] =
-        `${formData.almacenamiento_valor} ${formData.almacenamiento_unidad}`;
-    if (formData.procesador) specsObject['Procesador'] = formData.procesador;
+    // Guardar Especificaciones Avanzadas Solo para Laptops/PCs y Celulares
+    if (
+      formData.categoria === 'Laptop/PC' ||
+      formData.categoria === 'Celular/Tablet'
+    ) {
+      if (formData.ram) specsObject['RAM'] = `${formData.ram} GB`;
+      if (formData.almacenamiento_valor)
+        specsObject['Almacenamiento'] =
+          `${formData.almacenamiento_valor} ${formData.almacenamiento_unidad}`;
+      if (formData.procesador) specsObject['Procesador'] = formData.procesador;
+    }
 
-    // 2. Extraemos los campos temporales del formData
     const {
       ram,
       almacenamiento_valor,
@@ -302,24 +314,22 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
       procesador,
       ...restFormData
     } = formData;
-
     const payload = { ...restFormData, especificaciones: specsObject };
 
     try {
       if (equipoToEdit) {
         await api.put(`/equipos/${equipoToEdit.id}`, payload);
-        toast.success('Equipo actualizado correctamente');
+        toast.success('Ítem actualizado correctamente');
       } else {
         await api.post('/equipos', payload);
-        toast.success('Equipo registrado correctamente');
+        toast.success('Ítem registrado en inventario');
       }
       onSuccess();
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Error al guardar el equipo');
+      toast.error(error.response?.data?.error || 'Error al guardar el ítem');
     }
   };
 
-  // --- ESTILOS DE SELECT ---
   const customSelectStyles = {
     control: (provided, state) => ({
       ...provided,
@@ -363,6 +373,26 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
       className='equipo-form'
       onSubmit={handleSubmit}
     >
+      {/* SECCIÓN CATEGORÍA */}
+      <div
+        className='input-group'
+        style={{ marginBottom: '10px' }}
+      >
+        <label style={{ color: '#4f46e5' }}>
+          <Package size={16} /> Categoría del Ítem *
+        </label>
+        <Select
+          options={categoriasOptions}
+          value={categoriasOptions.find(
+            (op) => op.value === formData.categoria,
+          )}
+          onChange={(opt) => handleSelectChange('categoria', opt)}
+          styles={customSelectStyles}
+          isSearchable={false}
+          menuPortalTarget={document.body}
+        />
+      </div>
+
       <div className='form-row'>
         <div className='input-group'>
           <label style={{ color: '#4f46e5' }}>
@@ -481,7 +511,7 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
             value={formData.modelo}
             onChange={handleChange}
             required
-            placeholder='Ej: Latitude 5420'
+            placeholder='Ej: Latitude 5420 o Cable HDMI'
           />
         </div>
         <div className='input-group'>
@@ -493,7 +523,7 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
             value={formData.numero_serie}
             onChange={handleChange}
             required
-            placeholder='S/N del fabricante'
+            placeholder='S/N o Código'
           />
         </div>
       </div>
@@ -527,105 +557,112 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
         </div>
       </div>
 
-      <div className='specs-section'>
-        <h4>Especificaciones Principales</h4>
-        <div className='form-row'>
-          <div className='input-group'>
-            <label>Memoria RAM (GB)</label>
-            <input
-              type='number'
-              inputMode='numeric'
-              pattern='[0-9]*'
-              name='ram'
-              value={formData.ram}
-              onChange={handleChange}
-              placeholder='Ej: 8, 16, 32'
-            />
-          </div>
-          <div className='input-group'>
-            <label>Almacenamiento</label>
-            <div className='almacenamiento-row'>
+      {/* RENDERIZADO CONDICIONAL DE ESPECIFICACIONES (Solo para Laptop/Celular) */}
+      {(formData.categoria === 'Laptop/PC' ||
+        formData.categoria === 'Celular/Tablet') && (
+        <div className='specs-section'>
+          <h4>Especificaciones Principales</h4>
+          <div className='form-row'>
+            <div className='input-group'>
+              <label>Memoria RAM (GB)</label>
               <input
                 type='number'
                 inputMode='numeric'
                 pattern='[0-9]*'
-                name='almacenamiento_valor'
-                value={formData.almacenamiento_valor}
+                name='ram'
+                value={formData.ram}
                 onChange={handleChange}
-                placeholder='Ej: 512'
-                className='almacenamiento-input'
+                placeholder='Ej: 8, 16, 32'
               />
-              <div className='almacenamiento-select'>
-                <Select
-                  name='almacenamiento_unidad'
-                  options={unidadAlmacenamientoOptions}
-                  value={unidadAlmacenamientoOptions.find(
-                    (op) => op.value === formData.almacenamiento_unidad,
-                  )}
-                  onChange={(opt) =>
-                    handleSelectChange('almacenamiento_unidad', opt)
-                  }
-                  styles={customSelectStyles}
-                  isSearchable={false}
-                  menuPortalTarget={document.body}
+            </div>
+            <div className='input-group'>
+              <label>Almacenamiento</label>
+              <div className='almacenamiento-row'>
+                <input
+                  type='number'
+                  inputMode='numeric'
+                  pattern='[0-9]*'
+                  name='almacenamiento_valor'
+                  value={formData.almacenamiento_valor}
+                  onChange={handleChange}
+                  placeholder='Ej: 512'
+                  className='almacenamiento-input'
                 />
+                <div className='almacenamiento-select'>
+                  <Select
+                    name='almacenamiento_unidad'
+                    options={unidadAlmacenamientoOptions}
+                    value={unidadAlmacenamientoOptions.find(
+                      (op) => op.value === formData.almacenamiento_unidad,
+                    )}
+                    onChange={(opt) =>
+                      handleSelectChange('almacenamiento_unidad', opt)
+                    }
+                    styles={customSelectStyles}
+                    isSearchable={false}
+                    menuPortalTarget={document.body}
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div
-          className='input-group'
-          style={{ marginTop: '10px' }}
-        >
-          <label>Procesador</label>
-          <input
-            name='procesador'
-            value={formData.procesador}
-            onChange={handleChange}
-            placeholder='Ej: Intel Core i7 10ma Gen'
-          />
-        </div>
-
-        <div className='procesador-builder'>
-          <span className='builder-title'>
-            <Cpu size={14} /> Constructor Rápido de Procesador
-          </span>
-          <div className='builder-grid'>
-            <Select
-              options={marcaProcOptions}
-              value={builderMarca}
-              onChange={handleBuilderMarcaChange}
-              placeholder='Marca...'
-              styles={customSelectStyles}
-              isClearable
-              menuPortalTarget={document.body}
-            />
-            <Select
-              options={getModeloOptions(builderMarca?.value)}
-              value={builderModelo}
-              onChange={setBuilderModelo}
-              placeholder='Modelo...'
-              styles={customSelectStyles}
-              isDisabled={!builderMarca}
-              isClearable
-              menuPortalTarget={document.body}
-            />
-            <Select
-              options={getGenOptions(builderMarca?.value)}
-              value={builderGen}
-              onChange={setBuilderGen}
-              placeholder='Generación...'
-              styles={customSelectStyles}
-              isDisabled={!builderMarca || builderMarca?.value === 'Apple'}
-              isClearable
-              menuPortalTarget={document.body}
+          <div
+            className='input-group'
+            style={{ marginTop: '10px' }}
+          >
+            <label>Procesador</label>
+            <input
+              name='procesador'
+              value={formData.procesador}
+              onChange={handleChange}
+              placeholder='Ej: Intel Core i7 10ma Gen'
             />
           </div>
-        </div>
 
+          <div className='procesador-builder'>
+            <span className='builder-title'>
+              <Cpu size={14} /> Constructor Rápido de Procesador
+            </span>
+            <div className='builder-grid'>
+              <Select
+                options={marcaProcOptions}
+                value={builderMarca}
+                onChange={handleBuilderMarcaChange}
+                placeholder='Marca...'
+                styles={customSelectStyles}
+                isClearable
+                menuPortalTarget={document.body}
+              />
+              <Select
+                options={getModeloOptions(builderMarca?.value)}
+                value={builderModelo}
+                onChange={setBuilderModelo}
+                placeholder='Modelo...'
+                styles={customSelectStyles}
+                isDisabled={!builderMarca}
+                isClearable
+                menuPortalTarget={document.body}
+              />
+              <Select
+                options={getGenOptions(builderMarca?.value)}
+                value={builderGen}
+                onChange={setBuilderGen}
+                placeholder='Generación...'
+                styles={customSelectStyles}
+                isDisabled={!builderMarca || builderMarca?.value === 'Apple'}
+                isClearable
+                menuPortalTarget={document.body}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SECCIÓN DE ESPECIFICACIONES EXTRAS (Para todas las categorías) */}
+      <div className='specs-section'>
         <h4 style={{ marginTop: '1.5rem' }}>
-          Otras Especificaciones (Opcional)
+          Otras Especificaciones o Detalles
         </h4>
         {specsList.map((spec, index) => (
           <div
@@ -633,12 +670,12 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
             key={index}
           >
             <input
-              placeholder='Ej: Tarjeta de Video'
+              placeholder='Ej: Color / Largo / Tipo'
               value={spec.key}
               onChange={(e) => handleSpecChange(index, 'key', e.target.value)}
             />
             <input
-              placeholder='Ej: RTX 3060 4GB'
+              placeholder='Ej: Negro / 2 metros / Inalámbrico'
               value={spec.value}
               onChange={(e) => handleSpecChange(index, 'value', e.target.value)}
             />
@@ -656,7 +693,7 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
           className='btn-add-spec'
           onClick={addSpecRow}
         >
-          <Plus size={18} /> Agregar componente extra
+          <Plus size={18} /> Agregar detalle extra
         </button>
       </div>
 
@@ -666,7 +703,7 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
           className='btn-submit'
         >
           <Save size={20} />{' '}
-          {equipoToEdit ? 'Actualizar Cambios' : 'Guardar Nuevo Equipo'}
+          {equipoToEdit ? 'Actualizar Cambios' : 'Guardar en Inventario'}
         </button>
       </div>
     </form>

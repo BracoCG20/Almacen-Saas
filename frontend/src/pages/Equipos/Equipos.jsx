@@ -19,6 +19,12 @@ import {
   X,
   Check,
   History,
+  Smartphone,
+  Camera,
+  Keyboard,
+  Monitor,
+  Cable,
+  Package,
 } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
 import AddEquipoForm from './AddEquipoForm';
@@ -36,7 +42,11 @@ const Equipos = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCondicion, setFilterCondicion] = useState({
     value: 'todos',
-    label: 'Todos los Equipos',
+    label: 'Todos (Propiedad)',
+  });
+  const [filterCategoria, setFilterCategoria] = useState({
+    value: 'todos',
+    label: 'Todas las Categorías',
   });
 
   // --- ESTADOS DE PAGINACIÓN ---
@@ -54,9 +64,20 @@ const Equipos = () => {
   const [equipoToDelete, setEquipoToDelete] = useState(null);
 
   const condicionOptions = [
-    { value: 'todos', label: 'Todos los Equipos' },
-    { value: 'propios', label: 'Equipos Propios' },
-    { value: 'alquilados', label: 'Equipos Alquilados' },
+    { value: 'todos', label: 'Todos (Propiedad)' },
+    { value: 'propios', label: 'Propios' },
+    { value: 'alquilados', label: 'Alquilados' },
+  ];
+
+  const categoriasFiltroOptions = [
+    { value: 'todos', label: 'Todas las Categorías' },
+    { value: 'Laptop/PC', label: 'Laptops y PCs' },
+    { value: 'Celular/Tablet', label: 'Celulares y Tablets' },
+    { value: 'Monitor/Pantalla', label: 'Monitores' },
+    { value: 'Periférico', label: 'Periféricos (Teclado, Mouse)' },
+    { value: 'Audiovisual', label: 'Cámaras, Parantes, etc.' },
+    { value: 'Redes/Cables', label: 'Cables y Redes' },
+    { value: 'Otros', label: 'Otros' },
   ];
 
   // --- FETCH DE DATOS ---
@@ -73,7 +94,7 @@ const Equipos = () => {
       });
       setEquipos(sorted);
     } catch (error) {
-      toast.error('Error al cargar datos');
+      toast.error('Error al cargar datos del inventario');
     } finally {
       setLoading(false);
     }
@@ -86,7 +107,7 @@ const Equipos = () => {
   // Reiniciar paginación al filtrar
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, filterCondicion]);
+  }, [searchTerm, filterCondicion, filterCategoria]);
 
   // --- FORMATEADORES ---
   const formatDate = (dateString) => {
@@ -117,6 +138,26 @@ const Equipos = () => {
     return [partAnios, partMeses].filter(Boolean).join(' y ');
   };
 
+  // Función para obtener el ícono según la categoría
+  const getCategoryIcon = (categoria) => {
+    switch (categoria) {
+      case 'Laptop/PC':
+        return <Laptop size={20} />;
+      case 'Celular/Tablet':
+        return <Smartphone size={20} />;
+      case 'Monitor/Pantalla':
+        return <Monitor size={20} />;
+      case 'Periférico':
+        return <Keyboard size={20} />;
+      case 'Audiovisual':
+        return <Camera size={20} />;
+      case 'Redes/Cables':
+        return <Cable size={20} />;
+      default:
+        return <Package size={20} />;
+    }
+  };
+
   // --- LÓGICA DE FILTRADO ---
   const filteredEquipos = equipos.filter((item) => {
     const term = searchTerm.toLowerCase();
@@ -132,7 +173,12 @@ const Equipos = () => {
     else if (filterCondicion.value === 'alquilados')
       matchesCondicion = item.es_propio === false;
 
-    return matchesSearch && matchesCondicion;
+    let matchesCat = true;
+    if (filterCategoria.value !== 'todos') {
+      matchesCat = item.categoria === filterCategoria.value;
+    }
+
+    return matchesSearch && matchesCondicion && matchesCat;
   });
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -145,39 +191,32 @@ const Equipos = () => {
     if (equipos.length === 0) return toast.info('No hay datos para exportar');
 
     const dataParaExcel = filteredEquipos.map((e) => {
-      // --- LÓGICA DE SEGURIDAD PARA EL JSON ---
       let specs = {};
       try {
         if (typeof e.especificaciones === 'string') {
-          // Si viene como texto, lo convertimos a objeto
           specs = JSON.parse(e.especificaciones);
         } else if (
           typeof e.especificaciones === 'object' &&
           e.especificaciones !== null
         ) {
-          // Si ya es un objeto, lo usamos directamente
           specs = e.especificaciones;
         }
       } catch (error) {
-        console.warn('Error parseando especificaciones:', error);
         specs = {};
       }
 
       return {
         'ID Inventario': e.id,
+        Categoría: e.categoria || 'Laptop/PC',
         'Código Patrimonial': e.codigo_patrimonial || 'No asignado',
         Marca: e.marca,
         Modelo: e.modelo,
         'Número de Serie': e.numero_serie,
         'Estado Actual': e.disponible ? 'ACTIVO' : 'BAJA',
         'Condición Física': e.estado_fisico_nombre || 'Desconocido',
-
-        // Datos de Propiedad
         'Tipo de Propiedad': e.es_propio ? 'PROPIO' : 'ALQUILADO',
         'Empresa Propietaria': e.empresa_nombre || '-',
         'Proveedor (Si es alquilado)': e.nombre_proveedor || '-',
-
-        // Fechas Clave
         'Fecha Adquisición/Inicio': e.fecha_adquisicion
           ? formatDate(e.fecha_adquisicion)
           : '-',
@@ -185,21 +224,16 @@ const Equipos = () => {
           ? formatDate(e.fecha_fin_alquiler)
           : '-',
         'Tiempo de Antigüedad': calcularAntiguedad(e.fecha_adquisicion),
-
-        // Especificaciones Técnicas (Ahora sí seguras)
-        // Probamos con minúsculas y Mayúsculas por si acaso
         Procesador: specs.procesador || specs.Procesador || '-',
         'Memoria RAM': specs.ram || specs.RAM || specs.Ram || '-',
         Almacenamiento: specs.almacenamiento || specs.Almacenamiento || '-',
-
-        // Observaciones
         'Notas Adicionales': e.observaciones || 'Ninguna',
       };
     });
 
     const ws = XLSX.utils.json_to_sheet(dataParaExcel);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Inventario_Equipos');
+    XLSX.utils.book_append_sheet(wb, ws, 'Inventario_General');
     XLSX.writeFile(wb, 'Reporte_Gerencial_Inventario.xlsx');
     toast.success('Reporte gerencial generado exitosamente');
   };
@@ -244,7 +278,7 @@ const Equipos = () => {
         disponible: nuevaDisponibilidad,
       });
       toast.success(
-        `Equipo ${nuevaDisponibilidad ? 'reactivado' : 'dado de baja'} exitosamente`,
+        `Ítem ${nuevaDisponibilidad ? 'reactivado' : 'dado de baja'} exitosamente`,
       );
       fetchData();
       setIsDeleteModalOpen(false);
@@ -297,7 +331,7 @@ const Equipos = () => {
   return (
     <div className='equipos-container'>
       <div className='page-header'>
-        <h1>Inventario de Equipos</h1>
+        <h1>Inventario General</h1>
         <div className='header-actions'>
           <button
             onClick={exportarExcel}
@@ -309,7 +343,7 @@ const Equipos = () => {
             className='btn-action-header btn-add'
             onClick={handleAddEquipo}
           >
-            <Plus size={18} /> Nuevo Equipo
+            <Plus size={18} /> Nuevo Ítem
           </button>
         </div>
       </div>
@@ -329,6 +363,15 @@ const Equipos = () => {
         </div>
         <div className='condition-filter'>
           <Select
+            options={categoriasFiltroOptions}
+            value={filterCategoria}
+            onChange={setFilterCategoria}
+            styles={customFilterStyles}
+            isSearchable={false}
+          />
+        </div>
+        <div className='condition-filter'>
+          <Select
             options={condicionOptions}
             value={filterCondicion}
             onChange={setFilterCondicion}
@@ -340,17 +383,18 @@ const Equipos = () => {
 
       <div className='table-container'>
         {currentItems.length === 0 ? (
-          <div className='no-data'>No se encontraron equipos.</div>
+          <div className='no-data'>
+            No se encontraron registros en el inventario.
+          </div>
         ) : (
           <table>
             <thead>
               <tr>
-                <th className='center'></th>
-                <th>Equipo</th>
+                <th className='center'>Cat.</th>
+                <th>Ítem</th>
                 <th>S/N & Código</th>
                 <th>Condición</th>
                 <th>Adquisición</th>
-                <th>Antigüedad</th>
                 <th>Estado Físico</th>
                 <th className='center'>Acciones</th>
               </tr>
@@ -362,8 +406,11 @@ const Equipos = () => {
                   className={!item.disponible ? 'inactive-row' : ''}
                 >
                   <td className='center'>
-                    <div className='device-icon-box'>
-                      <Laptop size={20} />
+                    <div
+                      className='device-icon-box'
+                      title={item.categoria}
+                    >
+                      {getCategoryIcon(item.categoria)}
                     </div>
                   </td>
                   <td>
@@ -399,17 +446,6 @@ const Equipos = () => {
                         {item.es_propio
                           ? item.empresa_nombre
                           : item.nombre_proveedor}
-                      </span>
-                    </div>
-                  </td>
-                  <td>
-                    <div className='info-cell'>
-                      <span className='audit-text'>
-                        <CalendarDays
-                          size={10}
-                          style={{ marginRight: '3px' }}
-                        />{' '}
-                        {formatDate(item.fecha_adquisicion)}
                       </span>
                     </div>
                   </td>
@@ -507,7 +543,6 @@ const Equipos = () => {
                   padding: '6px 12px',
                   borderRadius: '8px',
                   fontWeight: '600',
-                  width: 'auto',
                 }}
               >
                 <ChevronLeft size={16} /> Anterior
@@ -531,7 +566,6 @@ const Equipos = () => {
                   padding: '6px 12px',
                   borderRadius: '8px',
                   fontWeight: '600',
-                  width: 'auto',
                 }}
               >
                 Siguiente <ChevronRight size={16} />
@@ -546,12 +580,12 @@ const Equipos = () => {
         onClose={() => setIsModalOpen(false)}
         title={
           modalType === 'specs'
-            ? 'Ficha Técnica del Equipo'
+            ? 'Ficha Técnica'
             : modalType === 'history'
-              ? 'Historial del Equipo'
+              ? 'Historial del Ítem'
               : equipoToEdit
-                ? 'Editar Equipo'
-                : 'Registrar Nuevo Equipo'
+                ? 'Editar Ítem'
+                : 'Registrar Nuevo Ítem'
         }
       >
         {modalType === 'history' ? (
@@ -584,7 +618,7 @@ const Equipos = () => {
           </div>
           <h3>¿Estás seguro?</h3>
           <p>
-            Estás a punto de dar de baja el equipo{' '}
+            Estás a punto de dar de baja el ítem{' '}
             <strong>
               {equipoToDelete?.marca} {equipoToDelete?.modelo}
             </strong>{' '}
