@@ -20,11 +20,16 @@ import {
   ChevronLeft,
   ChevronRight,
   History,
+  HelpCircle, // <-- Importamos HelpCircle
 } from 'lucide-react';
+
+// --- IMPORTACIONES PARA EL TOUR ---
+import { driver } from 'driver.js';
+import 'driver.js/dist/driver.css';
 
 import Modal from '../../components/Modal/Modal';
 import AddColaboradorForm from './AddColaboradorForm';
-import ColaboradorHistorial from './ColaboradorHistorial'; // <-- Componente Nuevo
+import ColaboradorHistorial from './ColaboradorHistorial';
 import './Colaboradores.scss';
 
 const Colaboradores = () => {
@@ -44,12 +49,77 @@ const Colaboradores = () => {
 
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false); // Modal Historial
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
 
   const [colaboradorToEdit, setColaboradorToEdit] = useState(null);
   const [colaboradorToDelete, setColaboradorToDelete] = useState(null);
   const [colabToAction, setColabToAction] = useState(null);
   const [historyData, setHistoryData] = useState([]);
+
+  // --- FUNCIÓN DEL TOUR GUIADO ---
+  const startColaboradoresTour = () => {
+    const driverObj = driver({
+      showProgress: true,
+      nextBtnText: 'Siguiente &rarr;',
+      prevBtnText: '&larr; Anterior',
+      doneBtnText: '¡Entendido!',
+      allowClose: true,
+      overlayColor: 'rgba(0, 0, 0, 0.6)',
+      steps: [
+        {
+          element: '#tour-colab-filtros',
+          popover: {
+            title: 'Búsqueda de Personal',
+            description:
+              'Escribe el nombre o DNI de un empleado, o filtra por la empresa a la que pertenece.',
+            side: 'bottom',
+            align: 'start',
+          },
+        },
+        {
+          element: '#tour-colab-tabla',
+          popover: {
+            title: 'Directorio Activo',
+            description:
+              'Aquí verás a todo el personal. Si el ícono de WhatsApp está verde, puedes hacer clic para enviarle un mensaje directo.',
+            side: 'top',
+            align: 'start',
+          },
+        },
+        {
+          element: '#tour-colab-acciones',
+          popover: {
+            title: 'Gestión del Empleado',
+            description:
+              'Usa estos botones para ver el historial de cambios, editar sus datos de contacto, o dar de baja al colaborador si se retira de la empresa.',
+            side: 'left',
+            align: 'center',
+          },
+        },
+        {
+          element: '#tour-colab-excel',
+          popover: {
+            title: 'Exportar Reporte',
+            description:
+              'Genera un archivo Excel con la lista completa del personal y sus datos de contacto.',
+            side: 'bottom',
+            align: 'center',
+          },
+        },
+        {
+          element: '#tour-colab-nuevo',
+          popover: {
+            title: 'Nuevo Ingreso',
+            description:
+              'Haz clic aquí para registrar a un nuevo colaborador antes de asignarle sus equipos físicos.',
+            side: 'left',
+            align: 'start',
+          },
+        },
+      ],
+    });
+    driverObj.drive();
+  };
 
   const fetchData = async () => {
     setLoading(true);
@@ -86,6 +156,7 @@ const Colaboradores = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, filterEmpresa]);
@@ -113,7 +184,30 @@ const Colaboradores = () => {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const exportarExcel = () => {
-    /* IGUAL QUE ANTES */
+    if (colaboradores.length === 0)
+      return toast.info('No hay datos para exportar');
+
+    const dataParaExcel = filteredColaboradores.map((c) => ({
+      'Estado Actual': c.estado ? 'ACTIVO' : 'INACTIVO',
+      'Nombres Completos': c.nombres,
+      Apellidos: c.apellidos,
+      'DNI / Cédula': c.dni || '-',
+      Género: c.genero === 'F' ? 'Femenino' : 'Masculino',
+      'Empresa Asignada': c.empresa_nombre,
+      'Cargo / Puesto': c.cargo,
+      'Correo Corporativo/Personal': c.email_contacto,
+      'Teléfono / Celular': c.telefono || '-',
+      'Registrado Por': c.creador_nombre ? `${c.creador_nombre}` : 'Sistema',
+      'Fecha de Registro': c.fecha_creacion
+        ? new Date(c.fecha_creacion).toLocaleDateString('es-PE')
+        : '-',
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(dataParaExcel);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Directorio_Personal');
+    XLSX.writeFile(wb, 'Reporte_Gerencial_Colaboradores.xlsx');
+    toast.success('Reporte gerencial generado exitosamente');
   };
 
   const handleAdd = () => {
@@ -129,7 +223,6 @@ const Colaboradores = () => {
     setIsDeleteModalOpen(true);
   };
 
-  // --- LÓGICA DE HISTORIAL ---
   const handleViewHistory = async (colab) => {
     setColabToAction(colab);
     setIsHistoryModalOpen(true);
@@ -171,7 +264,49 @@ const Colaboradores = () => {
   };
 
   const customFilterStyles = {
-    /* IGUAL QUE ANTES */
+    control: (provided, state) => ({
+      ...provided,
+      backgroundColor: 'white',
+      border: state.isFocused ? '1px solid #7c3aed' : '1px solid #e2e8f0',
+      borderRadius: '12px',
+      padding: '2px 6px',
+      minHeight: '46px',
+      boxShadow: state.isFocused ? '0 0 0 3px rgba(124, 58, 237, 0.1)' : 'none',
+      cursor: 'pointer',
+      '&:hover': { borderColor: '#7c3aed' },
+    }),
+    indicatorSeparator: () => ({ display: 'none' }),
+    singleValue: (provided) => ({
+      ...provided,
+      color: '#1e293b',
+      fontWeight: '500',
+      fontSize: '0.95rem',
+    }),
+    placeholder: (provided) => ({
+      ...provided,
+      color: '#94a3b8',
+      fontSize: '0.95rem',
+    }),
+    menu: (provided) => ({
+      ...provided,
+      borderRadius: '12px',
+      overflow: 'hidden',
+      zIndex: 9999,
+      border: '1px solid #e2e8f0',
+      boxShadow: '0 10px 25px rgba(0,0,0,0.05)',
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isSelected
+        ? '#7c3aed'
+        : state.isFocused
+          ? '#f8fafc'
+          : 'white',
+      color: state.isSelected ? 'white' : '#334155',
+      cursor: 'pointer',
+      fontSize: '0.9rem',
+      padding: '10px 15px',
+    }),
   };
 
   if (loading) return <div className='loading-state'>Cargando...</div>;
@@ -181,13 +316,24 @@ const Colaboradores = () => {
       <div className='page-header'>
         <h1>Directorio de Personal</h1>
         <div className='header-actions'>
+          {/* BOTÓN TOUR */}
           <button
+            onClick={startColaboradoresTour}
+            className='btn-action-header btn-tour'
+          >
+            <HelpCircle size={18} />
+          </button>
+
+          <button
+            id='tour-colab-excel'
             onClick={exportarExcel}
             className='btn-action-header btn-excel'
           >
             <FileSpreadsheet size={18} /> Exportar Excel
           </button>
+
           <button
+            id='tour-colab-nuevo'
             className='btn-action-header btn-add'
             onClick={handleAdd}
           >
@@ -196,7 +342,10 @@ const Colaboradores = () => {
         </div>
       </div>
 
-      <div className='filters-bar'>
+      <div
+        className='filters-bar'
+        id='tour-colab-filtros'
+      >
         <div className='search-input'>
           <Search
             size={18}
@@ -221,7 +370,10 @@ const Colaboradores = () => {
         </div>
       </div>
 
-      <div className='table-container'>
+      <div
+        className='table-container'
+        id='tour-colab-tabla'
+      >
         {currentItems.length === 0 ? (
           <div className='no-data'>
             No se encontraron colaboradores con los filtros actuales.
@@ -241,7 +393,7 @@ const Colaboradores = () => {
               </tr>
             </thead>
             <tbody>
-              {currentItems.map((colab) => {
+              {currentItems.map((colab, index) => {
                 const isWoman = colab.genero === 'F';
                 return (
                   <tr
@@ -315,8 +467,11 @@ const Colaboradores = () => {
                       )}
                     </td>
                     <td>
-                      <div className='actions-cell'>
-                        {/* BOTÓN HISTORIAL */}
+                      {/* ID para el tour en el primer elemento */}
+                      <div
+                        className='actions-cell'
+                        id={index === 0 ? 'tour-colab-acciones' : undefined}
+                      >
                         <button
                           className='action-btn'
                           style={{ color: '#0ea5e9' }}
@@ -365,7 +520,6 @@ const Colaboradores = () => {
           </table>
         )}
 
-        {/* CONTROLES PAGINACIÓN */}
         {filteredColaboradores.length > itemsPerPage && (
           <div className='pagination-footer'>
             <div className='info'>
@@ -375,6 +529,7 @@ const Colaboradores = () => {
               </strong>{' '}
               de <strong>{filteredColaboradores.length}</strong>
             </div>
+
             <div
               className='controls'
               style={{ display: 'flex', alignItems: 'center', gap: '15px' }}
@@ -393,6 +548,7 @@ const Colaboradores = () => {
               >
                 <ChevronLeft size={16} /> Anterior
               </button>
+
               <span
                 style={{
                   fontSize: '0.9rem',
@@ -402,6 +558,7 @@ const Colaboradores = () => {
               >
                 Página {currentPage} de {totalPages}
               </span>
+
               <button
                 onClick={() => paginate(currentPage + 1)}
                 disabled={currentPage === totalPages}
@@ -432,7 +589,6 @@ const Colaboradores = () => {
         />
       </Modal>
 
-      {/* MODAL HISTORIAL */}
       <Modal
         isOpen={isHistoryModalOpen}
         onClose={() => setIsHistoryModalOpen(false)}

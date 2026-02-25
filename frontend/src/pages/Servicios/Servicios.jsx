@@ -24,7 +24,13 @@ import {
   Clock,
   ExternalLink,
   User,
+  HelpCircle, // <-- Importamos HelpCircle
 } from 'lucide-react';
+
+// --- IMPORTACIONES PARA EL TOUR ---
+import { driver } from 'driver.js';
+import 'driver.js/dist/driver.css';
+
 import Modal from '../../components/Modal/Modal';
 import AddServicioForm from './AddServicioForm';
 import PagoServicioModal from './PagoServicioModal';
@@ -40,11 +46,9 @@ const Servicios = () => {
   });
   const [userRole, setUserRole] = useState(null);
 
-  // --- ESTADOS DE PAGINACIÓN TABLA PRINCIPAL ---
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
-  // --- ESTADOS DE PAGINACIÓN HISTORIAL (AUDITORÍA) ---
   const [currentAuditPage, setCurrentAuditPage] = useState(1);
   const itemsPerAuditPage = 3;
 
@@ -69,6 +73,71 @@ const Servicios = () => {
     { value: 'Productividad y Gestión', label: 'Productividad y Gestión' },
     { value: 'Otros', label: 'Otros' },
   ];
+
+  // --- FUNCIÓN DEL TOUR GUIADO ---
+  const startServiciosTour = () => {
+    const driverObj = driver({
+      showProgress: true,
+      nextBtnText: 'Siguiente &rarr;',
+      prevBtnText: '&larr; Anterior',
+      doneBtnText: '¡Entendido!',
+      allowClose: true,
+      overlayColor: 'rgba(0, 0, 0, 0.6)',
+      steps: [
+        {
+          element: '#tour-servicios-filtros',
+          popover: {
+            title: 'Busca un Servicio',
+            description:
+              'Escribe el nombre del software o filtra por categorías como "Inteligencia Artificial" o "Diseño".',
+            side: 'bottom',
+            align: 'start',
+          },
+        },
+        {
+          element: '#tour-servicios-tabla',
+          popover: {
+            title: 'Control de Servicios y Licencias',
+            description:
+              'En esta tabla verás cuánto cuesta, cuántas licencias te quedan disponibles y quién es el empleado responsable de la cuenta.',
+            side: 'top',
+            align: 'start',
+          },
+        },
+        {
+          element: '#tour-servicios-acciones',
+          popover: {
+            title: 'Gestión Completa',
+            description:
+              'Desde aquí puedes registrar los pagos mensuales, ver qué se ha modificado, editar los datos o dar de baja la licencia.',
+            side: 'left',
+            align: 'center',
+          },
+        },
+        {
+          element: '#tour-servicios-excel',
+          popover: {
+            title: 'Reporte Financiero',
+            description:
+              'Genera un Excel con el detalle completo de gastos, facturación y fechas de próximo pago.',
+            side: 'bottom',
+            align: 'center',
+          },
+        },
+        {
+          element: '#tour-servicios-nuevo',
+          popover: {
+            title: 'Registrar Suscripción',
+            description:
+              'Agrega un nuevo servicio indicando su precio, si se paga con tarjeta o transferencia, y a qué empresa se le factura.',
+            side: 'left',
+            align: 'start',
+          },
+        },
+      ],
+    });
+    driverObj.drive();
+  };
 
   const fetchData = async () => {
     setLoading(true);
@@ -133,7 +202,6 @@ const Servicios = () => {
     return coincideTexto && coincideCategoria;
   });
 
-  // --- LÓGICA DE PAGINACIÓN TABLA PRINCIPAL ---
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredServicios.slice(
@@ -143,7 +211,6 @@ const Servicios = () => {
   const totalPages = Math.ceil(filteredServicios.length / itemsPerPage);
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  // --- LÓGICA DE PAGINACIÓN HISTORIAL (AUDITORÍA) ---
   const indexOfLastAuditItem = currentAuditPage * itemsPerAuditPage;
   const indexOfFirstAuditItem = indexOfLastAuditItem - itemsPerAuditPage;
   const currentAuditItems = auditoriaData.slice(
@@ -163,7 +230,6 @@ const Servicios = () => {
       'Descripción de Uso': s.descripcion || 'No detallada',
       'Enlace Web (URL)': s.link_servicio || '-',
       'Estado Actual': s.estado ? 'ACTIVO' : 'INACTIVO',
-
       'Costo Monetario': Number(s.precio),
       'Moneda de Cobro': s.moneda,
       'Frecuencia de Pago': s.frecuencia_pago,
@@ -171,12 +237,10 @@ const Servicios = () => {
       'Fecha Estimada Próximo Pago': s.fecha_proximo_pago
         ? new Date(s.fecha_proximo_pago).toLocaleDateString()
         : 'Sin fecha',
-
       'Total Licencias Compradas': s.licencias_totales,
       'Licencias en Uso Activo': s.licencias_usadas,
       'Licencias Disponibles (Libres)':
         s.licencias_totales - s.licencias_usadas,
-
       'Empresa que Paga/Factura': s.empresa_facturacion_nombre || 'No asignada',
       'Empresa Facturación (N° Tarjeta/Cuenta)':
         s.numero_tarjeta_empresa_factura || '-',
@@ -186,7 +250,6 @@ const Servicios = () => {
       'Empresa Usuaria (N° Tarjeta/Cuenta)':
         s.numero_tarjeta_empresa_usuaria || '-',
       'Empresa Usuaria (CCI)': s.cci_cuenta_empresa_usuaria || '-',
-
       'Colaborador Responsable de la Cuenta': s.responsable_nombre
         ? `${s.responsable_nombre} ${s.responsable_apellido}`
         : 'No asignado',
@@ -295,13 +358,23 @@ const Servicios = () => {
       <div className='page-header'>
         <h1>Gestión de Servicios y Licencias</h1>
         <div className='header-actions'>
+          {/* BOTÓN TOUR */}
           <button
+            onClick={startServiciosTour}
+            className='btn-action-header btn-tour'
+          >
+            <HelpCircle size={18} />
+          </button>
+
+          <button
+            id='tour-servicios-excel'
             onClick={exportarExcel}
             className='btn-action-header btn-excel'
           >
             <FileSpreadsheet size={18} /> Exportar
           </button>
           <button
+            id='tour-servicios-nuevo'
             className='btn-action-header btn-add'
             onClick={handleAdd}
           >
@@ -310,7 +383,10 @@ const Servicios = () => {
         </div>
       </div>
 
-      <div className='filters-container'>
+      <div
+        className='filters-container'
+        id='tour-servicios-filtros'
+      >
         <div className='search-bar'>
           <Search
             size={20}
@@ -334,7 +410,10 @@ const Servicios = () => {
         </div>
       </div>
 
-      <div className='table-container'>
+      <div
+        className='table-container'
+        id='tour-servicios-tabla'
+      >
         {currentItems.length === 0 ? (
           <div className='no-data'>
             No se encontraron servicios registrados.
@@ -355,7 +434,7 @@ const Servicios = () => {
               </tr>
             </thead>
             <tbody>
-              {currentItems.map((item) => (
+              {currentItems.map((item, index) => (
                 <tr
                   key={item.id}
                   className={!item.estado ? 'inactive-row' : ''}
@@ -380,7 +459,6 @@ const Servicios = () => {
                       </span>
                     </div>
                   </td>
-
                   <td className='center'>
                     {item.link_servicio ? (
                       <a
@@ -460,7 +538,11 @@ const Servicios = () => {
                     </span>
                   </td>
                   <td>
-                    <div className='actions-cell'>
+                    {/* ID para el tour en el primer elemento */}
+                    <div
+                      className='actions-cell'
+                      id={index === 0 ? 'tour-servicios-acciones' : undefined}
+                    >
                       <button
                         className='action-btn'
                         style={{ color: '#3b82f6' }}

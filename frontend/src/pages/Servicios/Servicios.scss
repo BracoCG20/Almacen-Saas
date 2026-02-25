@@ -71,6 +71,17 @@
             filter: brightness(0.9);
           }
         }
+        &.btn-tour {
+          background-color: #f3f0ff; // Fondo morado muy claro
+          padding: 10px 12px;
+          color: v.$primary;
+          border: 1px solid rgba(124, 58, 237, 0.3);
+
+          &:hover {
+            background-color: #e9d5ff; // Morado más oscuro al pasar el ratón
+            color: #6d28d9;
+          }
+        }
       }
     }
   }

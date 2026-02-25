@@ -25,7 +25,13 @@ import {
   Monitor,
   Cable,
   Package,
+  HelpCircle, // <-- Importamos HelpCircle
 } from 'lucide-react';
+
+// --- IMPORTACIONES PARA EL TOUR ---
+import { driver } from 'driver.js';
+import 'driver.js/dist/driver.css';
+
 import Modal from '../../components/Modal/Modal';
 import AddEquipoForm from './AddEquipoForm';
 import EquipoHistorial from './EquipoHistorial';
@@ -79,6 +85,71 @@ const Equipos = () => {
     { value: 'Redes/Cables', label: 'Cables y Redes' },
     { value: 'Otros', label: 'Otros' },
   ];
+
+  // --- FUNCIÓN DEL TOUR GUIADO ---
+  const startInventarioTour = () => {
+    const driverObj = driver({
+      showProgress: true,
+      nextBtnText: 'Siguiente &rarr;',
+      prevBtnText: '&larr; Anterior',
+      doneBtnText: '¡Entendido!',
+      allowClose: true,
+      overlayColor: 'rgba(0, 0, 0, 0.6)',
+      steps: [
+        {
+          element: '#tour-inventario-filtros',
+          popover: {
+            title: 'Búsqueda Inteligente',
+            description:
+              'Usa esta barra para buscar por serie, modelo o marca. También puedes filtrar por categoría o tipo de contrato.',
+            side: 'bottom',
+            align: 'start',
+          },
+        },
+        {
+          element: '#tour-inventario-tabla',
+          popover: {
+            title: 'Tabla Principal',
+            description:
+              'Aquí verás el listado de tus equipos. Observa el estado físico y si el equipo es propio o alquilado.',
+            side: 'top',
+            align: 'start',
+          },
+        },
+        {
+          element: '#tour-inventario-acciones',
+          popover: {
+            title: 'Acciones de Equipo',
+            description:
+              'En cada fila encontrarás botones para: Ver el historial de cambios, ver especificaciones técnicas, editar los datos, o darlo de baja.',
+            side: 'left',
+            align: 'center',
+          },
+        },
+        {
+          element: '#tour-inventario-excel',
+          popover: {
+            title: 'Exportar Reporte',
+            description:
+              'Haz clic aquí para descargar un Excel detallado del inventario filtrado en tu pantalla.',
+            side: 'bottom',
+            align: 'center',
+          },
+        },
+        {
+          element: '#tour-inventario-nuevo',
+          popover: {
+            title: 'Registrar Ítem',
+            description:
+              'Desde aquí puedes agregar nuevas laptops, accesorios o celulares al almacén general.',
+            side: 'left',
+            align: 'start',
+          },
+        },
+      ],
+    });
+    driverObj.drive();
+  };
 
   // --- FETCH DE DATOS ---
   const fetchData = async () => {
@@ -333,13 +404,24 @@ const Equipos = () => {
       <div className='page-header'>
         <h1>Inventario General</h1>
         <div className='header-actions'>
+          {/* BOTÓN TOUR */}
           <button
+            onClick={startInventarioTour}
+            className='btn-action-header btn-tour'
+          >
+            <HelpCircle size={18} />
+          </button>
+
+          <button
+            id='tour-inventario-excel'
             onClick={exportarExcel}
             className='btn-action-header btn-excel'
           >
             <FileSpreadsheet size={18} /> Exportar Excel
           </button>
+
           <button
+            id='tour-inventario-nuevo'
             className='btn-action-header btn-add'
             onClick={handleAddEquipo}
           >
@@ -348,7 +430,10 @@ const Equipos = () => {
         </div>
       </div>
 
-      <div className='filters-bar'>
+      <div
+        className='filters-bar'
+        id='tour-inventario-filtros'
+      >
         <div className='search-input'>
           <Search
             size={20}
@@ -381,7 +466,10 @@ const Equipos = () => {
         </div>
       </div>
 
-      <div className='table-container'>
+      <div
+        className='table-container'
+        id='tour-inventario-tabla'
+      >
         {currentItems.length === 0 ? (
           <div className='no-data'>
             No se encontraron registros en el inventario.
@@ -400,7 +488,7 @@ const Equipos = () => {
               </tr>
             </thead>
             <tbody>
-              {currentItems.map((item) => (
+              {currentItems.map((item, index) => (
                 <tr
                   key={item.id}
                   className={!item.disponible ? 'inactive-row' : ''}
@@ -467,7 +555,11 @@ const Equipos = () => {
                     </span>
                   </td>
                   <td className='center'>
-                    <div className='actions-cell'>
+                    {/* Al primer elemento de la tabla le ponemos el ID para la demo de acciones */}
+                    <div
+                      className='actions-cell'
+                      id={index === 0 ? 'tour-inventario-acciones' : undefined}
+                    >
                       <button
                         className='action-btn history'
                         onClick={() => handleViewHistory(item)}
