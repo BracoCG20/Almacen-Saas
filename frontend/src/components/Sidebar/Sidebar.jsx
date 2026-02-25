@@ -3,7 +3,6 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../service/api';
 import {
-  Home,
   Package,
   Users,
   Truck,
@@ -18,6 +17,7 @@ import {
   ChevronLeft,
   Menu,
   HelpCircle,
+  LayoutDashboard,
 } from 'lucide-react';
 
 // --- IMPORTACIONES PARA EL TOUR ---
@@ -148,7 +148,7 @@ const Sidebar = () => {
       id: 'tour-nav-dashboard',
       path: '/',
       name: 'Dashboard',
-      icon: <Home size={22} />,
+      icon: <LayoutDashboard size={22} />,
     },
     {
       id: 'tour-nav-inventario',
