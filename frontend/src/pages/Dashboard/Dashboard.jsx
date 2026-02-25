@@ -343,9 +343,7 @@ const Dashboard = () => {
         <h1>
           Hola, <span className='user-name'>{firstName}!</span> 👋
         </h1>
-        <p>
-          Aquí tienes un resumen de la gestión de activos y servicios de hoy.
-        </p>
+        <p>Aquí tienes un resumen de la gestión de equipos y servicios.</p>
       </div>
 
       {/* Tarjetas Superiores */}

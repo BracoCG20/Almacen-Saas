@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import api from '../../service/api';
 import {
   Home,
   Package,
@@ -15,21 +16,24 @@ import {
   LogOut,
   ChevronRight,
   ChevronLeft,
-  Menu, // <-- Importamos Menu
+  Menu,
+  HelpCircle,
 } from 'lucide-react';
+
+// --- IMPORTACIONES PARA EL TOUR ---
+import { driver } from 'driver.js';
+import 'driver.js/dist/driver.css';
 
 import './Sidebar.scss';
 import logo from '../../assets/logo_grupoSP.png';
 
 const Sidebar = () => {
-  // Inicia abierto en PC, cerrado en celular
   const [isOpen, setIsOpen] = useState(window.innerWidth > 768);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const currentYear = new Date().getFullYear();
 
-  // Efecto para ajustar si el usuario cambia el tamaño de la ventana
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth <= 768) {
@@ -51,16 +55,107 @@ const Sidebar = () => {
     setIsOpen(!isOpen);
   };
 
-  // Función que cierra el sidebar en móviles después de hacer clic en una ruta
   const handleNavigation = () => {
     if (window.innerWidth <= 768) {
       setIsOpen(false);
     }
   };
 
+  // --- FUNCIÓN DEL TOUR GUIADO ---
+  const startTour = () => {
+    if (window.innerWidth <= 768 && !isOpen) {
+      setIsOpen(true);
+    }
+
+    const driverObj = driver({
+      showProgress: true,
+      nextBtnText: 'Siguiente &rarr;',
+      prevBtnText: '&larr; Anterior',
+      doneBtnText: '¡Entendido!',
+      allowClose: true,
+      overlayColor: 'rgba(0, 0, 0, 0.6)',
+      steps: [
+        {
+          element: '#tour-profile',
+          popover: {
+            title: 'Tu Perfil',
+            description:
+              'Aquí puedes ver tu cuenta actual. Si eres SuperAdmin, tendrás permisos especiales.',
+            side: 'right',
+            align: 'start',
+          },
+        },
+        {
+          element: '#tour-nav-dashboard',
+          popover: {
+            title: 'Dashboard',
+            description:
+              'Métricas, gráficos y el resumen general de todo el almacén en tiempo real.',
+            side: 'right',
+            align: 'start',
+          },
+        },
+        {
+          element: '#tour-nav-inventario',
+          popover: {
+            title: 'Inventario General',
+            description:
+              'Aquí registras Laptops, Celulares, Cables y todo lo que pertenece a la empresa.',
+            side: 'right',
+            align: 'start',
+          },
+        },
+        {
+          element: '#tour-nav-asignacion',
+          popover: {
+            title: 'Entregas',
+            description:
+              'Usa esta opción para asignar un equipo a un colaborador y generar el Acta PDF.',
+            side: 'right',
+            align: 'start',
+          },
+        },
+        {
+          element: '#tour-nav-historial',
+          popover: {
+            title: 'Auditoría',
+            description:
+              'Un registro inmutable de quién entregó qué, y todas las firmas de los colaboradores.',
+            side: 'right',
+            align: 'start',
+          },
+        },
+        {
+          element: '#tour-nav-configuracion',
+          popover: {
+            title: 'Configuración',
+            description:
+              'Si tienes permisos, aquí podrás crear nuevos usuarios, editar empresas y cambiar contraseñas.',
+            side: 'right',
+            align: 'start',
+          },
+        },
+      ],
+    });
+
+    setTimeout(() => {
+      driverObj.drive();
+    }, 300);
+  };
+
   const routes = [
-    { path: '/', name: 'Dashboard', icon: <Home size={22} /> },
-    { path: '/equipos', name: 'Inventario', icon: <Package size={22} /> },
+    {
+      id: 'tour-nav-dashboard',
+      path: '/',
+      name: 'Dashboard',
+      icon: <Home size={22} />,
+    },
+    {
+      id: 'tour-nav-inventario',
+      path: '/equipos',
+      name: 'Inventario',
+      icon: <Package size={22} />,
+    },
     {
       path: '/colaboradores',
       name: 'Colaboradores',
@@ -69,6 +164,7 @@ const Sidebar = () => {
     { path: '/proveedores', name: 'Proveedores', icon: <Truck size={22} /> },
     { path: '/servicios', name: 'Servicios', icon: <Cloud size={22} /> },
     {
+      id: 'tour-nav-asignacion',
       path: '/asignacion',
       name: 'Realizar Entrega',
       icon: <ArrowRightLeft size={22} />,
@@ -80,23 +176,33 @@ const Sidebar = () => {
       icon: <Undo2 size={22} />,
       type: 'devolucion',
     },
-    { path: '/historial', name: 'Historial', icon: <History size={22} /> },
     {
+      id: 'tour-nav-historial',
+      path: '/historial',
+      name: 'Historial',
+      icon: <History size={22} />,
+    },
+    {
+      id: 'tour-nav-configuracion',
       path: '/configuracion',
       name: 'Configuración',
       icon: <Settings size={22} />,
     },
   ];
+
   const getAvatarUrl = (path) => {
     if (!path) return null;
     if (path.startsWith('http') || path.startsWith('blob:')) return path;
-    return `http://localhost:4000${path}`;
+    const baseUrl = api.defaults.baseURL
+      ? api.defaults.baseURL.replace(/\/api\/?$/, '')
+      : 'http://localhost:4000';
+    return `${baseUrl}${path}`;
   };
+
   const avatarUrl = getAvatarUrl(user?.foto_url);
 
   return (
     <>
-      {/* BOTÓN HAMBURGUESA (Solo visible en móviles cuando el menú está cerrado) */}
       <button
         className={`mobile-hamburger ${isOpen ? 'hidden' : ''}`}
         onClick={toggleSidebar}
@@ -104,7 +210,6 @@ const Sidebar = () => {
         <Menu size={24} />
       </button>
 
-      {/* Fondo oscuro semi-transparente solo visible en móviles cuando está abierto */}
       {isOpen && (
         <div
           className='mobile-overlay'
@@ -113,7 +218,6 @@ const Sidebar = () => {
       )}
 
       <div className={`sidebar ${isOpen ? 'open' : 'collapsed'}`}>
-        {/* Botón clásico de PC para expandir/colapsar (se ocultará en móvil mediante SCSS) */}
         <button
           className='toggle-btn'
           onClick={toggleSidebar}
@@ -133,7 +237,8 @@ const Sidebar = () => {
             <NavLink
               key={index}
               to={route.path}
-              onClick={handleNavigation} // Cierra el menú al navegar en celular
+              id={route.id}
+              onClick={handleNavigation}
               className={({ isActive }) =>
                 `nav-item ${isActive ? 'active' : ''} ${route.type || ''}`
               }
@@ -146,7 +251,10 @@ const Sidebar = () => {
         </nav>
 
         <div className='footer-actions'>
-          <div className='user-mini-card'>
+          <div
+            className='user-mini-card'
+            id='tour-profile'
+          >
             <div className='avatar'>
               {avatarUrl ? (
                 <img
@@ -168,16 +276,28 @@ const Sidebar = () => {
             </div>
           </div>
 
-          <button
-            className='logout-btn'
-            onClick={handleLogout}
-            title='Cerrar Sesión'
-          >
-            <span className='icon-wrapper'>
-              <LogOut size={20} />
-            </span>
-            <span className='label'>Cerrar Sesión</span>
-          </button>
+          {/* FILA DE BOTONES: LOGOUT + TOUR */}
+          <div className='action-buttons-row'>
+            <button
+              className='logout-btn'
+              onClick={handleLogout}
+              title='Cerrar Sesión'
+            >
+              <span className='icon-wrapper'>
+                <LogOut size={20} />
+              </span>
+              <span className='label'>Cerrar Sesión</span>
+            </button>
+
+            {/* BOTÓN DEL TOUR (Solo el ícono) */}
+            <button
+              className='tour-icon-btn'
+              onClick={startTour}
+              title='Tour del Sistema'
+            >
+              <HelpCircle size={22} />
+            </button>
+          </div>
 
           <p className='copyright'>© {currentYear} Grupo SP</p>
         </div>

@@ -29,7 +29,6 @@ $smooth-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     &:active {
       transform: scale(0.95);
     }
-
     &.hidden {
       display: none;
     }
@@ -39,7 +38,6 @@ $smooth-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 // --- OVERLAY OSCURO (MÓVILES) ---
 .mobile-overlay {
   display: none;
-
   @media (max-width: 768px) {
     display: block;
     position: fixed;
@@ -49,7 +47,7 @@ $smooth-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(2px);
-    z-index: 998; // Justo por debajo del sidebar
+    z-index: 998;
     animation: fadeIn 0.3s ease;
   }
 }
@@ -82,30 +80,25 @@ $smooth-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   overflow: visible;
   flex-shrink: 0;
 
-  // --- COMPORTAMIENTO MÓVIL (SE OCULTA TOTALMENTE HACIA LA IZQUIERDA) ---
+  // --- COMPORTAMIENTO MÓVIL ---
   @media (max-width: 768px) {
     position: fixed;
     left: 0;
     top: 0;
     bottom: 0;
-    transform: translateX(0); // Posición abierta por defecto en el código
+    transform: translateX(0);
   }
-
   &.open {
     @media (max-width: 768px) {
-      width: $sidebar-width-open; // Se asegura de que se vea completo al abrir en móvil
+      width: $sidebar-width-open;
       box-shadow: 15px 0 40px rgba(0, 0, 0, 0.15);
     }
   }
-
   &.collapsed {
     width: $sidebar-width-collapsed;
-
     @media (max-width: 768px) {
-      transform: translateX(
-        -100%
-      ); // SE ESCONDE TOTALMENTE FUERA DE LA PANTALLA
-      width: $sidebar-width-open; // Mantiene el ancho listo para cuando regrese
+      transform: translateX(-100%);
+      width: $sidebar-width-open;
     }
   }
 
@@ -120,7 +113,7 @@ $smooth-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     pointer-events: none;
   }
 
-  // --- BOTÓN TOGGLE DE PC (LA FLECHITA) ---
+  // --- BOTÓN TOGGLE DE PC ---
   .toggle-btn {
     position: absolute;
     top: 50px;
@@ -140,9 +133,8 @@ $smooth-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     transition: all 0.2s ease;
 
     @media (max-width: 768px) {
-      display: none; // En móvil se oculta porque usamos el Overlay o la Hamburguesa
+      display: none;
     }
-
     &:hover {
       background-color: v.$primary;
       color: v.$white;
@@ -155,7 +147,6 @@ $smooth-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   // ESTILO INTERNO PC COLAPSADO
   // ==========================================
   &.collapsed {
-    // Si no estamos en móvil, aplicamos los estilos para achicar el contenido
     @media (min-width: 769px) {
       .logo-container img {
         max-width: 45px;
@@ -188,19 +179,31 @@ $smooth-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             visibility: hidden;
           }
         }
-        .logout-btn {
-          padding: 12px;
-          justify-content: center;
-          .icon-wrapper {
-            margin: 0;
+
+        // Ajuste de los botones cuando se colapsa
+        .action-buttons-row {
+          flex-direction: column; // Apila los botones
+          gap: 10px;
+
+          .logout-btn {
+            padding: 12px;
+            justify-content: center;
+            width: 100%;
+            .icon-wrapper {
+              margin: 0;
+            }
+            .label {
+              opacity: 0;
+              width: 0;
+              margin-left: 0;
+              display: none;
+            }
           }
-          .label {
-            opacity: 0;
-            width: 0;
-            margin-left: 0;
-            visibility: hidden;
+          .tour-icon-btn {
+            width: 100%; // Se estira para igualar al botón de logout
           }
         }
+
         .copyright {
           opacity: 0;
           height: 0;
@@ -254,7 +257,6 @@ $smooth-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         justify-content: center;
         transition: margin 0.3s ease;
       }
-
       .label {
         margin-left: 14px;
         opacity: 1;
@@ -313,7 +315,6 @@ $smooth-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         justify-content: center;
         color: v.$text-muted;
         flex-shrink: 0;
-
         img {
           width: 100%;
           height: 100%;
@@ -321,7 +322,6 @@ $smooth-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
           object-fit: cover;
         }
       }
-
       .info {
         margin-left: 12px;
         display: flex;
@@ -333,7 +333,6 @@ $smooth-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
           width 0.3s ease,
           margin 0.3s ease;
         visibility: visible;
-
         .name {
           font-size: 0.85rem;
           font-weight: 700;
@@ -351,41 +350,69 @@ $smooth-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
       }
     }
 
-    .logout-btn {
-      width: 100%;
-      height: 48px;
-      background: v.$white;
-      border: 1px solid rgba(v.$danger, 0.3);
-      color: v.$danger;
-      border-radius: 12px;
-      cursor: pointer;
+    // --- FILA DE BOTONES DE ACCIÓN (LOGOUT + TOUR) ---
+    .action-buttons-row {
       display: flex;
+      gap: 8px;
       align-items: center;
-      padding: 0 16px;
-      font-weight: 600;
-      transition: $smooth-transition;
-      white-space: nowrap;
-      overflow: hidden;
+      width: 100%;
 
-      .icon-wrapper {
+      .logout-btn {
+        flex: 1;
+        height: 48px;
+        background: v.$white;
+        border: 1px solid rgba(v.$danger, 0.3);
+        color: v.$danger;
+        border-radius: 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        font-weight: 600;
+        transition: $smooth-transition;
+        white-space: nowrap;
+        overflow: hidden;
+
+        .icon-wrapper {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: margin 0.3s ease;
+        }
+        .label {
+          margin-left: 12px;
+          opacity: 1;
+          transition:
+            opacity 0.2s ease,
+            width 0.3s ease,
+            margin 0.3s ease;
+          visibility: visible;
+        }
+        &:hover {
+          background: rgba(v.$danger, 0.1);
+          color: darken(v.$danger, 10%);
+        }
+      }
+
+      .tour-icon-btn {
+        width: 48px;
+        height: 48px;
+        flex-shrink: 0;
+        background: v.$white;
+        border: 1px solid rgba(v.$primary, 0.3);
+        color: v.$primary;
+        border-radius: 12px;
+        cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: margin 0.3s ease;
-      }
-      .label {
-        margin-left: 12px;
-        opacity: 1;
-        transition:
-          opacity 0.2s ease,
-          width 0.3s ease,
-          margin 0.3s ease;
-        visibility: visible;
-      }
+        transition: all 0.2s ease;
 
-      &:hover {
-        background: rgba(v.$danger, 0.1);
-        color: darken(v.$danger, 10%);
+        &:hover {
+          background: rgba(v.$primary, 0.1);
+          color: darken(v.$primary, 10%);
+          transform: scale(1.05);
+        }
       }
     }
 

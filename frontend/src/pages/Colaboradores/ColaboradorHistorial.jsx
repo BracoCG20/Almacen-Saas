@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { Clock, UserCheck, FileText, FileX } from 'lucide-react';
-import api from '../../service/api';
-import './ProveedorHistorial.scss';
+import { Clock, UserCheck } from 'lucide-react';
+import '../Proveedores/ProveedorHistorial.scss'; // Puedes reutilizar la hoja de estilos de proveedores
 
-const ProveedorHistorial = ({ historyData }) => {
+const ColaboradorHistorial = ({ historyData }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
 
@@ -14,20 +13,11 @@ const ProveedorHistorial = ({ historyData }) => {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  const getBackendFileUrl = (path) => {
-    if (!path) return null;
-    if (path.startsWith('http')) return path;
-    const baseUrl = api.defaults.baseURL
-      ? api.defaults.baseURL.replace(/\/api\/?$/, '')
-      : 'http://localhost:4000';
-    return `${baseUrl}${path}`;
-  };
-
   return (
     <div className='audit-modal-content'>
       {historyData.length === 0 ? (
         <p className='empty-audit'>
-          No hay registros en el historial de este proveedor.
+          No hay registros en el historial de este colaborador.
         </p>
       ) : (
         <>
@@ -42,32 +32,7 @@ const ProveedorHistorial = ({ historyData }) => {
                       {new Date(log.fecha_accion).toLocaleString('es-PE')}
                     </span>
                   </div>
-
-                  <p
-                    style={{ marginBottom: log.cambio_contrato ? '8px' : '0' }}
-                  >
-                    {log.descripcion_cambio}
-                  </p>
-
-                  {/* --- INDICADOR DE PDF CAMBIADO --- */}
-                  {log.cambio_contrato && (
-                    <div style={{ marginBottom: '10px' }}>
-                      {log.archivo_contrato_url ? (
-                        <a
-                          href={getBackendFileUrl(log.archivo_contrato_url)}
-                          target='_blank'
-                          rel='noreferrer'
-                          className='contract-badge added'
-                        >
-                          <FileText size={14} /> Ver Contrato Adjuntado
-                        </a>
-                      ) : (
-                        <span className='contract-badge removed'>
-                          <FileX size={14} /> Contrato Eliminado
-                        </span>
-                      )}
-                    </div>
-                  )}
+                  <p>{log.descripcion_cambio}</p>
 
                   <div
                     className='log-footer-grid'
@@ -157,4 +122,4 @@ const ProveedorHistorial = ({ historyData }) => {
   );
 };
 
-export default ProveedorHistorial;
+export default ColaboradorHistorial;
