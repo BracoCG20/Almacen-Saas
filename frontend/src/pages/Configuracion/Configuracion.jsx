@@ -13,7 +13,13 @@ import {
   Plus,
   List,
   Fingerprint,
+  HelpCircle,
 } from 'lucide-react';
+
+// --- IMPORTACIONES PARA EL TOUR ---
+import { driver } from 'driver.js';
+import 'driver.js/dist/driver.css';
+
 import './Configuracion.scss';
 
 import RegisterAdminModal from '../../components/RegisterAdminModal/RegisterAdminModal';
@@ -48,6 +54,72 @@ const Configuracion = () => {
     empresa_nombre: '',
   });
 
+  const isSuperAdmin = userRole === 1;
+
+  // --- FUNCIÓN DEL TOUR GUIADO ---
+  const startConfiguracionTour = () => {
+    // Definimos los pasos base (comunes para todos)
+    const steps = [
+      {
+        element: '#tour-config-perfil',
+        popover: {
+          title: 'Tu Foto de Perfil',
+          description:
+            'Haz clic en el ícono de la cámara para subir o cambiar tu foto de perfil visible en todo el sistema.',
+          side: 'bottom',
+          align: 'center',
+        },
+      },
+      {
+        element: '#tour-config-datos',
+        popover: {
+          title: 'Tus Datos',
+          description:
+            'Aquí puedes actualizar tu número de teléfono celular, y en caso de que lo necesites, cambiar tu contraseña de acceso.',
+          side: 'top',
+          align: 'start',
+        },
+      },
+    ];
+
+    // Si es SuperAdmin, agregamos los pasos exclusivos de administración
+    if (isSuperAdmin) {
+      steps.unshift(
+        {
+          element: '#tour-config-empresas',
+          popover: {
+            title: 'Gestión de Empresas',
+            description:
+              'Como administrador, puedes registrar nuevas sucursales o empresas del grupo para asignarlas a los equipos o colaboradores.',
+            side: 'bottom',
+            align: 'start',
+          },
+        },
+        {
+          element: '#tour-config-accesos',
+          popover: {
+            title: 'Control de Usuarios',
+            description:
+              'Crea nuevas cuentas para que otros compañeros puedan ingresar al sistema y gestiona sus permisos.',
+            side: 'bottom',
+            align: 'start',
+          },
+        },
+      );
+    }
+
+    const driverObj = driver({
+      showProgress: true,
+      nextBtnText: 'Siguiente &rarr;',
+      prevBtnText: '&larr; Anterior',
+      doneBtnText: '¡Entendido!',
+      allowClose: true,
+      overlayColor: 'rgba(0, 0, 0, 0.6)',
+      steps: steps,
+    });
+    driverObj.drive();
+  };
+
   // --- FETCH INICIAL DE DATOS ---
   useEffect(() => {
     const fetchPerfil = async () => {
@@ -60,7 +132,7 @@ const Configuracion = () => {
           nickname: u.nickname || '',
           email_login: u.email_login || '',
           telefono: u.telefono || '',
-          password: '', // Siempre vacío por seguridad
+          password: '',
           nombres: u.nombres || '',
           apellidos: u.apellidos || '',
           cargo: u.cargo || '',
@@ -68,7 +140,6 @@ const Configuracion = () => {
         });
 
         if (u.foto_perfil_url) {
-          // Generamos ruta dinámica según el backend
           const baseUrl = api.defaults.baseURL
             ? api.defaults.baseURL.replace(/\/api\/?$/, '')
             : 'http://localhost:5000';
@@ -103,12 +174,9 @@ const Configuracion = () => {
   };
 
   // --- ENVÍO DEL FORMULARIO ---
-  const isSuperAdmin = userRole === 1;
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validaciones Front-End
     if (formData.password && formData.password.length < 6) {
       return toast.warning(
         'Si deseas cambiar la contraseña, debe tener al menos 6 caracteres.',
@@ -130,7 +198,6 @@ const Configuracion = () => {
     if (formData.telefono) data.append('telefono', formData.telefono);
     if (fotoFile) data.append('foto', fotoFile);
 
-    // Si es SuperAdmin, enviamos las modificaciones de datos personales críticos
     if (isSuperAdmin) {
       data.append('nombres', formData.nombres);
       data.append('apellidos', formData.apellidos);
@@ -143,7 +210,6 @@ const Configuracion = () => {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      // Actualizamos el contexto global para que el Navbar reaccione
       if (fotoFile || isSuperAdmin) {
         updateUser({
           foto_url: res.data.foto_url || userRole.foto_url,
@@ -159,7 +225,6 @@ const Configuracion = () => {
         autoClose: 3000,
       });
 
-      // Limpiamos el campo de password tras el éxito
       setFormData((prev) => ({ ...prev, password: '' }));
     } catch (error) {
       console.error(error);
@@ -180,14 +245,28 @@ const Configuracion = () => {
   return (
     <div className='config-container'>
       <div className='header-actions'>
-        <div className='page-header'>
-          <h1>Configuración de Cuenta</h1>
-          <span>Administra tu información personal y corporativa.</span>
+        {/* LADO IZQUIERDO: TÍTULO Y BOTÓN DE TOUR */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <div className='page-header'>
+            <h1>Configuración de Cuenta</h1>
+            <span>Administra tu información personal y corporativa.</span>
+          </div>
+
+          <button
+            onClick={startConfiguracionTour}
+            className='btn-tour-header'
+          >
+            <HelpCircle size={18} />
+          </button>
         </div>
 
+        {/* LADO DERECHO: BOTONES DE SUPER ADMIN */}
         {isSuperAdmin && (
           <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-            <div className='button-group'>
+            <div
+              className='button-group'
+              id='tour-config-empresas'
+            >
               <button
                 type='button'
                 className='btn-main indigo'
@@ -209,7 +288,10 @@ const Configuracion = () => {
 
             <div className='divider-vertical'></div>
 
-            <div className='button-group'>
+            <div
+              className='button-group'
+              id='tour-config-accesos'
+            >
               <button
                 type='button'
                 className='btn-main blue'
@@ -233,7 +315,10 @@ const Configuracion = () => {
         onSubmit={handleSubmit}
         className='config-grid'
       >
-        <div className='card profile-card'>
+        <div
+          className='card profile-card'
+          id='tour-config-perfil'
+        >
           <div className='photo-wrapper'>
             <img
               src={preview || defaultImage}
@@ -278,7 +363,10 @@ const Configuracion = () => {
           </div>
         </div>
 
-        <div className='card details-card'>
+        <div
+          className='card details-card'
+          id='tour-config-datos'
+        >
           <h3 className='section-title'>Información Personal</h3>
 
           {!isSuperAdmin && (

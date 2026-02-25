@@ -8,7 +8,12 @@ import DevolucionForm from './DevolucionForm';
 import DevolucionTable from './DevolucionTable';
 import { generarPDFDevolucion } from '../../utils/pdfGeneratorDevolucion';
 
-import { AlertTriangle, X, Check } from 'lucide-react';
+import { AlertTriangle, X, Check, HelpCircle } from 'lucide-react'; // <-- Importamos HelpCircle
+
+// --- IMPORTACIONES PARA EL TOUR ---
+import { driver } from 'driver.js';
+import 'driver.js/dist/driver.css';
+
 import './Devolucion.scss';
 
 const Devolucion = () => {
@@ -39,6 +44,51 @@ const Devolucion = () => {
 
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const [movimientoToInvalidar, setMovimientoToInvalidar] = useState(null);
+
+  // --- FUNCIÓN DEL TOUR GUIADO ---
+  const startDevolucionTour = () => {
+    const driverObj = driver({
+      showProgress: true,
+      nextBtnText: 'Siguiente &rarr;',
+      prevBtnText: '&larr; Anterior',
+      doneBtnText: '¡Entendido!',
+      allowClose: true,
+      overlayColor: 'rgba(0, 0, 0, 0.6)',
+      steps: [
+        {
+          element: '#tour-devolucion-form',
+          popover: {
+            title: 'Formulario de Devolución',
+            description:
+              'Selecciona al colaborador; el sistema detectará automáticamente qué equipo tiene asignado. Llena el motivo y el estado físico en el que lo devuelve.',
+            side: 'right',
+            align: 'start',
+          },
+        },
+        {
+          element: '#tour-devolucion-acciones',
+          popover: {
+            title: 'Generar Constancia',
+            description:
+              'Guarda la devolución para descargar el PDF, o envíalo directamente por correo electrónico o WhatsApp al colaborador.',
+            side: 'right',
+            align: 'start',
+          },
+        },
+        {
+          element: '#tour-devolucion-tabla',
+          popover: {
+            title: 'Historial Reciente',
+            description:
+              'Aquí verás las últimas devoluciones. Si el empleado ya firmó la constancia, puedes escanearla y subirla haciendo clic aquí.',
+            side: 'left',
+            align: 'start',
+          },
+        },
+      ],
+    });
+    driverObj.drive();
+  };
 
   const fetchData = async () => {
     try {
@@ -353,7 +403,7 @@ const Devolucion = () => {
         form.append('observaciones', formData.observaciones);
         form.append('estado_fisico_id', formData.estado_fisico_id);
         form.append('estado_final_nombre', estadoNombre);
-        form.append('motivo', formData.motivo); // <-- AÑADIDO
+        form.append('motivo', formData.motivo);
         form.append('destinatario', us.email_contacto);
         form.append('nombreEmpleado', us.nombres);
         form.append('tipoEquipo', eq.modelo);
@@ -414,6 +464,14 @@ const Devolucion = () => {
     <div className='devolucion-container'>
       <div className='page-header'>
         <h1>Registrar Devolución</h1>
+
+        {/* BOTÓN TOUR */}
+        <button
+          onClick={startDevolucionTour}
+          className='btn-tour-header'
+        >
+          <HelpCircle size={18} />
+        </button>
       </div>
 
       <input
@@ -425,24 +483,28 @@ const Devolucion = () => {
       />
 
       <div className='content-grid'>
-        <DevolucionForm
-          usuariosOptions={usuariosOptions}
-          estadosOptions={estadosOptions}
-          formData={formData}
-          setFormData={setFormData}
-          equipoDetectado={equipoDetectado}
-          handleUserChange={handleUserChange}
-          onAction={handleAction}
-        />
+        <div id='tour-devolucion-form'>
+          <DevolucionForm
+            usuariosOptions={usuariosOptions}
+            estadosOptions={estadosOptions}
+            formData={formData}
+            setFormData={setFormData}
+            equipoDetectado={equipoDetectado}
+            handleUserChange={handleUserChange}
+            onAction={handleAction}
+          />
+        </div>
 
-        <DevolucionTable
-          historial={historialVisual}
-          onVerPdf={handleVerPdfHistorial}
-          onVerFirmado={handleVerFirmado}
-          onSubirClick={handleSubirClick}
-          onInvalidar={onInvalidarClick}
-          onReenviarCorreo={handleReenviarCorreo}
-        />
+        <div id='tour-devolucion-tabla'>
+          <DevolucionTable
+            historial={historialVisual}
+            onVerPdf={handleVerPdfHistorial}
+            onVerFirmado={handleVerFirmado}
+            onSubirClick={handleSubirClick}
+            onInvalidar={onInvalidarClick}
+            onReenviarCorreo={handleReenviarCorreo}
+          />
+        </div>
 
         <Modal
           isOpen={isRejectModalOpen}

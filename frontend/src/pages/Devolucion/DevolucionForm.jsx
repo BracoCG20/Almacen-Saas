@@ -312,7 +312,10 @@ const DevolucionForm = ({
           </label>
         </div>
 
-        <div className='actions-container'>
+        <div
+          className='actions-container'
+          id='tour-devolucion-acciones'
+        >
           <button
             type='button'
             onClick={() => isFormValid && onAction('GUARDAR')}

@@ -111,7 +111,10 @@ const EntregaForm = ({
         <span>¿Incluye Cargador?</span>
       </label>
 
-      <div className='actions-container'>
+      <div
+        className='actions-container'
+        id='tour-asignacion-acciones'
+      >
         <button
           type='button'
           onClick={() => onAction('GUARDAR')}

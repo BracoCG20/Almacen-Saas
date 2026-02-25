@@ -14,8 +14,14 @@ import {
   ChevronLeft,
   ChevronRight,
   CalendarDays,
+  HelpCircle, // <-- Importamos HelpCircle
 } from 'lucide-react';
 import { toast } from 'react-toastify';
+
+// --- IMPORTACIONES PARA EL TOUR ---
+import { driver } from 'driver.js';
+import 'driver.js/dist/driver.css';
+
 import './Historial.scss';
 
 const Historial = () => {
@@ -39,6 +45,61 @@ const Historial = () => {
     { value: 'entrega', label: 'Asignaciones' },
     { value: 'devolucion', label: 'Devoluciones' },
   ];
+
+  // --- FUNCIÓN DEL TOUR GUIADO ---
+  const startHistorialTour = () => {
+    const driverObj = driver({
+      showProgress: true,
+      nextBtnText: 'Siguiente &rarr;',
+      prevBtnText: '&larr; Anterior',
+      doneBtnText: '¡Entendido!',
+      allowClose: true,
+      overlayColor: 'rgba(0, 0, 0, 0.6)',
+      steps: [
+        {
+          element: '#tour-historial-filtros',
+          popover: {
+            title: 'Busca y Filtra',
+            description:
+              'Encuentra rápidamente el historial de un empleado específico, o filtra para ver solamente Entregas o solo Devoluciones.',
+            side: 'bottom',
+            align: 'start',
+          },
+        },
+        {
+          element: '#tour-historial-tabla',
+          popover: {
+            title: 'Auditoría Total',
+            description:
+              'Aquí queda el registro inmutable. Podrás ver exactamente en qué fecha y hora se hizo el movimiento y qué administrador lo ejecutó.',
+            side: 'top',
+            align: 'start',
+          },
+        },
+        {
+          element: '#tour-historial-estado',
+          popover: {
+            title: 'Estado del Equipo',
+            description:
+              'En el caso de las devoluciones, esta columna te indicará si el equipo regresó Operativo, Dañado o Perdido.',
+            side: 'left',
+            align: 'center',
+          },
+        },
+        {
+          element: '#tour-historial-excel',
+          popover: {
+            title: 'Exportación Avanzada',
+            description:
+              'Genera un Excel completo. Incluirá detalles de auditoría como el estado de la firma del acta y si se le envió el correo al empleado.',
+            side: 'bottom',
+            align: 'center',
+          },
+        },
+      ],
+    });
+    driverObj.drive();
+  };
 
   // --- ESTILOS REACT-SELECT ---
   const customSelectStyles = {
@@ -133,7 +194,7 @@ const Historial = () => {
   const getBackendUrl = () => {
     const baseUrl = api.defaults.baseURL
       ? api.defaults.baseURL.replace(/\/api\/?$/, '')
-      : 'http://localhost:5000';
+      : 'http://localhost:4000';
     return baseUrl;
   };
 
@@ -212,7 +273,16 @@ const Historial = () => {
       <div className='page-header'>
         <h1>Historial y Auditoría</h1>
         <div className='header-actions'>
+          {/* BOTÓN TOUR */}
           <button
+            onClick={startHistorialTour}
+            className='btn-action-header btn-tour'
+          >
+            <HelpCircle size={18} />
+          </button>
+
+          <button
+            id='tour-historial-excel'
             onClick={exportarExcel}
             className='btn-action-header btn-excel'
           >
@@ -221,7 +291,10 @@ const Historial = () => {
         </div>
       </div>
 
-      <div className='filters-container'>
+      <div
+        className='filters-container'
+        id='tour-historial-filtros'
+      >
         <div className='search-bar'>
           <Search
             size={20}
@@ -245,7 +318,10 @@ const Historial = () => {
         </div>
       </div>
 
-      <div className='table-container'>
+      <div
+        className='table-container'
+        id='tour-historial-tabla'
+      >
         {currentItems.length === 0 ? (
           <div className='no-data'>
             No se encontraron registros que coincidan.
@@ -264,7 +340,7 @@ const Historial = () => {
               </tr>
             </thead>
             <tbody>
-              {currentItems.map((h) => {
+              {currentItems.map((h, index) => {
                 const isEntrega = h.tipo === 'entrega';
                 const estLower = (h.estado_equipo_momento || '')
                   .toLowerCase()
@@ -401,7 +477,10 @@ const Historial = () => {
                         <span style={{ color: '#cbd5e1' }}>-</span>
                       )}
                     </td>
-                    <td className='center'>
+                    <td
+                      className='center'
+                      id={index === 0 ? 'tour-historial-estado' : undefined}
+                    >
                       {!isEntrega && h.estado_equipo_momento ? (
                         <span className={`status-badge-mini ${estadoClass}`}>
                           {h.estado_equipo_momento}

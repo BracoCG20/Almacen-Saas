@@ -8,7 +8,11 @@ import EntregaForm from './EntregaForm';
 import EntregaTable from './EntregaTable';
 import { generarPDFBlob } from '../../utils/pdfGeneratorAsignacion';
 
-import { AlertTriangle, X, Check } from 'lucide-react';
+import { AlertTriangle, X, Check, HelpCircle } from 'lucide-react'; // <-- Importamos HelpCircle
+
+// --- IMPORTACIONES PARA EL TOUR ---
+import { driver } from 'driver.js';
+import 'driver.js/dist/driver.css';
 
 import './Asignacion.scss';
 
@@ -32,6 +36,51 @@ const Asignacion = () => {
     cargador: true,
     observaciones: '',
   });
+
+  // --- FUNCIÓN DEL TOUR GUIADO ---
+  const startAsignacionTour = () => {
+    const driverObj = driver({
+      showProgress: true,
+      nextBtnText: 'Siguiente &rarr;',
+      prevBtnText: '&larr; Anterior',
+      doneBtnText: '¡Entendido!',
+      allowClose: true,
+      overlayColor: 'rgba(0, 0, 0, 0.6)',
+      steps: [
+        {
+          element: '#tour-asignacion-form',
+          popover: {
+            title: 'Formulario de Entrega',
+            description:
+              'Selecciona el equipo disponible y el colaborador al que se lo asignarás. Añade observaciones si es necesario.',
+            side: 'right',
+            align: 'start',
+          },
+        },
+        {
+          element: '#tour-asignacion-acciones',
+          popover: {
+            title: 'Generar Acta',
+            description:
+              'Una vez completado el formulario, puedes guardar y descargar el PDF, enviarlo directamente por Email, o abrir un chat de WhatsApp.',
+            side: 'right',
+            align: 'start',
+          },
+        },
+        {
+          element: '#tour-asignacion-tabla',
+          popover: {
+            title: 'Historial Reciente',
+            description:
+              'Aquí aparecerán las últimas entregas que has realizado. Verás el estado de la firma y podrás subir el documento escaneado.',
+            side: 'left',
+            align: 'start',
+          },
+        },
+      ],
+    });
+    driverObj.drive();
+  };
 
   const fetchData = async () => {
     try {
@@ -148,7 +197,6 @@ const Asignacion = () => {
       (e) => e.id === parseInt(formData.equipo_id),
     );
 
-    // CORRECCIÓN AQUÍ: Cambiamos us.correo por us.email_contacto
     if (tipoAccion === 'EMAIL' && !us.email_contacto) {
       return toast.error('El colaborador no tiene correo registrado');
     }
@@ -246,6 +294,14 @@ const Asignacion = () => {
     <div className='entrega-container'>
       <div className='page-header'>
         <h1>Registrar Entrega</h1>
+
+        {/* BOTÓN TOUR */}
+        <button
+          onClick={startAsignacionTour}
+          className='btn-tour-header'
+        >
+          <HelpCircle size={18} />
+        </button>
       </div>
 
       <input
@@ -257,35 +313,41 @@ const Asignacion = () => {
       />
 
       <div className='content-grid'>
-        <EntregaForm
-          equiposOptions={equiposOptions}
-          usuariosOptions={usuariosOptions}
-          formData={formData}
-          setFormData={setFormData}
-          onAction={handleAction}
-        />
+        {/* Envolvemos el form en un div con id para el tour */}
+        <div id='tour-asignacion-form'>
+          <EntregaForm
+            equiposOptions={equiposOptions}
+            usuariosOptions={usuariosOptions}
+            formData={formData}
+            setFormData={setFormData}
+            onAction={handleAction}
+          />
+        </div>
 
-        <EntregaTable
-          historial={historialVisual}
-          onVerPdfOriginal={(item) => {
-            const doc = generarPDFBlob(
-              { serie: item.serie, marca: item.marca, modelo: item.modelo },
-              {
-                nombres: item.empleado_nombre,
-                apellidos: item.empleado_apellido,
-                dni: item.dni || '---',
-                genero: item.genero || 'hombre',
-              },
-              item.fecha_movimiento,
-              item.cargador,
-            );
-            setPdfUrl(doc.output('bloburl'));
-            setShowPdfModal(true);
-          }}
-          onVerFirmado={handleVerFirmado}
-          onSubirClick={handleSubirClick}
-          onInvalidar={onInvalidarClick}
-        />
+        {/* Envolvemos la tabla en un div con id para el tour */}
+        <div id='tour-asignacion-tabla'>
+          <EntregaTable
+            historial={historialVisual}
+            onVerPdfOriginal={(item) => {
+              const doc = generarPDFBlob(
+                { serie: item.serie, marca: item.marca, modelo: item.modelo },
+                {
+                  nombres: item.empleado_nombre,
+                  apellidos: item.empleado_apellido,
+                  dni: item.dni || '---',
+                  genero: item.genero || 'hombre',
+                },
+                item.fecha_movimiento,
+                item.cargador,
+              );
+              setPdfUrl(doc.output('bloburl'));
+              setShowPdfModal(true);
+            }}
+            onVerFirmado={handleVerFirmado}
+            onSubirClick={handleSubirClick}
+            onInvalidar={onInvalidarClick}
+          />
+        </div>
       </div>
 
       <Modal

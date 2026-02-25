@@ -5,8 +5,6 @@
   max-width: 1200px;
   margin: 0 auto;
 
-  // El padding general del layout hace que no necesitemos preocuparnos por los bordes extremos
-
   .header-actions {
     display: flex;
     justify-content: space-between;
@@ -30,6 +28,28 @@
     .page-header span {
       font-size: 0.95rem;
       color: v.$text-muted;
+    }
+
+    // --- ESTILOS DEL NUEVO BOTÓN DEL TOUR ---
+    .btn-tour-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px;
+      background-color: #f3f0ff; // Fondo morado muy claro
+      color: v.$primary;
+      border: 1px solid rgba(124, 58, 237, 0.3);
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background-color: #e9d5ff; // Morado más oscuro al pasar el ratón
+        color: #6d28d9;
+        transform: translateY(-2px);
+      }
     }
 
     // Contenedor de botones super admin
@@ -64,7 +84,7 @@
       }
     }
 
-    button {
+    button.btn-main {
       border: none;
       border-radius: 10px;
       cursor: pointer;
@@ -78,6 +98,7 @@
       height: 45px;
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      color: v.$white;
 
       @media (max-width: 900px) {
         width: 100%; // Botones ancho total en móvil
@@ -87,10 +108,7 @@
         transform: translateY(-2px);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       }
-    }
 
-    .btn-main {
-      color: v.$white;
       &.indigo {
         background-color: v.$primary;
         &:hover {
