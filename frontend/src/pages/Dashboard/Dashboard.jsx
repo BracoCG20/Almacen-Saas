@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from 'react';
-import { AuthContext } from '../../context/AuthContext'; // Importamos el contexto
+import { AuthContext } from '../../context/AuthContext';
 import api from '../../service/api';
 import {
   Laptop,
@@ -7,8 +7,13 @@ import {
   HandCoins,
   AlertOctagon,
   CreditCard,
-  TrendingUp, // Nuevo icono para la sección de costos
+  TrendingUp,
+  HelpCircle, // <-- Nuevo icono para el botón del tour
 } from 'lucide-react';
+
+// --- IMPORTACIONES PARA EL TOUR ---
+import { driver } from 'driver.js';
+import 'driver.js/dist/driver.css';
 
 import {
   MovementsChart,
@@ -26,7 +31,7 @@ import {
 import './Dashboard.scss';
 
 const Dashboard = () => {
-  const { user } = useContext(AuthContext); // Obtenemos el usuario logueado
+  const { user } = useContext(AuthContext);
   const [stats, setStats] = useState({
     total: 0,
     disponibles: 0,
@@ -43,12 +48,10 @@ const Dashboard = () => {
   const [inventoryOriginData, setInventoryOriginData] = useState([]);
   const [globalInventoryData, setGlobalInventoryData] = useState([]);
 
-  // --- ESTADOS PARA GASTOS DE SERVICIOS ---
   const [serviciosActivos, setServiciosActivos] = useState([]);
   const [frecuenciaCosto, setFrecuenciaCosto] = useState('Todos');
   const [costosAgrupados, setCostosAgrupados] = useState({});
 
-  // --- ESTADOS PARA GRÁFICOS DE SAAS ---
   const [chartCurrency, setChartCurrency] = useState('USD');
   const [categoryCostData, setCategoryCostData] = useState([]);
   const [serviceCostData, setServiceCostData] = useState([]);
@@ -69,10 +72,73 @@ const Dashboard = () => {
     'Nov',
     'Dic',
   ];
-
   const currencySymbols = { USD: '$', PEN: 'S/', EUR: '€' };
 
-  // ... (La función processData sigue igual, no es necesario repetirla aquí para ahorrar espacio)
+  // --- FUNCIÓN DEL TOUR GUIADO PARA EL DASHBOARD ---
+  const startDashboardTour = () => {
+    const driverObj = driver({
+      showProgress: true,
+      nextBtnText: 'Siguiente &rarr;',
+      prevBtnText: '&larr; Anterior',
+      doneBtnText: '¡Entendido!',
+      allowClose: true,
+      overlayColor: 'rgba(0, 0, 0, 0.6)',
+      steps: [
+        {
+          element: '#tour-welcome',
+          popover: {
+            title: 'Bienvenido a tu Panel',
+            description:
+              'Aquí tendrás una vista general de todo el inventario físico y de los costos de servicios.',
+            side: 'bottom',
+            align: 'start',
+          },
+        },
+        {
+          element: '#tour-stats',
+          popover: {
+            title: 'Resumen Rápido',
+            description:
+              'Controla de un vistazo cuántos equipos tienes, cuántos están libres para asignarse y cuántos están averiados.',
+            side: 'bottom',
+            align: 'start',
+          },
+        },
+        {
+          element: '#tour-costs',
+          popover: {
+            title: 'Inversión en Servicios',
+            description:
+              'Monitorea cuánto estás pagando por licencias de software. Usa los filtros para ver el costo mensual, anual, etc.',
+            side: 'top',
+            align: 'start',
+          },
+        },
+        {
+          element: '#tour-expense-charts',
+          popover: {
+            title: 'Análisis de Gastos',
+            description:
+              'Descubre gráficamente en qué categorías se va el presupuesto y cuáles son los servicios más costosos. Cámbialo de USD a PEN fácilmente.',
+            side: 'top',
+            align: 'start',
+          },
+        },
+        {
+          element: '#tour-equipment-charts',
+          popover: {
+            title: 'Análisis de Equipos',
+            description:
+              'Mide la cantidad de entregas mensuales, estado del hardware, y hasta cuántos colaboradores aún no te han firmado sus actas.',
+            side: 'top',
+            align: 'start',
+          },
+        },
+      ],
+    });
+    driverObj.drive();
+  };
+
   const processData = (equipos, historial) => {
     // 1. MOVIMIENTOS
     const months = {};
@@ -194,16 +260,9 @@ const Dashboard = () => {
         h.tipo_movimiento === 'entrega' ||
         h.tipo_movimiento === 'devolucion'
       ) {
-        if (!h.pdf_firmado_url) {
-          // Si no hay archivo subido, obligatoriamente está PENDIENTE
-          pendientes++;
-        } else if (h.firma_valida === false) {
-          // Si hay archivo subido, pero fue marcado como inválido, es RECHAZADO
-          rechazados++;
-        } else {
-          // Si hay archivo y no fue rechazado, está FIRMADO
-          firmados++;
-        }
+        if (!h.pdf_firmado_url) pendientes++;
+        else if (h.firma_valida === false) rechazados++;
+        else firmados++;
       }
     });
     setSignatureData(
@@ -306,7 +365,6 @@ const Dashboard = () => {
 
     serviciosActivos.forEach((s) => {
       if (s.moneda !== chartCurrency) return;
-
       let monthlyCost = Number(s.precio || 0);
       if (s.frecuencia_pago === 'Anual') monthlyCost /= 12;
       else if (s.frecuencia_pago === 'Trimestral') monthlyCost /= 3;
@@ -339,15 +397,30 @@ const Dashboard = () => {
 
   return (
     <div className='dashboard-container'>
-      <div className='welcome-section'>
-        <h1>
-          Hola, <span className='user-name'>{firstName}!</span> 👋
-        </h1>
-        <p>Aquí tienes un resumen de la gestión de equipos y servicios.</p>
+      {/* SECCIÓN BIENVENIDA Y BOTÓN TOUR */}
+      <div
+        className='welcome-section'
+        id='tour-welcome'
+      >
+        <div className='text-content'>
+          <h1>
+            Hola, <span className='user-name'>{firstName}!</span> 👋
+          </h1>
+          <p>Aquí tienes un resumen de la gestión de equipos y servicios.</p>
+        </div>
+        <button
+          className='dashboard-tour-btn'
+          onClick={startDashboardTour}
+        >
+          <HelpCircle size={18} />
+        </button>
       </div>
 
-      {/* Tarjetas Superiores */}
-      <div className='stats-grid'>
+      {/* TARJETAS DE ESTADO (EQUIPOS) */}
+      <div
+        className='stats-grid'
+        id='tour-stats'
+      >
         <div className='stat-card'>
           <div className='info'>
             <h3>Total Equipos</h3>
@@ -386,8 +459,11 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Tarjeta de Inversión (Rediseñada) */}
-      <div className='cost-summary-card'>
+      {/* TARJETA DE COSTOS */}
+      <div
+        className='cost-summary-card'
+        id='tour-costs'
+      >
         <div className='cost-header'>
           <div className='title-group'>
             <div className='icon-wrapper'>
@@ -428,7 +504,6 @@ const Dashboard = () => {
                     maximumFractionDigits: 2,
                   })}
                 </span>
-                {/* Icono decorativo de tendencia */}
                 <TrendingUp
                   size={24}
                   style={{
@@ -445,7 +520,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Sección de Gráficos de Gastos */}
+      {/* GRÁFICOS DE GASTOS SAAS */}
       <div className='charts-section-title'>
         <div>
           <h2>Análisis de Gastos</h2>
@@ -466,7 +541,10 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className='charts-row secondary-row'>
+      <div
+        className='charts-row secondary-row'
+        id='tour-expense-charts'
+      >
         <div className='chart-card'>
           <h3>Top Categorías (Costo Mensual)</h3>
           <div className='chart-wrapper'>
@@ -497,7 +575,7 @@ const Dashboard = () => {
 
       <div className='divider-line'></div>
 
-      {/* Sección de Gráficos de Equipos */}
+      {/* GRÁFICOS DE EQUIPOS */}
       <div className='charts-section-title'>
         <div>
           <h2>Análisis de Equipos</h2>
@@ -507,57 +585,58 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className='charts-row main-row'>
-        <div className='chart-card large'>
-          <h3>Movimientos (Últimos 6 Meses)</h3>
-          <div className='chart-wrapper'>
-            <MovementsChart data={movementsData} />
+      <div id='tour-equipment-charts'>
+        <div className='charts-row main-row'>
+          <div className='chart-card large'>
+            <h3>Movimientos (Últimos 6 Meses)</h3>
+            <div className='chart-wrapper'>
+              <MovementsChart data={movementsData} />
+            </div>
+          </div>
+          <div className='chart-card'>
+            <h3>Estado Físico Global</h3>
+            <div className='chart-wrapper'>
+              <StatusChart data={statusData} />
+            </div>
           </div>
         </div>
-        <div className='chart-card'>
-          <h3>Estado Físico Global</h3>
-          <div className='chart-wrapper'>
-            <StatusChart data={statusData} />
-          </div>
-        </div>
-      </div>
 
-      <div className='charts-row secondary-row'>
-        {/* ... Resto de los gráficos (igual que antes) ... */}
-        <div className='chart-card'>
-          <h3>Disponibilidad (Propios vs Proveedor)</h3>
-          <div className='chart-wrapper'>
-            <InventoryOriginChart data={inventoryOriginData} />
+        <div className='charts-row secondary-row'>
+          <div className='chart-card'>
+            <h3>Disponibilidad (Propios vs Proveedor)</h3>
+            <div className='chart-wrapper'>
+              <InventoryOriginChart data={inventoryOriginData} />
+            </div>
           </div>
-        </div>
-        <div className='chart-card'>
-          <h3>Resumen Total de Origen</h3>
-          <div className='chart-wrapper'>
-            <GlobalInventoryChart data={globalInventoryData} />
+          <div className='chart-card'>
+            <h3>Resumen Total de Origen</h3>
+            <div className='chart-wrapper'>
+              <GlobalInventoryChart data={globalInventoryData} />
+            </div>
           </div>
-        </div>
-        <div className='chart-card'>
-          <h3>Distribución (Equipos Propios)</h3>
-          <div className='chart-wrapper'>
-            <CompanyChart data={companyData} />
+          <div className='chart-card'>
+            <h3>Distribución (Equipos Propios)</h3>
+            <div className='chart-wrapper'>
+              <CompanyChart data={companyData} />
+            </div>
           </div>
-        </div>
-        <div className='chart-card'>
-          <h3>Top Proveedores (Alquilados)</h3>
-          <div className='chart-wrapper'>
-            <ProviderChart data={providerData} />
+          <div className='chart-card'>
+            <h3>Top Proveedores (Alquilados)</h3>
+            <div className='chart-wrapper'>
+              <ProviderChart data={providerData} />
+            </div>
           </div>
-        </div>
-        <div className='chart-card'>
-          <h3>Antigüedad del Inventario</h3>
-          <div className='chart-wrapper'>
-            <AgeChart data={ageData} />
+          <div className='chart-card'>
+            <h3>Antigüedad del Inventario</h3>
+            <div className='chart-wrapper'>
+              <AgeChart data={ageData} />
+            </div>
           </div>
-        </div>
-        <div className='chart-card'>
-          <h3>Cumplimiento de Firmas</h3>
-          <div className='chart-wrapper'>
-            <SignaturesChart data={signatureData} />
+          <div className='chart-card'>
+            <h3>Cumplimiento de Firmas</h3>
+            <div className='chart-wrapper'>
+              <SignaturesChart data={signatureData} />
+            </div>
           </div>
         </div>
       </div>

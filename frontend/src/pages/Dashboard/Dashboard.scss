@@ -17,30 +17,65 @@ $card-radius: 24px;
   // --- SECCIÓN DE BIENVENIDA ---
   .welcome-section {
     margin-bottom: 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
 
-    h1 {
-      font-size: 2.2rem;
-      font-weight: 800;
-      color: $text-dark;
-      margin: 0 0 0.5rem 0;
-      letter-spacing: -0.03em;
+    .text-content {
+      h1 {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: $text-dark;
+        margin: 0 0 0.5rem 0;
+        letter-spacing: -0.03em;
 
-      .user-name {
-        color: $purple-accent;
+        .user-name {
+          color: $purple-accent;
+        }
+
+        @media (max-width: 768px) {
+          font-size: 1.6rem;
+        }
       }
 
-      @media (max-width: 768px) {
-        font-size: 1.6rem; // Más pequeño en móvil
+      p {
+        color: $text-muted;
+        font-size: 1.05rem;
+        margin: 0;
+        @media (max-width: 768px) {
+          font-size: 0.95rem;
+        }
       }
     }
 
-    p {
-      color: $text-muted;
-      font-size: 1.05rem;
-      margin: 0;
+    // --- ESTILO DEL BOTÓN TOUR ---
+    .dashboard-tour-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px;
+      background-color: rgba($purple-accent, 0.1);
+      color: $purple-accent;
+      border: 1px solid rgba($purple-accent, 0.3);
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+
+      &:hover {
+        background-color: $purple-accent;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba($purple-accent, 0.2);
+      }
 
       @media (max-width: 768px) {
-        font-size: 0.95rem;
+        width: 100%;
+        justify-content: center;
       }
     }
   }

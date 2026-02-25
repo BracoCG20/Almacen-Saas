@@ -430,3 +430,85 @@ $smooth-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
   }
 }
+
+/* ==========================================
+   ESTILOS PERSONALIZADOS PARA EL TOUR (DRIVER.JS)
+   ========================================== */
+
+.driver-popover {
+  border-radius: 16px !important; /* Bordes redondeados como tus modales */
+  padding: 20px !important;
+  font-family: inherit !important; /* Hereda la fuente de tu sistema */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+  border: 1px solid #e2e8f0 !important;
+
+  /* Título del globo */
+  .driver-popover-title {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    color: #7c3aed !important; /* Color morado principal de tu app */
+    margin-bottom: 8px !important;
+  }
+
+  /* Descripción del globo */
+  .driver-popover-description {
+    font-size: 0.8rem !important;
+    color: #475569 !important; /* Color gris oscuro para buena lectura */
+    line-height: 1.5 !important;
+  }
+
+  /* Contenedor de los botones */
+  .driver-popover-footer {
+    margin-top: 15px !important;
+
+    /* Estilo general para todos los botones del tour */
+    button {
+      border-radius: 8px !important;
+      font-weight: 600 !important;
+      padding: 6px 14px !important;
+      font-size: 0.85rem !important;
+      transition: all 0.2s ease !important;
+      border: none !important;
+      text-shadow: none !important;
+      cursor: pointer !important;
+
+      /* Botón "Siguiente" o "¡Entendido!" */
+      &.driver-popover-next-btn {
+        background-color: #7c3aed !important;
+        color: white !important;
+
+        &:hover {
+          background-color: #6d28d9 !important; /* Morado más oscuro al pasar el mouse */
+          transform: translateY(-2px) !important;
+        }
+      }
+
+      /* Botón "Anterior" */
+      &.driver-popover-prev-btn {
+        background-color: #f1f5f9 !important;
+        color: #64748b !important;
+
+        &:hover {
+          background-color: #e2e8f0 !important;
+        }
+      }
+    }
+
+    /* Contador de pasos (ej. 1 de 6) */
+    .driver-popover-progress-text {
+      font-size: 0.8rem !important;
+      color: #94a3b8 !important;
+      font-weight: 600 !important;
+    }
+  }
+
+  /* Botón "X" para cerrar arriba a la derecha */
+  .driver-popover-close-btn {
+    color: #94a3b8 !important;
+    transition: color 0.2s !important;
+
+    &:hover {
+      color: #ef4444 !important; /* Rojo al pasar el mouse */
+    }
+  }
+}
