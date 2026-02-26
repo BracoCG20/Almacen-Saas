@@ -7,7 +7,7 @@ const {
   updateColaborador,
   deleteColaborador,
   activateColaborador,
-  getColaboradorHistorial, // <-- Nueva función importada
+  getColaboradorHistorial,
 } = require('../controllers/colaboradoresController');
 
 router.get('/', verifyToken, getColaboradores);

@@ -13,7 +13,7 @@ const {
 } = require('../controllers/equiposController');
 
 router.get('/marcas', verifyToken, getMarcas);
-router.get('/estados', verifyToken, getEstadosFisicos); // NUEVO
+router.get('/estados', verifyToken, getEstadosFisicos);
 
 router.get('/', verifyToken, getEquipos);
 router.get('/:id/historial', verifyToken, getEquipoHistorial);

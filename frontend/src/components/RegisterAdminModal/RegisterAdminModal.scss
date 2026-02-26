@@ -13,7 +13,7 @@
   align-items: center;
   z-index: 2000;
   animation: fadeIn 0.3s ease;
-  padding: 10px; // Evita que toque los bordes del teléfono
+  padding: 10px;
   box-sizing: border-box;
 
   .modal-content {
@@ -22,8 +22,8 @@
     border-radius: 16px;
     width: 100%;
     max-width: 600px;
-    max-height: 90vh; // No dejar que se salga de la pantalla verticalmente
-    overflow-y: auto; // Permite scroll interno si el form es muy largo en móvil
+    max-height: 90vh;
+    overflow-y: auto;
     box-shadow:
       0 20px 25px -5px rgba(0, 0, 0, 0.1),
       0 10px 10px -5px rgba(0, 0, 0, 0.04);
@@ -64,7 +64,7 @@
         transition: color 0.2s;
         display: flex;
         align-items: center;
-        padding: 0; // Remueve padding por defecto para alinear bien
+        padding: 0;
         &:hover {
           color: v.$danger;
         }
@@ -77,7 +77,7 @@
       gap: 1.5rem;
 
       @media (max-width: 600px) {
-        grid-template-columns: 1fr; // Apilado en móvil
+        grid-template-columns: 1fr;
         gap: 1rem;
       }
     }
@@ -117,12 +117,12 @@
 
     .modal-actions {
       display: flex;
-      justify-content: flex-end; // Mejor a la derecha
+      justify-content: flex-end;
       gap: 1rem;
       margin-top: 2rem;
 
       @media (max-width: 600px) {
-        flex-direction: column-reverse; // Cancela abajo, Confirmar arriba en móvil
+        flex-direction: column-reverse;
       }
 
       button {
@@ -141,7 +141,7 @@
 
         @media (max-width: 600px) {
           width: 100%;
-        } // Ancho completo en móvil
+        }
 
         &.btn-cancel {
           background: #f1f5f9;

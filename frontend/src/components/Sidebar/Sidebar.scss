@@ -436,9 +436,9 @@ $smooth-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
    ========================================== */
 
 .driver-popover {
-  border-radius: 16px !important; /* Bordes redondeados como tus modales */
+  border-radius: 16px !important;
   padding: 20px !important;
-  font-family: inherit !important; /* Hereda la fuente de tu sistema */
+  font-family: inherit !important;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
   border: 1px solid #e2e8f0 !important;
 
@@ -446,14 +446,14 @@ $smooth-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   .driver-popover-title {
     font-size: 1rem !important;
     font-weight: 600 !important;
-    color: #7c3aed !important; /* Color morado principal de tu app */
+    color: #7c3aed !important;
     margin-bottom: 8px !important;
   }
 
   /* Descripción del globo */
   .driver-popover-description {
     font-size: 0.8rem !important;
-    color: #475569 !important; /* Color gris oscuro para buena lectura */
+    color: #475569 !important;
     line-height: 1.5 !important;
   }
 
@@ -478,7 +478,7 @@ $smooth-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         color: white !important;
 
         &:hover {
-          background-color: #6d28d9 !important; /* Morado más oscuro al pasar el mouse */
+          background-color: #6d28d9 !important;
           transform: translateY(-2px) !important;
         }
       }
@@ -508,7 +508,7 @@ $smooth-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     transition: color 0.2s !important;
 
     &:hover {
-      color: #ef4444 !important; /* Rojo al pasar el mouse */
+      color: #ef4444 !important;
     }
   }
 }

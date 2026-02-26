@@ -119,7 +119,7 @@ const updatePerfil = async (req, res) => {
   const file = req.file;
 
   const client = await pool.connect();
-  let newFotoUrl = null; // <-- NUEVO: Variable para guardar la ruta
+  let newFotoUrl = null;
 
   try {
     await client.query('BEGIN');
@@ -145,7 +145,7 @@ const updatePerfil = async (req, res) => {
       const fileUrl = `/uploads/FotoPerfil/${file.filename}`;
       userFields.push(`foto_perfil_url = $${userIdx++}`);
       userValues.push(fileUrl);
-      newFotoUrl = fileUrl; // <-- NUEVO: Guardamos la ruta generada
+      newFotoUrl = fileUrl;
     }
 
     let colaborador_id = null;
@@ -315,7 +315,6 @@ const toggleUserStatus = async (req, res) => {
     // Si el usuario fue DESACTIVADO (activo === false), emitimos un evento por Socket.io
     if (activo === false) {
       const io = req.app.get('io');
-      // Emitimos el evento 'force_logout' solo a la sala personal de ese usuario
       io.to(`user_${id}`).emit('force_logout', {
         message: 'Un administrador ha revocado tu acceso al sistema.',
       });
