@@ -12,7 +12,7 @@
     margin-bottom: 2rem;
     border-bottom: 1px solid #e2e8f0;
     padding-bottom: 1.5rem;
-    flex-wrap: wrap; // Permite salto en móviles
+    flex-wrap: wrap;
     gap: 1.5rem;
 
     .page-header h1 {
@@ -36,7 +36,7 @@
       align-items: center;
       gap: 6px;
       padding: 10px;
-      background-color: #f3f0ff; // Fondo morado muy claro
+      background-color: #f3f0ff;
       color: v.$primary;
       border: 1px solid rgba(124, 58, 237, 0.3);
       border-radius: 10px;
@@ -46,7 +46,7 @@
       transition: all 0.2s ease;
 
       &:hover {
-        background-color: #e9d5ff; // Morado más oscuro al pasar el ratón
+        background-color: #e9d5ff;
         color: #6d28d9;
         transform: translateY(-2px);
       }
@@ -56,7 +56,7 @@
     > div {
       @media (max-width: 900px) {
         flex-direction: column;
-        align-items: stretch !important; // Fuerza a que ocupen el ancho completo en móvil
+        align-items: stretch !important;
         width: 100%;
         gap: 10px !important;
       }
@@ -68,7 +68,7 @@
       gap: 10px;
 
       @media (max-width: 900px) {
-        flex-direction: column; // Botones apilados
+        flex-direction: column;
         width: 100%;
       }
     }
@@ -80,7 +80,7 @@
       margin: 0 5px;
 
       @media (max-width: 900px) {
-        display: none; // Oculta el divisor vertical en celular
+        display: none;
       }
     }
 
@@ -101,7 +101,7 @@
       color: v.$white;
 
       @media (max-width: 900px) {
-        width: 100%; // Botones ancho total en móvil
+        width: 100%;
       }
 
       &:hover {
@@ -144,7 +144,7 @@
     align-items: start;
 
     @media (max-width: 900px) {
-      grid-template-columns: 1fr; // Se apila en una sola columna en pantallas pequeñas
+      grid-template-columns: 1fr;
     }
   }
 
@@ -156,7 +156,7 @@
     border: 1px solid #f1f5f9;
 
     @media (max-width: 768px) {
-      padding: 1.5rem; // Menos padding interior en móvil
+      padding: 1.5rem;
     }
   }
 
@@ -251,7 +251,7 @@
       margin-bottom: 20px;
 
       @media (max-width: 600px) {
-        grid-template-columns: 1fr; // Inputs en 1 columna en móvil
+        grid-template-columns: 1fr;
         gap: 15px;
       }
     }
