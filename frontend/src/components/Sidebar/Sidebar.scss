@@ -6,7 +6,7 @@ $smooth-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 
 // --- BOTÓN HAMBURGUESA PARA MÓVILES ---
 .mobile-hamburger {
-  display: none; // Oculto por defecto en PC
+  display: none;
 
   @media (max-width: 768px) {
     display: flex;
@@ -182,7 +182,7 @@ $smooth-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 
         // Ajuste de los botones cuando se colapsa
         .action-buttons-row {
-          flex-direction: column; // Apila los botones
+          flex-direction: column;
           gap: 10px;
 
           .logout-btn {
@@ -200,7 +200,7 @@ $smooth-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             }
           }
           .tour-icon-btn {
-            width: 100%; // Se estira para igualar al botón de logout
+            width: 100%;
           }
         }
 

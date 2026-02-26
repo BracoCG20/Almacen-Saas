@@ -144,7 +144,7 @@ const updateEquipo = async (req, res) => {
   const { id } = req.params;
   const modificadorId = req.user.id;
   const {
-    categoria, // <-- NUEVO CAMPO
+    categoria,
     empresa_id,
     marca,
     modelo,

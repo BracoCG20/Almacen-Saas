@@ -275,8 +275,6 @@ const Sidebar = () => {
               </span>
             </div>
           </div>
-
-          {/* FILA DE BOTONES: LOGOUT + TOUR */}
           <div className='action-buttons-row'>
             <button
               className='logout-btn'
@@ -288,8 +286,6 @@ const Sidebar = () => {
               </span>
               <span className='label'>Cerrar Sesión</span>
             </button>
-
-            {/* BOTÓN DEL TOUR (Solo el ícono) */}
             <button
               className='tour-icon-btn'
               onClick={startTour}
