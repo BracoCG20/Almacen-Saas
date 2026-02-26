@@ -8,7 +8,7 @@ import {
   AlertOctagon,
   CreditCard,
   TrendingUp,
-  HelpCircle, // <-- Nuevo icono para el botón del tour
+  HelpCircle,
 } from 'lucide-react';
 
 // --- IMPORTACIONES PARA EL TOUR ---

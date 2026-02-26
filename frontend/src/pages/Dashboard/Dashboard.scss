@@ -99,7 +99,7 @@ $card-radius: 24px;
     margin-bottom: 3rem;
 
     @media (max-width: 768px) {
-      gap: 1rem; // Menos espacio entre tarjetas en móvil
+      gap: 1rem;
     }
 
     .stat-card {
@@ -233,15 +233,15 @@ $card-radius: 24px;
         padding: 6px;
         border-radius: 14px;
         gap: 4px;
-        flex-wrap: wrap; // Permite que los botones bajen si no caben
+        flex-wrap: wrap;
         width: 100%;
 
         @media (min-width: 768px) {
-          width: auto; // Solo ocupa el 100% en móviles
+          width: auto;
         }
 
         .filter-btn {
-          flex: 1; // En móviles ocupan todo el espacio proporcional
+          flex: 1;
           text-align: center;
           background: transparent;
           color: $text-muted;
@@ -281,7 +281,7 @@ $card-radius: 24px;
         overflow: hidden;
 
         @media (max-width: 768px) {
-          min-width: 100%; // 100% de ancho en móvil
+          min-width: 100%;
           padding: 1.5rem;
         }
 
@@ -394,14 +394,14 @@ $card-radius: 24px;
       grid-template-columns: 1.6fr 1fr;
       @media (max-width: 1100px) {
         grid-template-columns: 1fr;
-      } // Apila gráficos en tablet/celular
+      }
     }
 
     &.secondary-row {
       grid-template-columns: repeat(2, 1fr);
       @media (max-width: 1024px) {
         grid-template-columns: 1fr;
-      } // Apila gráficos en tablet/celular
+      }
     }
 
     .chart-card {

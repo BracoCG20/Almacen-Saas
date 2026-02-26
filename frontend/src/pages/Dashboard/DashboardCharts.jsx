@@ -15,17 +15,16 @@ import {
   Area,
 } from 'recharts';
 
-// --- PALETA DE COLORES MODERNA (Estilo Synaptix/Premium) ---
 const COLORS = {
-  primary: '#7c3aed', // Morado vibrante
-  primaryLight: '#c4b5fd', // Morado claro
-  secondary: '#3b82f6', // Azul moderno
-  secondaryLight: '#93c5fd', // Azul claro
-  success: '#10b981', // Verde esmeralda
-  warning: '#f59e0b', // Ámbar/Naranja
-  danger: '#ef4444', // Rojo
-  textMuted: '#94a3b8', // Gris para textos secundarios
-  gridLine: '#f1f5f9', // Líneas de cuadrícula muy sutiles
+  primary: '#7c3aed',
+  primaryLight: '#c4b5fd',
+  secondary: '#3b82f6',
+  secondaryLight: '#93c5fd',
+  success: '#10b981',
+  warning: '#f59e0b',
+  danger: '#ef4444',
+  textMuted: '#94a3b8',
+  gridLine: '#f1f5f9',
 };
 
 const tooltipStyle = {
