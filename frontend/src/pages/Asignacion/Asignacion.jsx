@@ -8,7 +8,7 @@ import EntregaForm from './EntregaForm';
 import EntregaTable from './EntregaTable';
 import { generarPDFBlob } from '../../utils/pdfGeneratorAsignacion';
 
-import { AlertTriangle, X, Check, HelpCircle } from 'lucide-react'; // <-- Importamos HelpCircle
+import { AlertTriangle, X, Check, HelpCircle } from 'lucide-react';
 
 // --- IMPORTACIONES PARA EL TOUR ---
 import { driver } from 'driver.js';

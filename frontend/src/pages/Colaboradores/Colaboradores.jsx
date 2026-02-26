@@ -20,7 +20,7 @@ import {
   ChevronLeft,
   ChevronRight,
   History,
-  HelpCircle, // <-- Importamos HelpCircle
+  HelpCircle,
 } from 'lucide-react';
 
 // --- IMPORTACIONES PARA EL TOUR ---

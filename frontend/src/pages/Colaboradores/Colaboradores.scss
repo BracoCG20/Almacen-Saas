@@ -9,7 +9,7 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
-    flex-wrap: wrap; // Permite salto de línea en móviles
+    flex-wrap: wrap;
     gap: 1rem;
 
     h1 {
@@ -26,7 +26,7 @@
     .header-actions {
       display: flex;
       gap: 12px;
-      flex-wrap: wrap; // Botones apilables en móvil
+      flex-wrap: wrap;
       width: auto;
 
       @media (max-width: 600px) {
@@ -50,7 +50,7 @@
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 
         @media (max-width: 600px) {
-          flex: 1; // Ocupan todo el ancho proporcionalmente en móviles
+          flex: 1;
           padding: 0 10px;
           font-size: 0.85rem;
         }
@@ -73,13 +73,13 @@
         }
         // --- ESTILOS DEL NUEVO BOTÓN DEL TOUR ---
         &.btn-tour {
-          background-color: #f3f0ff; // Fondo morado muy claro
+          background-color: #f3f0ff;
           padding: 10px 12px;
           color: v.$primary;
           border: 1px solid rgba(124, 58, 237, 0.3);
 
           &:hover {
-            background-color: #e9d5ff; // Morado ligeramente más oscuro al pasar el ratón
+            background-color: #e9d5ff;
             color: #6d28d9;
           }
         }
@@ -149,9 +149,8 @@
     border-radius: 16px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
     border: 1px solid #e2e8f0;
-    overflow-x: auto; // ESENCIAL: Permite scroll horizontal en móviles
+    overflow-x: auto;
 
-    // Estilo del scrollbar de la tabla para que se vea limpio
     &::-webkit-scrollbar {
       height: 8px;
     }
@@ -170,7 +169,7 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 900px; // Fuerza a que la tabla no se aplaste en móviles
+      min-width: 900px;
 
       thead tr {
         background-color: #f1e9fe;
@@ -231,7 +230,6 @@
       }
     }
 
-    // ELEMENTOS INTERNOS DE LA TABLA
     .user-avatar-cell {
       display: flex;
       align-items: center;
@@ -397,11 +395,11 @@
     padding: 16px 25px;
     border-top: 1px solid #e2e8f0;
     background-color: white;
-    flex-wrap: wrap; // Permite salto de línea en móvil
+    flex-wrap: wrap;
     gap: 15px;
 
     @media (max-width: 600px) {
-      justify-content: center; // Centra en móvil
+      justify-content: center;
     }
 
     .info {
@@ -492,7 +490,7 @@
       display: flex;
       gap: 1rem;
       justify-content: center;
-      flex-wrap: wrap; // Móvil
+      flex-wrap: wrap;
 
       button {
         padding: 12px 20px;
@@ -505,7 +503,7 @@
         border: none;
         font-size: 0.95rem;
         transition: all 0.2s ease;
-        flex: 1; // Ocupan 50/50
+        flex: 1;
         min-width: 140px;
 
         &:hover {
