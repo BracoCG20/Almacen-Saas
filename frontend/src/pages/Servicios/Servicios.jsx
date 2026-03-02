@@ -24,10 +24,9 @@ import {
   Clock,
   ExternalLink,
   User,
-  HelpCircle, // <-- Importamos HelpCircle
+  HelpCircle,
 } from 'lucide-react';
 
-// --- IMPORTACIONES PARA EL TOUR ---
 import { driver } from 'driver.js';
 import 'driver.js/dist/driver.css';
 
@@ -44,6 +43,7 @@ const Servicios = () => {
     value: 'todos',
     label: 'Todas las Categorías',
   });
+
   const [userRole, setUserRole] = useState(null);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -74,7 +74,6 @@ const Servicios = () => {
     { value: 'Otros', label: 'Otros' },
   ];
 
-  // --- FUNCIÓN DEL TOUR GUIADO ---
   const startServiciosTour = () => {
     const driverObj = driver({
       showProgress: true,
@@ -97,9 +96,9 @@ const Servicios = () => {
         {
           element: '#tour-servicios-tabla',
           popover: {
-            title: 'Control de Servicios y Licencias',
+            title: 'Panel Inteligente',
             description:
-              'En esta tabla verás cuánto cuesta, cuántas licencias te quedan disponibles y quién es el empleado responsable de la cuenta.',
+              'Los servicios se ordenan automáticamente: Primero verás los que te han asignado a ti como responsable, ordenados por la fecha de cobro más próxima a vencer.',
             side: 'top',
             align: 'start',
           },
@@ -109,7 +108,7 @@ const Servicios = () => {
           popover: {
             title: 'Gestión Completa',
             description:
-              'Desde aquí puedes registrar los pagos mensuales, ver qué se ha modificado, editar los datos o dar de baja la licencia.',
+              'Desde aquí puedes registrar los pagos mensuales. Al registrar la factura, la fecha se actualizará y el servicio bajará en la lista.',
             side: 'left',
             align: 'center',
           },
@@ -143,13 +142,36 @@ const Servicios = () => {
     setLoading(true);
     try {
       const resPerfil = await api.get('/auth/perfil');
-      setUserRole(Number(resPerfil.data.rol_id));
+      const currentUserRol = Number(resPerfil.data.rol_id);
+      const currentUserId = resPerfil.data.id;
+
+      setUserRole(currentUserRol);
 
       const resServicios = await api.get('/servicios');
+
       const sorted = resServicios.data.sort((a, b) => {
-        if (a.estado === b.estado) return b.id - a.id;
-        return a.estado === true ? -1 : 1;
+        if (a.estado !== b.estado) return a.estado === true ? -1 : 1;
+
+        const aEsMio = a.usuario_id_responsable === currentUserId;
+        const bEsMio = b.usuario_id_responsable === currentUserId;
+
+        if (aEsMio && !bEsMio) return -1;
+        if (!aEsMio && bEsMio) return 1;
+
+        const fechaA = a.fecha_proximo_pago
+          ? new Date(a.fecha_proximo_pago).getTime()
+          : Infinity;
+        const fechaB = b.fecha_proximo_pago
+          ? new Date(b.fecha_proximo_pago).getTime()
+          : Infinity;
+
+        if (fechaA !== fechaB) {
+          return fechaA - fechaB;
+        }
+
+        return b.id - a.id;
       });
+
       setServicios(sorted);
     } catch (error) {
       toast.error('Error al cargar los servicios');
@@ -167,7 +189,15 @@ const Servicios = () => {
   }, [searchTerm, filtroCategoria]);
 
   const formatDate = (dateString) => {
-    if (!dateString) return <span className='no-date'>-</span>;
+    if (!dateString)
+      return (
+        <span
+          className='no-date'
+          style={{ color: '#cbd5e1' }}
+        >
+          -
+        </span>
+      );
     const date = new Date(
       dateString.includes('T') ? dateString : `${dateString}T12:00:00Z`,
     );
@@ -188,6 +218,55 @@ const Servicios = () => {
   const formatUrl = (url) => {
     if (!url) return '#';
     return url.startsWith('http') ? url : `https://${url}`;
+  };
+
+  // --- LÓGICA DE ESTILOS DINÁMICOS PARA LA FECHA DE PAGO ---
+  const getPaymentStatusStyle = (dateString) => {
+    if (!dateString) {
+      return { padding: '6px 12px', display: 'inline-flex' };
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const paymentDate = new Date(
+      dateString.includes('T') ? dateString : `${dateString}T12:00:00Z`,
+    );
+    paymentDate.setHours(0, 0, 0, 0);
+
+    const diffTime = paymentDate - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 0) {
+      // VENCIDO -> Fondo ROJO claro
+      return {
+        backgroundColor: '#fee2e2',
+        color: '#dc2626',
+        padding: '6px 12px',
+        borderRadius: '8px',
+        fontWeight: '700',
+        display: 'inline-flex',
+        border: '1px solid #fecaca',
+      };
+    } else if (diffDays >= 0 && diffDays <= 5) {
+      // PRÓXIMO A VENCER -> Fondo NARANJA claro
+      return {
+        backgroundColor: '#fff7ed',
+        color: '#ea580c',
+        padding: '6px 12px',
+        borderRadius: '8px',
+        fontWeight: '700',
+        display: 'inline-flex',
+        border: '1px solid #ffedd5',
+      };
+    }
+
+    // NORMAL (Faltan muchos días) -> Sin fondo
+    return {
+      padding: '6px 12px',
+      display: 'inline-flex',
+      color: '#475569',
+    };
   };
 
   const filteredServicios = servicios.filter((item) => {
@@ -363,7 +442,7 @@ const Servicios = () => {
             onClick={startServiciosTour}
             className='btn-action-header btn-tour'
           >
-            <HelpCircle size={18} />
+            <HelpCircle size={18} /> Tour Rápido
           </button>
 
           <button
@@ -502,7 +581,11 @@ const Servicios = () => {
                     )}
                   </td>
                   <td>
-                    <div className='email-cell'>
+                    {/* APLICAMOS EL ESTILO DINÁMICO DE FECHA AQUÍ */}
+                    <div
+                      className='email-cell'
+                      style={getPaymentStatusStyle(item.fecha_proximo_pago)}
+                    >
                       <CalendarDays size={14} />{' '}
                       {formatDate(item.fecha_proximo_pago)}
                     </div>
@@ -592,7 +675,7 @@ const Servicios = () => {
           </table>
         )}
 
-        {filteredServicios.length > 0 && (
+        {filteredServicios.length > itemsPerPage && (
           <div className='pagination-footer'>
             <div className='info'>
               Mostrando <strong>{indexOfFirstItem + 1}</strong> a{' '}
