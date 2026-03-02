@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Clock, UserCheck } from 'lucide-react';
-import '../Proveedores/ProveedorHistorial.scss'; // Puedes reutilizar la hoja de estilos de proveedores
+import '../Proveedores/ProveedorHistorial.scss';
 
 const ColaboradorHistorial = ({ historyData }) => {
   const [currentPage, setCurrentPage] = useState(1);
