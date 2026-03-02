@@ -1,7 +1,5 @@
 const { Router } = require('express');
-const router = Router();
 const verifyToken = require('../middlewares/authMiddleware');
-
 const {
   getEmpresas,
   createEmpresa,
@@ -10,10 +8,15 @@ const {
   activateEmpresa,
 } = require('../controllers/empresasController');
 
-router.get('/', verifyToken, getEmpresas);
-router.post('/', verifyToken, createEmpresa);
-router.put('/:id', verifyToken, updateEmpresa);
-router.delete('/:id', verifyToken, deleteEmpresa);
-router.put('/:id/activate', verifyToken, activateEmpresa);
+const router = Router();
+
+// Todas las rutas de empresas requieren autenticación
+router.use(verifyToken);
+
+router.get('/', getEmpresas);
+router.post('/', createEmpresa);
+router.put('/:id', updateEmpresa);
+router.delete('/:id', deleteEmpresa);
+router.put('/:id/activate', activateEmpresa);
 
 module.exports = router;

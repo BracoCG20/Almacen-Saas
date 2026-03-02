@@ -1,33 +1,30 @@
-const { Router } = require("express");
-const router = Router();
-const verifyToken = require("../middlewares/authMiddleware");
-const multer = require("multer");
-const path = require("path");
-
-const storage = multer.diskStorage({
-	destination: (req, file, cb) => {
-		cb(null, "uploads/");
-	},
-	filename: (req, file, cb) => {
-		cb(null, `contrato_prov_${Date.now()}${path.extname(file.originalname)}`);
-	},
-});
-const upload = multer({ storage });
+const { Router } = require('express');
+const verifyToken = require('../middlewares/authMiddleware');
+const createUploadMiddleware = require('../middlewares/uploadMiddleware');
 
 const {
-	getProveedores,
-	createProveedor,
-	updateProveedor,
-	toggleEstadoProveedor,
-	getProveedorHistorial,
-} = require("../controllers/proveedoresController");
+  getProveedores,
+  createProveedor,
+  updateProveedor,
+  toggleEstadoProveedor,
+  getProveedorHistorial,
+} = require('../controllers/proveedoresController');
 
-router.get("/", verifyToken, getProveedores);
-router.post("/", verifyToken, upload.single("contrato_pdf"), createProveedor);
-router.put("/:id", verifyToken, upload.single("contrato_pdf"), updateProveedor);
+const router = Router();
 
-// --- RUTAS NUEVAS Y ACTUALIZADAS ---
-router.put("/:id/estado", verifyToken, toggleEstadoProveedor);
-router.get("/:id/historial", verifyToken, getProveedorHistorial);
+// Configuramos que este upload guardará los PDFs en "ContratosProveedores" con el prefijo "contrato_prov"
+const uploadContrato = createUploadMiddleware(
+  'ContratosProveedores',
+  'contrato_prov',
+);
+
+// Todas las rutas requieren estar autenticado
+router.use(verifyToken);
+
+router.get('/', getProveedores);
+router.post('/', uploadContrato.single('contrato_pdf'), createProveedor);
+router.put('/:id', uploadContrato.single('contrato_pdf'), updateProveedor);
+router.put('/:id/estado', toggleEstadoProveedor);
+router.get('/:id/historial', getProveedorHistorial);
 
 module.exports = router;

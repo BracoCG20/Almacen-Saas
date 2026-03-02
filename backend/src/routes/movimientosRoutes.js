@@ -1,9 +1,9 @@
 const { Router } = require('express');
 const router = Router();
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+
 const verifyToken = require('../middlewares/authMiddleware');
+const createUploadMiddleware = require('../middlewares/uploadMiddleware');
 
 const {
   registrarEntrega,
@@ -16,54 +16,35 @@ const {
   reenviarCorreoActa,
 } = require('../controllers/movimientosController');
 
-const uploadDir = path.join(__dirname, '../../uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
+// Multer genérico que guarda físicamente en la carpeta "Firmados"
+const uploadFirmados = createUploadMiddleware('Firmados', 'firmado');
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, 'firmado-' + uniqueSuffix + path.extname(file.originalname));
-  },
-});
-const upload = multer({ storage: storage });
+// Multer en memoria (para generar el PDF al vuelo y mandarlo por email sin guardarlo en el disco)
 const uploadMem = multer({ storage: multer.memoryStorage() });
 
-router.get('/', verifyToken, obtenerHistorial);
-router.post('/entrega', verifyToken, registrarEntrega);
-router.post('/devolucion', verifyToken, registrarDevolucion);
+router.use(verifyToken);
+
+router.get('/', obtenerHistorial);
+router.post('/entrega', registrarEntrega);
+router.post('/devolucion', registrarDevolucion);
 
 router.post(
   '/entrega-con-correo',
-  verifyToken,
   uploadMem.single('pdf'),
   registrarEntregaConCorreo,
 );
 router.post(
   '/devolucion-con-correo',
-  verifyToken,
   uploadMem.single('pdf'),
   registrarDevolucionConCorreo,
 );
-
-// --- RUTA PARA REENVIAR CORREO---
-router.post(
-  '/reenviar-correo',
-  verifyToken,
-  uploadMem.single('pdf'),
-  reenviarCorreoActa,
-);
+router.post('/reenviar-correo', uploadMem.single('pdf'), reenviarCorreoActa);
 
 router.post(
   '/:id/subir-firmado',
-  verifyToken,
-  upload.single('pdf'),
+  uploadFirmados.single('pdf'),
   subirPdfFirmado,
 );
-router.put('/:id/invalidar', verifyToken, invalidarFirma);
+router.put('/:id/invalidar', invalidarFirma);
 
 module.exports = router;

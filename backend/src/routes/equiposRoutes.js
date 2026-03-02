@@ -1,7 +1,5 @@
 const { Router } = require('express');
-const router = Router();
 const verifyToken = require('../middlewares/authMiddleware');
-
 const {
   getEquipos,
   createEquipo,
@@ -12,14 +10,18 @@ const {
   getEquipoHistorial,
 } = require('../controllers/equiposController');
 
-router.get('/marcas', verifyToken, getMarcas);
-router.get('/estados', verifyToken, getEstadosFisicos);
+const router = Router();
 
-router.get('/', verifyToken, getEquipos);
-router.get('/:id/historial', verifyToken, getEquipoHistorial);
-router.post('/', verifyToken, createEquipo);
-router.put('/:id', verifyToken, updateEquipo);
+// Todas las rutas de equipos requieren autenticación
+router.use(verifyToken);
 
-router.put('/:id/disponibilidad', verifyToken, toggleDisponibilidad);
+router.get('/marcas', getMarcas);
+router.get('/estados', getEstadosFisicos);
+
+router.get('/', getEquipos);
+router.post('/', createEquipo);
+router.get('/:id/historial', getEquipoHistorial);
+router.put('/:id', updateEquipo);
+router.put('/:id/disponibilidad', toggleDisponibilidad);
 
 module.exports = router;

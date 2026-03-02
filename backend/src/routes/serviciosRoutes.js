@@ -1,25 +1,6 @@
 const { Router } = require('express');
-const router = Router();
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 const verifyToken = require('../middlewares/authMiddleware');
-
-const uploadDir = path.join(__dirname, '../../uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, 'factura-' + uniqueSuffix + path.extname(file.originalname));
-  },
-});
-const upload = multer({ storage: storage });
+const createUploadMiddleware = require('../middlewares/uploadMiddleware');
 
 const {
   getServicios,
@@ -33,21 +14,25 @@ const {
   getResponsables,
 } = require('../controllers/serviciosController');
 
-router.get('/', verifyToken, getServicios);
-router.post('/', verifyToken, createServicio);
-router.get('/responsables', verifyToken, getResponsables);
+const router = Router();
 
-router.put('/:id', verifyToken, updateServicio);
-router.put('/:id/estado', verifyToken, cambiarEstadoServicio);
-router.get('/:id/auditoria', verifyToken, getAuditoriaServicio);
+// Configura Multer para guardar las facturas en la subcarpeta 'Facturas'
+const uploadFactura = createUploadMiddleware('Facturas', 'factura');
 
-router.get('/:id/pagos', verifyToken, getPagosPorServicio);
-router.post(
-  '/:id/pagos',
-  verifyToken,
-  upload.single('comprobante'),
-  registrarPago,
-);
-router.put('/pagos/:pagoId/anular', verifyToken, anularPago);
+// Protegemos todas las rutas del módulo
+router.use(verifyToken);
+
+router.get('/', getServicios);
+router.post('/', createServicio);
+router.get('/responsables', getResponsables);
+
+router.put('/:id', updateServicio);
+router.put('/:id/estado', cambiarEstadoServicio);
+router.get('/:id/auditoria', getAuditoriaServicio);
+
+// --- RUTAS DE PAGOS ---
+router.get('/:id/pagos', getPagosPorServicio);
+router.post('/:id/pagos', uploadFactura.single('comprobante'), registrarPago);
+router.put('/pagos/:pagoId/anular', anularPago);
 
 module.exports = router;
