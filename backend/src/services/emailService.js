@@ -10,6 +10,7 @@ const enviarActaCorreo = async (
   archivoPDFBuffer,
   estado_final_nombre,
   motivo,
+  tokenFirma,
 ) => {
   const isEntrega = tipo_movimiento === 'entrega';
   const subject = isEntrega
@@ -18,6 +19,8 @@ const enviarActaCorreo = async (
   const fileName = isEntrega ? 'Acta_Entrega.pdf' : 'Constancia_Devolucion.pdf';
 
   const logoPath = path.join(__dirname, '../assets/logo_gruposp.png');
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+  const urlFirma = `${frontendUrl}/firmar/${tokenFirma}`;
 
   let contenidoEspecifico = '';
 
@@ -67,7 +70,7 @@ const enviarActaCorreo = async (
       <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0, 0.1);">
         <div style="background-color: ${isEntrega ? '#7c3aed' : '#dc2626'}; padding: 40px 20px; text-align: center;">
           <img src="cid:logo" alt="Logo" style="max-width: 180px; display: block; background-color: #ffffff; border-radius: 20px; padding: 5px 20px; margin: 0 auto 15px auto; filter: brightness(0) invert(1);" />
-          <h1 style="color: #ffffff; margin: 0; font-size: 24px; text-transform: uppercase;">${isEntrega ? 'Acta de Entrega' : 'Constancia de Devolución'}</h1>
+          <h1 style="color: #ffffff; margin: 0; font-size: 24px; text-transform: uppercase;">${isEntrega ? 'Acta de Asignación' : 'Constancia de Devolución'}</h1>
         </div>
         <div style="padding: 40px 30px; color: #334155;">
           <h2 style="color: #1e293b; margin-top: 0;">Hola, ${nombreEmpleado} 👋</h2>
@@ -75,11 +78,15 @@ const enviarActaCorreo = async (
           
           ${contenidoEspecifico}
 
-          <div style="text-align: center; margin-top: 30px;">
-            <div style="background-color: #ede9fe; color: #6d28d9; padding: 12px 24px; border-radius: 50px; font-size: 14px; font-weight: 700; display: inline-block;">
-              📎 Archivo Adjunto: ${fileName}
-            </div>
+          <div style="text-align: center; margin-top: 30px; margin-bottom: 20px;">
+            <a href="${urlFirma}" style="background-color: #10b981; color: white; padding: 16px 30px; border-radius: 8px; font-size: 16px; font-weight: bold; text-decoration: none; display: inline-block; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.25);">
+              ✍️ Hacer clic aquí para Revisar y Firmar
+            </a>
           </div>
+
+          <p style="font-size: 13px; color: #94a3b8; text-align: center; margin-top: 20px;">
+            Se adjunta una copia de lectura del documento en PDF. Para validarlo, utilice el botón verde de arriba.
+          </p>
         </div>
       </div>
     </body>

@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { AlertTriangle, LogOut } from 'lucide-react'; // Íconos para el modal
+import { AlertTriangle, LogOut } from 'lucide-react';
 
 import { AuthProvider, useAuth } from './context/AuthContext';
 import PrivateRoute from './components/PrivateRoute/PrivateRoute';
@@ -17,13 +17,11 @@ import Asignacion from './pages/Asignacion/Asignacion';
 import Devolucion from './pages/Devolucion/Devolucion';
 import Historial from './pages/Historial/Historial';
 import Configuracion from './pages/Configuracion/Configuracion';
+import FirmarDocumento from './pages/FirmarDocumento/FirmarDocumento'; // <-- NUEVA PANTALLA PÚBLICA
 
-// Subcomponente que escucha si debe mostrar el modal
 const GlobalForceLogoutModal = () => {
   const { isForceLogout, executeForceLogout } = useAuth();
-
   if (!isForceLogout) return null;
-
   return (
     <div
       style={{
@@ -49,7 +47,6 @@ const GlobalForceLogoutModal = () => {
           maxWidth: '400px',
           textAlign: 'center',
           boxShadow: '0 20px 25px rgba(0,0,0,0.2)',
-          animation: 'fadeIn 0.3s ease',
         }}
       >
         <div
@@ -99,14 +96,7 @@ const GlobalForceLogoutModal = () => {
             justifyContent: 'center',
             alignItems: 'center',
             gap: '8px',
-            transition: 'all 0.2s ease',
           }}
-          onMouseOver={(e) =>
-            (e.currentTarget.style.backgroundColor = '#dc2626')
-          }
-          onMouseOut={(e) =>
-            (e.currentTarget.style.backgroundColor = '#ef4444')
-          }
         >
           <LogOut size={18} /> Entendido
         </button>
@@ -124,6 +114,13 @@ function AppContent() {
           path='/login'
           element={<Login />}
         />
+
+        {/* RUTA PÚBLICA PARA EL EMPLEADO */}
+        <Route
+          path='/firmar/:token'
+          element={<FirmarDocumento />}
+        />
+
         <Route element={<PrivateRoute />}>
           <Route
             path='/'

@@ -1,5 +1,8 @@
 const { pool } = require('../config/db');
 const emailService = require('./emailService');
+const { v4: uuidv4 } = require('uuid'); // <-- Para generar el token único
+const fs = require('fs');
+const path = require('path');
 
 const getHistorial = async () => {
   const query = `
@@ -34,11 +37,30 @@ const getHistorial = async () => {
   return response.rows;
 };
 
+// Función auxiliar para guardar el PDF Original
+const guardarPdfOriginal = (buffer, tipo) => {
+  const uploadDir = path.join(__dirname, '../../uploads/Originales');
+  if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+
+  const fileName = `${tipo}-${Date.now()}.pdf`;
+  const filePath = path.join(uploadDir, fileName);
+  fs.writeFileSync(filePath, buffer);
+
+  return `/uploads/Originales/${fileName}`;
+};
+
 const registrarEntrega = async (data, adminId, archivoPDF) => {
   const client = await pool.connect();
   let movimientoId = null;
   let nombreEmpleado = data.nombreEmpleado || 'Desconocido';
   let textoColaborador = 'al colaborador';
+  let tokenFirma = null;
+  let pdfOriginalUrl = null;
+
+  if (archivoPDF) {
+    tokenFirma = uuidv4();
+    pdfOriginalUrl = guardarPdfOriginal(archivoPDF.buffer, 'asignacion');
+  }
 
   try {
     await client.query('BEGIN');
@@ -63,8 +85,8 @@ const registrarEntrega = async (data, adminId, archivoPDF) => {
     }
 
     const insertMov = `
-      INSERT INTO historial_movimientos (equipo_id, colaborador_id, tipo_movimiento, fecha_movimiento, cargador_incluido, observaciones, correo_enviado, usuario_creacion_id) 
-      VALUES ($1, $2, 'entrega', $3, $4, $5, $6, $7) RETURNING id
+      INSERT INTO historial_movimientos (equipo_id, colaborador_id, tipo_movimiento, fecha_movimiento, cargador_incluido, observaciones, correo_enviado, usuario_creacion_id, pdf_generado_url, token_firma) 
+      VALUES ($1, $2, 'entrega', $3, $4, $5, $6, $7, $8, $9) RETURNING id
     `;
     const movResult = await client.query(insertMov, [
       data.equipo_id,
@@ -74,6 +96,8 @@ const registrarEntrega = async (data, adminId, archivoPDF) => {
       data.observaciones || null,
       archivoPDF ? false : null,
       adminId,
+      pdfOriginalUrl,
+      tokenFirma,
     ]);
     movimientoId = movResult.rows[0].id;
 
@@ -106,6 +130,7 @@ const registrarEntrega = async (data, adminId, archivoPDF) => {
         data.cargador === 'true' || data.cargador === true
           ? 'SÍ (Incluido)'
           : 'NO (Solo equipo)';
+      // Se le pasa el tokenFirma al servicio de correo
       await emailService.enviarActaCorreo(
         'entrega',
         data.destinatario,
@@ -113,6 +138,9 @@ const registrarEntrega = async (data, adminId, archivoPDF) => {
         data.tipoEquipo,
         textoCargador,
         archivoPDF.buffer,
+        null,
+        null,
+        tokenFirma,
       );
       await pool.query(
         'UPDATE historial_movimientos SET correo_enviado = true WHERE id = $1',
@@ -130,14 +158,21 @@ const registrarEntrega = async (data, adminId, archivoPDF) => {
 const registrarDevolucion = async (data, adminId, archivoPDF) => {
   const client = await pool.connect();
   let movimientoId = null;
+  let tokenFirma = null;
+  let pdfOriginalUrl = null;
+
+  if (archivoPDF) {
+    tokenFirma = uuidv4();
+    pdfOriginalUrl = guardarPdfOriginal(archivoPDF.buffer, 'devolucion');
+  }
 
   try {
     await client.query('BEGIN');
     const estaDisponible = parseInt(data.estado_fisico_id) === 1;
 
     const insertMov = `
-      INSERT INTO historial_movimientos (equipo_id, colaborador_id, tipo_movimiento, fecha_movimiento, cargador_incluido, observaciones, estado_equipo_id, correo_enviado, usuario_creacion_id, motivo_movimiento) 
-      VALUES ($1, $2, 'devolucion', $3, $4, $5, $6, $7, $8, $9) RETURNING id
+      INSERT INTO historial_movimientos (equipo_id, colaborador_id, tipo_movimiento, fecha_movimiento, cargador_incluido, observaciones, estado_equipo_id, correo_enviado, usuario_creacion_id, motivo_movimiento, pdf_generado_url, token_firma) 
+      VALUES ($1, $2, 'devolucion', $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id
     `;
     const movResult = await client.query(insertMov, [
       data.equipo_id,
@@ -149,6 +184,8 @@ const registrarDevolucion = async (data, adminId, archivoPDF) => {
       archivoPDF ? false : null,
       adminId,
       data.motivo || 'Devolución regular',
+      pdfOriginalUrl,
+      tokenFirma,
     ]);
     movimientoId = movResult.rows[0].id;
 
@@ -199,6 +236,7 @@ const registrarDevolucion = async (data, adminId, archivoPDF) => {
         archivoPDF.buffer,
         data.estado_final_nombre,
         data.motivo,
+        tokenFirma,
       );
       await pool.query(
         'UPDATE historial_movimientos SET correo_enviado = true WHERE id = $1',

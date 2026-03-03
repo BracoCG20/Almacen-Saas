@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import api from '../../service/api';
 import * as XLSX from 'xlsx';
 import Select from 'react-select';
+import { io } from 'socket.io-client';
 import {
   FileSpreadsheet,
   Search,
@@ -159,6 +160,18 @@ const Historial = () => {
       }
     };
     fetchHistorial();
+
+    const baseUrl = api.defaults.baseURL
+      ? api.defaults.baseURL.replace(/\/api\/?$/, '')
+      : 'http://localhost:4000';
+    const socket = io(baseUrl);
+
+    socket.on('documento_firmado', (data) => {
+      toast.success('¡Un documento acaba de ser firmado digitalmente! 📝');
+      fetchHistorial();
+    });
+
+    return () => socket.disconnect();
   }, []);
 
   // Reiniciar paginación al filtrar
