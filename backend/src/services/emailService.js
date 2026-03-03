@@ -88,7 +88,7 @@ const enviarActaCorreo = async (
           </div>
 
           <p style="font-size: 13px; color: #94a3b8; text-align: center; margin-top: 20px;">
-            Se adjunta una copia de lectura del documento en PDF. Para validarlo, utilice el botón verde de arriba.
+            Se adjunta una copia de lectura del documento en PDF.</br> Para validarlo, utilice el botón verde de arriba.
           </p>
         </div>
       </div>
