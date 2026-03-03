@@ -1,0 +1,217 @@
+@use '../../styles/variables' as v;
+
+.firma-public-container {
+  min-height: 100vh;
+  background-color: #f1f5f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+
+  .firma-card {
+    width: 100%;
+    max-width: 750px;
+    background: v.$white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow:
+      0 20px 25px -5px rgba(0, 0, 0, 0.1),
+      0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+    .firma-header {
+      padding: 40px 20px;
+      color: v.$white;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+
+      &.entrega {
+        background: linear-gradient(135deg, v.$primary 0%, #4f46e5 100%);
+      }
+
+      &.devolucion {
+        background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 1.8rem;
+        font-weight: 800;
+        letter-spacing: -0.025em;
+      }
+
+      p {
+        margin: 0;
+        opacity: 0.9;
+        font-size: 1rem;
+      }
+    }
+
+    .firma-body {
+      padding: 35px;
+
+      @media (max-width: 600px) {
+        padding: 20px;
+      }
+
+      .info-summary {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        background: #f8fafc;
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 25px;
+
+        @media (max-width: 600px) {
+          grid-template-columns: 1fr;
+          gap: 10px;
+        }
+
+        .info-item {
+          label {
+            display: block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: v.$text-muted;
+            margin-bottom: 4px;
+          }
+          span {
+            font-size: 1rem;
+            font-weight: 600;
+            color: v.$text-main;
+          }
+        }
+      }
+
+      .pdf-preview-container {
+        height: 450px;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 25px;
+        background: #94a3b8;
+
+        iframe {
+          border: none;
+        }
+      }
+
+      .firma-form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+
+        .input-group {
+          label {
+            display: block;
+            font-weight: 700;
+            color: v.$text-main;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+          }
+
+          input {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            font-size: 1.1rem;
+            transition: all 0.2s;
+            outline: none;
+            font-weight: 600;
+            color: v.$primary;
+            text-align: center;
+            letter-spacing: 2px;
+
+            &:focus {
+              border-color: v.$primary;
+              box-shadow: 0 0 0 4px rgba(v.$primary, 0.1);
+            }
+
+            &::placeholder {
+              letter-spacing: normal;
+              color: #cbd5e1;
+              font-weight: 400;
+            }
+          }
+        }
+
+        .btn-firmar {
+          width: 100%;
+          padding: 16px;
+          border-radius: 12px;
+          background-color: #10b981;
+          color: v.$white;
+          border: none;
+          font-weight: 700;
+          font-size: 1.1rem;
+          cursor: pointer;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 10px;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);
+
+          &:hover:not(:disabled) {
+            background-color: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
+          }
+
+          &:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+            opacity: 0.7;
+          }
+        }
+      }
+    }
+  }
+
+  // Pantallas de Estado (Éxito / Error)
+  .status-screen {
+    background: v.$white;
+    padding: 50px 30px;
+    border-radius: 20px;
+    text-align: center;
+    max-width: 450px;
+    width: 100%;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+
+    .icon-box {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px auto;
+
+      &.success {
+        background-color: #ecfdf5;
+        color: #10b981;
+      }
+      &.error {
+        background-color: #fef2f2;
+        color: #ef4444;
+      }
+    }
+
+    h2 {
+      margin-bottom: 12px;
+      color: v.$text-main;
+      font-weight: 800;
+    }
+
+    p {
+      color: v.$text-muted;
+      line-height: 1.6;
+    }
+  }
+}

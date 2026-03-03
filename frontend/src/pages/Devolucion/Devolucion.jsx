@@ -10,6 +10,8 @@ import { generarPDFDevolucion } from '../../utils/pdfGeneratorDevolucion';
 
 import { AlertTriangle, X, Check, HelpCircle } from 'lucide-react'; // <-- Importamos HelpCircle
 
+import { io } from 'socket.io-client';
+
 // --- IMPORTACIONES PARA EL TOUR ---
 import { driver } from 'driver.js';
 import 'driver.js/dist/driver.css';
@@ -151,8 +153,24 @@ const Devolucion = () => {
     }
   };
 
+  // --- Busca esta sección en Devolucion.jsx ---
   useEffect(() => {
+    // 1. IMPORTANTE: Llamar a fetchData para que la página cargue los datos al entrar
     fetchData();
+
+    const baseUrl = api.defaults.baseURL
+      ? api.defaults.baseURL.replace(/\/api\/?$/, '')
+      : 'http://localhost:4000';
+    const socket = io(baseUrl);
+
+    socket.on('documento_firmado', (data) => {
+      toast.success(
+        '¡El colaborador acaba de firmar el acta! Actualizando vista...',
+      );
+      fetchData();
+    });
+
+    return () => socket.disconnect();
   }, []);
 
   const handleSubirClick = (id) => {

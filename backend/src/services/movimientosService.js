@@ -1,6 +1,6 @@
 const { pool } = require('../config/db');
 const emailService = require('./emailService');
-const { v4: uuidv4 } = require('uuid'); // <-- Para generar el token único
+const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
 const path = require('path');
 
@@ -9,7 +9,7 @@ const getHistorial = async () => {
     SELECT 
       m.id, m.fecha_movimiento, m.tipo_movimiento as tipo, m.cargador_incluido as cargador, 
       m.observaciones, m.motivo_movimiento as motivo, m.colaborador_id as empleado_id, 
-      m.equipo_id, m.pdf_firmado_url, m.firma_valida, m.correo_enviado, m.estado_equipo_id,
+      m.equipo_id, m.pdf_firmado_url, m.pdf_generado_url, m.firma_valida, m.correo_enviado, m.estado_equipo_id,
       st.nombre as estado_equipo_momento, e.marca, e.modelo, e.numero_serie as serie, 
       c.nombres as empleado_nombre, c.apellidos as empleado_apellido, c.dni, c.email_contacto as empleado_correo,
       u.nombres as admin_nombre, uc.email_login as admin_correo,
@@ -37,12 +37,14 @@ const getHistorial = async () => {
   return response.rows;
 };
 
-// Función auxiliar para guardar el PDF Original
-const guardarPdfOriginal = (buffer, tipo) => {
+// Función auxiliar para guardar el archivo PDF físico en la carpeta Originales
+const guardarPdfEnDisco = (buffer, tipo) => {
   const uploadDir = path.join(__dirname, '../../uploads/Originales');
-  if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
 
-  const fileName = `${tipo}-${Date.now()}.pdf`;
+  const fileName = `${tipo}-${Date.now()}-${Math.round(Math.random() * 1e9)}.pdf`;
   const filePath = path.join(uploadDir, fileName);
   fs.writeFileSync(filePath, buffer);
 
@@ -52,19 +54,19 @@ const guardarPdfOriginal = (buffer, tipo) => {
 const registrarEntrega = async (data, adminId, archivoPDF) => {
   const client = await pool.connect();
   let movimientoId = null;
-  let nombreEmpleado = data.nombreEmpleado || 'Desconocido';
-  let textoColaborador = 'al colaborador';
   let tokenFirma = null;
-  let pdfOriginalUrl = null;
+  let pathPdfGenerado = null;
 
+  // Si viene el PDF desde el frontend (Asignación con correo)
   if (archivoPDF) {
     tokenFirma = uuidv4();
-    pdfOriginalUrl = guardarPdfOriginal(archivoPDF.buffer, 'asignacion');
+    pathPdfGenerado = guardarPdfEnDisco(archivoPDF.buffer, 'entrega');
   }
 
   try {
     await client.query('BEGIN');
 
+    // Validar disponibilidad
     const checkEquipo = await client.query(
       'SELECT disponible FROM equipos WHERE id = $1',
       [data.equipo_id],
@@ -72,46 +74,40 @@ const registrarEntrega = async (data, adminId, archivoPDF) => {
     if (checkEquipo.rows.length === 0 || !checkEquipo.rows[0].disponible)
       throw new Error('El equipo no está disponible.');
 
-    const empQuery = await client.query(
-      'SELECT nombres, apellidos, genero FROM colaboradores WHERE id = $1',
-      [data.empleado_id],
-    );
-    if (empQuery.rows.length > 0) {
-      const emp = empQuery.rows[0];
-      nombreEmpleado = `${emp.nombres} ${emp.apellidos}`;
-      const genero = (emp.genero || '').toLowerCase().trim();
-      if (genero === 'f' || genero === 'mujer' || genero === 'femenino')
-        textoColaborador = 'a la colaboradora';
-    }
-
+    // Insertar Movimiento con nombres exactos de tu BD
     const insertMov = `
-      INSERT INTO historial_movimientos (equipo_id, colaborador_id, tipo_movimiento, fecha_movimiento, cargador_incluido, observaciones, correo_enviado, usuario_creacion_id, pdf_generado_url, token_firma) 
-      VALUES ($1, $2, 'entrega', $3, $4, $5, $6, $7, $8, $9) RETURNING id
+      INSERT INTO historial_movimientos (
+        equipo_id, colaborador_id, tipo_movimiento, fecha_movimiento, 
+        cargador_incluido, observaciones, correo_enviado, usuario_creacion_id, 
+        pdf_generado_url, token_firma, firma_valida
+      ) VALUES ($1, $2, 'entrega', $3, $4, $5, $6, $7, $8, $9, false) RETURNING id
     `;
     const movResult = await client.query(insertMov, [
       data.equipo_id,
       data.empleado_id,
-      data.fecha || 'NOW()',
+      data.fecha || new Date(),
       data.cargador,
       data.observaciones || null,
-      archivoPDF ? false : null,
+      !!archivoPDF,
       adminId,
-      pdfOriginalUrl,
+      pathPdfGenerado,
       tokenFirma,
     ]);
     movimientoId = movResult.rows[0].id;
 
+    // Actualizar Equipo
     await client.query('UPDATE equipos SET disponible = false WHERE id = $1', [
       data.equipo_id,
     ]);
 
+    // Auditoría de Equipo
     await client.query(
       `INSERT INTO historial_equipos (equipo_id, disponible, observaciones_equipo, accion_realizada, descripcion_cambio, usuario_accion_id) 
        VALUES ($1, false, $2, 'ENTREGA', $3, $4)`,
       [
         data.equipo_id,
         data.observaciones,
-        `Asignado ${textoColaborador}: ${nombreEmpleado}${archivoPDF ? ' (Acta por correo)' : ''}`,
+        `Asignación registrada. Firma pendiente vía token: ${tokenFirma || 'N/A'}`,
         adminId,
       ],
     );
@@ -119,18 +115,18 @@ const registrarEntrega = async (data, adminId, archivoPDF) => {
     await client.query('COMMIT');
   } catch (error) {
     await client.query('ROLLBACK');
-    client.release();
     throw error;
+  } finally {
+    client.release();
   }
 
-  let emailWarning = false;
+  // Proceso de Envío de Correo (Fuera de la transacción para no bloquear la BD si falla el SMTP)
   if (archivoPDF && data.destinatario) {
     try {
       const textoCargador =
         data.cargador === 'true' || data.cargador === true
           ? 'SÍ (Incluido)'
           : 'NO (Solo equipo)';
-      // Se le pasa el tokenFirma al servicio de correo
       await emailService.enviarActaCorreo(
         'entrega',
         data.destinatario,
@@ -142,28 +138,23 @@ const registrarEntrega = async (data, adminId, archivoPDF) => {
         null,
         tokenFirma,
       );
-      await pool.query(
-        'UPDATE historial_movimientos SET correo_enviado = true WHERE id = $1',
-        [movimientoId],
-      );
     } catch (error) {
-      emailWarning = true;
+      console.error('Error enviando email:', error);
     }
   }
 
-  client.release();
-  return { movimientoId, emailWarning };
+  return { movimientoId };
 };
 
 const registrarDevolucion = async (data, adminId, archivoPDF) => {
   const client = await pool.connect();
   let movimientoId = null;
   let tokenFirma = null;
-  let pdfOriginalUrl = null;
+  let pathPdfGenerado = null;
 
   if (archivoPDF) {
     tokenFirma = uuidv4();
-    pdfOriginalUrl = guardarPdfOriginal(archivoPDF.buffer, 'devolucion');
+    pathPdfGenerado = guardarPdfEnDisco(archivoPDF.buffer, 'devolucion');
   }
 
   try {
@@ -171,20 +162,23 @@ const registrarDevolucion = async (data, adminId, archivoPDF) => {
     const estaDisponible = parseInt(data.estado_fisico_id) === 1;
 
     const insertMov = `
-      INSERT INTO historial_movimientos (equipo_id, colaborador_id, tipo_movimiento, fecha_movimiento, cargador_incluido, observaciones, estado_equipo_id, correo_enviado, usuario_creacion_id, motivo_movimiento, pdf_generado_url, token_firma) 
-      VALUES ($1, $2, 'devolucion', $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id
+      INSERT INTO historial_movimientos (
+        equipo_id, colaborador_id, tipo_movimiento, fecha_movimiento, 
+        cargador_incluido, observaciones, estado_equipo_id, correo_enviado, 
+        usuario_creacion_id, motivo_movimiento, pdf_generado_url, token_firma, firma_valida
+      ) VALUES ($1, $2, 'devolucion', $3, $4, $5, $6, $7, $8, $9, $10, $11, false) RETURNING id
     `;
     const movResult = await client.query(insertMov, [
       data.equipo_id,
       data.empleado_id,
-      data.fecha || 'NOW()',
+      data.fecha || new Date(),
       data.cargador,
       data.observaciones || null,
       data.estado_fisico_id,
-      archivoPDF ? false : null,
+      !!archivoPDF,
       adminId,
       data.motivo || 'Devolución regular',
-      pdfOriginalUrl,
+      pathPdfGenerado,
       tokenFirma,
     ]);
     movimientoId = movResult.rows[0].id;
@@ -201,14 +195,12 @@ const registrarDevolucion = async (data, adminId, archivoPDF) => {
 
     await client.query(
       `INSERT INTO historial_equipos (equipo_id, disponible, estado_fisico_id, observaciones_equipo, accion_realizada, descripcion_cambio, usuario_accion_id) 
-       VALUES ($1, $2, $3, $4, 'DEVOLUCIÓN', 'Recepción de equipo en estado: ' || $5 || '. Motivo: ' || $6, $7)`,
+       VALUES ($1, $2, $3, $4, 'DEVOLUCIÓN', 'Recepción de equipo. Firma pendiente.', $5)`,
       [
         data.equipo_id,
         estaDisponible,
         data.estado_fisico_id,
         data.observaciones,
-        data.estado_final_nombre,
-        data.motivo || 'Devolución regular',
         adminId,
       ],
     );
@@ -216,11 +208,11 @@ const registrarDevolucion = async (data, adminId, archivoPDF) => {
     await client.query('COMMIT');
   } catch (error) {
     await client.query('ROLLBACK');
-    client.release();
     throw error;
+  } finally {
+    client.release();
   }
 
-  let emailWarning = false;
   if (archivoPDF && data.destinatario) {
     try {
       const textoCargador =
@@ -238,21 +230,16 @@ const registrarDevolucion = async (data, adminId, archivoPDF) => {
         data.motivo,
         tokenFirma,
       );
-      await pool.query(
-        'UPDATE historial_movimientos SET correo_enviado = true WHERE id = $1',
-        [movimientoId],
-      );
     } catch (error) {
-      emailWarning = true;
+      console.error('Error enviando email:', error);
     }
   }
 
-  client.release();
-  return { movimientoId, emailWarning };
+  return { movimientoId };
 };
 
 const actualizarFirmaDocumento = async (id, filePath, firmaValida) => {
-  const query = `UPDATE historial_movimientos SET pdf_firmado_url = $1, firma_valida = $2 WHERE id = $3`;
+  const query = `UPDATE historial_movimientos SET pdf_firmado_url = $1, firma_valida = $2, token_firma = NULL WHERE id = $3`;
   await pool.query(query, [filePath, firmaValida, id]);
 };
 

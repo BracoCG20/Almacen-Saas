@@ -8,6 +8,8 @@ import EntregaForm from './EntregaForm';
 import EntregaTable from './EntregaTable';
 import { generarPDFBlob } from '../../utils/pdfGeneratorAsignacion';
 
+import { io } from 'socket.io-client';
+
 import { AlertTriangle, X, Check, HelpCircle } from 'lucide-react';
 
 // --- IMPORTACIONES PARA EL TOUR ---
@@ -128,7 +130,22 @@ const Asignacion = () => {
   };
 
   useEffect(() => {
+    // 1. IMPORTANTE: Llamar a fetchData para que la página cargue los datos al entrar
     fetchData();
+
+    const baseUrl = api.defaults.baseURL
+      ? api.defaults.baseURL.replace(/\/api\/?$/, '')
+      : 'http://localhost:4000';
+    const socket = io(baseUrl);
+
+    socket.on('documento_firmado', (data) => {
+      toast.success(
+        '¡El colaborador acaba de firmar el acta! Actualizando vista...',
+      );
+      fetchData();
+    });
+
+    return () => socket.disconnect();
   }, []);
 
   const handleSubirClick = (id) => {

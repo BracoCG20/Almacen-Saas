@@ -91,6 +91,9 @@ app.use('/api/servicios', serviciosRoutes);
 const dashboardRoutes = require('./routes/dashboardRoutes');
 app.use('/api/dashboard', dashboardRoutes);
 
+const firmasRoutes = require('./routes/firmasRoutes');
+app.use('/api/firmas', firmasRoutes);
+
 // ==========================================
 // INICIAR EL SERVIDOR (Usamos 'server.listen' en lugar de 'app.listen')
 // ==========================================
