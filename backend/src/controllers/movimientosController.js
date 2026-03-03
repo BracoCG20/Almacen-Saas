@@ -138,14 +138,28 @@ const subirPdfFirmado = async (req, res) => {
 
 const invalidarFirma = async (req, res) => {
   try {
+    const { id } = req.params;
+    const usuarioId = req.user.id;
+
+    // 1. Ejecutar el servicio (Ya no le pasamos el objeto 'req' entero)
     await movimientosService.actualizarFirmaDocumento(
-      req.params.id,
+      id,
       null,
       false,
+      usuarioId,
     );
-    res.json({ message: 'Documento invalidado correctamente.' });
+
+    // 2. Emitir el evento de Socket.io correctamente
+    const io = req.app.get('io');
+    if (io) {
+      console.log(`Emitiendo actualización para movimiento: ${id}`);
+      io.emit('documento_firmado', { id, status: 'pendente' });
+    }
+
+    res.json({ message: 'Documento invalidado y enviado nuevamente.' });
   } catch (error) {
-    res.status(500).json({ error: 'Error interno al invalidar el documento.' });
+    console.error('Error en controller invalidar:', error);
+    res.status(500).json({ error: 'Fallo interno al invalidar.' });
   }
 };
 

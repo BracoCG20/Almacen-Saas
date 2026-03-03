@@ -153,24 +153,34 @@ const Devolucion = () => {
     }
   };
 
-  // --- Busca esta sección en Devolucion.jsx ---
   useEffect(() => {
-    // 1. IMPORTANTE: Llamar a fetchData para que la página cargue los datos al entrar
+    let isMounted = true;
+
+    // 1. Cargar datos
     fetchData();
 
+    // 2. Configurar Socket de forma segura
     const baseUrl = api.defaults.baseURL
       ? api.defaults.baseURL.replace(/\/api\/?$/, '')
       : 'http://localhost:4000';
+
+    // Quitamos la configuración forzada de websocket que causaba el warning
     const socket = io(baseUrl);
 
     socket.on('documento_firmado', (data) => {
-      toast.success(
-        '¡El colaborador acaba de firmar el acta! Actualizando vista...',
-      );
-      fetchData();
+      // Solo actualizamos si el componente sigue en pantalla
+      if (isMounted) {
+        // Eliminamos los console.log para mantenerlo limpio
+        toast.info('Actualizando estados de firma...', { icon: '📝' });
+        fetchData();
+      }
     });
 
-    return () => socket.disconnect();
+    return () => {
+      isMounted = false;
+      socket.off('documento_firmado');
+      socket.disconnect();
+    };
   }, []);
 
   const handleSubirClick = (id) => {

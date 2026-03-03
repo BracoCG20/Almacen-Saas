@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   History,
   Check,
@@ -10,6 +11,7 @@ import {
   AlertTriangle,
   CalendarDays,
   Circle,
+  Clock,
 } from 'lucide-react';
 
 const DevolucionTable = ({
@@ -38,23 +40,17 @@ const DevolucionTable = ({
 
   const getStatusBadge = (estado) => {
     const estLower = (estado || '').toLowerCase().trim();
-
-    if (estLower === 'operativo') {
+    if (estLower === 'operativo')
       return {
         color: '#16a34a',
         bg: '#dcfce7',
         text: 'Operativo',
         Icon: Check,
       };
-    } else if (
-      estLower === 'inoperativo' ||
-      estLower === 'malogrado' ||
-      estLower === 'mantenimiento'
-    ) {
+    if (['inoperativo', 'malogrado', 'mantenimiento'].includes(estLower))
       return { color: '#ea580c', bg: '#ffedd5', text: estado, Icon: IconX };
-    } else if (estLower === 'robado' || estLower === 'perdido') {
+    if (['robado', 'perdido'].includes(estLower))
       return { color: '#dc2626', bg: '#fee2e2', text: estado, Icon: IconX };
-    }
     return {
       color: '#64748b',
       bg: '#f1f5f9',
@@ -88,12 +84,11 @@ const DevolucionTable = ({
           {historial.map((h) => {
             const status = getStatusBadge(h.estado_equipo_momento);
             const StatusIcon = status.Icon;
-
             return (
               <tr key={h.id}>
                 <td>
                   <div className='email-cell'>
-                    <CalendarDays size={14} />
+                    <CalendarDays size={14} />{' '}
                     {formatDateTime(h.fecha_movimiento)}
                   </div>
                 </td>
@@ -155,29 +150,17 @@ const DevolucionTable = ({
                   {h.correo_enviado === false && (
                     <button
                       onClick={() => onReenviarCorreo(h)}
-                      title='Fallo el envío. Clic para reintentar'
                       style={{
                         background: 'none',
                         border: 'none',
                         cursor: 'pointer',
-                        padding: 0,
                       }}
                     >
                       <AlertTriangle
                         size={18}
                         className='mail-error'
-                        onMouseOver={(e) =>
-                          (e.currentTarget.style.transform = 'scale(1.2)')
-                        }
-                        onMouseOut={(e) =>
-                          (e.currentTarget.style.transform = 'scale(1)')
-                        }
-                        style={{ transition: 'transform 0.2s' }}
                       />
                     </button>
-                  )}
-                  {h.correo_enviado === null && (
-                    <span style={{ color: '#cbd5e1' }}>-</span>
                   )}
                 </td>
                 <td className='center'>
@@ -193,16 +176,7 @@ const DevolucionTable = ({
                 </td>
                 <td className='center'>
                   <div className='actions-cell'>
-                    {!h.pdf_firmado_url && (
-                      <button
-                        onClick={() => onSubirClick(h.id)}
-                        className='btn-upload'
-                      >
-                        <Upload size={14} /> Subir
-                      </button>
-                    )}
-
-                    {h.pdf_firmado_url && h.firma_valida !== false && (
+                    {h.firma_valida === true ? (
                       <>
                         <button
                           onClick={() => onVerFirmado(h.pdf_firmado_url)}
@@ -219,14 +193,23 @@ const DevolucionTable = ({
                           <Ban size={18} />
                         </button>
                       </>
-                    )}
-
-                    {h.pdf_firmado_url && h.firma_valida === false && (
+                    ) : h.token_firma ? (
+                      <div
+                        className='status-pending-signature'
+                        title='Esperando firma...'
+                      >
+                        <Clock
+                          size={18}
+                          color='#f59e0b'
+                          className='animate-pulse'
+                        />
+                      </div>
+                    ) : (
                       <button
                         onClick={() => onSubirClick(h.id)}
-                        className='btn-upload re-upload'
+                        className='btn-upload'
                       >
-                        <Upload size={14} /> Re-subir
+                        <Upload size={14} /> Subir
                       </button>
                     )}
                   </div>

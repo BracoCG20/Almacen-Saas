@@ -238,9 +238,90 @@ const registrarDevolucion = async (data, adminId, archivoPDF) => {
   return { movimientoId };
 };
 
-const actualizarFirmaDocumento = async (id, filePath, firmaValida) => {
-  const query = `UPDATE historial_movimientos SET pdf_firmado_url = $1, firma_valida = $2, token_firma = NULL WHERE id = $3`;
-  await pool.query(query, [filePath, firmaValida, id]);
+const actualizarFirmaDocumento = async (
+  id,
+  filePath,
+  firmaValida,
+  usuarioModificadorId,
+) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    if (firmaValida === false) {
+      // --- LÓGICA DE INVALIDACIÓN ---
+      const nuevoToken = uuidv4();
+
+      // MEJORA CLAVE: Añadimos st.nombre como estado_final_nombre para las devoluciones
+      const infoQuery = `
+                SELECT m.tipo_movimiento, m.cargador_incluido, m.pdf_generado_url, m.motivo_movimiento,
+                       c.email_contacto, c.nombres, c.apellidos, e.marca, e.modelo,
+                       st.nombre as estado_final_nombre
+                FROM historial_movimientos m
+                JOIN colaboradores c ON m.colaborador_id = c.id
+                JOIN equipos e ON m.equipo_id = e.id
+                LEFT JOIN estados_equipos st ON m.estado_equipo_id = st.id
+                WHERE m.id = $1
+            `;
+      const infoRes = await client.query(infoQuery, [id]);
+      const mov = infoRes.rows[0];
+
+      if (!mov) throw new Error('No se encontró el registro.');
+
+      await client.query(
+        `
+                UPDATE historial_movimientos 
+                SET pdf_firmado_url = NULL, 
+                    firma_valida = false, 
+                    token_firma = $1,
+                    fecha_modificacion = NOW(),
+                    usuario_modificacion_id = $2
+                WHERE id = $3
+            `,
+        [nuevoToken, usuarioModificadorId, id],
+      );
+
+      if (mov.email_contacto && mov.pdf_generado_url) {
+        const originalPdfPath = path.join(
+          __dirname,
+          '../../',
+          mov.pdf_generado_url,
+        );
+        if (fs.existsSync(originalPdfPath)) {
+          const pdfBuffer = fs.readFileSync(originalPdfPath);
+          await emailService.enviarActaCorreo(
+            mov.tipo_movimiento,
+            mov.email_contacto,
+            `${mov.nombres} ${mov.apellidos}`,
+            `${mov.marca} ${mov.modelo}`,
+            mov.cargador_incluido ? 'SÍ' : 'NO',
+            pdfBuffer,
+            mov.estado_final_nombre, // Pasamos el estado recuperado
+            mov.motivo_movimiento, // Pasamos el motivo recuperado
+            nuevoToken,
+          );
+        }
+      }
+    } else {
+      await client.query(
+        `
+                UPDATE historial_movimientos 
+                SET pdf_firmado_url = $1, firma_valida = true, token_firma = NULL 
+                WHERE id = $2
+            `,
+        [filePath, id],
+      );
+    }
+
+    await client.query('COMMIT');
+    return true;
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('ERROR EN INVALIDACIÓN:', error); // <-- Dejamos este console log temporal en backend para ver por qué falla si sigue fallando
+    throw error;
+  } finally {
+    client.release();
+  }
 };
 
 module.exports = {
@@ -248,4 +329,5 @@ module.exports = {
   registrarEntrega,
   registrarDevolucion,
   actualizarFirmaDocumento,
+  guardarPdfEnDisco,
 };

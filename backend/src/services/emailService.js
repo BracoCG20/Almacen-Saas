@@ -38,8 +38,11 @@ const enviarActaCorreo = async (
       </div>
     `;
   } else {
+    // --- VALIDACIÓN DE SEGURIDAD CRÍTICA AQUÍ ---
+    const estadoSeguro = estado_final_nombre || 'No especificado';
     const colorEstado =
-      estado_final_nombre.toLowerCase() === 'operativo' ? '#16a34a' : '#dc2626';
+      estadoSeguro.toLowerCase() === 'operativo' ? '#16a34a' : '#dc2626';
+
     contenidoEspecifico = `
       <div style="background-color: #fef2f2; border: 1px solid #ddd6fe; border-radius: 12px; padding: 25px; margin: 20px 0;">
         <p style="margin:0; font-size:11px; font-weight:700; color:#dc2626;">EQUIPO DEVUELTO</p>
@@ -47,7 +50,7 @@ const enviarActaCorreo = async (
         <div style="display:flex; justify-content:space-between; border-top:1px solid #ddd6fe; padding-top:15px; margin-bottom:15px;">
           <div>
             <p style="margin:0; font-size:11px; font-weight:700; color:#dc2626;">ESTADO FINAL</p>
-            <p style="margin:4px 0 0 0; font-size:15px; font-weight:600; color:${colorEstado}; text-transform:uppercase;">${estado_final_nombre}</p>
+            <p style="margin:4px 0 0 0; font-size:15px; font-weight:600; color:${colorEstado}; text-transform:uppercase;">${estadoSeguro}</p>
           </div>
           <div>
             <p style="margin:0; font-size:11px; font-weight:700; color:#dc2626;">CARGADOR</p>
