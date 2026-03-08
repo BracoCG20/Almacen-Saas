@@ -1,0 +1,141 @@
+@use "../../styles/variables" as v;
+@use "sass:color";
+
+.stats-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+	gap: 20px;
+	margin-bottom: 25px;
+
+	.stat-card-mini {
+		background: #ffffff;
+		border-radius: 14px;
+		padding: 20px;
+		border: 1px solid #e2e8f0;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+		transition:
+			transform 0.2s,
+			box-shadow 0.2s;
+
+		&:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 8px 16px rgba(0, 0, 0, 0.04);
+		}
+
+		/* Cabecera (Icono, Título y Porcentaje) */
+		.card-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 16px;
+
+			.title-wrapper {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+
+				.icon-sm {
+					width: 32px;
+					height: 32px;
+					border-radius: 8px;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+				}
+
+				h4 {
+					margin: 0;
+					font-size: 0.95rem;
+					font-weight: 700;
+					color: v.$text-main;
+				}
+			}
+
+			.percentage-badge {
+				font-size: 0.75rem;
+				font-weight: 600;
+				color: v.$text-muted;
+				background: #f8fafc;
+				padding: 4px 8px;
+				border-radius: 6px;
+				border: 1px solid #f1f5f9;
+			}
+		}
+
+		/* Barra de Progreso */
+		.progress-track {
+			width: 100%;
+			height: 6px;
+			background-color: #f1f5f9;
+			border-radius: 10px;
+			overflow: hidden;
+			margin-bottom: 20px;
+
+			.progress-fill {
+				height: 100%;
+				border-radius: 10px;
+				transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+			}
+		}
+
+		/* Métricas en Fila */
+		.card-metrics {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+
+			.metric-item {
+				display: flex;
+				flex-direction: column;
+				gap: 4px;
+				flex: 1;
+
+				.label {
+					font-size: 0.7rem;
+					color: #64748b;
+					font-weight: 600;
+					text-transform: uppercase;
+					letter-spacing: 0.5px;
+				}
+
+				.value {
+					font-size: 1.3rem;
+					font-weight: 800;
+					color: v.$text-main;
+
+					&.free {
+						color: #059669; /* Verde elegante */
+					}
+				}
+			}
+
+			.divider {
+				width: 1px;
+				height: 30px;
+				background-color: #e2e8f0;
+				margin: 0 15px;
+			}
+		}
+
+		/* --- TEMAS DE COLORES --- */
+		&.starter {
+			.icon-sm {
+				background-color: #f0f9ff;
+				color: #0284c7;
+			}
+			.progress-fill {
+				background: linear-gradient(90deg, #38bdf8, #0284c7);
+			}
+		}
+
+		&.standard {
+			.icon-sm {
+				background-color: #f3e8ff;
+				color: v.$primary;
+			}
+			.progress-fill {
+				background: linear-gradient(90deg, #a78bfa, v.$primary);
+			}
+		}
+	}
+}
