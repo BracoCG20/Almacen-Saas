@@ -3,7 +3,15 @@ import api from "../../service/api";
 import { toast } from "react-toastify";
 import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
-import { CloudUpload, Save, Link } from "lucide-react";
+import {
+	CloudUpload,
+	Save,
+	Link as LinkIcon,
+	Wallet,
+	CreditCard,
+	Landmark,
+	FileText,
+} from "lucide-react";
 import "./AddServicioForm.scss";
 
 const AddServicioForm = ({ onSuccess, servicioToEdit }) => {
@@ -67,13 +75,11 @@ const AddServicioForm = ({ onSuccess, servicioToEdit }) => {
 					api.get("/empresas"),
 					api.get("/servicios/responsables"),
 				]);
-
 				setEmpresasOptions(
 					resEmpresas.data
 						.filter((emp) => emp.estado)
 						.map((emp) => ({ value: emp.id, label: emp.razon_social })),
 				);
-
 				setUsuariosOptions(
 					resUsuarios.data.map((u) => ({
 						value: u.id,
@@ -82,7 +88,7 @@ const AddServicioForm = ({ onSuccess, servicioToEdit }) => {
 					})),
 				);
 			} catch (error) {
-				toast.error("Error al cargar datos iniciales de empresas o usuarios");
+				toast.error("Error al cargar datos iniciales");
 			}
 		};
 		fetchIniciales();
@@ -119,40 +125,36 @@ const AddServicioForm = ({ onSuccess, servicioToEdit }) => {
 
 	const handleChange = (e) => {
 		const { name, value, type } = e.target;
-		setFormData({
-			...formData,
+		setFormData((prev) => ({
+			...prev,
 			[name]: type === "number" && value !== "" ? Number(value) : value,
-		});
+		}));
 	};
 
 	const handleSelectChange = (selectedOption, actionMeta) => {
-		setFormData({
-			...formData,
+		setFormData((prev) => ({
+			...prev,
 			[actionMeta.name]: selectedOption ? selectedOption.value : null,
-		});
+		}));
 	};
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		if (!formData.nombre.trim())
-			return toast.warning("El nombre del servicio es obligatorio.");
+			return toast.warning("El nombre es obligatorio.");
 
 		setLoading(true);
 		try {
 			if (servicioToEdit) {
 				await api.put(`/servicios/${servicioToEdit.id}`, formData);
-				toast.success("Servicio actualizado correctamente ✅");
+				toast.success("Servicio actualizado correctamente");
 			} else {
 				await api.post("/servicios", formData);
-				toast.success("Servicio registrado correctamente ✅");
+				toast.success("Servicio registrado correctamente");
 			}
 			onSuccess();
 		} catch (error) {
-			console.error("Error guardando servicio:", error);
-			toast.error(
-				error.response?.data?.error ||
-					"Error al guardar los datos en el servidor ❌",
-			);
+			toast.error(error.response?.data?.error || "Error al guardar");
 		} finally {
 			setLoading(false);
 		}
@@ -162,301 +164,254 @@ const AddServicioForm = ({ onSuccess, servicioToEdit }) => {
 		control: (provided, state) => ({
 			...provided,
 			borderRadius: "8px",
-			borderColor: state.isFocused ? "#4f46e5" : "#cbd5e1",
-			boxShadow: state.isFocused ? "0 0 0 3px rgba(79, 70, 229, 0.15)" : "none",
-			minHeight: "50px",
-			height: "50px",
-			backgroundColor: "#fff",
+			borderColor: state.isFocused ? "#7c3aed" : "#e2e8f0",
+			boxShadow: state.isFocused ? "0 0 0 2px rgba(124, 58, 237, 0.1)" : "none",
+			minHeight: "40px",
+			height: "40px",
+			fontSize: "0.85rem",
+			backgroundColor: "white",
 			cursor: "pointer",
 		}),
-		valueContainer: (provided) => ({
-			...provided,
-			padding: "0 14px",
-			position: "relative",
-		}),
-		input: (provided) => ({ ...provided, margin: "0px", padding: "0px" }),
+		valueContainer: (provided) => ({ ...provided, padding: "0 10px" }),
 		indicatorSeparator: () => ({ display: "none" }),
 		singleValue: (provided) => ({
 			...provided,
 			color: "#1e293b",
-			fontSize: "0.95rem",
-			position: "absolute",
-			top: "50%",
-			transform: "translateY(-50%)",
-		}),
-		placeholder: (provided) => ({
-			...provided,
-			color: "#94a3b8",
-			fontSize: "0.95rem",
-			position: "absolute",
-			top: "50%",
-			transform: "translateY(-50%)",
-		}),
-		option: (provided, state) => ({
-			...provided,
-			backgroundColor: state.isSelected
-				? "#4f46e5"
-				: state.isFocused
-					? "#f8fafc"
-					: "white",
-			color: state.isSelected ? "white" : "#334155",
-			cursor: "pointer",
-			padding: "12px 15px",
+			fontWeight: "500",
 		}),
 		menuPortal: (base) => ({ ...base, zIndex: 9999 }),
 	};
 
 	return (
-		<form className='equipo-form' onSubmit={handleSubmit}>
-			<h4 className='form-section-title'>Información General</h4>
-			<div className='form-row'>
-				<div className='input-group'>
-					<label>Nombre del Servicio *</label>
-					<input
-						name='nombre'
-						value={formData.nombre}
-						onChange={handleChange}
-						required
-						placeholder='Ej: Google Workspace, AWS, Jira...'
-					/>
+		<form className='servicio-form-modern' onSubmit={handleSubmit}>
+			{/* SECCIÓN 1: GENERAL */}
+			<div className='form-section'>
+				<div className='section-header'>
+					<div className='indicator' />
+					<h4>Información del Servicio</h4>
 				</div>
-				<div className='input-group'>
-					<label>Categoría del Servicio *</label>
-					<Select
-						name='categoria_servicio'
-						options={categoriasOptions}
-						value={categoriasOptions.find(
-							(op) => op.value === formData.categoria_servicio,
-						)}
-						onChange={handleSelectChange}
-						styles={customSelectStyles}
-						isSearchable={false}
-						menuPortalTarget={document.body}
-						required
-					/>
-				</div>
-			</div>
-
-			<div className='form-row'>
-				<div className='input-group'>
-					<label>
-						<Link size={14} style={{ marginRight: "4px" }} /> Link del Servicio
-						(URL)
-					</label>
-					<input
-						type='url'
-						name='link_servicio'
-						value={formData.link_servicio}
-						onChange={handleChange}
-						placeholder='https://ejemplo.com/login'
-					/>
-				</div>
-				<div className='input-group'>
-					<label>Descripción</label>
-					<input
-						name='descripcion'
-						value={formData.descripcion}
-						onChange={handleChange}
-						placeholder='Ej: Correos corporativos y Drive'
-					/>
-				</div>
-			</div>
-
-			<div className='form-row-all' style={{ marginTop: "0.5rem" }}>
-				<div className='input-group'>
-					<label style={{ color: "#4f46e5" }}>Responsable de la Cuenta</label>
-					<Select
-						name='usuario_id_responsable'
-						options={usuariosOptions}
-						value={usuariosOptions.find(
-							(op) => op.value === formData.usuario_id_responsable,
-						)}
-						onChange={handleSelectChange}
-						styles={customSelectStyles}
-						placeholder='Seleccionar Responsable de TI o Gerencia...'
-						isClearable
-						menuPortalTarget={document.body}
-					/>
-				</div>
-			</div>
-
-			<hr className='divider' />
-
-			<h4 className='form-section-title'>Finanzas y Facturación</h4>
-			<div className='form-row'>
-				<div className='input-group'>
-					<label>Precio Estimado y Moneda</label>
-					<div style={{ display: "flex", gap: "8px" }}>
-						<div style={{ width: "120px" }}>
-							<Select
-								name='moneda'
-								options={monedaOptions}
-								value={monedaOptions.find((op) => op.value === formData.moneda)}
-								onChange={handleSelectChange}
-								styles={customSelectStyles}
-								isSearchable={false}
-								menuPortalTarget={document.body}
-							/>
-						</div>
+				<div className='form-grid'>
+					<div className='input-group'>
+						<label>Nombre del Servicio *</label>
 						<input
-							type='number'
-							step='0.01'
-							inputMode='numeric'
-							pattern='[0-9]*'
-							min='0'
-							name='precio'
-							value={formData.precio}
+							name='nombre'
+							value={formData.nombre}
 							onChange={handleChange}
-							placeholder='0.00'
-							style={{ flex: 1 }}
+							required
+							placeholder='Ej: AWS, Jira, Zoom...'
+						/>
+					</div>
+					<div className='input-group'>
+						<label>Categoría</label>
+						<Select
+							name='categoria_servicio'
+							options={categoriasOptions}
+							value={categoriasOptions.find(
+								(op) => op.value === formData.categoria_servicio,
+							)}
+							onChange={handleSelectChange}
+							styles={customSelectStyles}
+							isSearchable={false}
+							menuPortalTarget={document.body}
+						/>
+					</div>
+					<div className='input-group full-width'>
+						<label>
+							<LinkIcon size={14} /> URL / Enlace del Servicio
+						</label>
+						<input
+							type='url'
+							name='link_servicio'
+							value={formData.link_servicio}
+							onChange={handleChange}
+							placeholder='https://'
+						/>
+					</div>
+					<div className='input-group full-width'>
+						<label>
+							<FileText size={14} /> Descripción de uso
+						</label>
+						<input
+							name='descripcion'
+							value={formData.descripcion}
+							onChange={handleChange}
+							placeholder='¿Para qué se usa este software?'
 						/>
 					</div>
 				</div>
-				<div className='input-group'>
-					<label>Frecuencia de Pago *</label>
-					<Select
-						name='frecuencia_pago'
-						options={frecuenciaOptions}
-						value={frecuenciaOptions.find(
-							(op) => op.value === formData.frecuencia_pago,
-						)}
-						onChange={handleSelectChange}
-						styles={customSelectStyles}
-						isSearchable={false}
-						menuPortalTarget={document.body}
-						required
-					/>
-				</div>
 			</div>
 
-			<div className='form-row'>
-				<div className='input-group'>
-					<label>Método de Pago Predeterminado</label>
-					<CreatableSelect
-						name='metodo_pago'
-						options={metodoPagoOptions}
-						value={
-							formData.metodo_pago
-								? { value: formData.metodo_pago, label: formData.metodo_pago }
-								: null
-						}
-						onChange={handleSelectChange}
-						styles={customSelectStyles}
-						placeholder='Seleccione o escriba uno nuevo'
-						isClearable
-						menuPortalTarget={document.body}
-					/>
+			{/* SECCIÓN 2: COSTOS */}
+			<div className='form-section'>
+				<div className='section-header'>
+					<div className='indicator' />
+					<h4>Costos y Responsable</h4>
 				</div>
-				<div className='input-group'>
-					<label>Próximo Pago Estimado (Vencimiento)</label>
-					<input
-						type='date'
-						name='fecha_proximo_pago'
-						value={formData.fecha_proximo_pago}
-						onChange={handleChange}
-					/>
-				</div>
-			</div>
-
-			<hr className='divider' />
-
-			<h4 className='form-section-title'>Asignación y Datos Bancarios</h4>
-			<div className='form-row'>
-				<div className='input-group company-block'>
-					<label style={{ color: "#4f46e5", fontWeight: "bold" }}>
-						Empresa que Factura / Paga
-					</label>
-					<Select
-						name='empresa_id_factura'
-						options={empresasOptions}
-						value={empresasOptions.find(
-							(op) => op.value === formData.empresa_id_factura,
-						)}
-						onChange={handleSelectChange}
-						styles={customSelectStyles}
-						placeholder='Seleccione empresa...'
-						isClearable
-						menuPortalTarget={document.body}
-					/>
-					<div className='bank-details'>
-						<div className='field'>
-							<label>N° de Tarjeta / Cuenta de cargo</label>
+				<div className='form-grid'>
+					<div className='input-group'>
+						<label>Precio y Moneda</label>
+						<div className='currency-group'>
+							<div className='select-wrapper'>
+								<Select
+									name='moneda'
+									options={monedaOptions}
+									value={monedaOptions.find(
+										(op) => op.value === formData.moneda,
+									)}
+									onChange={handleSelectChange}
+									styles={customSelectStyles}
+									isSearchable={false}
+									menuPortalTarget={document.body}
+								/>
+							</div>
 							<input
-								name='numero_tarjeta_empresa_factura'
-								inputMode='numeric'
-								pattern='[0-9]*'
-								value={formData.numero_tarjeta_empresa_factura}
+								type='number'
+								step='0.01'
+								name='precio'
+								value={formData.precio}
 								onChange={handleChange}
-								placeholder='Ej: 4550 1234 ....'
-							/>
-						</div>
-						<div className='field'>
-							<label>CCI (Interbancaria)</label>
-							<input
-								name='cci_cuenta_empresa_factura'
-								inputMode='numeric'
-								pattern='[0-9]*'
-								value={formData.cci_cuenta_empresa_factura}
-								onChange={handleChange}
-								placeholder='Ej: 002-191-123...'
+								placeholder='0.00'
 							/>
 						</div>
 					</div>
-				</div>
-
-				<div className='input-group company-block'>
-					<label style={{ color: "#059669", fontWeight: "bold" }}>
-						Empresa que Utiliza el Servicio
-					</label>
-					<Select
-						name='empresa_id_usuaria'
-						options={empresasOptions}
-						value={empresasOptions.find(
-							(op) => op.value === formData.empresa_id_usuaria,
-						)}
-						onChange={handleSelectChange}
-						styles={customSelectStyles}
-						placeholder='Seleccione empresa...'
-						isClearable
-						menuPortalTarget={document.body}
-					/>
-					<div className='bank-details'>
-						<div className='field'>
-							<label>N° de Tarjeta / Cuenta interna</label>
-							<input
-								name='numero_tarjeta_empresa_usuaria'
-								inputMode='numeric'
-								pattern='[0-9]*'
-								value={formData.numero_tarjeta_empresa_usuaria}
-								onChange={handleChange}
-								placeholder='Ej: 4550 1234 ....'
-							/>
-						</div>
-						<div className='field'>
-							<label>CCI (Interbancaria) interna</label>
-							<input
-								name='cci_cuenta_empresa_usuaria'
-								inputMode='numeric'
-								pattern='[0-9]*'
-								value={formData.cci_cuenta_empresa_usuaria}
-								onChange={handleChange}
-								placeholder='Ej: 002-191-123...'
-							/>
-						</div>
+					<div className='input-group'>
+						<label>Frecuencia de Pago</label>
+						<Select
+							name='frecuencia_pago'
+							options={frecuenciaOptions}
+							value={frecuenciaOptions.find(
+								(op) => op.value === formData.frecuencia_pago,
+							)}
+							onChange={handleSelectChange}
+							styles={customSelectStyles}
+							isSearchable={false}
+							menuPortalTarget={document.body}
+						/>
+					</div>
+					<div className='input-group'>
+						<label>Próximo Vencimiento</label>
+						<input
+							type='date'
+							name='fecha_proximo_pago'
+							value={formData.fecha_proximo_pago}
+							onChange={handleChange}
+						/>
+					</div>
+					<div className='input-group'>
+						<label>Responsable Directo</label>
+						<Select
+							name='usuario_id_responsable'
+							options={usuariosOptions}
+							value={usuariosOptions.find(
+								(op) => op.value === formData.usuario_id_responsable,
+							)}
+							onChange={handleSelectChange}
+							styles={customSelectStyles}
+							placeholder='Seleccionar...'
+							isClearable
+							menuPortalTarget={document.body}
+						/>
 					</div>
 				</div>
 			</div>
 
-			<hr className='divider' />
+			{/* SECCIÓN 3: FACTURACIÓN */}
+			<div className='form-section'>
+				<div className='section-header'>
+					<div className='indicator' />
+					<h4>Datos de Facturación</h4>
+				</div>
+				<div className='billing-container'>
+					{/* Empresa Pago */}
+					<div className='billing-card factura'>
+						<div className='card-title'>
+							<Wallet size={14} /> Empresa que Paga
+						</div>
+						<Select
+							name='empresa_id_factura'
+							options={empresasOptions}
+							value={empresasOptions.find(
+								(op) => op.value === formData.empresa_id_factura,
+							)}
+							onChange={handleSelectChange}
+							styles={customSelectStyles}
+							placeholder='Empresa...'
+							isClearable
+							menuPortalTarget={document.body}
+						/>
+						<div className='mini-grid'>
+							<div className='mini-group'>
+								<label>N° Tarjeta</label>
+								<input
+									name='numero_tarjeta_empresa_factura'
+									value={formData.numero_tarjeta_empresa_factura}
+									onChange={handleChange}
+									placeholder='0000...'
+								/>
+							</div>
+							<div className='mini-group'>
+								<label>CCI</label>
+								<input
+									name='cci_cuenta_empresa_factura'
+									value={formData.cci_cuenta_empresa_factura}
+									onChange={handleChange}
+									placeholder='CCI...'
+								/>
+							</div>
+						</div>
+					</div>
 
-			<button type='submit' className='btn-submit-gigante' disabled={loading}>
-				{servicioToEdit ? (
-					<Save size={24} style={{ marginRight: "10px" }} />
-				) : (
-					<CloudUpload size={24} style={{ marginRight: "10px" }} />
-				)}
-				{servicioToEdit ? "Guardar Cambios" : "Registrar Servicio"}
-			</button>
+					{/* Empresa Usuaria */}
+					<div className='billing-card usuaria'>
+						<div className='card-title'>
+							<Landmark size={14} /> Empresa Usuaria
+						</div>
+						<Select
+							name='empresa_id_usuaria'
+							options={empresasOptions}
+							value={empresasOptions.find(
+								(op) => op.value === formData.empresa_id_usuaria,
+							)}
+							onChange={handleSelectChange}
+							styles={customSelectStyles}
+							placeholder='Empresa...'
+							isClearable
+							menuPortalTarget={document.body}
+						/>
+						<div className='mini-grid'>
+							<div className='mini-group'>
+								<label>N° Tarjeta</label>
+								<input
+									name='numero_tarjeta_empresa_usuaria'
+									value={formData.numero_tarjeta_empresa_usuaria}
+									onChange={handleChange}
+									placeholder='0000...'
+								/>
+							</div>
+							<div className='mini-group'>
+								<label>CCI</label>
+								<input
+									name='cci_cuenta_empresa_usuaria'
+									value={formData.cci_cuenta_empresa_usuaria}
+									onChange={handleChange}
+									placeholder='CCI...'
+								/>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div className='form-footer'>
+				<button type='submit' className='btn-submit-modern' disabled={loading}>
+					{servicioToEdit ? <Save size={18} /> : <CloudUpload size={18} />}
+					{loading
+						? "Procesando..."
+						: servicioToEdit
+							? "Actualizar Servicio"
+							: "Registrar Servicio"}
+				</button>
+			</div>
 		</form>
 	);
 };

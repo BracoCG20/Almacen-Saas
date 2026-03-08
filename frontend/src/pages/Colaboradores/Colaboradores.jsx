@@ -21,6 +21,7 @@ import {
 	ChevronRight,
 	History,
 	HelpCircle,
+	Barcode,
 } from "lucide-react";
 
 // --- IMPORTACIONES PARA EL TOUR ---
@@ -268,10 +269,11 @@ const Colaboradores = () => {
 			...provided,
 			backgroundColor: "white",
 			border: state.isFocused ? "1px solid #7c3aed" : "1px solid #e2e8f0",
-			borderRadius: "12px",
-			padding: "2px 6px",
-			minHeight: "46px",
-			boxShadow: state.isFocused ? "0 0 0 3px rgba(124, 58, 237, 0.1)" : "none",
+			borderRadius: "8px",
+			padding: "0px 4px",
+			minHeight: "40px",
+			height: "40px",
+			boxShadow: state.isFocused ? "0 0 0 2px rgba(124, 58, 237, 0.1)" : "none",
 			cursor: "pointer",
 			"&:hover": { borderColor: "#7c3aed" },
 		}),
@@ -280,20 +282,20 @@ const Colaboradores = () => {
 			...provided,
 			color: "#1e293b",
 			fontWeight: "500",
-			fontSize: "0.95rem",
+			fontSize: "0.85rem",
 		}),
 		placeholder: (provided) => ({
 			...provided,
 			color: "#94a3b8",
-			fontSize: "0.95rem",
+			fontSize: "0.85rem",
 		}),
 		menu: (provided) => ({
 			...provided,
-			borderRadius: "12px",
+			borderRadius: "8px",
 			overflow: "hidden",
 			zIndex: 9999,
 			border: "1px solid #e2e8f0",
-			boxShadow: "0 10px 25px rgba(0,0,0,0.05)",
+			boxShadow: "0 4px 15px rgba(0,0,0,0.05)",
 		}),
 		option: (provided, state) => ({
 			...provided,
@@ -304,8 +306,8 @@ const Colaboradores = () => {
 					: "white",
 			color: state.isSelected ? "white" : "#334155",
 			cursor: "pointer",
-			fontSize: "0.9rem",
-			padding: "10px 15px",
+			fontSize: "0.85rem",
+			padding: "8px 12px",
 		}),
 	};
 
@@ -316,28 +318,25 @@ const Colaboradores = () => {
 			<div className='page-header'>
 				<h1>Directorio de Personal</h1>
 				<div className='header-actions'>
-					{/* BOTÓN TOUR */}
 					<button
 						onClick={startColaboradoresTour}
 						className='btn-action-header btn-tour'
 					>
 						<HelpCircle size={18} />
 					</button>
-
 					<button
 						id='tour-colab-excel'
 						onClick={exportarExcel}
 						className='btn-action-header btn-excel'
 					>
-						<FileSpreadsheet size={18} /> Exportar Excel
+						<FileSpreadsheet size={16} /> Exportar Excel
 					</button>
-
 					<button
 						id='tour-colab-nuevo'
 						className='btn-action-header btn-add'
 						onClick={handleAdd}
 					>
-						<Plus size={18} /> Nuevo Colaborador
+						<Plus size={16} /> Nuevo Colaborador
 					</button>
 				</div>
 			</div>
@@ -399,7 +398,9 @@ const Colaboradores = () => {
 											</span>
 										</td>
 										<td>
-											<span className='dni-text'>{colab.dni}</span>
+											<span className='dni-text'>
+												<Barcode size={12} /> {colab.dni}
+											</span>
 										</td>
 										<td>
 											<div className='user-avatar-cell'>
@@ -509,6 +510,7 @@ const Colaboradores = () => {
 					</table>
 				)}
 
+				{/* RESTAURADA LA PAGINACIÓN ORIGINAL SIN ESTILOS EN LÍNEA */}
 				{filteredColaboradores.length > itemsPerPage && (
 					<div className='pagination-footer'>
 						<div className='info'>
@@ -584,10 +586,10 @@ const Colaboradores = () => {
 							className='btn-cancel'
 							onClick={() => setIsDeleteModalOpen(false)}
 						>
-							<X size={16} /> Cancelar
+							<X size={18} /> Cancelar
 						</button>
 						<button className='btn-confirm' onClick={executeDelete}>
-							<Check size={16} /> Confirmar Baja
+							<Check size={18} /> Confirmar Baja
 						</button>
 					</div>
 				</div>

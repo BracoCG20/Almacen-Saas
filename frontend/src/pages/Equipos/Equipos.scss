@@ -11,10 +11,9 @@
 
 		h1 {
 			font-size: 1.8rem;
-			font-weight: 800; /* Un poco más de peso estilo moderno */
-			color: v.$text-main; /* Usar el color principal en lugar de todo morado */
+			font-weight: 800;
+			color: v.$text-main;
 			margin: 0;
-
 			@media (max-width: 768px) {
 				font-size: 1.5rem;
 			}
@@ -34,12 +33,12 @@
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				gap: 8px;
-				padding: 0 16px; /* Ligeramente menos ancho */
-				height: 40px; /* Altura más estandarizada */
-				border-radius: 8px; /* Radio md de tailwind */
-				font-weight: 500; /* Regular/Medium */
-				font-size: 0.9rem;
+				gap: 6px;
+				padding: 0 14px;
+				height: 38px; // Reducido
+				border-radius: 8px;
+				font-weight: 500;
+				font-size: 0.85rem; // Reducido
 				border: none;
 				cursor: pointer;
 				color: white;
@@ -49,7 +48,6 @@
 				@media (max-width: 600px) {
 					flex: 1;
 					padding: 0 10px;
-					font-size: 0.85rem;
 				}
 
 				&:hover {
@@ -57,9 +55,9 @@
 					box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 				}
 				&.btn-excel {
-					background-color: #10b981;
+					background-color: v.$success;
 					&:hover {
-						background-color: #059669;
+						background-color: darken(v.$success, 5%);
 					}
 				}
 				&.btn-add {
@@ -69,14 +67,14 @@
 					}
 				}
 				&.btn-tour {
-					background-color: #f8fafc; /* Gris muy claro */
+					background-color: v.$violet-50;
 					color: v.$text-muted;
 					border: 1px solid #e2e8f0;
 					box-shadow: none;
 
 					&:hover {
-						background-color: #f1f5f9;
-						color: v.$text-main;
+						background-color: v.$violet-100;
+						color: v.$violet-700;
 					}
 				}
 			}
@@ -93,13 +91,13 @@
 			flex: 1;
 			min-width: 250px;
 			background: white;
-			padding: 0 16px;
-			height: 44px;
+			padding: 0 14px;
+			height: 40px; // REDUCIDO PARA IGUALAR AL SELECT
 			border-radius: 8px;
 			border: 1px solid #e2e8f0;
 			display: flex;
 			align-items: center;
-			gap: 12px;
+			gap: 10px;
 			transition: all 0.2s ease;
 
 			@media (max-width: 600px) {
@@ -108,14 +106,14 @@
 
 			&:focus-within {
 				border-color: v.$primary;
-				box-shadow: 0 0 0 2px rgba(v.$primary, 0.1); /* Anillo más sutil */
+				box-shadow: 0 0 0 2px rgba(v.$primary, 0.1);
 			}
 			input {
 				border: none;
 				outline: none;
 				width: 100%;
-				font-size: 0.9rem;
-				color: #0f172a;
+				font-size: 0.85rem; // Reducido
+				color: v.$text-main;
 				&::placeholder {
 					color: #94a3b8;
 				}
@@ -135,7 +133,7 @@
 		}
 	}
 
-	/* --- TABLA MINIMALISTA ESTILO SHADCN/DIRECTORIO --- */
+	/* --- TABLA MINIMALISTA VIOLET SHADCN --- */
 	.table-container {
 		background: #ffffff;
 		border-radius: 8px;
@@ -161,18 +159,18 @@
 			width: 100%;
 			border-collapse: collapse;
 			min-width: 900px;
-			font-size: 0.875rem; /* text-sm */
+			font-size: 0.85rem; // Reducido
 
-			/* Cabecera Indigo Suave */
+			/* Cabecera Violeta Suave usando Variables */
 			thead tr {
-				background-color: #eef2ff;
-				border-bottom: 1px solid #e0e7ff;
+				background-color: v.$violet-50;
+				border-bottom: 1px solid v.$violet-100;
 
 				th {
 					padding: 12px 16px;
 					text-align: left;
 					font-weight: 600;
-					color: #3730a3;
+					color: v.$violet-800;
 					white-space: nowrap;
 					&.center {
 						text-align: center;
@@ -197,9 +195,9 @@
 				}
 
 				td {
-					padding: 12px 16px;
+					padding: 10px 16px; // Ligeramente menos padding vertical
 					vertical-align: middle;
-					color: #0f172a;
+					color: v.$text-main;
 					&.center {
 						text-align: center;
 					}
@@ -217,9 +215,9 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: #64748b; /* Gris sutil */
+		color: v.$text-muted;
 		margin: 0 auto;
-		border: 1px solid #f1f5f9;
+		border: 1px solid #e2e8f0;
 	}
 
 	.info-cell {
@@ -229,29 +227,37 @@
 
 		.name {
 			font-weight: 500;
-			color: #0f172a;
+			color: v.$text-main;
 		}
 
 		.mono-font {
 			font-family:
 				ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-			font-size: 0.8rem;
+			font-size: 0.75rem;
 			background: #f1f5f9;
 			padding: 2px 6px;
 			border-radius: 4px;
-			display: inline-block;
+			display: inline-flex; // Para alinear el icono Barcode
+			align-items: center;
+			gap: 4px;
 			width: fit-content;
+			color: v.$text-muted;
 		}
 
 		.date-text {
-			color: #4f46e5;
+			color: v.$primary;
+			display: inline-flex;
+			align-items: center;
+			gap: 6px;
+			font-weight: 500;
+			font-size: 0.8rem;
 		}
 
 		.condicion-text {
 			font-weight: 600;
 			font-size: 0.8rem;
 			&.propio {
-				color: #4f46e5;
+				color: v.$primary;
 			}
 			&.alquilado {
 				color: #ea580c;
@@ -259,8 +265,8 @@
 		}
 
 		.audit-text {
-			font-size: 0.8rem;
-			color: #64748b;
+			font-size: 0.75rem;
+			color: v.$text-muted;
 		}
 	}
 
@@ -271,7 +277,7 @@
 		justify-content: center;
 		padding: 2px 10px;
 		border-radius: 9999px;
-		font-size: 0.75rem;
+		font-size: 0.7rem; // Tipografía más pequeña
 		font-weight: 600;
 		border: 1px solid transparent;
 
@@ -287,38 +293,37 @@
 		}
 		&.malogrado {
 			background-color: #fef2f2;
-			color: #dc2626;
+			color: v.$danger;
 			border-color: #fee2e2;
 		}
 	}
 
-	/* --- BOTONES FANTASMA (GHOST BUTTONS) --- */
+	/* --- BOTONES FANTASMA --- */
 	.actions-cell {
 		display: flex;
 		justify-content: center;
 		gap: 4px;
 
 		.action-btn {
-			width: 32px;
-			height: 32px;
+			width: 28px; // Reducido un poco
+			height: 28px;
 			border-radius: 6px;
 			border: none;
 			background-color: transparent;
-			color: #64748b; /* Gris por defecto */
+			color: v.$text-muted;
 			cursor: pointer;
 			display: flex;
 			align-items: center;
 			justify-content: center;
 			transition: all 0.2s ease;
 
-			/* Solo toman color al hacer hover */
 			&.history:hover {
 				background-color: #e0f2fe;
 				color: #0284c7;
 			}
 			&.view:hover {
 				background-color: #f1f5f9;
-				color: #0f172a;
+				color: v.$text-main;
 			}
 			&.edit:hover {
 				background-color: #fffbeb;
@@ -326,11 +331,11 @@
 			}
 			&.delete:hover {
 				background-color: #fef2f2;
-				color: #ef4444;
+				color: v.$danger;
 			}
 
 			&.activate {
-				color: #10b981;
+				color: v.$success;
 				&:hover {
 					background-color: #ecfdf5;
 					color: #059669;
@@ -344,7 +349,7 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding: 12px 20px;
+		padding: 10px 16px;
 		border-top: 1px solid #e2e8f0;
 		background-color: white;
 		flex-wrap: wrap;
@@ -355,18 +360,22 @@
 		}
 
 		.info {
-			color: #64748b;
-			font-size: 0.85rem;
+			color: v.$text-muted;
+			font-size: 0.8rem;
 			strong {
-				color: #0f172a;
+				color: v.$text-main;
 				font-weight: 600;
 			}
 		}
 
 		.controls {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+
 			span {
-				font-size: 0.85rem;
-				color: #64748b;
+				font-size: 0.8rem;
+				color: v.$text-muted;
 				font-weight: 500;
 			}
 
@@ -374,13 +383,13 @@
 				display: flex;
 				align-items: center;
 				gap: 4px;
-				padding: 6px 12px;
+				padding: 4px 10px; // Reducido
 				border-radius: 6px;
 				border: 1px solid #e2e8f0;
 				background-color: white;
 				cursor: pointer;
-				color: #0f172a;
-				font-size: 0.85rem;
+				color: v.$text-main;
+				font-size: 0.8rem;
 				font-weight: 500;
 				transition: all 0.2s ease;
 
@@ -389,7 +398,6 @@
 					cursor: not-allowed;
 					background-color: #f8fafc;
 				}
-
 				&:hover:not(:disabled) {
 					background-color: #f1f5f9;
 				}
@@ -401,12 +409,12 @@
 	.no-data {
 		padding: 32px;
 		text-align: center;
-		color: #64748b;
-		font-size: 0.875rem;
+		color: v.$text-muted;
+		font-size: 0.85rem;
 	}
 }
-//... (mantén el código de modal abajo igual, .confirm-modal-content, etc)
-// Modal Content
+
+// Modal Content Mantenido Igual
 .confirm-modal-content {
 	padding: 1rem;
 	text-align: center;
@@ -414,8 +422,8 @@
 		color: #f59e0b;
 		margin-bottom: 1rem;
 		background-color: #fffbeb;
-		width: 80px;
-		height: 80px;
+		width: 70px;
+		height: 70px;
 		border-radius: 50%;
 		display: flex;
 		align-items: center;
@@ -423,52 +431,77 @@
 		margin: 0 auto 1rem auto;
 	}
 	h3 {
-		color: #1e293b;
+		color: v.$text-main;
 		margin-bottom: 0.5rem;
-		font-size: 1.25rem;
+		font-size: 1.1rem;
+		font-weight: 700;
 	}
 	p {
-		color: #64748b;
+		color: v.$text-muted;
 		margin-bottom: 2rem;
-		font-size: 0.95rem;
+		font-size: 0.9rem;
+		line-height: 1.5;
 	}
 	.modal-actions {
 		display: flex;
 		gap: 1rem;
 		justify-content: center;
-		flex-wrap: wrap; // Móvil
-
+		flex-wrap: wrap;
 		button {
-			padding: 10px 20px;
+			padding: 10px 16px;
 			border-radius: 8px;
-			font-weight: 600;
+			font-weight: 500;
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			gap: 8px;
+			gap: 6px;
 			border: none;
 			font-size: 0.9rem;
 			transition: transform 0.2s;
-			flex: 1; // Ocupan 50/50
-			min-width: 140px;
-
+			flex: 1;
+			min-width: 120px;
 			&:hover {
 				transform: translateY(-1px);
 			}
 			&.btn-cancel {
 				background-color: white;
-				border: 1px solid #cbd5e1;
-				color: #64748b;
+				border: 1px solid #e2e8f0;
+				color: v.$text-muted;
 				&:hover {
 					background-color: #f8fafc;
 				}
 			}
 			&.btn-confirm {
-				background-color: #ef4444;
+				background-color: v.$danger;
 				color: white;
-				box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3);
+				box-shadow: 0 1px 2px rgba(239, 68, 68, 0.2);
 				&:hover {
 					background-color: #dc2626;
+				}
+			}
+		}
+	}
+}
+
+/* ==========================================
+   CORRECCIÓN GLOBAL: TOUR (DRIVER.JS) 
+   ELIMINA LA DISTORSIÓN DEL TEXTO DEL BOTÓN
+   ========================================== */
+.driver-popover {
+	.driver-popover-footer {
+		button {
+			// Elimina el borde y la sombra fuerte que distorsiona las letras
+			text-shadow: none !important;
+			font-weight: 500 !important;
+			letter-spacing: normal !important;
+			-webkit-text-stroke: 0 !important;
+			border: none !important;
+
+			&.driver-popover-next-btn {
+				background-color: v.$primary !important;
+				color: white !important;
+				&:hover {
+					background-color: darken(v.$primary, 5%) !important;
 				}
 			}
 		}

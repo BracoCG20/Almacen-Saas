@@ -294,7 +294,7 @@ const Proveedores = () => {
 			</div>
 
 			<div className='search-bar' id='tour-prov-buscador'>
-				<Search size={20} color='#94a3b8' />
+				<Search size={18} color='#94a3b8' />
 				<input
 					placeholder='Buscar por Razón Social o RUC...'
 					value={searchTerm}
@@ -367,7 +367,7 @@ const Proveedores = () => {
 												<Phone size={14} /> {prov.telefono_contacto}
 											</div>
 										) : (
-											<span className='no-contact'>-</span>
+											<span className='dash'>-</span>
 										)}
 									</td>
 									<td>
@@ -376,7 +376,7 @@ const Proveedores = () => {
 												<Mail size={14} /> {prov.email_contacto}
 											</div>
 										) : (
-											<span className='no-contact'>-</span>
+											<span className='dash'>-</span>
 										)}
 									</td>
 									<td className='center'>

@@ -13,34 +13,30 @@
 		width: 100%;
 		border-collapse: collapse;
 		text-align: left;
-		font-size: 0.875rem;
+		font-size: 0.85rem; // Letra un poco más sutil
 
-		/* CABECERA CON ESTILO INDIGO SUAVE */
-		th {
-			background-color: #eef2ff; /* indigo-50 de Tailwind */
-			color: #3730a3; /* indigo-800 para buen contraste */
-			font-weight: 600; /* Un poquito más de grosor para que destaque */
-			padding: 12px 16px;
-			border-bottom: 1px solid #e0e7ff; /* indigo-100 para el borde */
-			white-space: nowrap;
+		/* CABECERA CON ESTILO VIOLETA SUAVE */
+		thead tr {
+			background-color: v.$violet-50; // Usando la variable centralizada
+			border-bottom: 1px solid v.$violet-100;
 
-			&.center {
-				text-align: center;
+			th {
+				padding: 12px 16px;
+				text-align: left;
+				font-weight: 600;
+				color: v.$violet-800; // Letra oscura
+				white-space: nowrap;
+
+				&.center {
+					text-align: center;
+				}
 			}
 		}
 
-		td {
-			padding: 12px 16px;
+		tbody tr {
 			border-bottom: 1px solid #e2e8f0;
-			vertical-align: middle;
-			color: #0f172a;
-			&.center {
-				text-align: center;
-			}
-		}
-
-		tr {
 			transition: background-color 0.2s ease;
+
 			&:hover {
 				background-color: #f8fafc;
 			}
@@ -54,19 +50,31 @@
 				border-bottom: none;
 			}
 		}
+
+		td {
+			padding: 10px 16px;
+			vertical-align: middle;
+			color: v.$text-main;
+			&.center {
+				text-align: center;
+			}
+		}
 	}
 
 	/* --- ELEMENTOS INTERNOS DE LAS CELDAS --- */
 	.name {
 		font-weight: 500;
-		color: #0f172a;
+		color: v.$text-main;
 	}
 
 	.email-badge {
 		display: inline-flex;
 		align-items: center;
 		gap: 6px;
-		color: #64748b;
+		color: v.$text-muted;
+		svg {
+			color: #94a3b8;
+		}
 	}
 
 	/* Estilo Pill (Cápsula) */
@@ -76,7 +84,7 @@
 		justify-content: center;
 		padding: 2px 10px;
 		border-radius: 9999px;
-		font-size: 0.75rem;
+		font-size: 0.7rem; // Más comprimido
 		font-weight: 600;
 		border: 1px solid transparent;
 
@@ -86,9 +94,9 @@
 			border-color: #e0f2fe;
 		}
 		&.standard {
-			background-color: #faf5ff;
-			color: #7c3aed;
-			border-color: #f3e8ff;
+			background-color: v.$violet-50;
+			color: v.$primary;
+			border-color: v.$violet-100;
 		}
 	}
 
@@ -97,7 +105,7 @@
 		align-items: center;
 		padding: 2px 10px;
 		border-radius: 9999px;
-		font-size: 0.75rem;
+		font-size: 0.7rem;
 		font-weight: 600;
 		border: 1px solid transparent;
 
@@ -118,7 +126,7 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 6px;
-		color: #64748b;
+		color: v.$text-muted;
 		font-size: 0.8rem;
 
 		.icon-transfer {
@@ -127,7 +135,7 @@
 
 		strong {
 			font-weight: 500;
-			color: #0f172a;
+			color: v.$text-main;
 			margin-left: 2px;
 		}
 	}
@@ -151,18 +159,18 @@
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			width: 32px;
-			height: 32px;
+			width: 28px;
+			height: 28px;
 			border-radius: 6px;
 			border: none;
 			cursor: pointer;
 			transition: all 0.2s ease;
 			background: transparent;
-			color: #64748b;
+			color: v.$text-muted;
 
 			&.view:hover {
-				background-color: #e0e7ff; /* Cambiado a un azul suave al hover para combinar */
-				color: #3730a3;
+				background-color: v.$violet-50;
+				color: v.$violet-700;
 			}
 
 			&.baja:hover {
@@ -175,7 +183,7 @@
 	.no-data {
 		padding: 32px;
 		text-align: center;
-		color: #64748b;
-		font-size: 0.875rem;
+		color: v.$text-muted;
+		font-size: 0.85rem;
 	}
 }

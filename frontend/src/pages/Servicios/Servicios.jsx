@@ -106,9 +106,8 @@ const Servicios = () => {
 		setLoading(true);
 		try {
 			const resPerfil = await api.get("/auth/perfil");
-			const currentUserRol = Number(resPerfil.data.rol_id);
+			setUserRole(Number(resPerfil.data.rol_id));
 			const currentUserId = resPerfil.data.id;
-			setUserRole(currentUserRol);
 
 			const resServicios = await api.get("/servicios");
 			const sorted = resServicios.data.sort((a, b) => {
@@ -137,7 +136,6 @@ const Servicios = () => {
 	useEffect(() => {
 		fetchData();
 	}, []);
-
 	useEffect(() => {
 		setCurrentPage(1);
 	}, [searchTerm, filtroCategoria]);
@@ -155,27 +153,23 @@ const Servicios = () => {
 	};
 
 	const formatMoney = (amount, currency) => {
-		let symbol = "$";
-		if (currency === "PEN") symbol = "S/";
-		if (currency === "EUR") symbol = "€";
+		let symbol = currency === "PEN" ? "S/" : currency === "EUR" ? "€" : "$";
 		return `${symbol} ${Number(amount).toFixed(2)}`;
 	};
 
 	const formatUrl = (url) =>
 		url ? (url.startsWith("http") ? url : `https://${url}`) : "#";
 
-	// ESTA FUNCIÓN CORRIGE LA ALINEACIÓN Y EL DISEÑO DE LAS FECHAS
 	const getPaymentStatusStyle = (dateString) => {
 		const baseStyle = {
 			padding: "4px 10px",
 			display: "inline-flex",
-			alignItems: "center", // <--- Centra verticalmente el icono y el texto
-			gap: "6px", // <--- Separa el icono del texto
+			alignItems: "center",
+			gap: "6px",
 			borderRadius: "8px",
 			fontWeight: "600",
 			fontSize: "0.8rem",
 		};
-
 		if (!dateString)
 			return {
 				...baseStyle,
@@ -183,7 +177,6 @@ const Servicios = () => {
 				backgroundColor: "#f8fafc",
 				border: "1px solid #e2e8f0",
 			};
-
 		const today = new Date();
 		today.setHours(0, 0, 0, 0);
 		const paymentDate = new Date(
@@ -206,7 +199,6 @@ const Servicios = () => {
 				color: "#ea580c",
 				border: "1px solid #ffedd5",
 			};
-
 		return {
 			...baseStyle,
 			color: "#475569",
@@ -248,29 +240,18 @@ const Servicios = () => {
 	const exportarExcel = () => {
 		if (servicios.length === 0) return toast.info("No hay datos para exportar");
 		const dataParaExcel = filteredServicios.map((s) => ({
-			"ID Registro": s.id,
-			"Nombre del Servicio": s.nombre,
+			Nombre: s.nombre,
 			Categoría: s.categoria_servicio || "-",
-			"Descripción de Uso": s.descripcion || "No detallada",
-			"Enlace Web (URL)": s.link_servicio || "-",
-			"Estado Actual": s.estado ? "ACTIVO" : "INACTIVO",
-			"Costo Monetario": Number(s.precio),
-			"Moneda de Cobro": s.moneda,
-			"Frecuencia de Pago": s.frecuencia_pago,
-			"Método de Pago Preferido": s.metodo_pago || "-",
-			"Fecha Estimada Próximo Pago": s.fecha_proximo_pago
+			Precio: Number(s.precio),
+			Estado: s.estado ? "ACTIVO" : "INACTIVO",
+			"Próximo Pago": s.fecha_proximo_pago
 				? new Date(s.fecha_proximo_pago).toLocaleDateString()
-				: "Sin fecha",
-			"Empresa que Paga/Factura": s.empresa_facturacion_nombre || "No asignada",
-			"Colaborador Responsable de la Cuenta": s.responsable_nombre
-				? `${s.responsable_nombre} ${s.responsable_apellido}`
-				: "No asignado",
+				: "-",
 		}));
 		const ws = XLSX.utils.json_to_sheet(dataParaExcel);
 		const wb = XLSX.utils.book_new();
-		XLSX.utils.book_append_sheet(wb, ws, "Auditoría_SaaS");
-		XLSX.writeFile(wb, "Reporte_Gerencial_Servicios_SaaS.xlsx");
-		toast.success("Reporte gerencial generado exitosamente");
+		XLSX.utils.book_append_sheet(wb, ws, "Servicios");
+		XLSX.writeFile(wb, "Reporte_Servicios.xlsx");
 	};
 
 	const handleAdd = () => {
@@ -292,19 +273,15 @@ const Servicios = () => {
 	};
 
 	const executeChangeStatus = async () => {
-		if (!servicioToChangeStatus) return;
 		try {
 			await api.put(`/servicios/${servicioToChangeStatus.id}/estado`, {
 				estado: newStatus,
 			});
-			toast.success(
-				`Servicio ${newStatus ? "activado" : "cancelado"} exitosamente`,
-			);
+			toast.success(`Servicio ${newStatus ? "activado" : "cancelado"}`);
 			fetchData();
 			setIsStatusModalOpen(false);
-			setServicioToChangeStatus(null);
 		} catch (error) {
-			toast.error("Error al cambiar el estado");
+			toast.error("Error al cambiar estado");
 		}
 	};
 
@@ -323,20 +300,33 @@ const Servicios = () => {
 	const customSelectStyles = {
 		control: (provided, state) => ({
 			...provided,
-			borderRadius: "12px",
-			borderColor: state.isFocused ? "#7c3aed" : "#cbd5e1",
-			boxShadow: state.isFocused ? "0 0 0 3px rgba(124, 58, 237, 0.1)" : "none",
-			minHeight: "50px",
-			height: "50px",
+			borderRadius: "8px",
+			borderColor: state.isFocused ? "#7c3aed" : "#e2e8f0",
+			boxShadow: state.isFocused ? "0 0 0 2px rgba(124, 58, 237, 0.1)" : "none",
+			height: "40px",
+			minHeight: "40px",
 			cursor: "pointer",
+			fontSize: "0.85rem",
 		}),
-		valueContainer: (provided) => ({ ...provided, padding: "0 14px" }),
+		valueContainer: (provided) => ({ ...provided, padding: "0 10px" }),
+		indicatorSeparator: () => ({ display: "none" }),
 		singleValue: (provided) => ({
 			...provided,
 			color: "#1e293b",
 			fontWeight: "500",
 		}),
 		menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+		option: (provided, state) => ({
+			...provided,
+			backgroundColor: state.isSelected
+				? "#7c3aed"
+				: state.isFocused
+					? "#f5f3ff"
+					: "white",
+			color: state.isSelected ? "white" : "#334155",
+			fontSize: "0.85rem",
+			cursor: "pointer",
+		}),
 	};
 
 	if (loading)
@@ -351,17 +341,17 @@ const Servicios = () => {
 						onClick={exportarExcel}
 						className='btn-action-header btn-excel'
 					>
-						<FileSpreadsheet size={18} /> Exportar
+						<FileSpreadsheet size={16} /> Exportar
 					</button>
 					<button onClick={handleAdd} className='btn-action-header btn-add'>
-						<Plus size={18} /> Nuevo Servicio
+						<Plus size={16} /> Nuevo Servicio
 					</button>
 				</div>
 			</div>
 
-			<div className='filters-container'>
+			<div className='filters-container' id='tour-servicios-filtros'>
 				<div className='search-bar'>
-					<Search size={20} color='#94a3b8' />
+					<Search size={18} color='#94a3b8' />
 					<input
 						type='text'
 						placeholder='Buscar por Nombre...'
@@ -389,7 +379,7 @@ const Servicios = () => {
 							<tr>
 								<th className='center'>Tipo</th>
 								<th>Servicio</th>
-								<th className='center'>Enlace</th>
+								<th className='center'>Link</th>
 								<th>Facturación</th>
 								<th>Próximo Pago</th>
 								<th>Responsable</th>
@@ -427,7 +417,6 @@ const Servicios = () => {
 												target='_blank'
 												rel='noreferrer'
 												className='website-link'
-												title='Abrir Enlace'
 											>
 												<ExternalLink size={14} />
 											</a>
@@ -491,35 +480,27 @@ const Servicios = () => {
 											>
 												<History size={16} />
 											</button>
-											{item.estado ? (
-												<>
-													<button
-														className='action-btn edit'
-														onClick={() => handleEdit(item)}
-														title='Editar'
-													>
-														<Edit size={16} />
-													</button>
-													{userRole === 1 && (
-														<button
-															className='action-btn delete'
-															onClick={() => confirmChangeStatus(item, false)}
-															title='Dar de baja'
-														>
-															<Ban size={16} />
-														</button>
-													)}
-												</>
-											) : (
-												userRole === 1 && (
-													<button
-														className='action-btn activate'
-														onClick={() => confirmChangeStatus(item, true)}
-														title='Reactivar'
-													>
+											<button
+												className='action-btn edit'
+												onClick={() => handleEdit(item)}
+												title='Editar'
+											>
+												<Edit size={16} />
+											</button>
+											{userRole === 1 && (
+												<button
+													className={`action-btn ${item.estado ? "delete" : "activate"}`}
+													onClick={() =>
+														confirmChangeStatus(item, !item.estado)
+													}
+													title={item.estado ? "Dar de baja" : "Reactivar"}
+												>
+													{item.estado ? (
+														<Ban size={16} />
+													) : (
 														<Undo2 size={16} />
-													</button>
-												)
+													)}
+												</button>
 											)}
 										</div>
 									</td>
@@ -529,7 +510,6 @@ const Servicios = () => {
 					</table>
 				)}
 
-				{/* LA PAGINACIÓN AHORA ESTÁ ADENTRO DEL TABLE-CONTAINER */}
 				{filteredServicios.length > itemsPerPage && (
 					<div className='pagination-footer'>
 						<div className='info'>
@@ -539,19 +519,44 @@ const Servicios = () => {
 							</strong>{" "}
 							de <strong>{filteredServicios.length}</strong>
 						</div>
-						<div className='controls'>
+						<div
+							className='controls'
+							style={{ display: "flex", alignItems: "center", gap: "15px" }}
+						>
 							<button
 								onClick={() => paginate(currentPage - 1)}
 								disabled={currentPage === 1}
+								style={{
+									display: "flex",
+									alignItems: "center",
+									gap: "5px",
+									padding: "6px 12px",
+									borderRadius: "8px",
+									fontWeight: "600",
+								}}
 							>
 								<ChevronLeft size={16} /> Anterior
 							</button>
-							<span>
+							<span
+								style={{
+									fontSize: "0.9rem",
+									color: "#64748b",
+									fontWeight: "600",
+								}}
+							>
 								Página {currentPage} de {totalPages}
 							</span>
 							<button
 								onClick={() => paginate(currentPage + 1)}
 								disabled={currentPage === totalPages}
+								style={{
+									display: "flex",
+									alignItems: "center",
+									gap: "5px",
+									padding: "6px 12px",
+									borderRadius: "8px",
+									fontWeight: "600",
+								}}
 							>
 								Siguiente <ChevronRight size={16} />
 							</button>
@@ -559,9 +564,8 @@ const Servicios = () => {
 					</div>
 				)}
 			</div>
-			{/* AQUÍ RECIÉN SE CIERRA EL TABLE-CONTAINER */}
-			{/* --- MODALES RESTAURADOS --- */}
 
+			{/* MODALES */}
 			<Modal
 				isOpen={isFormModalOpen}
 				onClose={() => setIsFormModalOpen(false)}
@@ -593,7 +597,7 @@ const Servicios = () => {
 			<Modal
 				isOpen={isStatusModalOpen}
 				onClose={() => setIsStatusModalOpen(false)}
-				title={`Confirmar Acción`}
+				title='Confirmar Acción'
 			>
 				<div className='confirm-modal-content'>
 					<div className='warning-icon'>
@@ -612,7 +616,7 @@ const Servicios = () => {
 							<X size={18} /> Cancelar
 						</button>
 						<button
-							className={newStatus ? "btn-confirm green" : "btn-confirm"}
+							className={`btn-confirm ${newStatus ? "green" : ""}`}
 							onClick={executeChangeStatus}
 						>
 							<Check size={18} /> Confirmar
@@ -648,10 +652,9 @@ const Servicios = () => {
 												</span>
 											</div>
 											<p>{log.detalle}</p>
-
 											<div className='log-footer-grid'>
 												<div className='footer-item'>
-													<UserCheck size={14} style={{ color: "#059669" }} />
+													<UserCheck size={14} style={{ color: "#059669" }} />{" "}
 													<span>
 														Resp:{" "}
 														<strong>
@@ -662,7 +665,7 @@ const Servicios = () => {
 													</span>
 												</div>
 												<div className='footer-item'>
-													<User size={14} style={{ color: "#4f46e5" }} />
+													<User size={14} style={{ color: "#4f46e5" }} />{" "}
 													<span>
 														Por:{" "}
 														<strong>
@@ -677,7 +680,6 @@ const Servicios = () => {
 									</li>
 								))}
 							</ul>
-
 							{auditoriaData.length > itemsPerAuditPage && (
 								<div
 									className='pagination-footer'

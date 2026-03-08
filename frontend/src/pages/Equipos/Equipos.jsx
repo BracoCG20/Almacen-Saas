@@ -25,10 +25,10 @@ import {
 	Monitor,
 	Cable,
 	Package,
-	HelpCircle, // <-- Importamos HelpCircle
+	HelpCircle,
+	Barcode, // <-- No olvides asegurarte de que Barcode esté importado si lo usas
 } from "lucide-react";
 
-// --- IMPORTACIONES PARA EL TOUR ---
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
 
@@ -39,12 +39,10 @@ import EquipoSpecs from "./EquipoSpecs";
 import "./Equipos.scss";
 
 const Equipos = () => {
-	// --- ESTADOS PRINCIPALES ---
 	const [equipos, setEquipos] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [userRole, setUserRole] = useState(null);
 
-	// --- ESTADOS DE FILTRO ---
 	const [searchTerm, setSearchTerm] = useState("");
 	const [filterCondicion, setFilterCondicion] = useState({
 		value: "todos",
@@ -55,11 +53,9 @@ const Equipos = () => {
 		label: "Todas las Categorías",
 	});
 
-	// --- ESTADOS DE PAGINACIÓN ---
 	const [currentPage, setCurrentPage] = useState(1);
 	const itemsPerPage = 8;
 
-	// --- ESTADOS DE MODALES ---
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 	const [modalType, setModalType] = useState("specs");
@@ -80,13 +76,12 @@ const Equipos = () => {
 		{ value: "Laptop/PC", label: "Laptops y PCs" },
 		{ value: "Celular/Tablet", label: "Celulares y Tablets" },
 		{ value: "Monitor/Pantalla", label: "Monitores" },
-		{ value: "Periférico", label: "Periféricos (Teclado, Mouse)" },
-		{ value: "Audiovisual", label: "Cámaras, Parantes, etc." },
-		{ value: "Redes/Cables", label: "Cables y Redes" },
+		{ value: "Periférico", label: "Periféricos" },
+		{ value: "Audiovisual", label: "Audiovisual" },
+		{ value: "Redes/Cables", label: "Redes y Cables" },
 		{ value: "Otros", label: "Otros" },
 	];
 
-	// --- FUNCIÓN DEL TOUR GUIADO ---
 	const startInventarioTour = () => {
 		const driverObj = driver({
 			showProgress: true,
@@ -121,7 +116,7 @@ const Equipos = () => {
 					popover: {
 						title: "Acciones de Equipo",
 						description:
-							"En cada fila encontrarás botones para: Ver el historial de cambios, ver especificaciones técnicas, editar los datos, o darlo de baja.",
+							"En cada fila encontrarás botones para ver el historial, especificaciones técnicas, editar o dar de baja.",
 						side: "left",
 						align: "center",
 					},
@@ -141,7 +136,7 @@ const Equipos = () => {
 					popover: {
 						title: "Registrar Ítem",
 						description:
-							"Desde aquí puedes agregar nuevas laptops, accesorios o celulares al almacén general.",
+							"Desde aquí puedes agregar nuevos equipos o accesorios al almacén general.",
 						side: "left",
 						align: "start",
 					},
@@ -151,7 +146,6 @@ const Equipos = () => {
 		driverObj.drive();
 	};
 
-	// --- FETCH DE DATOS ---
 	const fetchData = async () => {
 		setLoading(true);
 		try {
@@ -175,12 +169,10 @@ const Equipos = () => {
 		fetchData();
 	}, []);
 
-	// Reiniciar paginación al filtrar
 	useEffect(() => {
 		setCurrentPage(1);
 	}, [searchTerm, filterCondicion, filterCategoria]);
 
-	// --- FORMATEADORES ---
 	const formatDate = (dateString) => {
 		if (!dateString) return "-";
 		const date = new Date(dateString);
@@ -209,27 +201,25 @@ const Equipos = () => {
 		return [partAnios, partMeses].filter(Boolean).join(" y ");
 	};
 
-	// Función para obtener el ícono según la categoría
 	const getCategoryIcon = (categoria) => {
 		switch (categoria) {
 			case "Laptop/PC":
-				return <Laptop size={20} />;
+				return <Laptop size={18} />;
 			case "Celular/Tablet":
-				return <Smartphone size={20} />;
+				return <Smartphone size={18} />;
 			case "Monitor/Pantalla":
-				return <Monitor size={20} />;
+				return <Monitor size={18} />;
 			case "Periférico":
-				return <Keyboard size={20} />;
+				return <Keyboard size={18} />;
 			case "Audiovisual":
-				return <Camera size={20} />;
+				return <Camera size={18} />;
 			case "Redes/Cables":
-				return <Cable size={20} />;
+				return <Cable size={18} />;
 			default:
-				return <Package size={20} />;
+				return <Package size={18} />;
 		}
 	};
 
-	// --- LÓGICA DE FILTRADO ---
 	const filteredEquipos = equipos.filter((item) => {
 		const term = searchTerm.toLowerCase();
 		const matchesSearch =
@@ -257,21 +247,19 @@ const Equipos = () => {
 	const currentItems = filteredEquipos.slice(indexOfFirstItem, indexOfLastItem);
 	const totalPages = Math.ceil(filteredEquipos.length / itemsPerPage);
 
-	// --- EXPORTAR EXCEL DETALLADO PARA DIRECTORES ---
 	const exportarExcel = () => {
 		if (equipos.length === 0) return toast.info("No hay datos para exportar");
 
 		const dataParaExcel = filteredEquipos.map((e) => {
 			let specs = {};
 			try {
-				if (typeof e.especificaciones === "string") {
+				if (typeof e.especificaciones === "string")
 					specs = JSON.parse(e.especificaciones);
-				} else if (
+				else if (
 					typeof e.especificaciones === "object" &&
 					e.especificaciones !== null
-				) {
+				)
 					specs = e.especificaciones;
-				}
 			} catch (error) {
 				specs = {};
 			}
@@ -287,29 +275,28 @@ const Equipos = () => {
 				"Condición Física": e.estado_fisico_nombre || "Desconocido",
 				"Tipo de Propiedad": e.es_propio ? "PROPIO" : "ALQUILADO",
 				"Empresa Propietaria": e.empresa_nombre || "-",
-				"Proveedor (Si es alquilado)": e.nombre_proveedor || "-",
-				"Fecha Adquisición/Inicio": e.fecha_adquisicion
+				Proveedor: e.nombre_proveedor || "-",
+				"Fecha Adquisición": e.fecha_adquisicion
 					? formatDate(e.fecha_adquisicion)
 					: "-",
 				"Fecha Fin Alquiler": e.fecha_fin_alquiler
 					? formatDate(e.fecha_fin_alquiler)
 					: "-",
 				"Tiempo de Antigüedad": calcularAntiguedad(e.fecha_adquisicion),
-				Procesador: specs.procesador || specs.Procesador || "-",
-				"Memoria RAM": specs.ram || specs.RAM || specs.Ram || "-",
-				Almacenamiento: specs.almacenamiento || specs.Almacenamiento || "-",
+				Procesador: specs.procesador || "-",
+				"Memoria RAM": specs.ram || "-",
+				Almacenamiento: specs.almacenamiento || "-",
 				"Notas Adicionales": e.observaciones || "Ninguna",
 			};
 		});
 
 		const ws = XLSX.utils.json_to_sheet(dataParaExcel);
 		const wb = XLSX.utils.book_new();
-		XLSX.utils.book_append_sheet(wb, ws, "Inventario_General");
-		XLSX.writeFile(wb, "Reporte_Gerencial_Inventario.xlsx");
-		toast.success("Reporte gerencial generado exitosamente");
+		XLSX.utils.book_append_sheet(wb, ws, "Inventario");
+		XLSX.writeFile(wb, "Reporte_Inventario.xlsx");
+		toast.success("Reporte generado exitosamente");
 	};
 
-	// --- HANDLERS DE MODALES ---
 	const handleViewSpecs = (equipo) => {
 		setModalType("specs");
 		setSelectedEquipo(equipo);
@@ -349,7 +336,7 @@ const Equipos = () => {
 				disponible: nuevaDisponibilidad,
 			});
 			toast.success(
-				`Ítem ${nuevaDisponibilidad ? "reactivado" : "dado de baja"} exitosamente`,
+				`Ítem ${nuevaDisponibilidad ? "reactivado" : "dado de baja"}`,
 			);
 			fetchData();
 			setIsDeleteModalOpen(false);
@@ -364,16 +351,17 @@ const Equipos = () => {
 		fetchData();
 	};
 
+	// --- ESTILOS COMPACTOS PARA REACT SELECT ---
 	const customFilterStyles = {
 		control: (provided, state) => ({
 			...provided,
 			backgroundColor: "white",
 			border: state.isFocused ? "1px solid #7c3aed" : "1px solid #e2e8f0",
-			borderRadius: "12px",
-			padding: "0px 6px",
-			height: "48px",
-			minHeight: "48px",
-			boxShadow: state.isFocused ? "0 0 0 3px rgba(124, 58, 237, 0.1)" : "none",
+			borderRadius: "8px", // Más redondeado suave
+			padding: "0px 4px",
+			height: "40px", // Altura reducida
+			minHeight: "40px",
+			boxShadow: state.isFocused ? "0 0 0 2px rgba(124, 58, 237, 0.1)" : "none",
 			cursor: "pointer",
 			"&:hover": { borderColor: "#7c3aed" },
 		}),
@@ -382,7 +370,12 @@ const Equipos = () => {
 			...provided,
 			color: "#1e293b",
 			fontWeight: "500",
-			fontSize: "0.95rem",
+			fontSize: "0.85rem", // Letra más pequeña
+		}),
+		placeholder: (provided) => ({
+			...provided,
+			color: "#94a3b8",
+			fontSize: "0.85rem",
 		}),
 		option: (provided, state) => ({
 			...provided,
@@ -393,7 +386,10 @@ const Equipos = () => {
 					: "white",
 			color: state.isSelected ? "white" : "#334155",
 			cursor: "pointer",
+			fontSize: "0.85rem", // Letra más pequeña en las opciones
+			padding: "8px 12px",
 		}),
+		menuPortal: (base) => ({ ...base, zIndex: 9999 }),
 	};
 
 	if (loading)
@@ -404,38 +400,35 @@ const Equipos = () => {
 			<div className='page-header'>
 				<h1>Inventario General</h1>
 				<div className='header-actions'>
-					{/* BOTÓN TOUR */}
 					<button
 						onClick={startInventarioTour}
 						className='btn-action-header btn-tour'
 					>
 						<HelpCircle size={18} />
 					</button>
-
 					<button
 						id='tour-inventario-excel'
 						onClick={exportarExcel}
 						className='btn-action-header btn-excel'
 					>
-						<FileSpreadsheet size={18} /> Exportar Excel
+						<FileSpreadsheet size={16} /> Exportar Excel
 					</button>
-
 					<button
 						id='tour-inventario-nuevo'
 						className='btn-action-header btn-add'
 						onClick={handleAddEquipo}
 					>
-						<Plus size={18} /> Nuevo Ítem
+						<Plus size={16} /> Nuevo Ítem
 					</button>
 				</div>
 			</div>
 
 			<div className='filters-bar' id='tour-inventario-filtros'>
 				<div className='search-input'>
-					<Search size={20} color='#94a3b8' />
+					<Search size={18} color='#94a3b8' />
 					<input
 						type='text'
-						placeholder='Buscar por Marca, Modelo, Serie o Cód. Pat...'
+						placeholder='Buscar marca, modelo, serie o código...'
 						value={searchTerm}
 						onChange={(e) => setSearchTerm(e.target.value)}
 					/>
@@ -498,7 +491,8 @@ const Equipos = () => {
 									<td>
 										<div className='info-cell'>
 											<span className='name mono-font'>
-												{item.numero_serie}
+												{/* Agregado ícono de código de barras aquí en vez de texto libre */}
+												<Barcode size={12} /> {item.numero_serie}
 											</span>
 											<span className='audit-text'>
 												{item.codigo_patrimonial || "Sin código"}
@@ -521,7 +515,8 @@ const Equipos = () => {
 									</td>
 									<td>
 										<div className='info-cell'>
-											<span className='name date-text'>
+											<span className='date-text'>
+												<CalendarDays size={12} />{" "}
 												{calcularAntiguedad(item.fecha_adquisicion)}
 											</span>
 										</div>
@@ -534,7 +529,6 @@ const Equipos = () => {
 										</span>
 									</td>
 									<td className='center'>
-										{/* Al primer elemento de la tabla le ponemos el ID para la demo de acciones */}
 										<div
 											className='actions-cell'
 											id={index === 0 ? "tour-inventario-acciones" : undefined}
@@ -607,15 +601,37 @@ const Equipos = () => {
 							<button
 								onClick={() => setCurrentPage(currentPage - 1)}
 								disabled={currentPage === 1}
+								style={{
+									display: "flex",
+									alignItems: "center",
+									gap: "5px",
+									padding: "6px 12px",
+									borderRadius: "8px",
+									fontWeight: "600",
+								}}
 							>
 								<ChevronLeft size={16} /> Anterior
 							</button>
-							<span>
+							<span
+								style={{
+									fontSize: "0.9rem",
+									color: "#64748b",
+									fontWeight: "600",
+								}}
+							>
 								Página {currentPage} de {totalPages}
 							</span>
 							<button
 								onClick={() => setCurrentPage(currentPage + 1)}
 								disabled={currentPage === totalPages}
+								style={{
+									display: "flex",
+									alignItems: "center",
+									gap: "5px",
+									padding: "6px 12px",
+									borderRadius: "8px",
+									fontWeight: "600",
+								}}
 							>
 								Siguiente <ChevronRight size={16} />
 							</button>
