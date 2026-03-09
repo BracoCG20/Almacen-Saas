@@ -13,10 +13,10 @@ const EquipoSpecs = ({ equipo, calcularAntiguedad, formatDate }) => {
   if (!equipo) return null;
 
   return (
-    <div className='specs-grid'>
+    <div className='specs-grid-modern'>
       <div className='header-specs'>
         <div className='big-icon'>
-          <Laptop size={36} />
+          <Laptop size={32} />
         </div>
         <div className='title-info-wrapper'>
           <h3>
@@ -53,20 +53,20 @@ const EquipoSpecs = ({ equipo, calcularAntiguedad, formatDate }) => {
       {equipo.observaciones && (
         <div className='observation-alert'>
           <h5>
-            <AlertTriangle size={14} /> Observaciones
+            <AlertTriangle size={14} /> Observaciones del Equipo
           </h5>
           <p>"{equipo.observaciones}"</p>
         </div>
       )}
 
-      <h4>Identificación y Adquisición</h4>
+      <h4 className='section-subtitle'>Identificación y Adquisición</h4>
+
       <div className='grid-2-col'>
-        <div className='info-box light'>
-          <Barcode
-            size={24}
-            className='icon-barcode'
-          />
-          <div>
+        <div className='info-box flex-row'>
+          <div className='icon-wrapper'>
+            <Barcode size={20} />
+          </div>
+          <div className='text-wrapper'>
             <span className='label'>Código Patrimonial</span>
             <span className='value'>{equipo.codigo_patrimonial || 'N/A'}</span>
           </div>
@@ -78,38 +78,34 @@ const EquipoSpecs = ({ equipo, calcularAntiguedad, formatDate }) => {
       </div>
 
       <div className='grid-2-col'>
-        <div className='info-box'>
-          <span className='label'>Fecha de Adquisición</span>
-          <span
-            className='value-text'
-            style={{ fontSize: '0.9rem', color: '#334155', fontWeight: '700' }}
-          >
-            <CalendarDays
-              size={12}
-              style={{ marginRight: '5px' }}
-            />
-            {formatDate(equipo.fecha_adquisicion)}
-          </span>
+        <div className='info-box flex-row'>
+          <div className='icon-wrapper secondary'>
+            <CalendarDays size={20} />
+          </div>
+          <div className='text-wrapper'>
+            <span className='label'>Fecha de Adquisición</span>
+            <span className='value date-text'>
+              {formatDate(equipo.fecha_adquisicion)}
+            </span>
+          </div>
         </div>
-        <div className='info-box'>
-          <span className='label'>Tiempo en la Empresa</span>
-          <span
-            className='value-text'
-            style={{ fontSize: '0.9rem', color: '#4f46e5', fontWeight: '700' }}
-          >
-            <Clock
-              size={12}
-              style={{ marginRight: '5px' }}
-            />
-            {calcularAntiguedad(equipo.fecha_adquisicion)}
-          </span>
+        <div className='info-box flex-row'>
+          <div className='icon-wrapper primary'>
+            <Clock size={20} />
+          </div>
+          <div className='text-wrapper'>
+            <span className='label'>Tiempo de Uso</span>
+            <span className='value highlight-text'>
+              {calcularAntiguedad(equipo.fecha_adquisicion)}
+            </span>
+          </div>
         </div>
       </div>
 
       {equipo.especificaciones &&
         Object.keys(equipo.especificaciones).length > 0 && (
           <>
-            <h4 className='mt'>Especificaciones Técnicas</h4>
+            <h4 className='section-subtitle mt-4'>Especificaciones Técnicas</h4>
             <div className='specs-list'>
               {Object.entries(equipo.especificaciones).map(
                 ([key, value], index) => (

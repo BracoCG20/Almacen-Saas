@@ -19,7 +19,7 @@ import './AddEquipoForm.scss';
 
 const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
   const [formData, setFormData] = useState({
-    categoria: 'Laptop/PC', // Categoría por defecto
+    categoria: 'Laptop/PC',
     empresa_id: '',
     marca: '',
     modelo: '',
@@ -53,10 +53,7 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
     { value: 'Celular/Tablet', label: 'Celular / Tablet' },
     { value: 'Monitor/Pantalla', label: 'Monitor / Pantalla' },
     { value: 'Periférico', label: 'Periférico (Teclado, Mouse, Auricular)' },
-    {
-      value: 'Audiovisual',
-      label: 'Equipo Audiovisual (Cámara, Mic, Parante)',
-    },
+    { value: 'Audiovisual', label: 'Equipo Audiovisual (Cámara, Mic)' },
     { value: 'Redes/Cables', label: 'Redes, Routers y Cables' },
     { value: 'Otros', label: 'Otros Materiales' },
   ];
@@ -295,7 +292,6 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
       return acc;
     }, {});
 
-    // Guardar Especificaciones Avanzadas Solo para Laptops/PCs y Celulares
     if (
       formData.categoria === 'Laptop/PC' ||
       formData.categoria === 'Celular/Tablet'
@@ -330,239 +326,270 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
     }
   };
 
+  // --- CORRECCIÓN EXACTA PARA ALINEACIÓN CENTRAL PERFECTA ---
   const customSelectStyles = {
     control: (provided, state) => ({
       ...provided,
       borderRadius: '8px',
-      borderColor: state.isFocused ? '#4f46e5' : '#cbd5e1',
-      boxShadow: state.isFocused ? '0 0 0 3px rgba(79, 70, 229, 0.15)' : 'none',
-      minHeight: '50px',
-      height: '50px',
-      backgroundColor: state.isDisabled ? '#f8fafc' : '#fff',
+      borderColor: state.isFocused ? '#7c3aed' : '#e2e8f0',
+      boxShadow: state.isFocused ? '0 0 0 2px rgba(124, 58, 237, 0.1)' : 'none',
+      height: '40px',
+      minHeight: '40px',
       cursor: state.isDisabled ? 'not-allowed' : 'pointer',
+      backgroundColor: state.isDisabled ? '#f8fafc' : '#fff',
+      display: 'flex',
+      alignItems: 'center',
     }),
-    valueContainer: (provided) => ({ ...provided, padding: '0 14px' }),
-    input: (provided) => ({ ...provided, margin: '0px', padding: '0px' }),
+    valueContainer: (provided) => ({
+      ...provided,
+      padding: '0 12px',
+      height: '100%',
+      display: 'flex',
+      alignItems: 'center',
+      position: 'relative',
+    }),
+    input: (provided) => ({
+      ...provided,
+      margin: '0px',
+      padding: '0px',
+      height: '40px',
+      color: 'transparent',
+    }),
     indicatorSeparator: () => ({ display: 'none' }),
+    indicatorsContainer: (provided) => ({ ...provided, height: '40px' }),
     singleValue: (provided) => ({
       ...provided,
       color: '#1e293b',
-      fontSize: '0.95rem',
+      fontWeight: '400',
+      fontSize: '0.85rem',
+      margin: '0px',
+      position: 'absolute',
+      top: '50%',
+      transform: 'translateY(-50%)',
     }),
     placeholder: (provided) => ({
       ...provided,
       color: '#94a3b8',
-      fontSize: '0.95rem',
+      fontSize: '0.85rem',
+      margin: '0px',
+      position: 'absolute',
+      top: '50%',
+      transform: 'translateY(-50%)',
     }),
+    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
     option: (provided, state) => ({
       ...provided,
       backgroundColor: state.isSelected
-        ? '#4f46e5'
+        ? '#7c3aed'
         : state.isFocused
-          ? '#f8fafc'
+          ? '#f5f3ff'
           : 'white',
       color: state.isSelected ? 'white' : '#334155',
+      fontSize: '0.85rem',
       cursor: 'pointer',
-      padding: '12px 15px',
+      padding: '8px 12px',
     }),
-    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
   };
 
   return (
     <form
-      className='equipo-form'
+      className='equipo-form-modern'
       onSubmit={handleSubmit}
     >
-      {/* SECCIÓN CATEGORÍA */}
-      <div
-        className='input-group'
-        style={{ marginBottom: '10px' }}
-      >
-        <label style={{ color: '#4f46e5' }}>
-          <Package size={16} /> Categoría del Ítem *
-        </label>
-        <Select
-          options={categoriasOptions}
-          value={categoriasOptions.find(
-            (op) => op.value === formData.categoria,
-          )}
-          onChange={(opt) => handleSelectChange('categoria', opt)}
-          styles={customSelectStyles}
-          isSearchable={false}
-          menuPortalTarget={document.body}
-        />
-      </div>
-
-      <div className='form-row'>
-        <div className='input-group'>
-          <label style={{ color: '#4f46e5' }}>
-            <Building2 size={16} /> Empresa Asignada *
-          </label>
-          <Select
-            options={empresasOptions}
-            value={empresasOptions.find(
-              (op) => op.value === formData.empresa_id,
-            )}
-            onChange={(opt) => handleSelectChange('empresa_id', opt)}
-            styles={customSelectStyles}
-            placeholder='Seleccione...'
-            isLoading={loadingData}
-            menuPortalTarget={document.body}
-            required
-          />
+      {/* SECCIÓN: CLASIFICACIÓN Y PROPIEDAD */}
+      <div className='form-section'>
+        <div className='section-header'>
+          <div className='indicator' />
+          <h4>Clasificación y Propiedad</h4>
         </div>
-        <div className='input-group'>
-          <label>
-            <Handshake size={16} /> Condición de Adquisición
-          </label>
-          <Select
-            options={condicionOptions}
-            value={condicionOptions.find(
-              (op) => op.value === formData.es_propio,
-            )}
-            onChange={handleCondicionChange}
-            styles={customSelectStyles}
-            isSearchable={false}
-            menuPortalTarget={document.body}
-          />
-        </div>
-      </div>
 
-      {!formData.es_propio && (
-        <div
-          className='form-row'
-          style={{
-            backgroundColor: '#fff7ed',
-            padding: '15px',
-            borderRadius: '10px',
-            border: '1px solid #fdba74',
-            marginTop: '5px',
-          }}
-        >
-          <div className='input-group'>
-            <label style={{ color: '#ea580c' }}>
-              <Building2 size={16} /> Proveedor *
+        <div className='form-grid'>
+          <div className='input-group full-width'>
+            <label>
+              <Package size={14} /> Categoría del Ítem *
             </label>
             <Select
-              options={proveedoresOptions}
-              value={proveedoresOptions.find(
-                (op) => op.value === formData.proveedor_id,
+              options={categoriasOptions}
+              value={categoriasOptions.find(
+                (op) => op.value === formData.categoria,
               )}
-              onChange={(opt) => handleSelectChange('proveedor_id', opt)}
+              onChange={(opt) => handleSelectChange('categoria', opt)}
               styles={customSelectStyles}
-              placeholder='Seleccione Proveedor...'
-              isLoading={loadingData}
+              isSearchable={false}
               menuPortalTarget={document.body}
             />
           </div>
+
           <div className='input-group'>
             <label>
-              <CalendarDays size={14} /> Fin Contrato
+              <Building2 size={14} /> Empresa Asignada *
             </label>
-            <input
-              type='date'
-              name='fecha_fin_alquiler'
-              value={formData.fecha_fin_alquiler}
-              onChange={handleChange}
+            <Select
+              options={empresasOptions}
+              value={empresasOptions.find(
+                (op) => op.value === formData.empresa_id,
+              )}
+              onChange={(opt) => handleSelectChange('empresa_id', opt)}
+              styles={customSelectStyles}
+              placeholder='Seleccione...'
+              isLoading={loadingData}
+              menuPortalTarget={document.body}
+              required
             />
+          </div>
+
+          <div className='input-group'>
+            <label>
+              <Handshake size={14} /> Condición de Adquisición
+            </label>
+            <Select
+              options={condicionOptions}
+              value={condicionOptions.find(
+                (op) => op.value === formData.es_propio,
+              )}
+              onChange={handleCondicionChange}
+              styles={customSelectStyles}
+              isSearchable={false}
+              menuPortalTarget={document.body}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* SECCIÓN DINÁMICA: PROVEEDOR (Solo si es alquilado) */}
+      {!formData.es_propio && (
+        <div className='form-section rent-section'>
+          <div className='form-grid'>
+            <div className='input-group'>
+              <label className='rent-label'>
+                <Building2 size={14} /> Proveedor de Alquiler *
+              </label>
+              <Select
+                options={proveedoresOptions}
+                value={proveedoresOptions.find(
+                  (op) => op.value === formData.proveedor_id,
+                )}
+                onChange={(opt) => handleSelectChange('proveedor_id', opt)}
+                styles={customSelectStyles}
+                placeholder='Seleccione Proveedor...'
+                isLoading={loadingData}
+                menuPortalTarget={document.body}
+              />
+            </div>
+            <div className='input-group'>
+              <label className='rent-label'>
+                <CalendarDays size={14} /> Fin Contrato
+              </label>
+              <input
+                type='date'
+                name='fecha_fin_alquiler'
+                value={formData.fecha_fin_alquiler}
+                onChange={handleChange}
+              />
+            </div>
           </div>
         </div>
       )}
 
-      <div className='form-row'>
-        <div className='input-group'>
-          <label>
-            <CalendarDays size={16} /> Fecha Adquisición *
-          </label>
-          <input
-            type='date'
-            name='fecha_adquisicion'
-            value={formData.fecha_adquisicion}
-            onChange={handleChange}
-            required
-          />
+      {/* SECCIÓN: DATOS DEL EQUIPO */}
+      <div className='form-section'>
+        <div className='section-header'>
+          <div className='indicator' />
+          <h4>Datos del Equipo</h4>
         </div>
-        <div className='input-group'>
-          <label>Marca *</label>
-          <CreatableSelect
-            isClearable
-            isDisabled={loadingData}
-            onChange={(opt) => handleSelectChange('marca', opt)}
-            options={marcasOptions}
-            value={
-              marcasOptions.find((op) => op.value === formData.marca) ||
-              (formData.marca
-                ? { label: formData.marca, value: formData.marca }
-                : null)
-            }
-            styles={customSelectStyles}
-            placeholder='Escribir o buscar...'
-            menuPortalTarget={document.body}
-            required
-          />
+
+        <div className='form-grid'>
+          <div className='input-group'>
+            <label>
+              <CalendarDays size={14} /> Fecha Adquisición *
+            </label>
+            <input
+              type='date'
+              name='fecha_adquisicion'
+              value={formData.fecha_adquisicion}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className='input-group'>
+            <label>Marca *</label>
+            <CreatableSelect
+              isClearable
+              isDisabled={loadingData}
+              onChange={(opt) => handleSelectChange('marca', opt)}
+              options={marcasOptions}
+              value={
+                marcasOptions.find((op) => op.value === formData.marca) ||
+                (formData.marca
+                  ? { label: formData.marca, value: formData.marca }
+                  : null)
+              }
+              styles={customSelectStyles}
+              placeholder='Escribir o buscar...'
+              menuPortalTarget={document.body}
+              required
+            />
+          </div>
+          <div className='input-group'>
+            <label>Modelo *</label>
+            <input
+              name='modelo'
+              value={formData.modelo}
+              onChange={handleChange}
+              required
+              placeholder='Ej: Latitude 5420'
+            />
+          </div>
+          <div className='input-group'>
+            <label>
+              <Barcode size={14} /> Serie (S/N) *
+            </label>
+            <input
+              name='numero_serie'
+              value={formData.numero_serie}
+              onChange={handleChange}
+              required
+              placeholder='S/N o Código'
+            />
+          </div>
+          <div className='input-group'>
+            <label className='warning-label'>
+              <AlertTriangle size={14} /> Estado Físico *
+            </label>
+            <Select
+              options={estadosFisicosOptions}
+              value={estadosFisicosOptions.find(
+                (op) => op.value === formData.estado_fisico_id,
+              )}
+              onChange={(opt) => handleSelectChange('estado_fisico_id', opt)}
+              styles={customSelectStyles}
+              isSearchable={false}
+              placeholder='Seleccione...'
+              menuPortalTarget={document.body}
+              required
+            />
+          </div>
+          <div className='input-group'>
+            <label>Observaciones Físicas</label>
+            <input
+              name='observaciones'
+              value={formData.observaciones}
+              onChange={handleChange}
+              placeholder='Detalles, golpes, arañazos...'
+            />
+          </div>
         </div>
       </div>
 
-      <div className='form-row'>
-        <div className='input-group'>
-          <label>Modelo *</label>
-          <input
-            name='modelo'
-            value={formData.modelo}
-            onChange={handleChange}
-            required
-            placeholder='Ej: Latitude 5420 o Cable HDMI'
-          />
-        </div>
-        <div className='input-group'>
-          <label>
-            <Barcode size={14} /> Serie (S/N) *
-          </label>
-          <input
-            name='numero_serie'
-            value={formData.numero_serie}
-            onChange={handleChange}
-            required
-            placeholder='S/N o Código'
-          />
-        </div>
-      </div>
-
-      <div className='form-row'>
-        <div className='input-group'>
-          <label style={{ color: '#f59e0b' }}>
-            <AlertTriangle size={16} /> Estado Físico *
-          </label>
-          <Select
-            options={estadosFisicosOptions}
-            value={estadosFisicosOptions.find(
-              (op) => op.value === formData.estado_fisico_id,
-            )}
-            onChange={(opt) => handleSelectChange('estado_fisico_id', opt)}
-            styles={customSelectStyles}
-            isSearchable={false}
-            placeholder='Seleccione...'
-            menuPortalTarget={document.body}
-            required
-          />
-        </div>
-        <div className='input-group'>
-          <label>Observaciones Físicas</label>
-          <input
-            name='observaciones'
-            value={formData.observaciones}
-            onChange={handleChange}
-            placeholder='Detalles, golpes, arañazos, etc.'
-          />
-        </div>
-      </div>
-
-      {/* RENDERIZADO CONDICIONAL DE ESPECIFICACIONES (Solo para Laptop/Celular) */}
+      {/* SECCIÓN ESPECIFICACIONES TÉCNICAS (Solo Laptops o Celulares) */}
       {(formData.categoria === 'Laptop/PC' ||
         formData.categoria === 'Celular/Tablet') && (
-        <div className='specs-section'>
-          <h4>Especificaciones Principales</h4>
-          <div className='form-row'>
+        <div className='form-section'>
+          <div className='section-header'>
+            <div className='indicator' />
+            <h4>Especificaciones Principales</h4>
+          </div>
+          <div className='form-grid'>
             <div className='input-group'>
               <label>Memoria RAM (GB)</label>
               <input
@@ -605,19 +632,15 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
                 </div>
               </div>
             </div>
-          </div>
-
-          <div
-            className='input-group'
-            style={{ marginTop: '10px' }}
-          >
-            <label>Procesador</label>
-            <input
-              name='procesador'
-              value={formData.procesador}
-              onChange={handleChange}
-              placeholder='Ej: Intel Core i7 10ma Gen'
-            />
+            <div className='input-group full-width'>
+              <label>Procesador</label>
+              <input
+                name='procesador'
+                value={formData.procesador}
+                onChange={handleChange}
+                placeholder='Ej: Intel Core i7 10ma Gen'
+              />
+            </div>
           </div>
 
           <div className='procesador-builder'>
@@ -659,50 +682,56 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
         </div>
       )}
 
-      {/* SECCIÓN DE ESPECIFICACIONES EXTRAS (Para todas las categorías) */}
-      <div className='specs-section'>
-        <h4 style={{ marginTop: '1.5rem' }}>
-          Otras Especificaciones o Detalles
-        </h4>
-        {specsList.map((spec, index) => (
-          <div
-            className='spec-row'
-            key={index}
-          >
-            <input
-              placeholder='Ej: Color / Largo / Tipo'
-              value={spec.key}
-              onChange={(e) => handleSpecChange(index, 'key', e.target.value)}
-            />
-            <input
-              placeholder='Ej: Negro / 2 metros / Inalámbrico'
-              value={spec.value}
-              onChange={(e) => handleSpecChange(index, 'value', e.target.value)}
-            />
-            <button
-              type='button'
-              className='btn-remove'
-              onClick={() => removeSpecRow(index)}
+      {/* SECCIÓN DETALLES EXTRA */}
+      <div className='form-section'>
+        <div className='section-header'>
+          <div className='indicator' />
+          <h4>Otras Especificaciones o Detalles</h4>
+        </div>
+        <div className='specs-container'>
+          {specsList.map((spec, index) => (
+            <div
+              className='spec-row'
+              key={index}
             >
-              <Trash size={18} />
-            </button>
-          </div>
-        ))}
-        <button
-          type='button'
-          className='btn-add-spec'
-          onClick={addSpecRow}
-        >
-          <Plus size={18} /> Agregar detalle extra
-        </button>
+              <input
+                placeholder='Ej: Color / Largo / Tipo'
+                value={spec.key}
+                onChange={(e) => handleSpecChange(index, 'key', e.target.value)}
+              />
+              <input
+                placeholder='Ej: Negro / 2 metros'
+                value={spec.value}
+                onChange={(e) =>
+                  handleSpecChange(index, 'value', e.target.value)
+                }
+              />
+              <button
+                type='button'
+                className='btn-remove'
+                onClick={() => removeSpecRow(index)}
+              >
+                <Trash size={16} />
+              </button>
+            </div>
+          ))}
+          <button
+            type='button'
+            className='btn-add-spec'
+            onClick={addSpecRow}
+          >
+            <Plus size={16} /> Agregar detalle extra
+          </button>
+        </div>
       </div>
 
-      <div className='form-actions'>
+      <div className='form-footer'>
         <button
           type='submit'
-          className='btn-submit'
+          className='btn-submit-modern'
+          disabled={loadingData}
         >
-          <Save size={20} />{' '}
+          <Save size={18} />{' '}
           {equipoToEdit ? 'Actualizar Cambios' : 'Guardar en Inventario'}
         </button>
       </div>
