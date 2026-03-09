@@ -460,44 +460,45 @@
 		font-size: 0.85rem;
 	}
 
-	// --- MODALES (Mantenidos igual) ---
 	.confirm-modal-content {
-		padding: 1rem;
+		padding: 0.5rem;
 		text-align: center;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+
 		.warning-icon {
 			color: #f59e0b;
 			margin-bottom: 1rem;
 			background-color: #fffbeb;
-			width: 70px;
-			height: 70px;
+			width: 56px;
+			height: 56px;
 			border-radius: 50%;
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			margin: 0 auto 1rem auto;
 		}
+
 		h3 {
-			color: v.$text-main;
+			color: #0f172a;
 			margin-bottom: 0.5rem;
 			font-size: 1.1rem;
 			font-weight: 700;
 		}
 		p {
-			color: v.$text-muted;
-			margin-bottom: 2rem;
-			font-size: 0.9rem;
+			color: #64748b;
+			margin-bottom: 1.5rem;
+			font-size: 0.85rem;
 			line-height: 1.5;
-			strong {
-				color: v.$text-main;
-			}
 		}
 		.modal-actions {
 			display: flex;
-			gap: 1rem;
+			gap: 12px;
 			justify-content: center;
-			flex-wrap: wrap;
+			width: 100%;
+
 			button {
-				padding: 10px 16px;
+				height: 38px;
 				border-radius: 8px;
 				font-weight: 500;
 				display: flex;
@@ -505,17 +506,15 @@
 				justify-content: center;
 				gap: 6px;
 				border: none;
-				font-size: 0.9rem;
-				transition: transform 0.2s;
+				font-size: 0.85rem;
+				transition: all 0.2s ease;
 				flex: 1;
-				min-width: 120px;
-				&:hover {
-					transform: translateY(-1px);
-				}
+
 				&.btn-cancel {
 					background-color: white;
 					border: 1px solid #e2e8f0;
-					color: v.$text-muted;
+					color: #475569;
+					cursor: pointer;
 					&:hover {
 						background-color: #f8fafc;
 					}
@@ -523,7 +522,7 @@
 				&.btn-confirm {
 					background-color: v.$danger;
 					color: white;
-					box-shadow: 0 1px 2px rgba(239, 68, 68, 0.2);
+					cursor: pointer;
 					&:hover {
 						background-color: #dc2626;
 					}

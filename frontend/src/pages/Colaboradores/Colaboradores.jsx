@@ -567,6 +567,7 @@ const Colaboradores = () => {
 				isOpen={isDeleteModalOpen}
 				onClose={() => setIsDeleteModalOpen(false)}
 				title='Confirmar Baja'
+				maxWidth='400px'
 			>
 				<div className='confirm-modal-content'>
 					<div className='warning-icon'>
