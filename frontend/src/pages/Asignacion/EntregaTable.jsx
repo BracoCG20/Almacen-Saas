@@ -10,8 +10,9 @@ import {
 	AlertTriangle,
 	CalendarDays,
 	Clock,
-	Barcode, // <-- Nuevo icono importado
+	Barcode,
 } from "lucide-react";
+import "./EntregaTable.scss"; // <-- IMPORTAMOS SU PROPIO SCSS
 
 const EntregaTable = ({
 	historial,
@@ -77,7 +78,6 @@ const EntregaTable = ({
 						historial.map((h) => (
 							<tr key={h.id}>
 								<td>
-									{/* Nueva celda apilada para fecha y hora */}
 									<div className='date-time-cell'>
 										<span className='date-part'>
 											<CalendarDays size={13} />{" "}
@@ -91,7 +91,6 @@ const EntregaTable = ({
 								<td>
 									<div className='info-cell'>
 										<span className='name'>{h.modelo}</span>
-										{/* Código de barras reemplazando el texto S/N */}
 										<span className='audit-text'>
 											<Barcode size={12} /> {h.serie}
 										</span>
@@ -137,7 +136,6 @@ const EntregaTable = ({
 								</td>
 								<td className='center'>
 									<div className='actions-cell'>
-										{/* CASO 1: YA ESTÁ FIRMADO */}
 										{h.firma_valida === true ? (
 											<>
 												<button
@@ -156,20 +154,18 @@ const EntregaTable = ({
 												</button>
 											</>
 										) : h.token_firma ? (
-											/* CASO 2: PENDIENTE DE FIRMA */
 											<div
 												className='status-pending-signature'
 												title='Esperando firma del colaborador...'
 											>
 												<Clock
-													size={16}
+													size={14}
 													color='#d97706'
 													className='animate-pulse'
 												/>
 												<span>PENDIENTE</span>
 											</div>
 										) : (
-											/* CASO 3: NO SE HA ENVIADO POR CORREO */
 											<button
 												onClick={() => onSubirClick(h.id)}
 												className='btn-upload'

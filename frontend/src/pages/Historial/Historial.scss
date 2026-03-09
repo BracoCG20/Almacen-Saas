@@ -1,12 +1,13 @@
 @use "../../styles/variables" as v;
 
 .historial-container {
-	// --- HEADER ---
 	.page-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin-bottom: 2rem;
+		margin-bottom: 1.5rem;
+		padding-bottom: 1rem;
+		border-bottom: 1px solid #e2e8f0;
 		flex-wrap: wrap;
 		gap: 1rem;
 
@@ -15,7 +16,6 @@
 			font-weight: 800;
 			color: v.$text-main;
 			margin: 0;
-
 			@media (max-width: 768px) {
 				font-size: 1.5rem;
 			}
@@ -25,7 +25,6 @@
 			display: flex;
 			gap: 12px;
 			width: auto;
-
 			@media (max-width: 600px) {
 				width: 100%;
 			}
@@ -34,50 +33,44 @@
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				gap: 8px;
-				padding: 0 16px;
+				gap: 6px;
+				padding: 0 14px;
 				height: 40px;
 				border-radius: 8px;
 				font-weight: 500;
-				font-size: 0.9rem;
+				font-size: 0.85rem;
 				border: none;
 				cursor: pointer;
 				color: white;
-				transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-				box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-
+				transition: all 0.2s;
 				@media (max-width: 600px) {
 					flex: 1;
-					padding: 0 10px;
-					font-size: 0.85rem;
 				}
-
 				&:hover {
 					transform: translateY(-1px);
 					box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 				}
+
 				&.btn-excel {
-					background-color: #10b981;
+					background-color: v.$success;
 					&:hover {
-						background-color: #059669;
+						background-color: darken(v.$success, 5%);
 					}
 				}
 				&.btn-tour {
-					background-color: #f8fafc;
+					background-color: v.$violet-50;
 					color: v.$text-muted;
 					border: 1px solid #e2e8f0;
-					box-shadow: none;
-
 					&:hover {
-						background-color: #f1f5f9;
-						color: v.$text-main;
+						background-color: v.$violet-100;
+						color: v.$violet-700;
 					}
 				}
 			}
 		}
 	}
 
-	// --- FILTROS ---
+	// --- FILTROS (ALINEADOS A 40px) ---
 	.filters-container {
 		display: flex;
 		gap: 15px;
@@ -88,29 +81,27 @@
 			flex: 1;
 			min-width: 250px;
 			background: white;
-			padding: 0 16px;
-			height: 44px;
+			padding: 0 12px;
+			height: 40px;
 			border-radius: 8px;
 			border: 1px solid #e2e8f0;
 			display: flex;
 			align-items: center;
-			gap: 12px;
+			gap: 10px;
 			transition: all 0.2s ease;
-
 			@media (max-width: 600px) {
 				min-width: 100%;
 			}
-
 			&:focus-within {
 				border-color: v.$primary;
-				box-shadow: 0 0 0 2px rgba(v.$primary, 0.1);
+				box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.1);
 			}
 			input {
 				border: none;
 				outline: none;
 				width: 100%;
-				font-size: 0.9rem;
-				color: #0f172a;
+				font-size: 0.85rem;
+				color: v.$text-main;
 				background: transparent;
 				&::placeholder {
 					color: #94a3b8;
@@ -126,62 +117,49 @@
 		}
 	}
 
-	// --- TABLA MINIMALISTA ---
+	// --- TABLA MINIMALISTA VIOLETA ---
 	.table-container {
 		background: #ffffff;
 		border-radius: 8px;
 		border: 1px solid #e2e8f0;
-		box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 		overflow-x: auto;
-
 		&::-webkit-scrollbar {
 			height: 6px;
-		}
-		&::-webkit-scrollbar-track {
-			background: transparent;
 		}
 		&::-webkit-scrollbar-thumb {
 			background: #cbd5e1;
 			border-radius: 10px;
-		}
-		&::-webkit-scrollbar-thumb:hover {
-			background: #94a3b8;
 		}
 
 		table {
 			width: 100%;
 			border-collapse: collapse;
 			min-width: 1000px;
-			font-size: 0.875rem;
-
-			/* Cabecera Indigo Suave */
+			font-size: 0.85rem;
 			thead tr {
-				background-color: #eef2ff;
-				border-bottom: 1px solid #e0e7ff;
-
+				background-color: v.$violet-50;
+				border-bottom: 1px solid v.$violet-100;
 				th {
 					padding: 12px 16px;
 					text-align: left;
 					font-weight: 600;
-					color: #3730a3;
+					color: v.$violet-800;
 					white-space: nowrap;
 					&.center {
 						text-align: center;
 					}
 				}
 			}
-
 			tbody tr {
 				border-bottom: 1px solid #e2e8f0;
 				transition: background-color 0.2s ease;
-
 				&:hover {
 					background-color: #f8fafc;
 				}
 				&:last-child {
 					border-bottom: none;
 				}
-
 				td {
 					padding: 12px 16px;
 					vertical-align: middle;
@@ -195,24 +173,21 @@
 	}
 
 	// --- CELDAS INTERNAS ---
-
 	.date-time-cell {
 		display: flex;
 		flex-direction: column;
 		gap: 2px;
-
 		.date-part {
 			display: inline-flex;
 			align-items: center;
 			gap: 6px;
 			color: #1e293b;
 			font-weight: 500;
-			font-size: 0.75rem;
+			font-size: 0.8rem;
 			svg {
 				color: #64748b;
 			}
 		}
-
 		.time-part {
 			display: inline-flex;
 			align-items: center;
@@ -235,21 +210,18 @@
 			gap: 6px;
 			font-weight: 500;
 			color: #0f172a;
-
 			&.time-use {
 				color: #059669;
 				font-size: 0.85rem;
 			}
 		}
-
 		.audit-text {
 			display: inline-flex;
 			align-items: center;
 			gap: 4px;
 			font-size: 0.75rem;
 			color: #64748b;
-			font-family:
-				ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+			font-family: monospace;
 			background: #f1f5f9;
 			padding: 2px 6px;
 			border-radius: 4px;
@@ -288,17 +260,16 @@
 		color: #cbd5e1;
 	}
 
-	// --- BADGES GLOBALES ---
+	// --- BADGES ---
 	.status-badge {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		padding: 2px 10px;
-		border-radius: 9999px;
+		padding: 4px 10px;
+		border-radius: 6px;
 		font-size: 0.75rem;
 		font-weight: 600;
 		border: 1px solid transparent;
-
 		&.entrega {
 			background-color: #f0fdf4;
 			color: #16a34a;
@@ -306,7 +277,7 @@
 		}
 		&.devolucion {
 			background-color: #fef2f2;
-			color: #dc2626;
+			color: v.$danger;
 			border-color: #fee2e2;
 		}
 	}
@@ -319,7 +290,6 @@
 		font-weight: 600;
 		text-transform: uppercase;
 		border: 1px solid transparent;
-
 		&.operativo {
 			background-color: #f0fdf4;
 			color: #16a34a;
@@ -327,7 +297,7 @@
 		}
 		&.inoperativo {
 			background-color: #fef2f2;
-			color: #dc2626;
+			color: v.$danger;
 			border-color: #fee2e2;
 		}
 		&.malogrado {
@@ -337,7 +307,7 @@
 		}
 		&.robado {
 			background-color: #fef2f2;
-			color: #dc2626;
+			color: v.$danger;
 			border-color: #fee2e2;
 		}
 		&.neutro {
@@ -352,16 +322,14 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding: 12px 20px;
+		padding: 12px 16px;
 		border-top: 1px solid #e2e8f0;
 		background-color: white;
 		flex-wrap: wrap;
 		gap: 15px;
-
 		@media (max-width: 600px) {
 			justify-content: center;
 		}
-
 		.info {
 			color: #64748b;
 			font-size: 0.85rem;
@@ -370,18 +338,15 @@
 				font-weight: 600;
 			}
 		}
-
 		.controls {
 			display: flex;
 			align-items: center;
 			gap: 15px;
-
 			span {
 				font-size: 0.85rem;
 				color: #64748b;
 				font-weight: 500;
 			}
-
 			button {
 				display: flex;
 				align-items: center;
@@ -395,13 +360,11 @@
 				font-size: 0.85rem;
 				font-weight: 500;
 				transition: all 0.2s ease;
-
 				&:disabled {
 					opacity: 0.4;
 					cursor: not-allowed;
 					background-color: #f8fafc;
 				}
-
 				&:hover:not(:disabled) {
 					background-color: #f1f5f9;
 				}
@@ -414,6 +377,6 @@
 		padding: 32px;
 		text-align: center;
 		color: #64748b;
-		font-size: 0.875rem;
+		font-size: 0.85rem;
 	}
 }

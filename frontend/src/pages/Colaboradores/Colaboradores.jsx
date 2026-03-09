@@ -329,7 +329,7 @@ const Colaboradores = () => {
 						onClick={exportarExcel}
 						className='btn-action-header btn-excel'
 					>
-						<FileSpreadsheet size={16} /> Exportar Excel
+						<FileSpreadsheet size={16} /> Exportar
 					</button>
 					<button
 						id='tour-colab-nuevo'

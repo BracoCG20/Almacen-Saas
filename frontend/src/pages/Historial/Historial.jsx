@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import api from "../../service/api";
 import * as XLSX from "xlsx";
 import Select from "react-select";
-
 import {
 	FileSpreadsheet,
 	Search,
@@ -16,7 +15,7 @@ import {
 	ChevronRight,
 	CalendarDays,
 	HelpCircle,
-	Barcode, // <-- Importamos HelpCircle
+	Barcode,
 } from "lucide-react";
 import { toast } from "react-toastify";
 
@@ -88,61 +87,63 @@ const Historial = () => {
 						align: "center",
 					},
 				},
-				{
-					element: "#tour-historial-excel",
-					popover: {
-						title: "Exportación Avanzada",
-						description:
-							"Genera un Excel completo. Incluirá detalles de auditoría como el estado de la firma del acta y si se le envió el correo al empleado.",
-						side: "bottom",
-						align: "center",
-					},
-				},
 			],
 		});
 		driverObj.drive();
 	};
 
-	// --- ESTILOS REACT-SELECT ---
+	// --- ESTILOS REACT-SELECT (CENTRADOS A 40px) ---
 	const customSelectStyles = {
 		control: (provided, state) => ({
 			...provided,
 			borderRadius: "8px",
-			borderColor: state.isFocused ? "#4f46e5" : "#cbd5e1",
-			boxShadow: state.isFocused ? "0 0 0 3px rgba(79, 70, 229, 0.15)" : "none",
-			minHeight: "50px",
-			height: "50px",
+			borderColor: state.isFocused ? "#7c3aed" : "#e2e8f0",
+			boxShadow: state.isFocused ? "0 0 0 2px rgba(124, 58, 237, 0.1)" : "none",
+			height: "40px",
+			minHeight: "40px",
 			backgroundColor: "white",
 			cursor: "pointer",
+			display: "flex",
+			alignItems: "center",
 		}),
 		valueContainer: (provided) => ({
 			...provided,
-			padding: "0 14px",
+			padding: "0 12px",
+			height: "100%",
+			display: "flex",
+			alignItems: "center",
 			position: "relative",
 		}),
-		input: (provided) => ({ ...provided, margin: "0px", padding: "0px" }),
+		input: (provided) => ({
+			...provided,
+			margin: "0px",
+			padding: "0px",
+			height: "40px",
+			color: "transparent",
+		}),
 		indicatorSeparator: () => ({ display: "none" }),
-		indicatorsContainer: (provided) => ({ ...provided, height: "50px" }),
+		indicatorsContainer: (provided) => ({ ...provided, height: "40px" }),
 		singleValue: (provided) => ({
 			...provided,
 			color: "#1e293b",
-			fontSize: "0.95rem",
-			fontWeight: "600",
+			fontSize: "0.85rem",
+			fontWeight: "500",
 			position: "absolute",
 			top: "50%",
 			transform: "translateY(-50%)",
+			margin: "0px",
 		}),
 		option: (provided, state) => ({
 			...provided,
 			backgroundColor: state.isSelected
-				? "#4f46e5"
+				? "#7c3aed"
 				: state.isFocused
 					? "#f8fafc"
 					: "white",
 			color: state.isSelected ? "white" : "#334155",
 			cursor: "pointer",
-			padding: "12px 15px",
-			fontSize: "0.95rem",
+			padding: "8px 12px",
+			fontSize: "0.85rem",
 		}),
 		menuPortal: (base) => ({ ...base, zIndex: 9999 }),
 	};
@@ -163,25 +164,11 @@ const Historial = () => {
 		fetchHistorial();
 	}, []);
 
-	// Reiniciar paginación al filtrar
 	useEffect(() => {
 		setCurrentPage(1);
 	}, [filtroTexto, filtroTipo]);
 
 	// --- FORMATEADORES ---
-	const formatDateTime = (isoString) => {
-		if (!isoString) return "-";
-		const date = new Date(isoString);
-		return date.toLocaleString("es-PE", {
-			day: "2-digit",
-			month: "short",
-			year: "numeric",
-			hour: "2-digit",
-			minute: "2-digit",
-			hour12: true,
-		});
-	};
-
 	const formatDuration = (intervalObj) => {
 		if (!intervalObj) return "-";
 		let texto = [];
@@ -192,7 +179,6 @@ const Historial = () => {
 		return texto.join(", ");
 	};
 
-	// Obtenemos la URL base del backend dinámicamente para los PDFs
 	const getBackendUrl = () => {
 		const baseUrl = api.defaults.baseURL
 			? api.defaults.baseURL.replace(/\/api\/?$/, "")
@@ -221,30 +207,24 @@ const Historial = () => {
 	const totalPages = Math.ceil(historialFiltrado.length / itemsPerPage);
 	const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-	// --- EXPORTAR EXCEL DETALLADO PARA DIRECTORES ---
+	// --- EXPORTAR EXCEL ---
 	const exportarExcel = () => {
 		if (historialFiltrado.length === 0)
 			return toast.info("No hay datos para exportar");
 
 		const dataParaExcel = historialFiltrado.map((h) => ({
 			"ID Registro": h.id,
-			"Fecha y Hora": formatDateTime(h.fecha_movimiento),
+			"Fecha y Hora": new Date(h.fecha_movimiento).toLocaleString("es-PE"),
 			"Tipo de Acción": h.tipo === "entrega" ? "ASIGNACIÓN" : "DEVOLUCIÓN",
-
-			// Datos del Equipo
 			"Equipo (Marca/Modelo)": `${h.marca} ${h.modelo}`,
 			"N° Serie": h.serie,
 			"Estado Físico Reportado": h.estado_equipo_momento || "Operativo",
 			"¿Incluyó Cargador?": h.cargador ? "SÍ" : "NO",
 			"Tiempo de Uso":
 				h.tipo === "entrega" ? formatDuration(h.tiempo_uso) : "N/A",
-
-			// Datos del Colaborador
 			"Colaborador Asignado": `${h.empleado_nombre} ${h.empleado_apellido}`,
 			"DNI Colaborador": h.dni || "-",
 			"Correo Colaborador": h.empleado_correo || "-",
-
-			// Auditoría y Sistema
 			"Observaciones del Movimiento": h.observaciones || "Ninguna",
 			"Registrado Por": h.admin_nombre
 				? `${h.admin_nombre} (${h.admin_correo})`
@@ -263,7 +243,7 @@ const Historial = () => {
 		const ws = XLSX.utils.json_to_sheet(dataParaExcel);
 		const wb = XLSX.utils.book_new();
 		XLSX.utils.book_append_sheet(wb, ws, "Auditoria_Movimientos");
-		XLSX.writeFile(wb, "Reporte_Auditoria_Equipos_GTH.xlsx");
+		XLSX.writeFile(wb, "Reporte_Auditoria_Equipos.xlsx");
 		toast.success("Reporte de Auditoría generado exitosamente");
 	};
 
@@ -299,21 +279,21 @@ const Historial = () => {
 						onClick={startHistorialTour}
 						className='btn-action-header btn-tour'
 					>
-						<HelpCircle size={18} />
+						<HelpCircle size={16} />
 					</button>
 					<button
 						id='tour-historial-excel'
 						onClick={exportarExcel}
 						className='btn-action-header btn-excel'
 					>
-						<FileSpreadsheet size={18} /> Exportar Excel
+						<FileSpreadsheet size={16} /> Exportar
 					</button>
 				</div>
 			</div>
 
 			<div className='filters-container' id='tour-historial-filtros'>
 				<div className='search-bar'>
-					<Search size={20} color='#94a3b8' />
+					<Search size={18} color='#94a3b8' />
 					<input
 						type='text'
 						placeholder='Buscar por empleado, serie o modelo...'
@@ -358,18 +338,16 @@ const Historial = () => {
 									.trim();
 								let estadoClass = "neutro";
 
-								if (estLower === "operativo") {
-									estadoClass = "operativo";
-								} else if (estLower === "inoperativo") {
+								if (estLower === "operativo") estadoClass = "operativo";
+								else if (estLower === "inoperativo")
 									estadoClass = "inoperativo";
-								} else if (
+								else if (
 									estLower === "mantenimiento" ||
 									estLower === "malogrado"
-								) {
+								)
 									estadoClass = "malogrado";
-								} else if (estLower === "robado" || estLower === "perdido") {
+								else if (estLower === "robado" || estLower === "perdido")
 									estadoClass = "robado";
-								}
 
 								return (
 									<tr key={h.id}>
@@ -430,7 +408,7 @@ const Historial = () => {
 														<span className='name'>
 															<ShieldCheck
 																size={14}
-																style={{ color: "#4f46e5" }}
+																style={{ color: "#7c3aed" }}
 															/>{" "}
 															{h.admin_nombre}
 														</span>
@@ -471,7 +449,6 @@ const Historial = () => {
 					</table>
 				)}
 
-				{/* PAGINACIÓN DENTRO DEL CONTENEDOR DE LA TABLA */}
 				{historialFiltrado.length > itemsPerPage && (
 					<div className='pagination-footer'>
 						<div className='info'>
@@ -481,7 +458,6 @@ const Historial = () => {
 							</strong>{" "}
 							de <strong>{historialFiltrado.length}</strong>
 						</div>
-
 						<div className='controls'>
 							<button
 								onClick={() => paginate(currentPage - 1)}
@@ -489,11 +465,9 @@ const Historial = () => {
 							>
 								<ChevronLeft size={16} /> Anterior
 							</button>
-
 							<span>
 								Página {currentPage} de {totalPages}
 							</span>
-
 							<button
 								onClick={() => paginate(currentPage + 1)}
 								disabled={currentPage === totalPages}

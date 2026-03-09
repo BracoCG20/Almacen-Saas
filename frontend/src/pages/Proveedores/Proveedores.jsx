@@ -265,7 +265,7 @@ const Proveedores = () => {
 		<div className='proveedores-container'>
 			<div className='page-header'>
 				<h1 style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-					<Truck size={28} /> Gestión de Proveedores
+					Gestión de Proveedores
 				</h1>
 				<div className='header-actions'>
 					{/* BOTÓN TOUR */}
@@ -281,7 +281,7 @@ const Proveedores = () => {
 						className='btn-action-header btn-excel'
 						onClick={exportarExcel}
 					>
-						<FileSpreadsheet size={18} /> Exportar Excel
+						<FileSpreadsheet size={18} /> Exportar
 					</button>
 					<button
 						id='tour-prov-nuevo'

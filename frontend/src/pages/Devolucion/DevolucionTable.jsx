@@ -12,8 +12,9 @@ import {
 	CalendarDays,
 	Circle,
 	Clock,
-	Barcode, // <-- Nuevo icono importado
+	Barcode,
 } from "lucide-react";
+import "./DevolucionTable.scss"; // <-- IMPORTAMOS SU PROPIO SCSS
 
 const DevolucionTable = ({
 	historial,
@@ -23,7 +24,6 @@ const DevolucionTable = ({
 	onInvalidar,
 	onReenviarCorreo,
 }) => {
-	// Separamos el formato de Fecha y Hora para apilarlos
 	const formatDateOnly = (isoString) => {
 		if (!isoString) return "-";
 		const date = new Date(
@@ -54,13 +54,10 @@ const DevolucionTable = ({
 		const estLower = (estado || "").toLowerCase().trim();
 		if (estLower === "operativo")
 			return { className: "operativo", text: "Operativo", Icon: Check };
-
 		if (["inoperativo", "malogrado", "mantenimiento"].includes(estLower))
 			return { className: "mantenimiento", text: estado, Icon: IconX };
-
 		if (["robado", "perdido"].includes(estLower))
 			return { className: "malogrado", text: estado, Icon: IconX };
-
 		return { className: "desconocido", text: estado || "Desc.", Icon: Circle };
 	};
 
@@ -96,11 +93,9 @@ const DevolucionTable = ({
 						historial.map((h) => {
 							const status = getStatusBadge(h.estado_equipo_momento);
 							const StatusIcon = status.Icon;
-
 							return (
 								<tr key={h.id}>
 									<td>
-										{/* Nueva celda apilada para fecha y hora */}
 										<div className='date-time-cell'>
 											<span className='date-part'>
 												<CalendarDays size={13} />{" "}
@@ -114,7 +109,6 @@ const DevolucionTable = ({
 									<td>
 										<div className='info-cell'>
 											<span className='name'>{h.modelo}</span>
-											{/* Código de barras reemplazando el texto S/N */}
 											<span className='audit-text'>
 												<Barcode size={12} /> {h.serie}
 											</span>
@@ -134,7 +128,7 @@ const DevolucionTable = ({
 									</td>
 									<td className='center'>
 										<div className={`status-badge ${status.className}`}>
-											<StatusIcon size={12} style={{ marginRight: "4px" }} />
+											<StatusIcon size={12} style={{ marginRight: "4px" }} />{" "}
 											{status.text}
 										</div>
 									</td>
@@ -150,7 +144,7 @@ const DevolucionTable = ({
 											<Mail
 												size={16}
 												className='mail-success'
-												title='Correo enviado'
+												title='Enviado'
 											/>
 										)}
 										{h.correo_enviado === false && (
@@ -202,7 +196,7 @@ const DevolucionTable = ({
 													title='Esperando firma...'
 												>
 													<Clock
-														size={16}
+														size={14}
 														color='#d97706'
 														className='animate-pulse'
 													/>

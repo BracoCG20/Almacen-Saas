@@ -145,9 +145,7 @@ const Directorio = () => {
 	return (
 		<div className='directorio-container'>
 			<div className='page-header'>
-				<h1>
-					<Contact size={28} /> Directorio Workspace
-				</h1>
+				<h1>Directorio Workspace</h1>
 				<button className='btn-add' onClick={openAddModal}>
 					<Plus size={18} /> Asignar Licencia
 				</button>
