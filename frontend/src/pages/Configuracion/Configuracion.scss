@@ -1,124 +1,124 @@
-@use "../../styles/variables" as v;
+@use '../../styles/variables' as v;
 
 .config-container {
-	padding: 2rem;
-	max-width: 1200px;
-	margin: 0 auto;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
 
-	// Header
-	.page-header {
-		margin-bottom: 2rem;
-		h1 {
-			font-size: 1.8rem;
-			color: v.$text-main;
-			font-weight: 800;
-			margin: 0 0 0.2rem 0;
-			@media (max-width: 768px) {
-				font-size: 1.5rem;
-			}
-		}
-		span {
-			font-size: 0.95rem;
-			color: v.$text-muted;
-		}
-	}
+  // Header
+  .page-header {
+    margin-bottom: 2rem;
+    h1 {
+      font-size: 1.8rem;
+      color: v.$text-main;
+      font-weight: 700;
+      margin: 0 0 0.2rem 0;
+      @media (max-width: 768px) {
+        font-size: 1.5rem;
+      }
+    }
+    span {
+      font-size: 0.95rem;
+      color: v.$text-muted;
+    }
+  }
 
-	// Estado Restringido
-	&.restricted {
-		text-align: center;
-		padding: 100px 0;
-		.icon-restricted {
-			color: #cbd5e1;
-			margin-bottom: 20px;
-		}
-		h2 {
-			color: #0f172a;
-			margin-bottom: 10px;
-		}
-		p {
-			color: #64748b;
-		}
-	}
+  // Estado Restringido
+  &.restricted {
+    text-align: center;
+    padding: 100px 0;
+    .icon-restricted {
+      color: #cbd5e1;
+      margin-bottom: 20px;
+    }
+    h2 {
+      color: #0f172a;
+      margin-bottom: 10px;
+    }
+    p {
+      color: #64748b;
+    }
+  }
 
-	// Grid de Tarjetas
-	.config-cards-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-		gap: 20px;
-	}
+  // Grid de Tarjetas
+  .config-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+  }
 
-	// Tarjeta de Admin
-	.admin-card {
-		background: white;
-		padding: 30px;
-		border-radius: 12px;
-		border: 1px solid #e2e8f0;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-		transition:
-			transform 0.2s ease,
-			box-shadow 0.2s ease;
+  // Tarjeta de Admin
+  .admin-card {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
 
-		&:hover {
-			transform: translateY(-2px);
-			box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
-		}
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+    }
 
-		h2 {
-			color: #0f172a;
-			font-size: 1.2rem;
-			font-weight: 700;
-			margin: 0 0 10px 0;
-		}
+    h2 {
+      color: #0f172a;
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin: 0 0 10px 0;
+    }
 
-		p {
-			color: #64748b;
-			font-size: 0.9rem;
-			margin: 0 0 20px 0;
-			line-height: 1.5;
-		}
+    p {
+      color: #64748b;
+      font-size: 0.9rem;
+      margin: 0 0 20px 0;
+      line-height: 1.5;
+    }
 
-		.card-actions {
-			display: flex;
-			gap: 10px;
-		}
-	}
+    .card-actions {
+      display: flex;
+      gap: 10px;
+    }
+  }
 
-	// Botones
-	.btn-main {
-		flex: 1;
-		border: none;
-		border-radius: 8px;
-		cursor: pointer;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 8px;
-		font-weight: 500;
-		font-size: 0.9rem;
-		padding: 0 16px;
-		height: 44px;
-		transition: all 0.2s ease;
-		color: v.$white;
+  // Botones
+  .btn-main {
+    flex: 1;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 0 16px;
+    height: 44px;
+    transition: all 0.2s ease;
+    color: v.$white;
 
-		&.indigo {
-			background-color: v.$primary;
-			&:hover {
-				background-color: darken(v.$primary, 5%);
-			}
-		}
-		&.indigo-light {
-			background-color: #f8fafc;
-			color: #0f172a;
-			border: 1px solid #e2e8f0;
-			&:hover {
-				background-color: #f1f5f9;
-			}
-		}
-		&.green {
-			background-color: #10b981;
-			&:hover {
-				background-color: #059669;
-			}
-		}
-	}
+    &.indigo {
+      background-color: v.$primary;
+      &:hover {
+        background-color: darken(v.$primary, 5%);
+      }
+    }
+    &.indigo-light {
+      background-color: #f8fafc;
+      color: #0f172a;
+      border: 1px solid #e2e8f0;
+      &:hover {
+        background-color: #f1f5f9;
+      }
+    }
+    &.green {
+      background-color: #10b981;
+      &:hover {
+        background-color: #059669;
+      }
+    }
+  }
 }

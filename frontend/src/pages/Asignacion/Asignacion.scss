@@ -1,144 +1,144 @@
-@use "../../styles/variables" as v;
+@use '../../styles/variables' as v;
 
 .entrega-container {
-	// --- HEADER DE LA PÁGINA ---
-	.page-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 1.5rem;
-		padding-bottom: 1rem;
-		border-bottom: 1px solid #e2e8f0;
+  // --- HEADER DE LA PÁGINA ---
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e2e8f0;
 
-		h1 {
-			font-size: 1.8rem;
-			font-weight: 800;
-			color: v.$text-main;
-			margin: 0;
-			@media (max-width: 768px) {
-				font-size: 1.5rem;
-			}
-		}
+    h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: v.$text-main;
+      margin: 0;
+      @media (max-width: 768px) {
+        font-size: 1.5rem;
+      }
+    }
 
-		.btn-tour-header {
-			display: flex;
-			align-items: center;
-			gap: 8px;
-			padding: 8px 12px;
-			background-color: v.$violet-50;
-			color: v.$text-muted;
-			border: 1px solid #e2e8f0;
-			border-radius: 8px;
-			font-weight: 500;
-			font-size: 0.85rem;
-			cursor: pointer;
-			transition: all 0.2s ease;
-			&:hover {
-				background-color: v.$violet-100;
-				color: v.$violet-700;
-			}
-		}
-	}
+    .btn-tour-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background-color: v.$violet-50;
+      color: v.$text-muted;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      &:hover {
+        background-color: v.$violet-100;
+        color: v.$violet-700;
+      }
+    }
+  }
 
-	// --- ESTRUCTURA GRID ---
-	.content-grid {
-		display: grid;
-		grid-template-columns: 1fr 2fr;
-		gap: 2rem;
-		align-items: start;
+  // --- ESTRUCTURA GRID ---
+  .content-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2rem;
+    align-items: start;
 
-		@media (max-width: 1024px) {
-			grid-template-columns: 1fr;
-			gap: 1.5rem;
-		}
-	}
+    @media (max-width: 1024px) {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+  }
 }
 
 // --- MODAL DE CONFIRMACIÓN COMPACTO (Global) ---
 .confirm-modal-content {
-	padding: 0.5rem;
-	text-align: center;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
+  padding: 0.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-	.warning-icon {
-		color: #f59e0b;
-		margin-bottom: 1rem;
-		background-color: #fffbeb;
-		width: 56px;
-		height: 56px;
-		border-radius: 50%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.1);
+  .warning-icon {
+    color: #f59e0b;
+    margin-bottom: 1rem;
+    background-color: #fffbeb;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.1);
 
-		&.reject {
-			color: v.$danger;
-			background-color: #fef2f2;
-			box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
-		}
-	}
+    &.reject {
+      color: v.$danger;
+      background-color: #fef2f2;
+      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+    }
+  }
 
-	h3 {
-		color: v.$text-main;
-		margin-bottom: 0.5rem;
-		font-size: 1.05rem;
-		font-weight: 700;
-	}
-	p {
-		color: v.$text-muted;
-		margin-bottom: 1.5rem;
-		font-size: 0.85rem;
-		line-height: 1.5;
-		max-width: 320px;
-	}
+  h3 {
+    color: v.$text-main;
+    margin-bottom: 0.5rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+  p {
+    color: v.$text-muted;
+    margin-bottom: 1.5rem;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    max-width: 320px;
+  }
 
-	.modal-actions {
-		display: flex;
-		gap: 12px;
-		justify-content: center;
-		width: 100%;
-		button {
-			height: 38px;
-			padding: 0 16px;
-			border-radius: 8px;
-			font-weight: 500;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			gap: 6px;
-			border: none;
-			font-size: 0.85rem;
-			transition: all 0.2s ease;
-			flex: 1;
-			max-width: 170px;
-			white-space: nowrap;
-			&:hover {
-				transform: translateY(-1px);
-			}
-			&:active {
-				transform: translateY(0);
-			}
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    width: 100%;
+    button {
+      height: 38px;
+      padding: 0 16px;
+      border-radius: 8px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: none;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+      flex: 1;
+      max-width: 170px;
+      white-space: nowrap;
+      &:hover {
+        transform: translateY(-1px);
+      }
+      &:active {
+        transform: translateY(0);
+      }
 
-			&.btn-cancel {
-				background-color: white;
-				border: 1px solid #e2e8f0;
-				color: v.$text-main;
-				&:hover {
-					background-color: #f1f5f9;
-				}
-			}
-			&.btn-confirm-reject {
-				background-color: v.$danger;
-				color: white;
-				box-shadow: 0 1px 2px rgba(239, 68, 68, 0.2);
-				&:hover {
-					background-color: #dc2626;
-					box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3);
-				}
-			}
-		}
-	}
+      &.btn-cancel {
+        background-color: white;
+        border: 1px solid #e2e8f0;
+        color: v.$text-main;
+        &:hover {
+          background-color: #f1f5f9;
+        }
+      }
+      &.btn-confirm-reject {
+        background-color: v.$danger;
+        color: white;
+        box-shadow: 0 1px 2px rgba(239, 68, 68, 0.2);
+        &:hover {
+          background-color: #dc2626;
+          box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3);
+        }
+      }
+    }
+  }
 }

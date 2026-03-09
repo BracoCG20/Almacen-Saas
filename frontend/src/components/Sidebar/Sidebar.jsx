@@ -287,7 +287,7 @@ const Sidebar = () => {
                     handleNavigation();
                   }}
                 >
-                  <UserCircle size={16} /> Mi Perfil
+                  <UserCircle size={16} /> Editar Perfil
                 </button>
                 <div className='dropdown-divider'></div>
                 <button
