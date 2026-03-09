@@ -1,201 +1,209 @@
-@use "../../styles/variables" as v;
+@use '../../styles/variables' as v;
 
 .form-card {
-	background: white;
-	padding: 1.5rem;
-	border-radius: 12px;
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-	border: 1px solid #e2e8f0;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e2e8f0;
 
-	.input-group {
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 
-		.label-highlight {
-			display: flex;
-			align-items: center;
-			gap: 6px;
-			font-size: 0.85rem;
-			font-weight: 700;
-			text-transform: uppercase;
+    .label-highlight {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #475569;
 
-			&.primary {
-				color: v.$primary;
-			}
-			&.blue {
-				color: #3b82f6;
-			}
-			&.danger {
-				color: v.$danger;
-			}
-		}
+      &.blue {
+        color: v.$primary;
+      }
+      &.danger {
+        color: v.$danger;
+        svg {
+          color: v.$danger;
+        }
+      }
+    }
 
-		.danger-textarea {
-			width: 100%;
-			padding: 10px 14px;
-			border-radius: 8px;
-			border: 1px solid #fca5a5;
-			background: #fef2f2;
-			font-family: inherit;
-			resize: none;
-			height: 100px;
-			box-sizing: border-box;
-			outline: none;
-			font-size: 0.85rem;
-			color: #0f172a;
-			transition: all 0.2s ease;
+    .danger-textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid #fca5a5;
+      background: #fef2f2;
+      font-family: inherit;
+      resize: none;
+      height: 100px;
+      box-sizing: border-box;
+      outline: none;
+      font-size: 0.85rem;
+      color: #0f172a;
+      transition: all 0.2s ease;
 
-			&:focus {
-				border-color: v.$danger;
-				box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1);
-			}
-		}
-	}
+      &:focus {
+        border-color: v.$danger;
+        box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1);
+      }
+    }
+  }
 
-	.detected-equipment-card {
-		margin-top: 1.5rem;
-		padding: 15px;
-		background: #f0f9ff;
-		border: 1px solid #bae6fd;
-		border-radius: 8px;
-		display: flex;
-		align-items: center;
-		gap: 15px;
+  .detected-equipment-card {
+    margin-top: 1.5rem;
+    padding: 15px;
+    background: #f7f3ff;
+    border: 1px solid #e5d6fe;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
 
-		.icon-wrapper {
-			width: 48px;
-			height: 48px;
-			background: #fff;
-			border-radius: 50%;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			color: #0284c7;
-			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-		}
-		.info-wrapper {
-			display: flex;
-			flex-direction: column;
-			.subtitle {
-				font-size: 0.7rem;
-				color: #64748b;
-				font-weight: 700;
-				text-transform: uppercase;
-			}
-			.title {
-				color: #0f172a;
-				font-size: 1.05rem;
-			}
-			.serial {
-				font-size: 0.8rem;
-				color: #334155;
-				font-family: monospace;
-				margin-top: 2px;
-			}
-		}
-	}
+    .icon-wrapper {
+      width: 48px;
+      height: 48px;
+      background: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: v.$primary;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+    .info-wrapper {
+      display: flex;
+      flex-direction: column;
+      .subtitle {
+        font-size: 0.7rem;
+        color: #64748b;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+      .title {
+        color: #0f172a;
+        font-size: 1rem;
+      }
+      .serial {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.8rem;
+        font-family: monospace;
+        margin-top: 2px;
+        color: #64748b;
+        background: #f1f5f9;
+        padding: 2px 6px;
+        border-radius: 4px;
+        border: 1px solid #e2e8f0;
+        width: fit-content;
+      }
+    }
+  }
 
-	.empty-equipment-card {
-		margin-top: 1.5rem;
-		padding: 15px;
-		background: #f8fafc;
-		border: 1px dashed #cbd5e1;
-		border-radius: 8px;
-		color: #94a3b8;
-		font-style: italic;
-		text-align: center;
-		font-size: 0.85rem;
-	}
+  .empty-equipment-card {
+    margin-top: 1.5rem;
+    padding: 15px;
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 8px;
+    color: #94a3b8;
+    font-style: italic;
+    text-align: center;
+    font-size: 0.85rem;
+  }
 
-	.checkbox-card {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		padding: 12px 14px;
-		border-radius: 8px;
-		width: 100%;
-		cursor: pointer;
-		transition: all 0.2s ease;
-		box-sizing: border-box;
+  .checkbox-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    width: 100%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
 
-		&.danger-checkbox {
-			background: #fff1f2;
-			border: 1px solid #fecdd3;
-			&:hover {
-				background: #ffe4e6;
-			}
-			input {
-				accent-color: #e11d48;
-				width: 16px;
-				height: 16px;
-				cursor: pointer;
-			}
-			span {
-				color: #9f1239;
-				font-weight: 600;
-				display: flex;
-				align-items: center;
-				gap: 8px;
-				font-size: 0.85rem;
-			}
-		}
-	}
+    &.danger-checkbox {
+      background: #fff1f2;
+      border: 1px solid #fecdd3;
+      &:hover {
+        background: #ffe4e6;
+      }
+      input {
+        accent-color: #e11d48;
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+      }
+      span {
+        color: #9f1239;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+      }
+    }
+  }
 
-	.actions-container {
-		display: flex;
-		flex-direction: column;
-		gap: 10px;
-		margin-top: 2rem;
-		border-top: 1px dashed #e2e8f0;
-		padding-top: 1.5rem;
+  .actions-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 2rem;
+    border-top: 1px dashed #e2e8f0;
+    padding-top: 1.5rem;
 
-		.btn-action {
-			width: 100%;
-			height: 40px; // Alineado a 40px
-			border-radius: 8px;
-			border: none;
-			cursor: pointer;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			gap: 8px;
-			font-size: 0.85rem;
-			font-weight: 600;
-			color: white;
-			transition: all 0.2s ease;
+    .btn-action {
+      width: 100%;
+      height: 40px; // Alineado a 40px
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: white;
+      transition: all 0.2s ease;
 
-			&:disabled {
-				background-color: #f8fafc !important;
-				color: #94a3b8 !important;
-				cursor: not-allowed;
-				border: 1px solid #e2e8f0;
-				box-shadow: none;
-				transform: none;
-			}
-			&:hover:not(:disabled) {
-				transform: translateY(-1px);
-				box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-			}
+      &:disabled {
+        background-color: #f8fafc !important;
+        color: #94a3b8 !important;
+        cursor: not-allowed;
+        border: 1px solid #e2e8f0;
+        box-shadow: none;
+        transform: none;
+      }
+      &:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
 
-			&.gray {
-				background: #64748b;
-				&:hover:not(:disabled) {
-					background: #475569;
-				}
-			}
-			&.blue {
-				background: #3b82f6;
-				&:hover:not(:disabled) {
-					background: #2563eb;
-				}
-			}
-			&.green {
-				background: #10b981;
-				&:hover:not(:disabled) {
-					background: #059669;
-				}
-			}
-		}
-	}
+      &.gray {
+        background: #64748b;
+        &:hover:not(:disabled) {
+          background: #475569;
+        }
+      }
+      &.blue {
+        background: #3b82f6;
+        &:hover:not(:disabled) {
+          background: #2563eb;
+        }
+      }
+      &.green {
+        background: #10b981;
+        &:hover:not(:disabled) {
+          background: #059669;
+        }
+      }
+    }
+  }
 }
