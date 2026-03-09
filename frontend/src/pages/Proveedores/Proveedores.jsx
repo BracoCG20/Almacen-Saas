@@ -504,10 +504,11 @@ const Proveedores = () => {
 				isOpen={isDeleteModalOpen}
 				onClose={() => setIsDeleteModalOpen(false)}
 				title='Confirmar Acción'
+				maxWidth='450px' // <--- ESTO EVITA QUE SEA GIGANTE
 			>
 				<div className='confirm-modal-content'>
 					<div className='warning-icon'>
-						<AlertTriangle size={40} />
+						<AlertTriangle size={32} />
 					</div>
 					<h3>¿Desactivar Proveedor?</h3>
 					<p>
@@ -520,13 +521,13 @@ const Proveedores = () => {
 							className='btn-cancel'
 							onClick={() => setIsDeleteModalOpen(false)}
 						>
-							<X size={18} /> Cancelar
+							<X size={16} /> Cancelar
 						</button>
 						<button
 							className='btn-confirm'
 							onClick={() => handleToggleEstado(false)}
 						>
-							<Check size={18} /> Confirmar Baja
+							<Check size={16} /> Confirmar Baja
 						</button>
 					</div>
 				</div>

@@ -21,9 +21,7 @@ import {
 	Banknote,
 	UserCheck,
 	History,
-	Clock,
 	ExternalLink,
-	User,
 	HelpCircle,
 } from "lucide-react";
 import { driver } from "driver.js";
@@ -31,6 +29,7 @@ import "driver.js/dist/driver.css";
 import Modal from "../../components/Modal/Modal";
 import AddServicioForm from "./AddServicioForm";
 import PagoServicioModal from "./PagoServicioModal";
+import ServicioHistorial from "./ServicioHistorial"; // <-- NUEVO IMPORT
 import "./Servicios.scss";
 
 const Servicios = () => {
@@ -44,8 +43,6 @@ const Servicios = () => {
 	const [userRole, setUserRole] = useState(null);
 	const [currentPage, setCurrentPage] = useState(1);
 	const itemsPerPage = 8;
-	const [currentAuditPage, setCurrentAuditPage] = useState(1);
-	const itemsPerAuditPage = 3;
 
 	const [isFormModalOpen, setIsFormModalOpen] = useState(false);
 	const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
@@ -136,6 +133,7 @@ const Servicios = () => {
 	useEffect(() => {
 		fetchData();
 	}, []);
+
 	useEffect(() => {
 		setCurrentPage(1);
 	}, [searchTerm, filtroCategoria]);
@@ -177,6 +175,7 @@ const Servicios = () => {
 				backgroundColor: "#f8fafc",
 				border: "1px solid #e2e8f0",
 			};
+
 		const today = new Date();
 		today.setHours(0, 0, 0, 0);
 		const paymentDate = new Date(
@@ -228,15 +227,6 @@ const Servicios = () => {
 	const totalPages = Math.ceil(filteredServicios.length / itemsPerPage);
 	const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-	const indexOfLastAuditItem = currentAuditPage * itemsPerAuditPage;
-	const indexOfFirstAuditItem = indexOfLastAuditItem - itemsPerAuditPage;
-	const currentAuditItems = auditoriaData.slice(
-		indexOfFirstAuditItem,
-		indexOfLastAuditItem,
-	);
-	const totalAuditPages = Math.ceil(auditoriaData.length / itemsPerAuditPage);
-	const paginateAudit = (pageNumber) => setCurrentAuditPage(pageNumber);
-
 	const exportarExcel = () => {
 		if (servicios.length === 0) return toast.info("No hay datos para exportar");
 		const dataParaExcel = filteredServicios.map((s) => ({
@@ -266,6 +256,7 @@ const Servicios = () => {
 		setServicioParaPago(servicio);
 		setIsPagoModalOpen(true);
 	};
+
 	const confirmChangeStatus = (servicio, status) => {
 		setServicioToChangeStatus(servicio);
 		setNewStatus(status);
@@ -290,13 +281,13 @@ const Servicios = () => {
 			const res = await api.get(`/servicios/${servicio.id}/auditoria`);
 			setAuditoriaData(res.data);
 			setServicioParaPago(servicio);
-			setCurrentAuditPage(1);
 			setIsAuditModalOpen(true);
 		} catch (error) {
 			toast.error("Error cargando auditoría");
 		}
 	};
 
+	// --- FIX CENTRADO REACT SELECT ---
 	const customSelectStyles = {
 		control: (provided, state) => ({
 			...provided,
@@ -306,14 +297,44 @@ const Servicios = () => {
 			height: "40px",
 			minHeight: "40px",
 			cursor: "pointer",
-			fontSize: "0.85rem",
+			display: "flex",
+			alignItems: "center",
 		}),
-		valueContainer: (provided) => ({ ...provided, padding: "0 10px" }),
+		valueContainer: (provided) => ({
+			...provided,
+			padding: "0 12px",
+			height: "100%",
+			display: "flex",
+			alignItems: "center",
+			position: "relative",
+		}),
+		input: (provided) => ({
+			...provided,
+			margin: "0px",
+			padding: "0px",
+			height: "40px",
+			color: "transparent",
+		}),
 		indicatorSeparator: () => ({ display: "none" }),
+		indicatorsContainer: (provided) => ({ ...provided, height: "40px" }),
 		singleValue: (provided) => ({
 			...provided,
 			color: "#1e293b",
 			fontWeight: "500",
+			fontSize: "0.85rem",
+			margin: "0px",
+			position: "absolute",
+			top: "50%",
+			transform: "translateY(-50%)",
+		}),
+		placeholder: (provided) => ({
+			...provided,
+			color: "#94a3b8",
+			fontSize: "0.85rem",
+			margin: "0px",
+			position: "absolute",
+			top: "50%",
+			transform: "translateY(-50%)",
 		}),
 		menuPortal: (base) => ({ ...base, zIndex: 9999 }),
 		option: (provided, state) => ({
@@ -326,6 +347,7 @@ const Servicios = () => {
 			color: state.isSelected ? "white" : "#334155",
 			fontSize: "0.85rem",
 			cursor: "pointer",
+			padding: "8px 12px",
 		}),
 	};
 
@@ -521,7 +543,7 @@ const Servicios = () => {
 						</div>
 						<div
 							className='controls'
-							style={{ display: "flex", alignItems: "center", gap: "15px" }}
+							style={{ display: "flex", alignItems: "center", gap: "10px" }}
 						>
 							<button
 								onClick={() => paginate(currentPage - 1)}
@@ -531,20 +553,20 @@ const Servicios = () => {
 									alignItems: "center",
 									gap: "5px",
 									padding: "6px 12px",
-									borderRadius: "8px",
+									borderRadius: "6px",
 									fontWeight: "600",
 								}}
 							>
-								<ChevronLeft size={16} /> Anterior
+								<ChevronLeft size={16} /> Ant
 							</button>
 							<span
 								style={{
-									fontSize: "0.9rem",
+									fontSize: "0.85rem",
 									color: "#64748b",
 									fontWeight: "600",
 								}}
 							>
-								Página {currentPage} de {totalPages}
+								{currentPage} / {totalPages}
 							</span>
 							<button
 								onClick={() => paginate(currentPage + 1)}
@@ -554,11 +576,11 @@ const Servicios = () => {
 									alignItems: "center",
 									gap: "5px",
 									padding: "6px 12px",
-									borderRadius: "8px",
+									borderRadius: "6px",
 									fontWeight: "600",
 								}}
 							>
-								Siguiente <ChevronRight size={16} />
+								Sig <ChevronRight size={16} />
 							</button>
 						</div>
 					</div>
@@ -594,14 +616,25 @@ const Servicios = () => {
 				/>
 			</Modal>
 
+			{/* HISTORIAL MODAL (Ahora llama al nuevo componente) */}
+			<Modal
+				isOpen={isAuditModalOpen}
+				onClose={() => setIsAuditModalOpen(false)}
+				title={`Historial: ${servicioParaPago?.nombre}`}
+			>
+				<ServicioHistorial historyData={auditoriaData} />
+			</Modal>
+
+			{/* MODAL CONFIRMAR BAJA (CON MAX-WIDTH 400PX) */}
 			<Modal
 				isOpen={isStatusModalOpen}
 				onClose={() => setIsStatusModalOpen(false)}
 				title='Confirmar Acción'
+				maxWidth='400px'
 			>
 				<div className='confirm-modal-content'>
 					<div className='warning-icon'>
-						<AlertTriangle size={40} />
+						<AlertTriangle size={32} />
 					</div>
 					<h3>¿Estás seguro?</h3>
 					<p>
@@ -613,111 +646,15 @@ const Servicios = () => {
 							className='btn-cancel'
 							onClick={() => setIsStatusModalOpen(false)}
 						>
-							<X size={18} /> Cancelar
+							Cancelar
 						</button>
 						<button
 							className={`btn-confirm ${newStatus ? "green" : ""}`}
 							onClick={executeChangeStatus}
 						>
-							<Check size={18} /> Confirmar
+							Confirmar
 						</button>
 					</div>
-				</div>
-			</Modal>
-
-			<Modal
-				isOpen={isAuditModalOpen}
-				onClose={() => setIsAuditModalOpen(false)}
-				title={`Historial: ${servicioParaPago?.nombre}`}
-			>
-				<div className='audit-modal-content'>
-					{auditoriaData.length === 0 ? (
-						<p className='empty-audit'>No hay registros en el historial.</p>
-					) : (
-						<>
-							<ul className='audit-timeline'>
-								{currentAuditItems.map((log) => (
-									<li
-										key={log.id}
-										className={
-											log.accion.includes("ANULADO") ? "error-log" : ""
-										}
-									>
-										<div className='audit-card'>
-											<div className='log-header'>
-												<strong>{log.accion}</strong>
-												<span className='date-badge'>
-													<Clock size={12} />{" "}
-													{new Date(log.fecha).toLocaleString()}
-												</span>
-											</div>
-											<p>{log.detalle}</p>
-											<div className='log-footer-grid'>
-												<div className='footer-item'>
-													<UserCheck size={14} style={{ color: "#059669" }} />{" "}
-													<span>
-														Resp:{" "}
-														<strong>
-															{log.resp_nombres
-																? `${log.resp_nombres} ${log.resp_apellidos}`
-																: "No asignado"}
-														</strong>
-													</span>
-												</div>
-												<div className='footer-item'>
-													<User size={14} style={{ color: "#4f46e5" }} />{" "}
-													<span>
-														Por:{" "}
-														<strong>
-															{log.creador_nombres
-																? `${log.creador_nombres} ${log.creador_apellidos}`
-																: "Sistema"}
-														</strong>
-													</span>
-												</div>
-											</div>
-										</div>
-									</li>
-								))}
-							</ul>
-							{auditoriaData.length > itemsPerAuditPage && (
-								<div
-									className='pagination-footer'
-									style={{
-										borderTop: "none",
-										padding: "15px 5px 0 5px",
-										marginTop: "10px",
-										background: "transparent",
-									}}
-								>
-									<div className='info' style={{ fontSize: "0.8rem" }}>
-										Mostrando <strong>{indexOfFirstAuditItem + 1}</strong> a{" "}
-										<strong>
-											{Math.min(indexOfLastAuditItem, auditoriaData.length)}
-										</strong>{" "}
-										de <strong>{auditoriaData.length}</strong>
-									</div>
-									<div className='controls'>
-										<button
-											onClick={() => paginateAudit(currentAuditPage - 1)}
-											disabled={currentAuditPage === 1}
-										>
-											<ChevronLeft size={14} /> Ant
-										</button>
-										<span>
-											{currentAuditPage} / {totalAuditPages}
-										</span>
-										<button
-											onClick={() => paginateAudit(currentAuditPage + 1)}
-											disabled={currentAuditPage === totalAuditPages}
-										>
-											Sig <ChevronRight size={14} />
-										</button>
-									</div>
-								</div>
-							)}
-						</>
-					)}
 				</div>
 			</Modal>
 		</div>

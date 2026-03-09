@@ -1,150 +1,142 @@
-@use '../../styles/variables' as v;
+@use "../../styles/variables" as v;
 
 .file-upload-wrapper {
-  width: 100%;
+	width: 100%;
 
-  &.empty-state {
-    .custom-upload-btn {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      padding: 14px;
-      background-color: #f8fafc;
-      border: 2px dashed #cbd5e1;
-      border-radius: 10px;
-      color: #64748b;
-      font-weight: 600;
-      font-size: 0.95rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      outline: none;
+	// ESTADO VACÍO (Botón de subida)
+	&.empty-state {
+		.custom-upload-btn {
+			width: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 10px;
+			height: 40px; // Alineado a los inputs del resto del formulario
+			background-color: #f8fafc;
+			border: 1px dashed #cbd5e1;
+			border-radius: 8px;
+			color: #64748b;
+			font-weight: 500;
+			font-size: 0.85rem;
+			cursor: pointer;
+			transition: all 0.2s ease;
+			outline: none;
 
-      @media (max-width: 600px) {
-        flex-direction: column;
-        gap: 6px;
-        padding: 20px 10px;
-        text-align: center;
-        font-size: 0.85rem;
-      }
+			svg {
+				color: v.$primary;
+				transition: transform 0.2s ease;
+			}
 
-      svg {
-        color: v.$primary;
-        transition: transform 0.2s ease;
+			&:hover {
+				background-color: v.$violet-50;
+				border-color: v.$primary;
+				color: v.$violet-700;
 
-        @media (max-width: 600px) {
-          width: 28px;
-          height: 28px;
-        }
-      }
+				svg {
+					transform: translateY(-2px);
+				}
+			}
+		}
+	}
 
-      &:hover {
-        background-color: #f1f5f9;
-        border-color: v.$primary;
-        color: v.$primary;
+	// TARJETA DE VISTA PREVIA (Cuando hay archivo)
+	.file-preview-card {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		background-color: #f8fafc;
+		border: 1px solid #e2e8f0;
+		padding: 6px 10px; // Padding más compacto
+		border-radius: 8px;
+		transition: all 0.2s ease;
+		gap: 15px;
 
-        svg {
-          transform: translateY(-2px);
-        }
-      }
-    }
-  }
+		@media (max-width: 600px) {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 8px;
+		}
 
-  // --- TARJETA DE VISTA PREVIA ---
-  .file-preview-card {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #f8fafc;
-    border: 1px solid #e2e8f0;
-    padding: 12px 18px;
-    border-radius: 10px;
-    transition: all 0.2s ease;
-    gap: 15px;
+		&:hover {
+			border-color: v.$primary;
+			box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.05);
+		}
 
-    @media (max-width: 600px) {
-      flex-direction: column;
-      align-items: stretch;
-      padding: 15px;
-      gap: 12px;
-    }
+		.file-info {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			color: #334155;
+			font-weight: 600;
+			font-size: 0.8rem;
+			flex: 1;
+			min-width: 0;
 
-    &:hover {
-      border-color: #cbd5e1;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    }
+			.icon-new {
+				color: v.$primary;
+			}
+			.icon-existing {
+				color: #10b981;
+			}
 
-    .file-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: #334155;
-      font-weight: 600;
-      font-size: 0.9rem;
-      flex: 1;
-      min-width: 0;
+			span {
+				display: inline-block;
+				max-width: 100%;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+		}
 
-      span {
-        display: inline-block;
-        max-width: 100%;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-    }
+		.file-actions {
+			display: flex;
+			gap: 6px;
+			flex-shrink: 0;
 
-    .file-actions {
-      display: flex;
-      gap: 8px;
-      flex-shrink: 0;
+			@media (max-width: 600px) {
+				justify-content: flex-end;
+			}
 
-      @media (max-width: 600px) {
-        justify-content: flex-end;
-      }
+			.btn-icon {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				width: 32px;
+				height: 32px;
+				border-radius: 6px;
+				border: 1px solid transparent;
+				cursor: pointer;
+				transition: all 0.2s;
+				text-decoration: none;
+				background-color: transparent;
 
-      .btn-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 36px;
-        height: 36px;
-        border-radius: 8px;
-        border: none;
-        cursor: pointer;
-        transition: all 0.2s;
-        text-decoration: none;
+				&.preview {
+					color: #0ea5e9;
+					&:hover {
+						background-color: #e0f2fe;
+						border-color: #bae6fd;
+						transform: translateY(-1px);
+					}
+				}
 
-        @media (max-width: 600px) {
-          flex: 1;
-          max-width: 60px;
-        }
+				&.download {
+					color: #10b981;
+					&:hover {
+						background-color: #dcfce7;
+						border-color: #bbf7d0;
+						transform: translateY(-1px);
+					}
+				}
 
-        &.preview {
-          background-color: #e0f2fe;
-          color: #0ea5e9;
-          &:hover {
-            background-color: #bae6fd;
-            transform: translateY(-2px);
-          }
-        }
-        &.download {
-          background-color: #dcfce7;
-          color: #10b981;
-          &:hover {
-            background-color: #bbf7d0;
-            transform: translateY(-2px);
-          }
-        }
-        &.delete {
-          background-color: #fee2e2;
-          color: #ef4444;
-          &:hover {
-            background-color: #fecaca;
-            transform: translateY(-2px);
-          }
-        }
-      }
-    }
-  }
+				&.delete {
+					color: #ef4444;
+					&:hover {
+						background-color: #fee2e2;
+						border-color: #fecaca;
+						transform: translateY(-1px);
+					}
+				}
+			}
+		}
+	}
 }

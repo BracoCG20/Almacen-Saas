@@ -14,7 +14,7 @@ const getAllServicios = async () => {
     LEFT JOIN empresas eu ON s.empresa_id_usuaria = eu.id
     LEFT JOIN usuarios u_resp ON s.usuario_id_responsable = u_resp.id
     LEFT JOIN colaboradores c_resp ON u_resp.colaborador_id = c_resp.id
-    LEFT JOIN usuarios uc1 ON s.usuario_creation_id = uc1.id
+    LEFT JOIN usuarios uc1 ON s.usuario_creacion_id = uc1.id  -- <--- AQUÍ ESTABA EL ERROR (antes decía creation_id)
     LEFT JOIN colaboradores c1 ON uc1.colaborador_id = c1.id
     ORDER BY s.estado DESC, s.fecha_creacion DESC;
   `;

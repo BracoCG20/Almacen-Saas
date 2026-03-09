@@ -36,7 +36,7 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Hacer pública la carpeta de uploads
+// Hacer pública la carpeta de uploads (Apunta estricta y únicamente a backend/uploads)
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 // ==========================================
@@ -98,7 +98,7 @@ const directorioRoutes = require("./routes/directorioRoutes");
 app.use("/api/directorio", directorioRoutes);
 
 // ==========================================
-// INICIAR EL SERVIDOR (Usamos 'server.listen' en lugar de 'app.listen')
+// INICIAR EL SERVIDOR
 // ==========================================
 const PORT = process.env.PORT || 4000;
 

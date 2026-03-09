@@ -114,38 +114,19 @@
 					color: #475569;
 					font-size: 0.85rem;
 					line-height: 1.5;
-				}
-
-				.contract-status-container {
-					margin-bottom: 12px;
-					.contract-badge {
-						display: inline-flex;
-						align-items: center;
-						gap: 6px;
-						padding: 4px 10px;
-						border-radius: 6px;
-						font-size: 0.75rem;
-						font-weight: 600;
-						&.added {
-							background-color: v.$violet-50;
-							color: v.$primary;
-							text-decoration: none;
-							border: 1px solid v.$violet-100;
-							&:hover {
-								background-color: v.$violet-100;
-							}
-						}
-						&.removed {
-							background-color: #fef2f2;
-							color: v.$danger;
-							border: 1px solid #fee2e2;
-						}
-					}
+					margin: 0 0 12px 0;
 				}
 
 				.log-footer-grid {
 					border-top: 1px dashed #e2e8f0;
 					padding-top: 10px;
+					display: grid;
+					grid-template-columns: 1fr 1fr;
+					gap: 10px;
+
+					@media (max-width: 500px) {
+						grid-template-columns: 1fr;
+					}
 
 					.footer-item {
 						display: flex;
@@ -156,6 +137,9 @@
 
 						.icon-primary {
 							color: v.$primary;
+						}
+						.icon-success {
+							color: #059669;
 						}
 						strong {
 							color: #1e293b;

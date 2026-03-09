@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import api from "../../service/api";
 import { toast } from "react-toastify";
 import Select from "react-select";
-import CreatableSelect from "react-select/creatable";
 import {
 	CloudUpload,
 	Save,
@@ -59,13 +58,6 @@ const AddServicioForm = ({ onSuccess, servicioToEdit }) => {
 		{ value: "Anual", label: "Anual" },
 		{ value: "Trimestral", label: "Trimestral" },
 		{ value: "Único", label: "Pago Único" },
-	];
-
-	const metodoPagoOptions = [
-		{ value: "BCP", label: "BCP" },
-		{ value: "Interbank", label: "Interbank" },
-		{ value: "BBVA", label: "BBVA" },
-		{ value: "Transferencia", label: "Transferencia" },
 	];
 
 	useEffect(() => {
@@ -160,26 +152,68 @@ const AddServicioForm = ({ onSuccess, servicioToEdit }) => {
 		}
 	};
 
+	// --- CORRECCIÓN EXACTA PARA ALINEACIÓN CENTRAL PERFECTA ---
 	const customSelectStyles = {
 		control: (provided, state) => ({
 			...provided,
 			borderRadius: "8px",
 			borderColor: state.isFocused ? "#7c3aed" : "#e2e8f0",
 			boxShadow: state.isFocused ? "0 0 0 2px rgba(124, 58, 237, 0.1)" : "none",
-			minHeight: "40px",
 			height: "40px",
-			fontSize: "0.85rem",
-			backgroundColor: "white",
+			minHeight: "40px",
 			cursor: "pointer",
+			display: "flex",
+			alignItems: "center",
 		}),
-		valueContainer: (provided) => ({ ...provided, padding: "0 10px" }),
+		valueContainer: (provided) => ({
+			...provided,
+			padding: "0 12px",
+			height: "100%",
+			display: "flex",
+			alignItems: "center",
+			position: "relative",
+		}),
+		input: (provided) => ({
+			...provided,
+			margin: "0px",
+			padding: "0px",
+			height: "40px",
+			color: "transparent",
+		}),
 		indicatorSeparator: () => ({ display: "none" }),
+		indicatorsContainer: (provided) => ({ ...provided, height: "40px" }),
 		singleValue: (provided) => ({
 			...provided,
 			color: "#1e293b",
-			fontWeight: "500",
+			fontWeight: "400",
+			fontSize: "0.85rem",
+			margin: "0px",
+			position: "absolute",
+			top: "50%",
+			transform: "translateY(-50%)",
+		}),
+		placeholder: (provided) => ({
+			...provided,
+			color: "#94a3b8",
+			fontSize: "0.85rem",
+			margin: "0px",
+			position: "absolute",
+			top: "50%",
+			transform: "translateY(-50%)",
 		}),
 		menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+		option: (provided, state) => ({
+			...provided,
+			backgroundColor: state.isSelected
+				? "#7c3aed"
+				: state.isFocused
+					? "#f5f3ff"
+					: "white",
+			color: state.isSelected ? "white" : "#334155",
+			fontSize: "0.85rem",
+			cursor: "pointer",
+			padding: "8px 12px",
+		}),
 	};
 
 	return (
