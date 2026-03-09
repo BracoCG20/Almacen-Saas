@@ -97,7 +97,6 @@ const UserListModal = ({ onClose }) => {
   const currentItems = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
 
-  // --- FUNCIÓN EXPORTAR EXCEL ---
   const exportarExcel = () => {
     if (filteredUsers.length === 0)
       return toast.info('No hay datos para exportar');
@@ -127,18 +126,18 @@ const UserListModal = ({ onClose }) => {
       onClick={onClose}
     >
       <div
-        className='list-modal-content'
+        className='list-modal-content-modern'
         onClick={(e) => e.stopPropagation()}
       >
         <div className='modal-header'>
           <h2>
-            <Users size={24} /> Gestión de Accesos (Usuarios)
+            <Users size={20} /> Gestión de Accesos (Usuarios)
           </h2>
           <button
             className='btn-close'
             onClick={onClose}
           >
-            <X size={24} />
+            <X size={20} />
           </button>
         </div>
 
@@ -146,7 +145,7 @@ const UserListModal = ({ onClose }) => {
         <div className='toolbar-actions'>
           <div className='search-bar'>
             <Search
-              size={20}
+              size={18}
               color='#94a3b8'
             />
             <input
@@ -160,7 +159,7 @@ const UserListModal = ({ onClose }) => {
             className='btn-excel-modal'
             onClick={exportarExcel}
           >
-            <FileSpreadsheet size={18} /> Exportar Excel
+            <FileSpreadsheet size={16} /> Exportar Excel
           </button>
         </div>
 
@@ -186,31 +185,24 @@ const UserListModal = ({ onClose }) => {
                   {currentItems.map((u) => (
                     <tr
                       key={u.usuario_id}
-                      style={{ opacity: u.activo ? 1 : 0.6 }}
+                      className={!u.activo ? 'inactive-row' : ''}
                     >
                       <td>
-                        <strong>
-                          {u.nombres} {u.apellidos}
-                        </strong>
-                        <br />
-                        <small style={{ color: '#64748b' }}>{u.cargo}</small>
+                        <div className='info-cell'>
+                          <span className='name'>
+                            {u.nombres} {u.apellidos}
+                          </span>
+                          <span className='audit-text'>{u.cargo}</span>
+                        </div>
                       </td>
                       <td>{u.email_login}</td>
                       <td>
                         {u.rol_id === 1 ? (
-                          <span
-                            style={{
-                              color: '#7c3aed',
-                              fontWeight: 'bold',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '5px',
-                            }}
-                          >
-                            <ShieldCheck size={16} /> {u.nombre_rol}
+                          <span className='badge-rol superadmin'>
+                            <ShieldCheck size={14} /> {u.nombre_rol}
                           </span>
                         ) : (
-                          <span style={{ color: '#334155', fontWeight: '500' }}>
+                          <span className='badge-rol admin'>
                             {u.nombre_rol || 'Admin'}
                           </span>
                         )}
@@ -218,7 +210,7 @@ const UserListModal = ({ onClose }) => {
                       <td>{u.empresa_nombre || '-'}</td>
                       <td className='center'>
                         <span
-                          className={`status-badge ${u.activo ? 'active' : 'inactive'}`}
+                          className={`status-badge-mini ${u.activo ? 'active' : 'inactive'}`}
                         >
                           {u.activo ? 'Activo' : 'Inactivo'}
                         </span>
@@ -226,20 +218,20 @@ const UserListModal = ({ onClose }) => {
                       <td className='center'>
                         <div className='actions-cell'>
                           <button
-                            className={`btn-toggle ${u.activo ? 'danger' : 'success'}`}
+                            className={`action-btn-mini ${u.activo ? 'danger' : 'success'}`}
                             onClick={() => handleToggleStatus(u)}
                             title={
                               u.activo ? 'Inactivar Acceso' : 'Activar Acceso'
                             }
                           >
                             {u.activo ? (
-                              <ToggleRight size={22} />
+                              <ToggleRight size={20} />
                             ) : (
-                              <ToggleLeft size={22} />
+                              <ToggleLeft size={20} />
                             )}
                           </button>
                           <button
-                            className='btn-key'
+                            className='action-btn-mini key'
                             onClick={() =>
                               setPassModal({
                                 show: true,
@@ -249,7 +241,7 @@ const UserListModal = ({ onClose }) => {
                             }
                             title='Forzar Cambio de Contraseña'
                           >
-                            <KeyRound size={18} />
+                            <KeyRound size={16} />
                           </button>
                         </div>
                       </td>
@@ -261,7 +253,7 @@ const UserListModal = ({ onClose }) => {
 
             {/* --- PAGINACIÓN --- */}
             {filteredUsers.length > itemsPerPage && (
-              <div className='pagination-footer'>
+              <div className='pagination-footer-mini'>
                 <div className='info'>
                   Mostrando <strong>{indexOfFirstItem + 1}</strong> a{' '}
                   <strong>
@@ -274,22 +266,16 @@ const UserListModal = ({ onClose }) => {
                     onClick={() => setCurrentPage(currentPage - 1)}
                     disabled={currentPage === 1}
                   >
-                    <ChevronLeft size={16} /> Anterior
+                    <ChevronLeft size={16} /> Ant
                   </button>
-                  <span
-                    style={{
-                      fontSize: '0.85rem',
-                      color: '#64748b',
-                      fontWeight: '600',
-                    }}
-                  >
+                  <span>
                     {currentPage} / {totalPages}
                   </span>
                   <button
                     onClick={() => setCurrentPage(currentPage + 1)}
                     disabled={currentPage === totalPages}
                   >
-                    Siguiente <ChevronRight size={16} />
+                    Sig <ChevronRight size={16} />
                   </button>
                 </div>
               </div>

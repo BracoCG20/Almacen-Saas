@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../service/api';
 import { toast } from 'react-toastify';
 import { X, Building2, Save } from 'lucide-react';
-import '../RegisterAdminModal/RegisterAdminModal.scss';
+import './AddEmpresaModal.scss'; // <-- IMPORTAMOS SU PROPIO SCSS
 
 const AddEmpresaModal = ({ onClose, onSuccess, empresaToEdit }) => {
   const [empresa, setEmpresa] = useState({
@@ -78,27 +78,28 @@ const AddEmpresaModal = ({ onClose, onSuccess, empresaToEdit }) => {
       onClick={onClose}
     >
       <div
-        className='modal-content'
+        className='modal-content-modern'
         onClick={(e) => e.stopPropagation()}
       >
         <div className='modal-header'>
           <h2>
-            <Building2 size={24} />{' '}
+            <Building2 size={20} />{' '}
             {empresaToEdit ? 'Editar Empresa' : 'Registrar Empresa'}
           </h2>
           <button
             className='btn-close'
             onClick={onClose}
+            title='Cerrar'
           >
-            <X size={24} />
+            <X size={20} />
           </button>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          style={{ maxHeight: '70vh', overflowY: 'auto', paddingRight: '10px' }}
+          className='form-modern-layout'
         >
-          <div className='form-row'>
+          <div className='form-grid'>
             <div className='input-group'>
               <label>Razón Social *</label>
               <input
@@ -120,7 +121,7 @@ const AddEmpresaModal = ({ onClose, onSuccess, empresaToEdit }) => {
             </div>
           </div>
 
-          <div className='form-row'>
+          <div className='form-grid'>
             <div className='input-group'>
               <label>RUC *</label>
               <input
@@ -147,7 +148,7 @@ const AddEmpresaModal = ({ onClose, onSuccess, empresaToEdit }) => {
             </div>
           </div>
 
-          <div className='input-group'>
+          <div className='input-group full-width'>
             <label>Dirección Fiscal</label>
             <input
               name='direccion_fiscal'
@@ -157,7 +158,7 @@ const AddEmpresaModal = ({ onClose, onSuccess, empresaToEdit }) => {
             />
           </div>
 
-          <div className='form-row'>
+          <div className='form-grid-3'>
             <div className='input-group'>
               <label>Departamento</label>
               <input
@@ -187,7 +188,7 @@ const AddEmpresaModal = ({ onClose, onSuccess, empresaToEdit }) => {
             </div>
           </div>
 
-          <div className='form-row'>
+          <div className='form-grid'>
             <div className='input-group'>
               <label>Email de Contacto</label>
               <input
@@ -210,7 +211,7 @@ const AddEmpresaModal = ({ onClose, onSuccess, empresaToEdit }) => {
             </div>
           </div>
 
-          <div className='form-row'>
+          <div className='form-grid'>
             <div className='input-group'>
               <label>Representante Legal</label>
               <input
@@ -218,6 +219,7 @@ const AddEmpresaModal = ({ onClose, onSuccess, empresaToEdit }) => {
                 name='nombre_representante_legal'
                 value={empresa.nombre_representante_legal}
                 onChange={handleChange}
+                placeholder='Nombre completo'
               />
             </div>
             <div className='input-group'>
@@ -243,8 +245,8 @@ const AddEmpresaModal = ({ onClose, onSuccess, empresaToEdit }) => {
               type='submit'
               className='btn-confirm'
             >
-              {empresaToEdit ? <Save size={18} /> : <Save size={18} />}
-              {empresaToEdit ? 'Actualizar' : 'Guardar Empresa'}
+              <Save size={16} />{' '}
+              {empresaToEdit ? 'Actualizar Empresa' : 'Guardar Empresa'}
             </button>
           </div>
         </form>

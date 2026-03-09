@@ -31,10 +31,8 @@ const RegisterAdminModal = ({ onClose }) => {
           api.get('/auth/users'),
         ]);
 
-        // 1. Extrae los DNIs de los que YA tienen un acceso creado
         const dnisConAcceso = resUsers.data.map((u) => u.dni);
 
-        // 2. Filtra la lista: Solo activos Y que su DNI NO esté en la lista de arriba
         const options = resColab.data
           .filter((c) => c.estado === true && !dnisConAcceso.includes(c.dni))
           .map((c) => ({
@@ -88,49 +86,67 @@ const RegisterAdminModal = ({ onClose }) => {
     }
   };
 
+  // --- FIX CENTRADO REACT SELECT 40PX ---
   const customSelectStyles = {
     control: (provided, state) => ({
       ...provided,
       borderRadius: '8px',
-      borderColor: state.isFocused ? '#4f46e5' : '#cbd5e1',
-      boxShadow: state.isFocused ? '0 0 0 3px rgba(79, 70, 229, 0.1)' : 'none',
-      height: '50px',
-      minHeight: '50px',
+      borderColor: state.isFocused ? '#7c3aed' : '#e2e8f0',
+      boxShadow: state.isFocused ? '0 0 0 2px rgba(124, 58, 237, 0.1)' : 'none',
+      height: '40px',
+      minHeight: '40px',
+      backgroundColor: state.isDisabled ? '#f8fafc' : '#fff',
+      cursor: state.isDisabled ? 'not-allowed' : 'pointer',
       display: 'flex',
       alignItems: 'center',
     }),
     valueContainer: (provided) => ({
       ...provided,
+      padding: '0 12px',
       height: '100%',
-      padding: '0 14px',
       display: 'flex',
       alignItems: 'center',
+      position: 'relative',
     }),
     input: (provided) => ({
       ...provided,
       margin: '0px',
       padding: '0px',
+      height: '40px',
+      color: 'transparent',
     }),
+    indicatorSeparator: () => ({ display: 'none' }),
+    indicatorsContainer: (provided) => ({ ...provided, height: '40px' }),
     singleValue: (provided) => ({
       ...provided,
-      marginTop: '2px',
       color: '#1e293b',
-      fontSize: '0.95rem',
+      fontSize: '0.85rem',
+      fontWeight: '500',
+      position: 'absolute',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      margin: '0px',
     }),
-    indicatorsContainer: (provided) => ({
+    placeholder: (provided) => ({
       ...provided,
-      height: '100%',
+      color: '#94a3b8',
+      fontSize: '0.85rem',
+      position: 'absolute',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      margin: '0px',
     }),
     option: (provided, state) => ({
       ...provided,
       backgroundColor: state.isSelected
-        ? '#4f46e5'
+        ? '#7c3aed'
         : state.isFocused
-          ? '#e0e7ff'
+          ? '#f5f3ff'
           : 'white',
       color: state.isSelected ? 'white' : '#334155',
       cursor: 'pointer',
-      padding: '12px 15px',
+      fontSize: '0.85rem',
+      padding: '8px 12px',
     }),
     menuPortal: (base) => ({ ...base, zIndex: 9999 }),
   };
@@ -141,23 +157,27 @@ const RegisterAdminModal = ({ onClose }) => {
       onClick={onClose}
     >
       <div
-        className='modal-content'
+        className='modal-content-modern'
         onClick={(e) => e.stopPropagation()}
       >
         <div className='modal-header'>
           <h2>
-            <Key size={24} /> Otorgar Acceso al Sistema
+            <Key size={20} /> Otorgar Acceso al Sistema
           </h2>
           <button
             className='btn-close'
             onClick={onClose}
+            title='Cerrar'
           >
-            <X size={24} />
+            <X size={20} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className='input-group'>
+        <form
+          onSubmit={handleSubmit}
+          className='form-modern-layout'
+        >
+          <div className='input-group full-width'>
             <label>Seleccionar Colaborador *</label>
             <Select
               options={colaboradoresOptions}
@@ -174,22 +194,22 @@ const RegisterAdminModal = ({ onClose }) => {
               menuPortalTarget={document.body}
               menuPosition={'fixed'}
             />
-            <small style={{ color: '#64748b', fontSize: '0.75rem' }}>
-              Solo aparecen colaboradores registrados, activos y que NO tengan
-              acceso al sistema.
+            <small className='help-text'>
+              Solo aparecen colaboradores registrados, activos y sin acceso
+              previo.
             </small>
           </div>
 
-          <div className='form-row'>
+          <div className='form-grid'>
             <div className='input-group'>
-              <label>Nickname (Identificador único) *</label>
+              <label>Nickname (Identificador) *</label>
               <input
                 type='text'
                 name='nickname'
                 required
                 onChange={handleChange}
                 value={newUser.nickname}
-                placeholder='ej: jperez'
+                placeholder='Ej: jperez'
               />
             </div>
             <div className='input-group'>
@@ -206,7 +226,7 @@ const RegisterAdminModal = ({ onClose }) => {
             </div>
           </div>
 
-          <div className='form-row'>
+          <div className='form-grid'>
             <div className='input-group'>
               <label>Email (Usuario de Login) *</label>
               <input
@@ -215,16 +235,18 @@ const RegisterAdminModal = ({ onClose }) => {
                 required
                 onChange={handleChange}
                 value={newUser.email_login}
+                placeholder='correo@empresa.com'
               />
             </div>
             <div className='input-group'>
-              <label>Contraseña *</label>
+              <label>Contraseña Temporal *</label>
               <input
                 type='password'
                 name='password'
                 required
                 onChange={handleChange}
                 value={newUser.password}
+                placeholder='*******'
               />
             </div>
           </div>
@@ -241,7 +263,7 @@ const RegisterAdminModal = ({ onClose }) => {
               type='submit'
               className='btn-confirm'
             >
-              <UserPlus size={18} /> Crear Credenciales
+              <UserPlus size={16} /> Crear Credenciales
             </button>
           </div>
         </form>

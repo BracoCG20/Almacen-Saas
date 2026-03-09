@@ -6,7 +6,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(15, 23, 42, 0.6); // Slate 900 oscuro con opacidad
+  background: rgba(15, 23, 42, 0.6); // Fondo oscuro con opacidad
   backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
@@ -21,7 +21,7 @@
     padding: 1.5rem 1.8rem;
     border-radius: 12px;
     width: 100%;
-    max-width: 550px;
+    max-width: 650px; // Un poco más ancho porque tiene muchos datos
     max-height: 90vh;
     overflow-y: auto;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
@@ -89,6 +89,17 @@
       }
     }
 
+    // Grilla especial para Dep/Prov/Distrito
+    .form-grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1.2rem;
+
+      @media (max-width: 600px) {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .input-group {
       display: flex;
       flex-direction: column;
@@ -128,12 +139,6 @@
         &::placeholder {
           color: #cbd5e1;
         }
-      }
-
-      .help-text {
-        color: #64748b;
-        font-size: 0.75rem;
-        margin-top: 2px;
       }
     }
 
@@ -200,7 +205,7 @@
   }
 }
 
-// Animaciones base (puedes dejarlas si las tienes globales, sino aquí aseguran que funcione)
+// Animaciones base
 @keyframes fadeIn {
   from {
     opacity: 0;
