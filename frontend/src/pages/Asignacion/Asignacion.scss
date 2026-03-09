@@ -1,6 +1,11 @@
 @use '../../styles/variables' as v;
 
 .entrega-container {
+  /* SOLUCIÓN: Limita el contenedor al 100% de la pantalla */
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+
   // --- HEADER DE LA PÁGINA ---
   .page-header {
     display: flex;
@@ -47,9 +52,22 @@
     gap: 2rem;
     align-items: start;
 
+    /* SOLUCIÓN: Asegura que el grid no se salga de la pantalla */
+    width: 100%;
+    box-sizing: border-box;
+
+    /* SOLUCIÓN CLAVE: Evita que la tabla ancha reviente todo el layout en móvil */
+    > div {
+      min-width: 0;
+      width: 100%;
+    }
+
     @media (max-width: 1024px) {
       grid-template-columns: 1fr;
       gap: 1.5rem;
+    }
+    .tour-asignacion-form {
+      width: 100%;
     }
   }
 }
@@ -61,6 +79,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+  box-sizing: border-box;
 
   .warning-icon {
     color: #f59e0b;
