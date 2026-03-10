@@ -1,18 +1,21 @@
 @use '../../styles/variables' as v;
 
 .config-container {
-  padding: 2rem;
+  padding: 1.5rem 2rem;
   max-width: 1200px;
   margin: 0 auto;
 
   // Header
   .page-header {
     margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+
     h1 {
       font-size: 1.8rem;
       color: v.$text-main;
       font-weight: 700;
-      margin: 0 0 0.2rem 0;
+      margin: 0 0 0.4rem 0;
       @media (max-width: 768px) {
         font-size: 1.5rem;
       }
@@ -40,85 +43,285 @@
     }
   }
 
-  // Grid de Tarjetas
+  // --- GRILLA ESTRICTA A 2 COLUMNAS ---
   .config-cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    grid-template-columns: repeat(2, 1fr); // <--- FORZAMOS 2 COLUMNAS
     gap: 20px;
+
+    @media (max-width: 850px) {
+      grid-template-columns: 1fr; // En tablets/celulares pasa a 1 columna
+    }
   }
 
   // Tarjeta de Admin
   .admin-card {
     background: white;
-    padding: 30px;
+    padding: 1.5rem;
     border-radius: 12px;
     border: 1px solid #e2e8f0;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    transition:
-      transform 0.2s ease,
-      box-shadow 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.2s ease;
 
     &:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.06);
       transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
     }
 
-    h2 {
-      color: #0f172a;
-      font-size: 1.2rem;
-      font-weight: 700;
-      margin: 0 0 10px 0;
+    .card-content {
+      h2 {
+        color: v.$violet-800;
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin: 0 0 8px 0;
+      }
+      p {
+        color: #64748b;
+        font-size: 0.85rem;
+        margin: 0 0 1.5rem 0;
+        line-height: 1.5;
+      }
     }
 
-    p {
-      color: #64748b;
-      font-size: 0.9rem;
-      margin: 0 0 20px 0;
-      line-height: 1.5;
+    // --- NUEVO ESTILO DUAL PARA LICENCIAS ---
+    .license-stats-dual {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 1.5rem;
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+      padding: 10px 12px;
+      border-radius: 8px;
+
+      .stat-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background-color: white;
+        padding: 6px 10px;
+        border-radius: 6px;
+        border: 1px solid #f1f5f9;
+
+        .icon-cloud {
+          color: #0ea5e9;
+        }
+
+        .type-label {
+          font-size: 0.8rem;
+          color: #64748b;
+          font-weight: 600;
+          flex: 1; // Empuja el valor hacia la derecha
+        }
+
+        .limit-value {
+          color: v.$primary;
+          font-size: 0.9rem;
+          font-weight: 500;
+        }
+      }
     }
 
     .card-actions {
       display: flex;
       gap: 10px;
+
+      // Botones a 40px
+      .btn-main {
+        flex: 1;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        padding: 0 16px;
+        height: 40px; // ALTURA UNIFICADA
+        transition: all 0.2s ease;
+        color: v.$white;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+
+        &:active {
+          transform: translateY(0);
+        }
+
+        &.indigo {
+          background-color: v.$primary;
+          &:hover {
+            background-color: v.$violet-700;
+          }
+        }
+        &.indigo-light {
+          background-color: #f8fafc;
+          color: #475569;
+          border: 1px solid #e2e8f0;
+          box-shadow: none;
+          &:hover {
+            background-color: #f1f5f9;
+            color: #1e293b;
+            border-color: #cbd5e1;
+          }
+        }
+        &.green {
+          background-color: #10b981;
+          &:hover {
+            background-color: #059669;
+          }
+        }
+      }
     }
   }
+}
 
-  // Botones
-  .btn-main {
-    flex: 1;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    font-weight: 500;
-    font-size: 0.9rem;
-    padding: 0 16px;
-    height: 44px;
-    transition: all 0.2s ease;
-    color: v.$white;
+// --- MODAL DE LICENCIAS ---
+.config-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  animation: fadeIn 0.2s ease;
+  padding: 1rem;
+  box-sizing: border-box;
 
-    &.indigo {
-      background-color: v.$primary;
-      &:hover {
-        background-color: darken(v.$primary, 5%);
+  .config-modal-content {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.2rem;
+      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 0.8rem;
+      h2 {
+        margin: 0;
+        font-size: 1.15rem;
+        color: v.$violet-800;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 700;
+      }
+      .btn-close {
+        background: transparent;
+        border: none;
+        color: #94a3b8;
+        cursor: pointer;
+        padding: 4px;
+        transition: 0.2s;
+        &:hover {
+          color: v.$danger;
+          background: #fef2f2;
+          border-radius: 4px;
+        }
       }
     }
-    &.indigo-light {
-      background-color: #f8fafc;
-      color: #0f172a;
-      border: 1px solid #e2e8f0;
-      &:hover {
-        background-color: #f1f5f9;
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 1.2rem;
+      label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #475569;
+      }
+      input {
+        width: 100%;
+        height: 40px;
+        padding: 0 12px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        font-size: 0.9rem;
+        color: #0f172a;
+        outline: none;
+        box-sizing: border-box;
+        transition: 0.2s;
+        &:focus {
+          border-color: v.$primary;
+          box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.1);
+        }
       }
     }
-    &.green {
-      background-color: #10b981;
-      &:hover {
-        background-color: #059669;
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 1.5rem;
+      border-top: 1px solid #f1f5f9;
+      padding-top: 1.5rem;
+      button {
+        height: 40px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        font-size: 0.85rem;
+        flex: 1;
+        transition: 0.2s;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        &.btn-cancel {
+          background: #ffffff;
+          color: #64748b;
+          border: 1px solid #e2e8f0;
+          &:hover {
+            background: #f8fafc;
+            color: #1e293b;
+          }
+        }
+        &.btn-confirm {
+          background: v.$primary;
+          color: white;
+          box-shadow: 0 1px 2px rgba(124, 58, 237, 0.15);
+          &:hover {
+            background: v.$violet-700;
+            transform: translateY(-1px);
+          }
+        }
       }
     }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
