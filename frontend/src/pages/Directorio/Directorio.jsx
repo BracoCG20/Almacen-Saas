@@ -1,181 +1,266 @@
-import { useState, useEffect } from "react";
-import api from "../../service/api";
-import { toast } from "react-toastify";
-import { Contact, Plus } from "lucide-react";
-import Modal from "../../components/Modal/Modal";
+import { useState, useEffect } from 'react';
+import api from '../../service/api';
+import { toast } from 'react-toastify';
+import { Plus, FileSpreadsheet } from 'lucide-react';
+import * as XLSX from 'xlsx';
+import Modal from '../../components/Modal/Modal';
 
-import DirectorioStats from "./DirectorioStats";
-import DirectorioTable from "./DirectorioTable";
-import DirectorioForm from "./DirectorioForm";
-import "./Directorio.scss";
+import DirectorioStats from './DirectorioStats';
+import DirectorioTable from './DirectorioTable';
+import DirectorioForm from './DirectorioForm';
+import DirectorioHistorial from './DirectorioHistorial';
+import './Directorio.scss';
 
 const Directorio = () => {
-	const [directorio, setDirectorio] = useState([]);
-	const [colaboradores, setColaboradores] = useState([]);
-	const [estadisticas, setEstadisticas] = useState([]);
-	const [loading, setLoading] = useState(true);
+  const [directorio, setDirectorio] = useState([]);
+  const [colaboradores, setColaboradores] = useState([]);
+  const [estadisticas, setEstadisticas] = useState([]);
+  const [historialAuditoria, setHistorialAuditoria] = useState([]);
 
-	const [modalOpen, setModalOpen] = useState(false);
-	const [modalMode, setModalMode] = useState("ADD"); // "ADD", "EDIT", "BAJA"
-	const [currentId, setCurrentId] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-	const [formData, setFormData] = useState({
-		colaborador_id: "",
-		tipo_licencia: "BUSINESS_STARTER",
-		estado: true,
-		datos_transferidos: false,
-		colaborador_destino_id: "",
-	});
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState('ADD'); // "ADD", "EDIT", "BAJA"
+  const [currentId, setCurrentId] = useState(null);
 
-	const fetchData = async () => {
-		try {
-			const [resDir, resCol, resStats] = await Promise.all([
-				api.get("/directorio"),
-				api.get("/colaboradores"),
-				api.get("/directorio/estadisticas"),
-			]);
-			setDirectorio(resDir.data);
-			setColaboradores(resCol.data.filter((c) => c.estado === true));
-			setEstadisticas(resStats.data);
-		} catch (error) {
-			toast.error("Error al cargar datos del directorio");
-		} finally {
-			setLoading(false);
-		}
-	};
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [selectedHistory, setSelectedHistory] = useState([]); // <-- Nuevo estado para el historial de 1 sola persona
 
-	useEffect(() => {
-		fetchData();
-	}, []);
+  const [formData, setFormData] = useState({
+    colaborador_id: '',
+    tipo_licencia: 'BUSINESS_STARTER',
+    estado: true,
+    datos_transferidos: false,
+    colaborador_destino_id: '',
+  });
 
-	const openAddModal = () => {
-		setModalMode("ADD");
-		setFormData({
-			colaborador_id: "",
-			tipo_licencia: "BUSINESS_STARTER",
-			estado: true,
-			datos_transferidos: false,
-			colaborador_destino_id: "",
-		});
-		setModalOpen(true);
-	};
+  const fetchData = async () => {
+    try {
+      const [resDir, resCol, resStats, resHist] = await Promise.all([
+        api.get('/directorio'),
+        api.get('/colaboradores'),
+        api.get('/directorio/estadisticas'),
+        api.get('/directorio/historial'),
+      ]);
+      setDirectorio(resDir.data);
+      setColaboradores(resCol.data);
+      setEstadisticas(resStats.data);
+      setHistorialAuditoria(resHist.data);
+    } catch (error) {
+      toast.error('Error al cargar datos del directorio');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-	const openEditModal = (registro) => {
-		setModalMode("EDIT");
-		setCurrentId(registro.id);
-		setFormData({
-			colaborador_id: registro.colaborador_id,
-			tipo_licencia: registro.tipo_licencia,
-			estado: registro.estado,
-			datos_transferidos: registro.datos_transferidos || false,
-			colaborador_destino_id: registro.colaborador_destino_id || "",
-		});
-		setModalOpen(true);
-	};
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-	const openBajaModal = (registro) => {
-		setModalMode("BAJA");
-		setCurrentId(registro.id);
-		setFormData({
-			colaborador_id: registro.colaborador_id,
-			tipo_licencia: registro.tipo_licencia, // Mantenemos la que tenía
-			estado: false, // Forzamos el estado a false (Inactivo)
-			datos_transferidos: registro.datos_transferidos || false,
-			colaborador_destino_id: registro.colaborador_destino_id || "",
-		});
-		setModalOpen(true);
-	};
+  const exportarHistorialExcel = () => {
+    if (historialAuditoria.length === 0)
+      return toast.info('No hay historial para exportar.');
+    const data = historialAuditoria.map((h) => ({
+      'Fecha Registro': new Date(h.fecha_registro).toLocaleString('es-PE'),
+      Acción: h.accion,
+      Licencia: h.tipo_licencia,
+      'Colaborador Afectado': `${h.col_nombres} ${h.col_apellidos}`,
+      Detalles: h.detalles,
+      'Transferido A': h.datos_transferidos
+        ? `${h.dest_nombres} ${h.dest_apellidos}`
+        : 'No',
+      'Responsable (Usuario)': h.resp_nombres
+        ? `${h.resp_nombres} ${h.resp_apellidos}`
+        : 'Sistema',
+    }));
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Auditoria');
+    XLSX.writeFile(wb, 'Historial_Directorio.xlsx');
+    toast.success('Excel generado correctamente');
+  };
 
-	const handleSubmit = async (e) => {
-		e.preventDefault();
-		if (!formData.colaborador_id)
-			return toast.warning("Selecciona un colaborador");
+  // Funciones de Modales
+  const openAddModal = () => {
+    setModalMode('ADD');
+    setFormData({
+      colaborador_id: '',
+      tipo_licencia: 'BUSINESS_STARTER',
+      estado: true,
+      datos_transferidos: false,
+      colaborador_destino_id: '',
+    });
+    setModalOpen(true);
+  };
+  const openEditModal = (registro) => {
+    setModalMode('EDIT');
+    setCurrentId(registro.id);
+    setFormData({
+      colaborador_id: registro.colaborador_id,
+      tipo_licencia: registro.tipo_licencia,
+      estado: registro.estado,
+      datos_transferidos: registro.datos_transferidos || false,
+      colaborador_destino_id: registro.colaborador_destino_id || '',
+    });
+    setModalOpen(true);
+  };
+  const openBajaModal = (registro) => {
+    setModalMode('BAJA');
+    setCurrentId(registro.id);
+    setFormData({
+      colaborador_id: registro.colaborador_id,
+      tipo_licencia: registro.tipo_licencia,
+      estado: false,
+      datos_transferidos: registro.datos_transferidos || false,
+      colaborador_destino_id: registro.colaborador_destino_id || '',
+    });
+    setModalOpen(true);
+  };
 
-		// Validar disponibilidad de licencias solo si se está añadiendo o activando una
-		if ((modalMode === "ADD" || modalMode === "EDIT") && formData.estado) {
-			const statsLicencia = estadisticas.find(
-				(s) => s.tipo_licencia === formData.tipo_licencia,
-			);
-			if (statsLicencia && statsLicencia.disponibles <= 0) {
-				return toast.error(
-					`No te quedan licencias disponibles de tipo ${formData.tipo_licencia}.`,
-				);
-			}
-		}
+  // NUEVA FUNCIÓN: Ver historial individual
+  const handleViewHistory = (registro) => {
+    const historialFiltrado = historialAuditoria.filter(
+      (h) => h.directorio_id === registro.id,
+    );
+    setSelectedHistory(historialFiltrado);
+    setShowHistoryModal(true);
+  };
 
-		// Validación de transferencia al dar de baja
-		if (
-			modalMode === "BAJA" &&
-			formData.datos_transferidos &&
-			!formData.colaborador_destino_id
-		) {
-			return toast.warning("Selecciona a quién se le transfirieron los datos");
-		}
+  const handleReactivar = async (registro) => {
+    const statsLicencia = estadisticas.find(
+      (s) => s.tipo_licencia === registro.tipo_licencia,
+    );
+    if (statsLicencia && statsLicencia.disponibles <= 0) {
+      return toast.error(
+        `No te quedan licencias disponibles de tipo ${registro.tipo_licencia} para reactivar.`,
+      );
+    }
 
-		try {
-			if (modalMode === "ADD") {
-				await api.post("/directorio", formData);
-				toast.success("Licencia asignada exitosamente");
-			} else {
-				// Tanto EDIT como BAJA usan el mismo endpoint PUT, solo cambia la data enviada
-				await api.put(`/directorio/${currentId}`, formData);
-				if (modalMode === "BAJA") {
-					toast.success("Servicio dado de baja correctamente");
-				} else {
-					toast.success("Licencia actualizada");
-				}
-			}
-			setModalOpen(false);
-			fetchData();
-		} catch (error) {
-			toast.error(error.response?.data?.error || "Ocurrió un error al guardar");
-		}
-	};
+    try {
+      await api.put(`/directorio/${registro.id}`, {
+        ...registro,
+        estado: true,
+        datos_transferidos: false,
+        colaborador_destino_id: null,
+      });
+      toast.success('Licencia reactivada correctamente');
+      fetchData();
+    } catch (error) {
+      toast.error('Error al reactivar');
+    }
+  };
 
-	// Determinar título del modal
-	const getModalTitle = () => {
-		if (modalMode === "ADD") return "Asignar Nueva Licencia";
-		if (modalMode === "EDIT") return "Cambiar Plan de Licencia";
-		return "Dar de Baja y Transferir";
-	};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.colaborador_id)
+      return toast.warning('Selecciona un colaborador');
 
-	if (loading)
-		return <div className='loading-state'>Cargando Directorio...</div>;
+    if ((modalMode === 'ADD' || modalMode === 'EDIT') && formData.estado) {
+      const statsLicencia = estadisticas.find(
+        (s) => s.tipo_licencia === formData.tipo_licencia,
+      );
+      if (statsLicencia && statsLicencia.disponibles <= 0) {
+        return toast.error(
+          `No te quedan licencias disponibles de tipo ${formData.tipo_licencia}.`,
+        );
+      }
+    }
 
-	return (
-		<div className='directorio-container'>
-			<div className='page-header'>
-				<h1>Directorio Workspace</h1>
-				<button className='btn-add' onClick={openAddModal}>
-					<Plus size={18} /> Asignar Licencia
-				</button>
-			</div>
+    if (
+      modalMode === 'BAJA' &&
+      formData.datos_transferidos &&
+      !formData.colaborador_destino_id
+    ) {
+      return toast.warning('Selecciona a quién se le transfirieron los datos');
+    }
 
-			<DirectorioStats estadisticas={estadisticas} />
+    try {
+      if (modalMode === 'ADD') {
+        await api.post('/directorio', formData);
+        toast.success('Licencia asignada exitosamente');
+      } else {
+        await api.put(`/directorio/${currentId}`, formData);
+        toast.success(
+          modalMode === 'BAJA'
+            ? 'Servicio dado de baja correctamente'
+            : 'Licencia actualizada',
+        );
+      }
+      setModalOpen(false);
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.error || 'Ocurrió un error al guardar');
+    }
+  };
 
-			<DirectorioTable
-				directorio={directorio}
-				onEdit={openEditModal}
-				onBaja={openBajaModal} // Cambiado onDelete por onBaja
-			/>
+  if (loading)
+    return <div className='loading-state'>Cargando Directorio...</div>;
 
-			<Modal
-				isOpen={modalOpen}
-				onClose={() => setModalOpen(false)}
-				title={getModalTitle()}
-			>
-				<DirectorioForm
-					formData={formData}
-					setFormData={setFormData}
-					colaboradores={colaboradores}
-					directorio={directorio}
-					modalMode={modalMode} // Pasamos el modo actual en lugar del booleano editMode
-					onSubmit={handleSubmit}
-					onCancel={() => setModalOpen(false)}
-				/>
-			</Modal>
-		</div>
-	);
+  return (
+    <div className='directorio-container'>
+      <div className='page-header'>
+        <h1>Directorio Workspace</h1>
+
+        {/* Contenedor de acciones unificado */}
+        <div className='header-actions'>
+          <button
+            className='btn-excel-header'
+            onClick={exportarHistorialExcel}
+            title='Exportar Auditoría'
+          >
+            <FileSpreadsheet size={16} /> <span>Exportar</span>
+          </button>
+          <button
+            className='btn-add'
+            onClick={openAddModal}
+          >
+            <Plus size={18} /> Asignar Licencia
+          </button>
+        </div>
+      </div>
+
+      <DirectorioStats estadisticas={estadisticas} />
+
+      <DirectorioTable
+        directorio={directorio}
+        onEdit={openEditModal}
+        onBaja={openBajaModal}
+        onReactivar={handleReactivar}
+        onViewHistory={handleViewHistory} // <-- Pasamos la nueva función a la tabla
+      />
+
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={
+          modalMode === 'ADD'
+            ? 'Asignar Licencia'
+            : modalMode === 'EDIT'
+              ? 'Editar Licencia'
+              : 'Dar de Baja'
+        }
+      >
+        <DirectorioForm
+          formData={formData}
+          setFormData={setFormData}
+          colaboradores={colaboradores}
+          directorio={directorio}
+          modalMode={modalMode}
+          onSubmit={handleSubmit}
+          onCancel={() => setModalOpen(false)}
+        />
+      </Modal>
+
+      <Modal
+        isOpen={showHistoryModal}
+        onClose={() => setShowHistoryModal(false)}
+        title='Auditoría de Licencia'
+      >
+        {/* Ahora le pasamos solo el historial seleccionado */}
+        <DirectorioHistorial historyData={selectedHistory} />
+      </Modal>
+    </div>
+  );
 };
 
 export default Directorio;

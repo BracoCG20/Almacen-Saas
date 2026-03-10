@@ -1,44 +1,100 @@
 @use '../../styles/variables' as v;
-@use 'sass:color';
 
 .directorio-container {
-  padding: 20px;
-  animation: fadeIn 0.3s ease-in-out;
+  width: 100%;
+  box-sizing: border-box;
 
   .page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    flex-wrap: wrap;
+    gap: 15px;
 
     h1 {
       font-size: 1.8rem;
-      color: v.$text-main;
-      display: flex;
-      align-items: center;
-      gap: 10px;
       font-weight: 700;
-    }
-
-    .btn-add {
-      background-color: v.$primary;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 10px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      transition: all 0.2s;
-      box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2);
-
-      &:hover {
-        background-color: color.adjust(v.$primary, $lightness: -10%);
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(79, 70, 229, 0.3);
+      color: v.$text-main;
+      margin: 0;
+      @media (max-width: 768px) {
+        font-size: 1.5rem;
       }
     }
+
+    // --- NUEVO CONTENEDOR DE BOTONES ---
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+
+      @media (max-width: 600px) {
+        width: 100%;
+        .btn-excel-header,
+        .btn-add {
+          flex: 1;
+          justify-content: center;
+        }
+      }
+
+      .btn-excel-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        height: 40px; // Misma altura que el botón morado
+        padding: 0 14px;
+        background-color: v.$success; // Verde muy clarito
+        color: white; // Verde esmeralda texto
+        border: 1px solid #bbf7d0;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background-color: darken(v.$success, 5%);
+          transform: translateY(-1px);
+          box-shadow: 0 2px 4px rgba(22, 163, 74, 0.1);
+        }
+
+        &:active {
+          transform: translateY(0);
+        }
+      }
+
+      .btn-add {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 16px;
+        height: 40px;
+        background-color: v.$primary;
+        color: v.$white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background-color: darken(v.$primary, 5%);
+          transform: translateY(-1px);
+        }
+      }
+    }
+  }
+
+  .loading-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+    font-size: 1.2rem;
+    color: v.$text-muted;
   }
 }
