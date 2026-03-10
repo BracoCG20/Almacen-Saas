@@ -17,37 +17,36 @@ import {
 
 const COLORS = {
   primary: '#7c3aed',
-  primaryLight: '#c4b5fd',
+  primaryLight: '#ddd6fe',
   secondary: '#3b82f6',
-  secondaryLight: '#93c5fd',
+  secondaryLight: '#bfdbfe',
   success: '#10b981',
   warning: '#f59e0b',
   danger: '#ef4444',
-  textMuted: '#94a3b8',
+  textMuted: '#64748b',
   gridLine: '#f1f5f9',
 };
 
 const tooltipStyle = {
   backgroundColor: '#ffffff',
-  borderRadius: '16px',
-  border: 'none',
-  boxShadow:
-    '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 5px 10px -5px rgba(0, 0, 0, 0.04)',
-  padding: '12px 16px',
+  borderRadius: '8px',
+  border: '1px solid #e2e8f0',
+  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+  padding: '10px 14px',
+  fontSize: '0.85rem',
 };
 
 // 1. Gráfico de Barras: Entregas vs Devoluciones
-// SE AÑADIÓ debounce={150} a todos los ResponsiveContainer
 export const MovementsChart = ({ data }) => {
   return (
     <ResponsiveContainer
       width='100%'
-      height={320}
+      height={250}
       debounce={150}
     >
       <BarChart
         data={data}
-        margin={{ top: 20, right: 15, left: -15, bottom: 0 }}
+        margin={{ top: 10, right: 10, left: -25, bottom: 0 }}
       >
         <CartesianGrid
           strokeDasharray='3 3'
@@ -58,41 +57,41 @@ export const MovementsChart = ({ data }) => {
           dataKey='name'
           axisLine={false}
           tickLine={false}
-          tick={{ fill: COLORS.textMuted, fontSize: 12, fontWeight: 500 }}
+          tick={{ fill: COLORS.textMuted, fontSize: 11 }}
           dy={10}
         />
         <YAxis
           axisLine={false}
           tickLine={false}
-          tick={{ fill: COLORS.textMuted, fontSize: 12 }}
+          tick={{ fill: COLORS.textMuted, fontSize: 11 }}
           dx={-10}
         />
         <Tooltip
-          cursor={{ fill: '#f8fafc', opacity: 0.5 }}
+          cursor={{ fill: '#f8fafc' }}
           contentStyle={tooltipStyle}
           labelStyle={{
             fontWeight: 700,
-            color: '#1e293b',
-            marginBottom: '5px',
+            color: '#0f172a',
+            marginBottom: '4px',
           }}
         />
         <Legend
-          wrapperStyle={{ paddingTop: '20px' }}
+          wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
           iconType='circle'
         />
         <Bar
           dataKey='entregas'
           name='Entregas'
           fill={COLORS.success}
-          radius={[8, 8, 0, 0]}
-          barSize={28}
+          radius={[4, 4, 0, 0]}
+          barSize={20}
         />
         <Bar
           dataKey='devoluciones'
           name='Devoluciones'
           fill={COLORS.secondaryLight}
-          radius={[8, 8, 0, 0]}
-          barSize={28}
+          radius={[4, 4, 0, 0]}
+          barSize={20}
         />
       </BarChart>
     </ResponsiveContainer>
@@ -109,7 +108,7 @@ export const StatusChart = ({ data }) => {
   return (
     <ResponsiveContainer
       width='100%'
-      height={280}
+      height={250}
       debounce={150}
     >
       <PieChart>
@@ -117,11 +116,11 @@ export const StatusChart = ({ data }) => {
           data={data}
           cx='50%'
           cy='50%'
-          innerRadius={75}
-          outerRadius={95}
-          paddingAngle={5}
+          innerRadius={60}
+          outerRadius={80}
+          paddingAngle={4}
           dataKey='value'
-          cornerRadius={8}
+          cornerRadius={4}
         >
           {data.map((entry, index) => (
             <Cell
@@ -137,13 +136,8 @@ export const StatusChart = ({ data }) => {
         />
         <Legend
           verticalAlign='bottom'
-          height={36}
           iconType='circle'
-          wrapperStyle={{
-            fontSize: '13px',
-            color: COLORS.textMuted,
-            fontWeight: 500,
-          }}
+          wrapperStyle={{ fontSize: '11px', color: COLORS.textMuted }}
         />
       </PieChart>
     </ResponsiveContainer>
@@ -155,12 +149,12 @@ export const InventoryOriginChart = ({ data }) => {
   return (
     <ResponsiveContainer
       width='100%'
-      height={280}
+      height={250}
       debounce={150}
     >
       <BarChart
         data={data}
-        margin={{ top: 20, right: 15, left: -15, bottom: 0 }}
+        margin={{ top: 10, right: 10, left: -25, bottom: 0 }}
       >
         <CartesianGrid
           strokeDasharray='3 3'
@@ -171,43 +165,42 @@ export const InventoryOriginChart = ({ data }) => {
           dataKey='name'
           axisLine={false}
           tickLine={false}
-          tick={{ fill: COLORS.textMuted, fontSize: 12, fontWeight: 600 }}
+          tick={{ fill: COLORS.textMuted, fontSize: 11 }}
           dy={10}
         />
         <YAxis
           axisLine={false}
           tickLine={false}
-          tick={{ fill: COLORS.textMuted, fontSize: 12 }}
+          tick={{ fill: COLORS.textMuted, fontSize: 11 }}
           dx={-10}
         />
         <Tooltip
-          cursor={{ fill: '#f8fafc', opacity: 0.5 }}
+          cursor={{ fill: '#f8fafc' }}
           contentStyle={tooltipStyle}
         />
         <Legend
           verticalAlign='bottom'
-          height={36}
           iconType='circle'
-          wrapperStyle={{ fontSize: '12px', paddingTop: '15px' }}
+          wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }}
         />
         <Bar
           dataKey='Disponibles'
           stackId='a'
           fill={COLORS.success}
-          barSize={40}
+          barSize={30}
         />
         <Bar
           dataKey='Ocupados'
           stackId='a'
           fill={COLORS.secondary}
-          barSize={40}
+          barSize={30}
         />
         <Bar
           dataKey='Inoperativos'
           stackId='a'
           fill={COLORS.danger}
-          radius={[8, 8, 0, 0]}
-          barSize={40}
+          radius={[4, 4, 0, 0]}
+          barSize={30}
         />
       </BarChart>
     </ResponsiveContainer>
@@ -219,12 +212,12 @@ export const AgeChart = ({ data }) => {
   return (
     <ResponsiveContainer
       width='100%'
-      height={280}
+      height={250}
       debounce={150}
     >
       <AreaChart
         data={data}
-        margin={{ top: 10, right: 10, left: -15, bottom: 0 }}
+        margin={{ top: 10, right: 10, left: -25, bottom: 0 }}
       >
         <defs>
           <linearGradient
@@ -237,7 +230,7 @@ export const AgeChart = ({ data }) => {
             <stop
               offset='5%'
               stopColor={COLORS.primary}
-              stopOpacity={0.3}
+              stopOpacity={0.2}
             />
             <stop
               offset='95%'
@@ -255,13 +248,13 @@ export const AgeChart = ({ data }) => {
           dataKey='year'
           axisLine={false}
           tickLine={false}
-          tick={{ fill: COLORS.textMuted, fontSize: 12 }}
+          tick={{ fill: COLORS.textMuted, fontSize: 11 }}
           dy={10}
         />
         <YAxis
           axisLine={false}
           tickLine={false}
-          tick={{ fill: COLORS.textMuted, fontSize: 12 }}
+          tick={{ fill: COLORS.textMuted, fontSize: 11 }}
           dx={-10}
         />
         <Tooltip contentStyle={tooltipStyle} />
@@ -270,7 +263,7 @@ export const AgeChart = ({ data }) => {
           dataKey='cantidad'
           name='Equipos Adquiridos'
           stroke={COLORS.primary}
-          strokeWidth={3}
+          strokeWidth={2}
           fillOpacity={1}
           fill='url(#colorAge)'
         />
@@ -289,21 +282,21 @@ export const SignaturesChart = ({ data }) => {
   return (
     <ResponsiveContainer
       width='100%'
-      height={280}
+      height={250}
       debounce={150}
     >
       <PieChart>
         <Pie
           data={data}
           cx='50%'
-          cy='65%'
+          cy='60%'
           startAngle={180}
           endAngle={0}
-          innerRadius={80}
-          outerRadius={100}
+          innerRadius={70}
+          outerRadius={90}
           paddingAngle={4}
           dataKey='value'
-          cornerRadius={8}
+          cornerRadius={4}
         >
           {data.map((entry, index) => (
             <Cell
@@ -316,13 +309,8 @@ export const SignaturesChart = ({ data }) => {
         <Tooltip contentStyle={tooltipStyle} />
         <Legend
           verticalAlign='bottom'
-          height={36}
           iconType='circle'
-          wrapperStyle={{
-            fontSize: '13px',
-            color: COLORS.textMuted,
-            fontWeight: 500,
-          }}
+          wrapperStyle={{ fontSize: '11px', color: COLORS.textMuted }}
         />
       </PieChart>
     </ResponsiveContainer>
@@ -334,13 +322,13 @@ export const CompanyChart = ({ data }) => {
   return (
     <ResponsiveContainer
       width='100%'
-      height={280}
+      height={250}
       debounce={150}
     >
       <BarChart
         layout='vertical'
         data={data}
-        margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+        margin={{ top: 0, right: 10, left: -10, bottom: 0 }}
       >
         <CartesianGrid
           strokeDasharray='3 3'
@@ -355,21 +343,21 @@ export const CompanyChart = ({ data }) => {
         <YAxis
           dataKey='name'
           type='category'
-          width={100}
-          tick={{ fill: COLORS.textMuted, fontSize: 11, fontWeight: 500 }}
+          width={90}
+          tick={{ fill: COLORS.textMuted, fontSize: 10 }}
           axisLine={false}
           tickLine={false}
         />
         <Tooltip
-          cursor={{ fill: '#f8fafc', opacity: 0.5 }}
+          cursor={{ fill: '#f8fafc' }}
           contentStyle={tooltipStyle}
         />
         <Bar
           dataKey='cantidad'
-          name='Equipos Propios'
+          name='Propios'
           fill={COLORS.primary}
-          radius={[0, 8, 8, 0]}
-          barSize={20}
+          radius={[0, 4, 4, 0]}
+          barSize={16}
         />
       </BarChart>
     </ResponsiveContainer>
@@ -381,13 +369,13 @@ export const ProviderChart = ({ data }) => {
   return (
     <ResponsiveContainer
       width='100%'
-      height={280}
+      height={250}
       debounce={150}
     >
       <BarChart
         layout='vertical'
         data={data}
-        margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+        margin={{ top: 0, right: 10, left: -10, bottom: 0 }}
       >
         <CartesianGrid
           strokeDasharray='3 3'
@@ -402,21 +390,21 @@ export const ProviderChart = ({ data }) => {
         <YAxis
           dataKey='name'
           type='category'
-          width={100}
-          tick={{ fill: COLORS.textMuted, fontSize: 11, fontWeight: 500 }}
+          width={90}
+          tick={{ fill: COLORS.textMuted, fontSize: 10 }}
           axisLine={false}
           tickLine={false}
         />
         <Tooltip
-          cursor={{ fill: '#f8fafc', opacity: 0.5 }}
+          cursor={{ fill: '#f8fafc' }}
           contentStyle={tooltipStyle}
         />
         <Bar
           dataKey='cantidad'
-          name='Equipos de Proveedor'
+          name='Alquilados'
           fill={COLORS.secondary}
-          radius={[0, 8, 8, 0]}
-          barSize={20}
+          radius={[0, 4, 4, 0]}
+          barSize={16}
         />
       </BarChart>
     </ResponsiveContainer>
@@ -434,7 +422,7 @@ export const GlobalInventoryChart = ({ data }) => {
   return (
     <ResponsiveContainer
       width='100%'
-      height={280}
+      height={250}
       debounce={150}
     >
       <PieChart>
@@ -442,11 +430,11 @@ export const GlobalInventoryChart = ({ data }) => {
           data={data}
           cx='50%'
           cy='45%'
-          innerRadius={55}
-          outerRadius={85}
+          innerRadius={50}
+          outerRadius={75}
           paddingAngle={3}
           dataKey='value'
-          cornerRadius={6}
+          cornerRadius={4}
         >
           {data.map((entry, index) => (
             <Cell
@@ -459,13 +447,8 @@ export const GlobalInventoryChart = ({ data }) => {
         <Tooltip contentStyle={tooltipStyle} />
         <Legend
           verticalAlign='bottom'
-          height={48}
           iconType='circle'
-          wrapperStyle={{
-            fontSize: '11px',
-            color: COLORS.textMuted,
-            fontWeight: 500,
-          }}
+          wrapperStyle={{ fontSize: '10px', color: COLORS.textMuted }}
         />
       </PieChart>
     </ResponsiveContainer>
@@ -477,13 +460,13 @@ export const CategoryCostChart = ({ data, currency }) => {
   return (
     <ResponsiveContainer
       width='100%'
-      height={280}
+      height={250}
       debounce={150}
     >
       <BarChart
         layout='vertical'
         data={data}
-        margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+        margin={{ top: 0, right: 20, left: 10, bottom: 0 }}
       >
         <CartesianGrid
           strokeDasharray='3 3'
@@ -498,13 +481,13 @@ export const CategoryCostChart = ({ data, currency }) => {
         <YAxis
           dataKey='name'
           type='category'
-          width={120}
-          tick={{ fill: COLORS.textMuted, fontSize: 11, fontWeight: 500 }}
+          width={110}
+          tick={{ fill: COLORS.textMuted, fontSize: 10 }}
           axisLine={false}
           tickLine={false}
         />
         <Tooltip
-          cursor={{ fill: '#f8fafc', opacity: 0.5 }}
+          cursor={{ fill: '#f8fafc' }}
           contentStyle={tooltipStyle}
           formatter={(value) => [
             `${currency} ${value.toFixed(2)}`,
@@ -513,10 +496,10 @@ export const CategoryCostChart = ({ data, currency }) => {
         />
         <Bar
           dataKey='costo'
-          name='Costo Mensualizado'
+          name='Costo Mensual'
           fill={COLORS.primary}
-          radius={[0, 8, 8, 0]}
-          barSize={20}
+          radius={[0, 4, 4, 0]}
+          barSize={16}
         />
       </BarChart>
     </ResponsiveContainer>
@@ -528,13 +511,13 @@ export const ServiceCostChart = ({ data, currency }) => {
   return (
     <ResponsiveContainer
       width='100%'
-      height={280}
+      height={250}
       debounce={150}
     >
       <BarChart
         layout='vertical'
         data={data}
-        margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+        margin={{ top: 0, right: 20, left: 10, bottom: 0 }}
       >
         <CartesianGrid
           strokeDasharray='3 3'
@@ -549,13 +532,13 @@ export const ServiceCostChart = ({ data, currency }) => {
         <YAxis
           dataKey='name'
           type='category'
-          width={120}
-          tick={{ fill: COLORS.textMuted, fontSize: 11, fontWeight: 500 }}
+          width={110}
+          tick={{ fill: COLORS.textMuted, fontSize: 10 }}
           axisLine={false}
           tickLine={false}
         />
         <Tooltip
-          cursor={{ fill: '#f8fafc', opacity: 0.5 }}
+          cursor={{ fill: '#f8fafc' }}
           contentStyle={tooltipStyle}
           formatter={(value) => [
             `${currency} ${value.toFixed(2)}`,
@@ -564,10 +547,10 @@ export const ServiceCostChart = ({ data, currency }) => {
         />
         <Bar
           dataKey='costo'
-          name='Costo Mensualizado'
+          name='Costo Mensual'
           fill={COLORS.secondary}
-          radius={[0, 8, 8, 0]}
-          barSize={20}
+          radius={[0, 4, 4, 0]}
+          barSize={16}
         />
       </BarChart>
     </ResponsiveContainer>
