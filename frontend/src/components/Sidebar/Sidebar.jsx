@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../service/api';
+import { io } from 'socket.io-client';
 import {
   Package,
   Users,
@@ -28,22 +29,46 @@ import 'driver.js/dist/driver.css';
 import './Sidebar.scss';
 import logo from '../../assets/logo_grupoSP.png';
 
+const SOCKET_URL = api.defaults.baseURL
+  ? api.defaults.baseURL.replace(/\/api\/?$/, '')
+  : 'http://localhost:4000';
+
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(window.innerWidth > 768);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [unreadTickets, setUnreadTickets] = useState(0);
   const menuRef = useRef(null);
 
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const currentYear = new Date().getFullYear();
 
+  // Función para obtener tickets pendientes (Solo para SuperAdmin)
+  const fetchUnreadCount = async () => {
+    if (Number(user?.rol_id) !== 1) return; // Seguridad extra
+    try {
+      const res = await api.get('/tickets');
+      const count = res.data.filter((t) => t.estado === 'Pendiente').length;
+      setUnreadTickets(count);
+    } catch (error) {
+      console.error('Error al obtener conteo de tickets', error);
+    }
+  };
+
+  useEffect(() => {
+    // SOLO SI ES SUPERADMIN (ROL 1) ACTIVAMOS SOCKETS Y FETCH
+    if (Number(user?.rol_id) === 1) {
+      fetchUnreadCount();
+      const socket = io(SOCKET_URL);
+      socket.on('nuevo_ticket', () => fetchUnreadCount());
+      socket.on('actualizacion_ticket', () => fetchUnreadCount());
+      return () => socket.disconnect();
+    }
+  }, [user]); // Se ejecuta cuando el usuario carga
+
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth <= 768) {
-        setIsOpen(false);
-      } else {
-        setIsOpen(true);
-      }
+      setIsOpen(window.innerWidth > 768);
     };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
@@ -64,20 +89,14 @@ const Sidebar = () => {
     navigate('/login');
   };
 
-  const toggleSidebar = () => {
-    setIsOpen(!isOpen);
-  };
+  const toggleSidebar = () => setIsOpen(!isOpen);
 
   const handleNavigation = () => {
-    if (window.innerWidth <= 768) {
-      setIsOpen(false);
-    }
+    if (window.innerWidth <= 768) setIsOpen(false);
   };
 
   const startTour = () => {
-    if (window.innerWidth <= 768 && !isOpen) {
-      setIsOpen(true);
-    }
+    if (window.innerWidth <= 768 && !isOpen) setIsOpen(true);
     const driverObj = driver({
       showProgress: true,
       nextBtnText: 'Siguiente &rarr;',
@@ -150,7 +169,8 @@ const Sidebar = () => {
       path: '/tickets',
       name: 'Tickets',
       icon: <Tickets size={20} />,
-    },
+      isTicketRoute: true,
+    }, // Marcador para el badge
     {
       id: 'tour-nav-asignacion',
       path: '/asignacion',
@@ -170,7 +190,6 @@ const Sidebar = () => {
       name: 'Historial',
       icon: <History size={20} />,
     },
-
     {
       id: 'tour-nav-configuracion',
       path: '/configuracion',
@@ -198,7 +217,6 @@ const Sidebar = () => {
       >
         <Menu size={20} />
       </button>
-
       {isOpen && (
         <div
           className='mobile-overlay'
@@ -233,14 +251,23 @@ const Sidebar = () => {
               }
               title={!isOpen ? route.name : ''}
             >
-              <div className='icon-wrapper'>{route.icon}</div>
+              <div className='icon-wrapper'>
+                {route.icon}
+                {/* VALIDACIÓN: SOLO SUPERADMIN Y SOLO EN RUTA TICKETS */}
+                {route.isTicketRoute &&
+                  Number(user?.rol_id) === 1 &&
+                  unreadTickets > 0 && (
+                    <span className='nav-badge'>
+                      {unreadTickets > 9 ? '9+' : unreadTickets}
+                    </span>
+                  )}
+              </div>
               <span className='label'>{route.name}</span>
             </NavLink>
           ))}
         </nav>
 
         <div className='footer-actions'>
-          {/* BOTÓN AYUDA MOVIDO ARRIBA DEL USUARIO */}
           <div className='action-buttons-row'>
             <button
               className='tour-icon-btn'
@@ -252,7 +279,6 @@ const Sidebar = () => {
             </button>
           </div>
 
-          {/* TARJETA DE USUARIO INTERACTIVA */}
           <div
             className='user-menu-container'
             ref={menuRef}
@@ -306,7 +332,6 @@ const Sidebar = () => {
               </div>
             )}
           </div>
-
           <p className='copyright'>© {currentYear} Grupo SP</p>
         </div>
       </div>
