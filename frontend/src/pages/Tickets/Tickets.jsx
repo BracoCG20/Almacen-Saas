@@ -3,6 +3,7 @@ import api from '../../service/api';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../context/AuthContext';
 import { io } from 'socket.io-client';
+import Select from 'react-select'; // <-- Importación del Select
 import {
   Plus,
   Search,
@@ -31,7 +32,6 @@ const TimeCounter = ({ start, end, status }) => {
 
     const calculateTime = () => {
       const startTime = new Date(start).getTime();
-      // Si está resuelto o rechazado, usamos la fecha de cierre. Si no, usamos la hora actual (reloj en vivo)
       const endTime =
         (status === 'Resuelto' || status === 'Rechazado') && end
           ? new Date(end).getTime()
@@ -50,9 +50,8 @@ const TimeCounter = ({ start, end, status }) => {
       }
     };
 
-    calculateTime(); // Cálculo inicial
+    calculateTime();
 
-    // Si está en proceso, actualiza la pantalla cada 1 minuto automáticamente
     let interval;
     if (status === 'En Proceso') {
       interval = setInterval(calculateTime, 60000);
@@ -77,7 +76,13 @@ const Tickets = () => {
   const { user } = useAuth();
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // ESTADOS DE FILTROS
   const [searchTerm, setSearchTerm] = useState('');
+  const [filtroTipo, setFiltroTipo] = useState({
+    value: 'todos',
+    label: 'Todos los Tipos',
+  });
 
   const [modalOpen, setModalOpen] = useState(false);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
@@ -90,6 +95,67 @@ const Tickets = () => {
     asunto: '',
     descripcion: '',
   });
+
+  // OPCIONES PARA EL FILTRO DE CATEGORÍAS
+  const opcionesTipoFiltro = [
+    { value: 'todos', label: 'Todos los Tipos' },
+    { value: 'Fallo de Hardware / Equipo no enciende', label: '💻 Hardware' },
+    { value: 'Problemas de Red / Internet', label: '🌐 Red / Internet' },
+    { value: 'Creación de Correo / Credenciales', label: '🔑 Credenciales' },
+    { value: 'Instalación de Software / Licencia', label: '💿 Software' },
+    { value: 'Creación de HTML Mailing', label: '✉️ Mailing' },
+    { value: 'Revisión / Mantenimiento', label: '🛠️ Mantenimiento' },
+    { value: 'Otros requerimientos', label: '📦 Otros' },
+  ];
+
+  const customSelectStyles = {
+    control: (provided, state) => ({
+      ...provided,
+      borderRadius: '8px',
+      borderColor: state.isFocused ? '#7c3aed' : '#e2e8f0',
+      boxShadow: state.isFocused ? '0 0 0 2px rgba(124, 58, 237, 0.1)' : 'none',
+      height: '40px',
+      minHeight: '40px',
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+    }),
+    valueContainer: (provided) => ({
+      ...provided,
+      padding: '0 12px',
+      height: '100%',
+      display: 'flex',
+      alignItems: 'center',
+    }),
+    input: (provided) => ({
+      ...provided,
+      margin: '0px',
+      padding: '0px',
+      height: '40px',
+      color: 'transparent',
+    }),
+    indicatorSeparator: () => ({ display: 'none' }),
+    indicatorsContainer: (provided) => ({ ...provided, height: '40px' }),
+    singleValue: (provided) => ({
+      ...provided,
+      color: '#1e293b',
+      fontWeight: '500',
+      fontSize: '0.85rem',
+    }),
+    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isSelected
+        ? '#7c3aed'
+        : state.isFocused
+          ? '#f5f3ff'
+          : 'white',
+      color: state.isSelected ? 'white' : '#334155',
+      fontSize: '0.85rem',
+      cursor: 'pointer',
+      padding: '8px 12px',
+    }),
+  };
 
   const fetchData = async () => {
     try {
@@ -106,23 +172,11 @@ const Tickets = () => {
     fetchData();
   }, []);
 
-  // --- EFECTO PARA ESCUCHAR SOCKETS (ACTUALIZACIÓN EN VIVO) ---
   useEffect(() => {
     const socket = io(SOCKET_URL);
-
-    // Escucha cuando alguien crea un ticket nuevo
-    socket.on('nuevo_ticket', () => {
-      fetchData(); // Refresca la tabla en silencio
-    });
-
-    // Escucha si otro técnico toma un ticket o le cambia el estado
-    socket.on('actualizacion_ticket', () => {
-      fetchData();
-    });
-
-    return () => {
-      socket.disconnect();
-    };
+    socket.on('nuevo_ticket', () => fetchData());
+    socket.on('actualizacion_ticket', () => fetchData());
+    return () => socket.disconnect();
   }, []);
 
   const openAddModal = () => {
@@ -138,17 +192,13 @@ const Tickets = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Solo validamos que haya llenado los campos de texto
     if (!formData.tipo_solicitud || !formData.asunto || !formData.descripcion) {
       return toast.warning('Completa todos los campos obligatorios');
     }
-
     try {
       await api.post('/tickets', formData);
       toast.success('Ticket generado exitosamente');
       setModalOpen(false);
-      // fetchData() ya no es estrictamente necesario aquí si el socket avisa, pero lo dejamos por seguridad.
       fetchData();
     } catch (error) {
       toast.error(error.response?.data?.error || 'Error al generar el ticket');
@@ -159,7 +209,6 @@ const Tickets = () => {
     try {
       await api.put(`/tickets/${ticketId}/asignar`);
       toast.success('¡Has tomado el ticket!');
-      // fetchData() también se ejecutará automáticamente gracias al socket, pero lo dejamos.
       fetchData();
     } catch (error) {
       toast.error('Error al asignar el ticket');
@@ -194,21 +243,26 @@ const Tickets = () => {
     }
   };
 
-  const filteredTickets = tickets.filter(
-    (t) =>
+  // LÓGICA DE FILTRADO (Texto + Select)
+  const filteredTickets = tickets.filter((t) => {
+    const matchSearch =
       t.asunto.toLowerCase().includes(searchTerm.toLowerCase()) ||
       t.solicitante_nombres?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      `TKT-${t.id}`.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+      `TKT-${t.id}`.toLowerCase().includes(searchTerm.toLowerCase());
 
-  // --- LÓGICA DE PAGINACIÓN ---
+    const matchTipo =
+      filtroTipo.value === 'todos' || t.tipo_solicitud === filtroTipo.value;
+
+    return matchSearch && matchTipo;
+  });
+
+  // LÓGICA DE PAGINACIÓN
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8; // Muestra 8 tickets por página
+  const itemsPerPage = 8;
 
-  // Si busca algo, regresamos a la página 1
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm]);
+  }, [searchTerm, filtroTipo]);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -249,11 +303,23 @@ const Tickets = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
+
+        <div className='select-filter'>
+          <Select
+            options={opcionesTipoFiltro}
+            value={filtroTipo}
+            onChange={setFiltroTipo}
+            styles={customSelectStyles}
+            isSearchable={false}
+          />
+        </div>
       </div>
 
       <div className='table-container'>
         {filteredTickets.length === 0 ? (
-          <div className='no-data'>No hay tickets registrados.</div>
+          <div className='no-data'>
+            No se encontraron tickets con esos filtros.
+          </div>
         ) : (
           <>
             <table>
@@ -356,7 +422,6 @@ const Tickets = () => {
               </tbody>
             </table>
 
-            {/* CONTROLES DE PAGINACIÓN */}
             {filteredTickets.length > itemsPerPage && (
               <div className='pagination-footer'>
                 <div className='info'>

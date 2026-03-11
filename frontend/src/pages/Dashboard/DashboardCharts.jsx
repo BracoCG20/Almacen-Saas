@@ -556,3 +556,113 @@ export const ServiceCostChart = ({ data, currency }) => {
     </ResponsiveContainer>
   );
 };
+
+// 11. Gráfico de Dona: Distribución de Tipos de Ticket
+export const TicketsTypeChart = ({ data }) => {
+  const TICKET_COLORS = [
+    COLORS.primary,
+    COLORS.secondary,
+    COLORS.warning,
+    COLORS.danger,
+    COLORS.success,
+    COLORS.primaryLight,
+  ];
+  return (
+    <ResponsiveContainer
+      width='100%'
+      height={250}
+      debounce={150}
+    >
+      <PieChart>
+        <Pie
+          data={data}
+          cx='50%'
+          cy='50%'
+          innerRadius={55}
+          outerRadius={80}
+          paddingAngle={3}
+          dataKey='value'
+          cornerRadius={4}
+        >
+          {data.map((entry, index) => (
+            <Cell
+              key={`cell-${index}`}
+              fill={TICKET_COLORS[index % TICKET_COLORS.length]}
+              stroke='none'
+            />
+          ))}
+        </Pie>
+        <Tooltip contentStyle={tooltipStyle} />
+        <Legend
+          verticalAlign='bottom'
+          iconType='circle'
+          wrapperStyle={{
+            fontSize: '10px',
+            color: COLORS.textMuted,
+            marginTop: '10px',
+          }}
+        />
+      </PieChart>
+    </ResponsiveContainer>
+  );
+};
+
+// 12. Gráfico de Eficiencia por Categoría (SLA por Tipo)
+export const SLACategoryChart = ({ data }) => {
+  if (!data || data.length === 0) {
+    return (
+      <div style={{ textAlign: 'center', color: COLORS.textMuted }}>
+        No hay suficientes tickets resueltos
+      </div>
+    );
+  }
+
+  return (
+    <ResponsiveContainer
+      width='100%'
+      height={250}
+      debounce={150}
+    >
+      <BarChart
+        layout='vertical'
+        data={data}
+        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+      >
+        <CartesianGrid
+          strokeDasharray='3 3'
+          horizontal={true}
+          vertical={false}
+          stroke={COLORS.gridLine}
+        />
+        <XAxis
+          type='number'
+          hide
+        />
+        <YAxis
+          dataKey='name'
+          type='category'
+          width={120}
+          tick={{ fill: COLORS.textMuted, fontSize: 10 }}
+          axisLine={false}
+          tickLine={false}
+        />
+        <Tooltip
+          cursor={{ fill: '#f8fafc' }}
+          contentStyle={tooltipStyle}
+          formatter={(value) => {
+            const h = Math.floor(value / 60);
+            const m = Math.round(value % 60);
+            return [`${h > 0 ? h + 'h ' : ''}${m}m`, 'Promedio de Resolución'];
+          }}
+        />
+        <Bar
+          dataKey='promedio'
+          name='Minutos'
+          fill={COLORS.success}
+          radius={[0, 4, 4, 0]}
+          barSize={18}
+        />
+      </BarChart>
+    </ResponsiveContainer>
+  );
+};

@@ -9,6 +9,9 @@ import {
   CreditCard,
   TrendingUp,
   HelpCircle,
+  Ticket, // <-- CORREGIDO DE 'Tickets' a 'Ticket'
+  Clock,
+  LayoutList,
 } from 'lucide-react';
 
 import { driver } from 'driver.js';
@@ -25,6 +28,8 @@ import {
   GlobalInventoryChart,
   CategoryCostChart,
   ServiceCostChart,
+  TicketsTypeChart,
+  SLACategoryChart,
 } from './DashboardCharts';
 
 import './Dashboard.scss';
@@ -56,6 +61,15 @@ const Dashboard = () => {
   const [serviceCostData, setServiceCostData] = useState([]);
 
   const [loading, setLoading] = useState(true);
+
+  const [ticketStats, setTicketStats] = useState({
+    total: 0,
+    pendientes: 0,
+    proceso: 0,
+    resueltos: 0,
+  });
+  const [ticketTypeData, setTicketTypeData] = useState([]);
+  const [averageResolutionTime, setAverageResolutionTime] = useState(0);
 
   const MESES = [
     'Ene',
@@ -300,9 +314,10 @@ const Dashboard = () => {
     const fetchStats = async () => {
       try {
         const res = await api.get('/dashboard');
-        const equipos = res.data.equipos;
-        const movimientos = res.data.movimientos;
-        const serviciosSaaS = res.data.servicios;
+        const equipos = res.data.equipos || [];
+        const movimientos = res.data.movimientos || [];
+        const serviciosSaaS = res.data.servicios || [];
+        const tickets = res.data.tickets || [];
 
         const total = equipos.length;
         const inoperativos = equipos.filter(
@@ -326,6 +341,69 @@ const Dashboard = () => {
         setStats({ total, ocupados, disponibles, inoperativos });
         processData(equipos, movimientos);
         setServiciosActivos(serviciosSaaS);
+
+        // --- LÓGICA DE TICKETS ---
+        if (tickets) {
+          let pendientes = 0,
+            proceso = 0,
+            resueltos = 0;
+          const typeCount = {};
+          const slaStorage = {}; // Para guardar { "Hardware": { totalMins: 0, count: 0 } }
+
+          tickets.forEach((t) => {
+            if (t.estado === 'Pendiente') pendientes++;
+            else if (t.estado === 'En Proceso') proceso++;
+            else if (t.estado === 'Resuelto') resueltos++;
+
+            const tipo = t.tipo_solicitud || 'Otro';
+            const tipoShort = tipo
+              .split('/')[0]
+              .trim()
+              .replace(/[^\w\s]/gi, '');
+            typeCount[tipoShort] = (typeCount[tipoShort] || 0) + 1;
+
+            // Agrupación por tipo para el promedio
+            if (
+              t.estado === 'Resuelto' &&
+              t.fecha_inicio_atencion &&
+              t.fecha_cierre
+            ) {
+              const start = new Date(t.fecha_inicio_atencion).getTime();
+              const end = new Date(t.fecha_cierre).getTime();
+              const diffMins = (end - start) / (1000 * 60);
+
+              if (diffMins > 0) {
+                if (!slaStorage[tipoShort])
+                  slaStorage[tipoShort] = { total: 0, count: 0 };
+                slaStorage[tipoShort].total += diffMins;
+                slaStorage[tipoShort].count += 1;
+              }
+            }
+          });
+
+          setTicketStats({
+            total: tickets.length,
+            pendientes,
+            proceso,
+            resueltos,
+          });
+
+          setTicketTypeData(
+            Object.entries(typeCount)
+              .map(([name, value]) => ({ name, value }))
+              .sort((a, b) => b.value - a.value),
+          );
+
+          // NUEVO: Creamos el array para el gráfico de promedios por categoría
+          const promediosPorTipo = Object.entries(slaStorage)
+            .map(([name, data]) => ({
+              name,
+              promedio: data.total / data.count,
+            }))
+            .sort((a, b) => b.promedio - a.promedio);
+
+          setAverageResolutionTime(promediosPorTipo); // Ahora guardamos un array, no un número
+        }
       } catch (error) {
         console.error(error);
       } finally {
@@ -572,8 +650,85 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+      <div className='section-title-modern'>
+        <div className='title-block'>
+          <h2>Mesa de Ayuda (Soporte TI)</h2>
+          <p>Rendimiento del equipo de soporte y estado de solicitudes.</p>
+        </div>
+      </div>
 
-      <div className='section-divider'></div>
+      {/* Tarjetas de Tickets */}
+      <div
+        className='stats-grid-modern'
+        style={{ marginBottom: '1.5rem' }}
+      >
+        <div className='stat-card'>
+          <div className='info'>
+            <span className='label'>Total Tickets</span>
+            <span className='number'>{ticketStats.total}</span>
+          </div>
+          <div className='icon-wrapper bg-indigo'>
+            <LayoutList size={24} />
+          </div>
+        </div>
+        <div className='stat-card'>
+          <div className='info'>
+            <span className='label'>Pendientes</span>
+            <span className='number text-danger'>{ticketStats.pendientes}</span>
+          </div>
+          <div className='icon-wrapper bg-danger'>
+            <AlertOctagon size={24} />
+          </div>
+        </div>
+        <div className='stat-card'>
+          <div className='info'>
+            <span className='label'>En Proceso</span>
+            <span className='number text-primary'>{ticketStats.proceso}</span>
+          </div>
+          <div className='icon-wrapper bg-primary'>
+            <Clock size={24} />
+          </div>
+        </div>
+        <div className='stat-card'>
+          <div className='info'>
+            <span className='label'>Resueltos</span>
+            <span className='number text-success'>{ticketStats.resueltos}</span>
+          </div>
+          <div className='icon-wrapper bg-success'>
+            <CheckCircle size={24} />
+          </div>
+        </div>
+      </div>
+
+      {/* Gráficos de Tickets */}
+      <div
+        className='charts-grid-modern'
+        style={{ marginBottom: '3rem' }}
+      >
+        <div className='chart-card'>
+          <div className='chart-header'>
+            <div className='indicator secondary'></div>
+            <h3>Tipos de Problemas Recurrentes</h3>
+          </div>
+          <div className='chart-wrapper'>
+            {ticketTypeData.length > 0 ? (
+              <TicketsTypeChart data={ticketTypeData} />
+            ) : (
+              <span className='empty-chart'>No hay tickets registrados</span>
+            )}
+          </div>
+        </div>
+
+        <div className='chart-card'>
+          <div className='chart-header'>
+            <div className='indicator success'></div>
+            <h3>Nivel de Respuesta por Categoría</h3>
+          </div>
+          <div className='chart-wrapper'>
+            <SLACategoryChart data={averageResolutionTime} />
+          </div>
+        </div>
+      </div>
 
       {/* GRÁFICOS DE EQUIPOS */}
       <div className='section-title-modern'>
