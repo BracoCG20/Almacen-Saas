@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../service/api';
 import { toast } from 'react-toastify';
-import { Plus, FileSpreadsheet } from 'lucide-react';
+import { Plus, FileSpreadsheet, AlertTriangle, X, Check } from 'lucide-react'; // <-- Agregamos iconos
 import * as XLSX from 'xlsx';
 import Modal from '../../components/Modal/Modal';
 
@@ -20,11 +20,14 @@ const Directorio = () => {
   const [loading, setLoading] = useState(true);
 
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState('ADD'); // "ADD", "EDIT", "BAJA"
+  const [modalMode, setModalMode] = useState('ADD');
   const [currentId, setCurrentId] = useState(null);
 
   const [showHistoryModal, setShowHistoryModal] = useState(false);
-  const [selectedHistory, setSelectedHistory] = useState([]); // <-- Nuevo estado para el historial de 1 sola persona
+  const [selectedHistory, setSelectedHistory] = useState([]);
+
+  // --- NUEVO ESTADO PARA LA ALERTA DE CONFIRMACIÓN ---
+  const [confirmBajaOpen, setConfirmBajaOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     colaborador_id: '',
@@ -66,9 +69,10 @@ const Directorio = () => {
       Licencia: h.tipo_licencia,
       'Colaborador Afectado': `${h.col_nombres} ${h.col_apellidos}`,
       Detalles: h.detalles,
-      'Transferido A': h.datos_transferidos
-        ? `${h.dest_nombres} ${h.dest_apellidos}`
-        : 'No',
+      'Transferido A':
+        h.datos_transferidos && h.dest_nombres
+          ? `${h.dest_nombres} ${h.dest_apellidos}`
+          : 'No aplica',
       'Responsable (Usuario)': h.resp_nombres
         ? `${h.resp_nombres} ${h.resp_apellidos}`
         : 'Sistema',
@@ -80,7 +84,6 @@ const Directorio = () => {
     toast.success('Excel generado correctamente');
   };
 
-  // Funciones de Modales
   const openAddModal = () => {
     setModalMode('ADD');
     setFormData({
@@ -117,7 +120,6 @@ const Directorio = () => {
     setModalOpen(true);
   };
 
-  // NUEVA FUNCIÓN: Ver historial individual
   const handleViewHistory = (registro) => {
     const historialFiltrado = historialAuditoria.filter(
       (h) => h.directorio_id === registro.id,
@@ -135,7 +137,6 @@ const Directorio = () => {
         `No te quedan licencias disponibles de tipo ${registro.tipo_licencia} para reactivar.`,
       );
     }
-
     try {
       await api.put(`/directorio/${registro.id}`, {
         ...registro,
@@ -166,30 +167,50 @@ const Directorio = () => {
       }
     }
 
-    if (
-      modalMode === 'BAJA' &&
-      formData.datos_transferidos &&
-      !formData.colaborador_destino_id
-    ) {
-      return toast.warning('Selecciona a quién se le transfirieron los datos');
+    // Si es BAJA, interceptamos aquí y abrimos la alerta de confirmación
+    if (modalMode === 'BAJA') {
+      if (formData.datos_transferidos && !formData.colaborador_destino_id) {
+        return toast.warning(
+          'Selecciona a quién se le transfirieron los datos',
+        );
+      }
+      setConfirmBajaOpen(true); // <-- Abre la alerta final
+      return;
     }
 
+    // Si es ADD o EDIT se ejecuta normal
+    executeSave();
+  };
+
+  // Función normal para ADD y EDIT
+  const executeSave = async () => {
     try {
       if (modalMode === 'ADD') {
         await api.post('/directorio', formData);
         toast.success('Licencia asignada exitosamente');
       } else {
         await api.put(`/directorio/${currentId}`, formData);
-        toast.success(
-          modalMode === 'BAJA'
-            ? 'Servicio dado de baja correctamente'
-            : 'Licencia actualizada',
-        );
+        toast.success('Licencia actualizada');
       }
       setModalOpen(false);
       fetchData();
     } catch (error) {
       toast.error(error.response?.data?.error || 'Ocurrió un error al guardar');
+    }
+  };
+
+  // --- NUEVA FUNCIÓN: Ejecuta la BAJA tras confirmar ---
+  const executeBaja = async () => {
+    try {
+      await api.put(`/directorio/${currentId}`, formData);
+      toast.success('Servicio dado de baja correctamente');
+      setConfirmBajaOpen(false);
+      setModalOpen(false);
+      fetchData();
+    } catch (error) {
+      toast.error(
+        error.response?.data?.error || 'Ocurrió un error al dar de baja',
+      );
     }
   };
 
@@ -200,15 +221,13 @@ const Directorio = () => {
     <div className='directorio-container'>
       <div className='page-header'>
         <h1>Directorio Workspace</h1>
-
-        {/* Contenedor de acciones unificado */}
         <div className='header-actions'>
           <button
             className='btn-excel-header'
             onClick={exportarHistorialExcel}
             title='Exportar Auditoría'
           >
-            <FileSpreadsheet size={16} /> <span>Exportar</span>
+            <FileSpreadsheet size={16} /> <span>Exportar Historial</span>
           </button>
           <button
             className='btn-add'
@@ -226,7 +245,7 @@ const Directorio = () => {
         onEdit={openEditModal}
         onBaja={openBajaModal}
         onReactivar={handleReactivar}
-        onViewHistory={handleViewHistory} // <-- Pasamos la nueva función a la tabla
+        onViewHistory={handleViewHistory}
       />
 
       <Modal
@@ -256,8 +275,41 @@ const Directorio = () => {
         onClose={() => setShowHistoryModal(false)}
         title='Auditoría de Licencia'
       >
-        {/* Ahora le pasamos solo el historial seleccionado */}
         <DirectorioHistorial historyData={selectedHistory} />
+      </Modal>
+
+      {/* --- NUEVO MODAL DE CONFIRMACIÓN DE BAJA --- */}
+      <Modal
+        isOpen={confirmBajaOpen}
+        onClose={() => setConfirmBajaOpen(false)}
+        title=''
+        maxWidth='400px'
+      >
+        <div className='confirm-modal-content'>
+          <div className='warning-icon reject'>
+            <AlertTriangle size={40} />
+          </div>
+          <h3>¿Estás seguro?</h3>
+          <p>
+            Esta acción suspenderá la cuenta de Workspace y{' '}
+            <strong>desactivará automáticamente</strong> a este empleado en el
+            registro general de colaboradores.
+          </p>
+          <div className='modal-actions'>
+            <button
+              className='btn-cancel'
+              onClick={() => setConfirmBajaOpen(false)}
+            >
+              <X size={18} /> Cancelar
+            </button>
+            <button
+              className='btn-confirm-reject'
+              onClick={executeBaja}
+            >
+              <Check size={18} /> Sí, dar de baja
+            </button>
+          </div>
+        </div>
       </Modal>
     </div>
   );

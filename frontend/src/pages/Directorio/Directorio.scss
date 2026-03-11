@@ -98,3 +98,103 @@
     color: v.$text-muted;
   }
 }
+
+// --- MODAL DE CONFIRMACIÓN (Alerta) ---
+.confirm-modal-content {
+  padding: 1rem 0.5rem 0.5rem 0.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+
+  .warning-icon {
+    margin-bottom: 1rem;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &.reject {
+      color: v.$danger;
+      background-color: #fef2f2;
+      box-shadow: 0 0 0 6px rgba(239, 68, 68, 0.1);
+    }
+  }
+
+  h3 {
+    color: #0f172a;
+    margin-bottom: 0.5rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+  p {
+    color: #64748b;
+    margin-bottom: 1.8rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    max-width: 320px;
+
+    strong {
+      color: v.$danger;
+    }
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
+
+    @media (max-width: 450px) {
+      flex-direction: column-reverse;
+    }
+
+    button {
+      height: 42px;
+      padding: 0 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: none;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+      flex: 1;
+      white-space: nowrap;
+      cursor: pointer;
+
+      &:hover {
+        transform: translateY(-1px);
+      }
+      &:active {
+        transform: translateY(0);
+      }
+
+      &.btn-cancel {
+        background-color: white;
+        border: 1px solid #e2e8f0;
+        color: #475569;
+        &:hover {
+          background-color: #f8fafc;
+          color: #0f172a;
+        }
+      }
+      &.btn-confirm-reject {
+        background-color: v.$danger;
+        color: white;
+        box-shadow: 0 1px 2px rgba(239, 68, 68, 0.2);
+        &:hover {
+          background-color: #dc2626;
+          box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3);
+        }
+      }
+    }
+  }
+}
