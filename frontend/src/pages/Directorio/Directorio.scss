@@ -198,3 +198,37 @@
     }
   }
 }
+
+.btn-tour {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 14px;
+  height: 38px; // Reducido a 38px
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.85rem; // Reducido
+  border: none;
+  cursor: pointer;
+  color: white;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+
+  @media (max-width: 600px) {
+    flex: 1;
+    padding: 0 10px;
+  }
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+  background-color: v.$violet-50;
+  color: v.$text-muted;
+  border: 1px solid #e2e8f0;
+  box-shadow: none;
+  &:hover {
+    background-color: v.$violet-100;
+    color: v.$violet-700;
+  }
+}

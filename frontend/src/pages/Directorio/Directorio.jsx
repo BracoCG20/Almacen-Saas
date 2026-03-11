@@ -1,8 +1,17 @@
 import { useState, useEffect } from 'react';
 import api from '../../service/api';
 import { toast } from 'react-toastify';
-import { Plus, FileSpreadsheet, AlertTriangle, X, Check } from 'lucide-react';
+import {
+  Plus,
+  FileSpreadsheet,
+  AlertTriangle,
+  X,
+  Check,
+  HelpCircle,
+} from 'lucide-react';
 import * as XLSX from 'xlsx';
+import { driver } from 'driver.js';
+import 'driver.js/dist/driver.css';
 import Modal from '../../components/Modal/Modal';
 
 import DirectorioStats from './DirectorioStats';
@@ -36,6 +45,50 @@ const Directorio = () => {
     datos_transferidos: false,
     colaborador_destino_id: '',
   });
+
+  const startDirectorioTour = () => {
+    const driverObj = driver({
+      showProgress: true,
+      nextBtnText: 'Siguiente &rarr;',
+      prevBtnText: '&larr; Anterior',
+      doneBtnText: '¡Entendido!',
+      allowClose: true,
+      overlayColor: 'rgba(15, 23, 42, 0.6)',
+      steps: [
+        {
+          element: '#tour-dir-header',
+          popover: {
+            title: 'Directorio Workspace',
+            description:
+              'Aquí puedes asignar nuevas licencias o exportar el historial de auditoría a Excel.',
+            side: 'bottom',
+            align: 'start',
+          },
+        },
+        {
+          element: '#tour-dir-stats',
+          popover: {
+            title: 'Límites en Tiempo Real',
+            description:
+              'Observa cuántas licencias te quedan disponibles de cada plan. Si llegas a 0, el sistema bloqueará nuevas asignaciones.',
+            side: 'bottom',
+            align: 'start',
+          },
+        },
+        {
+          element: '#tour-dir-table',
+          popover: {
+            title: 'Control de Cuentas',
+            description:
+              'Revisa el estado de cada correo. En la columna de Acciones puedes Editar, Dar de Baja, o ver el Historial individual de la cuenta.',
+            side: 'top',
+            align: 'start',
+          },
+        },
+      ],
+    });
+    driverObj.drive();
+  };
 
   const fetchData = async () => {
     try {
@@ -167,22 +220,19 @@ const Directorio = () => {
       }
     }
 
-    // Si es BAJA, interceptamos aquí y abrimos la alerta de confirmación
     if (modalMode === 'BAJA') {
       if (formData.datos_transferidos && !formData.colaborador_destino_id) {
         return toast.warning(
           'Selecciona a quién se le transfirieron los datos',
         );
       }
-      setConfirmBajaOpen(true); // <-- Abre la alerta final
+      setConfirmBajaOpen(true);
       return;
     }
 
-    // Si es ADD o EDIT se ejecuta normal
     executeSave();
   };
 
-  // Función normal para ADD y EDIT
   const executeSave = async () => {
     try {
       if (modalMode === 'ADD') {
@@ -199,7 +249,6 @@ const Directorio = () => {
     }
   };
 
-  // --- NUEVA FUNCIÓN: Ejecuta la BAJA tras confirmar ---
   const executeBaja = async () => {
     try {
       await api.put(`/directorio/${currentId}`, formData);
@@ -219,15 +268,27 @@ const Directorio = () => {
 
   return (
     <div className='directorio-container'>
-      <div className='page-header'>
-        <h1>Directorio Workspace</h1>
+      <div
+        className='page-header'
+        id='tour-dir-header'
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+          <h1>Directorio</h1>
+        </div>
         <div className='header-actions'>
+          <button
+            className='btn-tour'
+            onClick={startDirectorioTour}
+            title='Guía Rápida'
+          >
+            <HelpCircle size={18} />
+          </button>
           <button
             className='btn-excel-header'
             onClick={exportarHistorialExcel}
             title='Exportar Auditoría'
           >
-            <FileSpreadsheet size={16} /> <span>Exportar Historial</span>
+            <FileSpreadsheet size={16} /> <span>Exportar</span>
           </button>
           <button
             className='btn-add'
@@ -238,15 +299,19 @@ const Directorio = () => {
         </div>
       </div>
 
-      <DirectorioStats estadisticas={estadisticas} />
+      <div id='tour-dir-stats'>
+        <DirectorioStats estadisticas={estadisticas} />
+      </div>
 
-      <DirectorioTable
-        directorio={directorio}
-        onEdit={openEditModal}
-        onBaja={openBajaModal}
-        onReactivar={handleReactivar}
-        onViewHistory={handleViewHistory}
-      />
+      <div id='tour-dir-table'>
+        <DirectorioTable
+          directorio={directorio}
+          onEdit={openEditModal}
+          onBaja={openBajaModal}
+          onReactivar={handleReactivar}
+          onViewHistory={handleViewHistory}
+        />
+      </div>
 
       <Modal
         isOpen={modalOpen}
@@ -278,7 +343,6 @@ const Directorio = () => {
         <DirectorioHistorial historyData={selectedHistory} />
       </Modal>
 
-      {/* --- NUEVO MODAL DE CONFIRMACIÓN DE BAJA --- */}
       <Modal
         isOpen={confirmBajaOpen}
         onClose={() => setConfirmBajaOpen(false)}

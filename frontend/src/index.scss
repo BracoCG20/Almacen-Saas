@@ -42,3 +42,55 @@ body {
     background: #94a3b8;
   }
 }
+
+/* ==============================================================
+   ESTADO DE CARGA GLOBAL (Reemplaza el texto plano)
+   ============================================================== */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 65vh; /* Centra el contenido en la pantalla */
+  width: 100%;
+  gap: 1.5rem;
+  font-family: inherit;
+
+  /* Creación del Spinner elegante (Círculo giratorio) */
+  &::before {
+    content: '';
+    width: 48px;
+    height: 48px;
+    border: 4px solid #e2e8f0; /* Gris muy claro (fondo del anillo) */
+    border-top-color: #7c3aed; /* Tu morado principal (el que gira) */
+    border-radius: 50%;
+    animation: spinLoader 1s linear infinite;
+    box-shadow: 0 4px 10px rgba(124, 58, 237, 0.15); /* Ligero brillo */
+  }
+
+  /* Estilo del texto "Cargando..." */
+  color: #64748b; /* Texto gris profesional */
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+
+  /* Efecto de latido (Pulse) en el texto */
+  animation: pulseText 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Animaciones */
+@keyframes spinLoader {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulseText {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
