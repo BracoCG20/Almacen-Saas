@@ -100,6 +100,9 @@ app.use('/api/directorio', directorioRoutes);
 const configuracionRoutes = require('./routes/configuracionRoutes');
 app.use('/api/configuracion', configuracionRoutes);
 
+const ticketsRoutes = require('./routes/ticketsRoutes');
+app.use('/api/tickets', ticketsRoutes);
+
 // ==========================================
 // INICIAR EL SERVIDOR
 // ==========================================
