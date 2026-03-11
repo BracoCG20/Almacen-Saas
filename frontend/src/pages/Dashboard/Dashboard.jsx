@@ -406,7 +406,7 @@ const Dashboard = () => {
           onClick={startDashboardTour}
           title='Iniciar recorrido'
         >
-          <HelpCircle size={18} /> <span>Guía Rápida</span>
+          <HelpCircle size={18} />
         </button>
       </div>
 

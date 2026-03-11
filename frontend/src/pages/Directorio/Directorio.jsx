@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../service/api';
 import { toast } from 'react-toastify';
-import { Plus, FileSpreadsheet, AlertTriangle, X, Check } from 'lucide-react'; // <-- Agregamos iconos
+import { Plus, FileSpreadsheet, AlertTriangle, X, Check } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import Modal from '../../components/Modal/Modal';
 
