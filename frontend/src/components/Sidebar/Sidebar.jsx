@@ -20,7 +20,7 @@ import {
   LayoutDashboard,
   NotebookTabs,
   UserCircle,
-  Ticket, // <-- NUEVO ÍCONO AGREGADO
+  Tickets,
 } from 'lucide-react';
 
 import { driver } from 'driver.js';
@@ -147,9 +147,9 @@ const Sidebar = () => {
     { path: '/proveedores', name: 'Proveedores', icon: <Truck size={20} /> },
     { path: '/servicios', name: 'Servicios', icon: <Cloud size={20} /> },
     {
-      path: '/tickets', // <-- NUEVA RUTA AGREGADA
+      path: '/tickets',
       name: 'Tickets',
-      icon: <Ticket size={20} />,
+      icon: <Tickets size={20} />,
     },
     {
       id: 'tour-nav-asignacion',

@@ -6,6 +6,7 @@ const {
   crearTicket,
   actualizarTicket,
   agregarComentarioTicket,
+  asignarTicket,
 } = require('../controllers/ticketsController');
 
 const router = Router();
@@ -18,5 +19,6 @@ router.post('/', crearTicket);
 router.get('/:id/historial', obtenerHistorialTicket);
 router.put('/:id', actualizarTicket);
 router.post('/:id/comentarios', agregarComentarioTicket);
+router.put('/:id/asignar', asignarTicket);
 
 module.exports = router;

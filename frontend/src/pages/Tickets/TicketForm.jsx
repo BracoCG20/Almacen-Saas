@@ -1,41 +1,86 @@
 import React from 'react';
 import Select from 'react-select';
+import { Clock, Info, User } from 'lucide-react';
 import './TicketForm.scss';
+
+// CATÁLOGO DE SERVICIOS CON PRIORIDAD Y SLA AUTOMÁTICO
+const catalogoSolicitudes = [
+  {
+    value: 'Fallo de Hardware / Equipo no enciende',
+    label: '💻 Fallo de Hardware / Equipo no enciende',
+    prioridad: 'Crítica',
+    sla: '2 a 4 horas',
+  },
+  {
+    value: 'Problemas de Red / Internet',
+    label: '🌐 Problemas de Red / Internet',
+    prioridad: 'Alta',
+    sla: '4 a 8 horas',
+  },
+  {
+    value: 'Creación de Correo / Credenciales',
+    label: '🔑 Creación de Correo / Credenciales',
+    prioridad: 'Media',
+    sla: '24 horas',
+  },
+  {
+    value: 'Instalación de Software / Licencia',
+    label: '💿 Instalación de Software / Licencia',
+    prioridad: 'Media',
+    sla: '24 a 48 horas',
+  },
+  {
+    value: 'Creación de HTML Mailing',
+    label: '✉️ Creación de HTML Mailing',
+    prioridad: 'Baja',
+    sla: '48 a 72 horas',
+  },
+  {
+    value: 'Revisión / Mantenimiento',
+    label: '🛠️ Revisión / Mantenimiento preventivo',
+    prioridad: 'Baja',
+    sla: 'Hasta 3 días',
+  },
+  {
+    value: 'Otros requerimientos',
+    label: '📦 Otros requerimientos',
+    prioridad: 'Baja',
+    sla: 'Sujeto a evaluación',
+  },
+];
 
 const TicketForm = ({
   formData,
   setFormData,
-  colaboradores,
+  currentUser,
   onSubmit,
   onCancel,
 }) => {
-  const opcionesColaboradores = colaboradores.map((c) => ({
-    value: c.id,
-    label: `${c.nombres} ${c.apellidos}`,
-  }));
+  const handleSelectChange = (selectedOption) => {
+    if (selectedOption) {
+      // Autocompletamos el tipo Y la prioridad oculta basada en el catálogo
+      setFormData({
+        ...formData,
+        tipo_solicitud: selectedOption.value,
+        prioridad: selectedOption.prioridad,
+      });
+    } else {
+      setFormData({ ...formData, tipo_solicitud: '', prioridad: '' });
+    }
+  };
 
-  const opcionesTipo = [
-    { value: 'Hardware', label: 'Hardware (Equipos físicos)' },
-    { value: 'Software', label: 'Software (Instalaciones, licencias)' },
-    { value: 'Accesos', label: 'Accesos (Credenciales, correos)' },
-    { value: 'Otros', label: 'Otros requerimientos' },
-  ];
+  // Buscar la info del SLA seleccionado para mostrarla en pantalla
+  const selectedService = catalogoSolicitudes.find(
+    (s) => s.value === formData.tipo_solicitud,
+  );
 
-  const opcionesPrioridad = [
-    { value: 'Baja', label: 'Baja (No urgente)' },
-    { value: 'Media', label: 'Media (Normal)' },
-    { value: 'Alta', label: 'Alta (Urgente)' },
-    { value: 'Crítica', label: 'Crítica (Bloqueante)' },
-  ];
-
-  // ESTILOS INYECTADOS DIRECTO AL SELECT PARA EVITAR CONFLICTOS CON EL MODAL
   const customSelectStyles = {
     control: (provided, state) => ({
       ...provided,
       borderRadius: '8px',
       borderColor: state.isFocused ? '#7c3aed' : '#e2e8f0',
       boxShadow: state.isFocused ? '0 0 0 2px rgba(124, 58, 237, 0.1)' : 'none',
-      minHeight: '40px',
+      minHeight: '42px',
       cursor: 'pointer',
     }),
     valueContainer: (provided) => ({ ...provided, padding: '0 12px' }),
@@ -43,14 +88,14 @@ const TicketForm = ({
       ...provided,
       color: '#1e293b',
       fontWeight: '500',
-      fontSize: '0.85rem',
+      fontSize: '0.9rem',
     }),
     placeholder: (provided) => ({
       ...provided,
       color: '#94a3b8',
-      fontSize: '0.85rem',
+      fontSize: '0.9rem',
     }),
-    menuPortal: (base) => ({ ...base, zIndex: 9999 }), // <-- ESTO EVITA QUE SE ESCONDA
+    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
     option: (provided, state) => ({
       ...provided,
       backgroundColor: state.isSelected
@@ -59,17 +104,10 @@ const TicketForm = ({
           ? '#f5f3ff'
           : 'white',
       color: state.isSelected ? 'white' : '#334155',
-      fontSize: '0.85rem',
+      fontSize: '0.9rem',
       cursor: 'pointer',
-      padding: '8px 12px',
+      padding: '10px 12px',
     }),
-  };
-
-  const handleSelectChange = (selectedOption, field) => {
-    setFormData({
-      ...formData,
-      [field]: selectedOption ? selectedOption.value : '',
-    });
   };
 
   return (
@@ -77,61 +115,63 @@ const TicketForm = ({
       onSubmit={onSubmit}
       className='ticket-form'
     >
+      {/* 1. SOLICITANTE LECTURA SOLAMENTE */}
       <div className='form-group'>
-        <label>Colaborador Solicitante *</label>
+        <label>Solicitante</label>
+        <div className='readonly-user-badge'>
+          <User size={16} />
+          <span>{currentUser?.nombre || 'Usuario Actual'}</span>
+        </div>
+      </div>
+
+      {/* 2. SELECTOR DE CATÁLOGO INTELIGENTE */}
+      <div className='form-group mt-1'>
+        <label>¿En qué te podemos ayudar? *</label>
         <Select
-          options={opcionesColaboradores}
+          className='react-select-container'
+          classNamePrefix='react-select'
+          options={catalogoSolicitudes}
           value={
-            opcionesColaboradores.find(
-              (op) => op.value === formData.colaborador_id,
+            catalogoSolicitudes.find(
+              (op) => op.value === formData.tipo_solicitud,
             ) || null
           }
-          onChange={(op) => handleSelectChange(op, 'colaborador_id')}
+          onChange={handleSelectChange}
           styles={customSelectStyles}
-          placeholder='Buscar colaborador...'
-          isClearable
+          placeholder='Selecciona el tipo de problema...'
+          isSearchable={false}
           menuPortalTarget={document.body}
           required
         />
       </div>
 
-      <div className='form-row-2'>
-        <div className='form-group'>
-          <label>Tipo de Solicitud *</label>
-          <Select
-            options={opcionesTipo}
-            value={
-              opcionesTipo.find((op) => op.value === formData.tipo_solicitud) ||
-              null
-            }
-            onChange={(op) => handleSelectChange(op, 'tipo_solicitud')}
-            styles={customSelectStyles}
-            isSearchable={false}
-            menuPortalTarget={document.body}
-          />
+      {/* 3. CAJA DE INFORMACIÓN SLA (Aparece al seleccionar algo) */}
+      {selectedService && (
+        <div
+          className={`sla-info-box ${selectedService.prioridad.toLowerCase()}`}
+        >
+          <div className='sla-row'>
+            <Info size={16} />
+            <span>
+              Prioridad asignada: <strong>{selectedService.prioridad}</strong>
+            </span>
+          </div>
+          <div className='sla-row'>
+            <Clock size={16} />
+            <span>
+              Tiempo de atención estimado:{' '}
+              <strong>{selectedService.sla}</strong>
+            </span>
+          </div>
         </div>
-        <div className='form-group'>
-          <label>Prioridad *</label>
-          <Select
-            options={opcionesPrioridad}
-            value={
-              opcionesPrioridad.find((op) => op.value === formData.prioridad) ||
-              null
-            }
-            onChange={(op) => handleSelectChange(op, 'prioridad')}
-            styles={customSelectStyles}
-            isSearchable={false}
-            menuPortalTarget={document.body}
-          />
-        </div>
-      </div>
+      )}
 
-      <div className='form-group'>
+      <div className='form-group mt-1'>
         <label>Asunto (Resumen breve) *</label>
         <input
           type='text'
           className='input-text'
-          placeholder='Ej: Necesito credenciales de Adobe'
+          placeholder='Ej: Necesito credenciales de Adobe / Mi PC no da imagen'
           value={formData.asunto}
           onChange={(e) => setFormData({ ...formData, asunto: e.target.value })}
           required
@@ -139,15 +179,15 @@ const TicketForm = ({
       </div>
 
       <div className='form-group'>
-        <label>Descripción del Problema / Solicitud *</label>
+        <label>Descripción detallada *</label>
         <textarea
           className='input-textarea'
-          placeholder='Describe detalladamente qué necesitas...'
+          placeholder='Describe detalladamente qué necesitas o los síntomas del problema para que el equipo técnico pueda ayudarte más rápido...'
           value={formData.descripcion}
           onChange={(e) =>
             setFormData({ ...formData, descripcion: e.target.value })
           }
-          rows='4'
+          rows='5'
           required
         />
       </div>
@@ -164,7 +204,7 @@ const TicketForm = ({
           type='submit'
           className='btn-save'
         >
-          Generar Ticket
+          Enviar Solicitud
         </button>
       </div>
     </form>

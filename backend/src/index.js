@@ -5,8 +5,8 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const path = require('path');
-const http = require('http'); // Importamos http para Socket.io
-const { Server } = require('socket.io'); // Importamos Socket.io
+const http = require('http');
+const { Server } = require('socket.io');
 
 const { pool } = require('./config/db');
 const mailer = require('./config/mailer');

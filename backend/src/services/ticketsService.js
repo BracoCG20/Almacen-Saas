@@ -38,18 +38,34 @@ const getTicketHistorial = async (ticketId) => {
 };
 
 // Crear un nuevo ticket
+// Crear un nuevo ticket
 const createTicket = async (data, userId) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
 
-    // 1. Insertar el Ticket
+    // --- 1. BUSCAMOS AUTOMÁTICAMENTE QUIÉN ES EL SOLICITANTE ---
+    // Usamos el userId (del token de sesión) para saber qué colaborador es.
+    const userQuery = await client.query(
+      'SELECT colaborador_id FROM usuarios WHERE id = $1',
+      [userId],
+    );
+    const colabId = userQuery.rows[0]?.colaborador_id;
+
+    // Si el usuario administrador no se ha enlazado a sí mismo en la tabla de colaboradores, le avisamos:
+    if (!colabId) {
+      throw new Error(
+        'Tu cuenta de usuario no está enlazada a un empleado. Pide al administrador que edite tu usuario y te asigne un perfil de colaborador.',
+      );
+    }
+
+    // 2. Insertar el Ticket usando el colabId seguro que sacamos de la base de datos
     const queryTicket = `
             INSERT INTO tickets (colaborador_id, asunto, descripcion, tipo_solicitud, prioridad, equipo_id, servicio_id) 
             VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id
         `;
     const valuesTicket = [
-      data.colaborador_id,
+      colabId,
       data.asunto,
       data.descripcion,
       data.tipo_solicitud,
@@ -60,7 +76,7 @@ const createTicket = async (data, userId) => {
     const resTicket = await client.query(queryTicket, valuesTicket);
     const nuevoId = resTicket.rows[0].id;
 
-    // 2. Registrar el evento de creación en el Historial
+    // 3. Registrar el evento de creación en el Historial
     const queryHistorial = `
             INSERT INTO historial_tickets (ticket_id, accion, estado_nuevo, detalles, usuario_registro_id) 
             VALUES ($1, 'CREADO', 'Pendiente', 'El ticket ha sido creado y está a la espera de atención.', $2)
@@ -71,21 +87,20 @@ const createTicket = async (data, userId) => {
     return nuevoId;
   } catch (e) {
     await client.query('ROLLBACK');
-    throw e;
+    throw e; // Pasa el error al controlador
   } finally {
     client.release();
   }
 };
 
-// Actualizar estado, prioridad o asignación del ticket
 const updateTicket = async (id, data, userId) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
 
-    // Obtener datos antiguos para comparar
+    // Obtener datos antiguos (Ahora traemos fecha_inicio_atencion)
     const resOld = await client.query(
-      'SELECT estado, usuario_asignado_id FROM tickets WHERE id = $1',
+      'SELECT estado, usuario_asignado_id, fecha_inicio_atencion FROM tickets WHERE id = $1',
       [id],
     );
     const oldData = resOld.rows[0];
@@ -111,10 +126,18 @@ const updateTicket = async (id, data, userId) => {
           ? 'CERRADO'
           : 'CAMBIO_ESTADO';
 
-      // Si se cierra, actualizamos la fecha de cierre en la tabla principal
+      // Si el estado pasa a Resuelto, detenemos el reloj (fecha_cierre)
       if (accion === 'CERRADO') {
         await client.query(
           'UPDATE tickets SET fecha_cierre = CURRENT_TIMESTAMP WHERE id = $1',
+          [id],
+        );
+      }
+
+      // Si alguien lo pasa a "En Proceso" manualmente desde el modal y no tenía hora de inicio, iniciamos el reloj
+      if (data.estado === 'En Proceso' && !oldData.fecha_inicio_atencion) {
+        await client.query(
+          'UPDATE tickets SET fecha_inicio_atencion = CURRENT_TIMESTAMP WHERE id = $1',
           [id],
         );
       }
@@ -131,20 +154,6 @@ const updateTicket = async (id, data, userId) => {
         `El estado cambió a ${data.estado}`,
         userId,
       ]);
-    }
-
-    // Si se asignó a una persona nueva, registrarlo
-    if (
-      oldData.usuario_asignado_id !== data.usuario_asignado_id &&
-      data.usuario_asignado_id !== null
-    ) {
-      await client.query(
-        `
-                INSERT INTO historial_tickets (ticket_id, accion, detalles, usuario_registro_id) 
-                VALUES ($1, 'ASIGNADO', 'El ticket ha sido asignado a un técnico para su revisión.', $2)
-            `,
-        [id, userId],
-      );
     }
 
     await client.query('COMMIT');
@@ -174,10 +183,44 @@ const addComentario = async (ticketId, detalles, userId) => {
   return res.rows[0];
 };
 
+// Asignar ticket al técnico actual (Tomar ticket)
+const assignTicket = async (ticketId, userId) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    // --- SE AGREGÓ: fecha_inicio_atencion = CURRENT_TIMESTAMP ---
+    const queryUpdate = `
+            UPDATE tickets 
+            SET usuario_asignado_id = $1, estado = 'En Proceso', 
+                fecha_actualizacion = CURRENT_TIMESTAMP, 
+                fecha_inicio_atencion = CURRENT_TIMESTAMP
+            WHERE id = $2 RETURNING *
+        `;
+    await client.query(queryUpdate, [userId, ticketId]);
+
+    const queryHistorial = `
+            INSERT INTO historial_tickets (ticket_id, accion, estado_anterior, estado_nuevo, detalles, usuario_registro_id) 
+            VALUES ($1, 'ASIGNADO', 'Pendiente', 'En Proceso', 'Un técnico ha tomado el ticket y comenzará a revisarlo.', $2)
+        `;
+    await client.query(queryHistorial, [ticketId, userId]);
+
+    await client.query('COMMIT');
+    return true;
+  } catch (e) {
+    await client.query('ROLLBACK');
+    throw e;
+  } finally {
+    client.release();
+  }
+};
+
+// No olvides exportarla al final:
 module.exports = {
   getTickets,
   getTicketHistorial,
   createTicket,
   updateTicket,
   addComentario,
+  assignTicket,
 };

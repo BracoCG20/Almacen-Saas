@@ -24,10 +24,19 @@ const obtenerHistorialTicket = async (req, res) => {
 const crearTicket = async (req, res) => {
   try {
     await ticketsService.createTicket(req.body, req.user.id);
+
+    // --- EMITIR AVISO POR SOCKET.IO DE NUEVO TICKET ---
+    const io = req.app.get('io');
+    if (io) {
+      io.emit('nuevo_ticket'); // Grita por el megáfono que hay uno nuevo
+    }
+
     res.status(201).json({ message: 'Ticket generado exitosamente.' });
   } catch (error) {
     console.error('🔥 Error en crearTicket:', error);
-    res.status(400).json({ error: 'Error al generar el ticket.' });
+    res
+      .status(400)
+      .json({ error: error.message || 'Error al generar el ticket.' });
   }
 };
 
@@ -35,6 +44,13 @@ const actualizarTicket = async (req, res) => {
   try {
     const { id } = req.params;
     await ticketsService.updateTicket(id, req.body, req.user.id);
+
+    // --- EMITIR AVISO POR SOCKET.IO ---
+    const io = req.app.get('io');
+    if (io) {
+      io.emit('actualizacion_ticket', { ticketId: Number(id) });
+    }
+
     res.json({ message: 'Ticket actualizado correctamente.' });
   } catch (error) {
     console.error('🔥 Error en actualizarTicket:', error);
@@ -54,6 +70,13 @@ const agregarComentarioTicket = async (req, res) => {
     }
 
     await ticketsService.addComentario(id, comentario, req.user.id);
+
+    // --- EMITIR AVISO POR SOCKET.IO ---
+    const io = req.app.get('io');
+    if (io) {
+      io.emit('actualizacion_ticket', { ticketId: Number(id) });
+    }
+
     res.json({ message: 'Comentario agregado correctamente.' });
   } catch (error) {
     console.error('🔥 Error en agregarComentarioTicket:', error);
@@ -61,10 +84,31 @@ const agregarComentarioTicket = async (req, res) => {
   }
 };
 
+const asignarTicket = async (req, res) => {
+  try {
+    const { id } = req.params;
+    // req.user.id es el ID del usuario logueado (el SuperAdmin de TI)
+    await ticketsService.assignTicket(id, req.user.id);
+
+    // Emitir alerta por sockets para que todos vean la actualización
+    const io = req.app.get('io');
+    if (io) {
+      io.emit('actualizacion_ticket', { ticketId: Number(id) });
+    }
+
+    res.json({ message: 'Ticket asignado correctamente.' });
+  } catch (error) {
+    console.error('🔥 Error al asignar ticket:', error);
+    res.status(400).json({ error: 'Error al tomar el ticket.' });
+  }
+};
+
+// Y expórtalo al final:
 module.exports = {
   obtenerTickets,
   obtenerHistorialTicket,
   crearTicket,
   actualizarTicket,
   agregarComentarioTicket,
+  asignarTicket, // <-- NUEVO
 };
