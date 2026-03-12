@@ -135,7 +135,7 @@ const Perfil = () => {
     }
   };
 
-  if (loading) return <div className='loading-state'>Cargando...</div>;
+  if (loading) return <div className='loading-state'>Cargando perfil...</div>;
   const defaultImage = `https://ui-avatars.com/api/?name=${formData.nombres}+${formData.apellidos}&background=random`;
 
   return (

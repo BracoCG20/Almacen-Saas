@@ -304,7 +304,8 @@ const Asignacion = () => {
     }
   };
 
-  if (loading) return <div className='loading-state'>Cargando...</div>;
+  if (loading)
+    return <div className='loading-state'>Cargando asignaciones...</div>;
 
   const equiposOptions = equiposDisponibles.map((e) => ({
     value: e.id,

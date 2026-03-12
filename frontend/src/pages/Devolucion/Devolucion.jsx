@@ -473,7 +473,8 @@ const Devolucion = () => {
     }
   };
 
-  if (loading) return <div className='loading-state'>Cargando sistema...</div>;
+  if (loading)
+    return <div className='loading-state'>Cargando devoluciones...</div>;
 
   const usuariosOptions = usuariosConEquipo.map((us) => ({
     value: us.id,

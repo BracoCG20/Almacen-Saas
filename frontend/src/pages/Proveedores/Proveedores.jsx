@@ -258,7 +258,8 @@ const Proveedores = () => {
     fetchProveedores();
   };
 
-  if (loading) return <div className='loading-state'>Cargando...</div>;
+  if (loading)
+    return <div className='loading-state'>Cargando proveedores...</div>;
 
   return (
     <div className='proveedores-container'>
