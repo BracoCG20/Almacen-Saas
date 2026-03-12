@@ -775,7 +775,7 @@ const Dashboard = () => {
         <div className='chart-card'>
           <div className='chart-header'>
             <div className='indicator secondary'></div>
-            <h3>Resumen Origen</h3>
+            <h3>Distribución Equipos</h3>
           </div>
           <div className='chart-wrapper'>
             <GlobalInventoryChart data={globalInventoryData} />
@@ -784,7 +784,7 @@ const Dashboard = () => {
         <div className='chart-card'>
           <div className='chart-header'>
             <div className='indicator'></div>
-            <h3>Distribución Propios</h3>
+            <h3>Distribución de Equipos Propios</h3>
           </div>
           <div className='chart-wrapper'>
             <CompanyChart data={companyData} />
