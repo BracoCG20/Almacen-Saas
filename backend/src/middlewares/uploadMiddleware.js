@@ -1,34 +1,38 @@
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const cloudinary = require('../config/cloudinary');
+const { v4: uuidv4 } = require('uuid');
+
+// Almacenamiento temporal en RAM
+const storage = multer.memoryStorage();
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 15 * 1024 * 1024 }, // Aumentamos a 15MB por si los PDFs son pesados
+});
 
 /**
- * Genera un middleware de Multer configurado para una carpeta específica.
- * @param {string} folderName Nombre de la carpeta dentro de 'backend/uploads/'
- * @param {string} prefix Prefijo para el nombre del archivo (ej: 'perfil', 'factura')
+ * Función universal para subir a Cloudinary
+ * @param {Buffer} fileBuffer Buffer del archivo
+ * @param {string} folder Carpeta destino en Cloudinary
  */
-const createUploadMiddleware = (folderName, prefix = 'file') => {
-  const uploadDir = path.join(__dirname, '../../uploads', folderName);
-
-  if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-  }
-
-  const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, uploadDir);
-    },
-    filename: (req, file, cb) => {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-      cb(null, `${prefix}-${uniqueSuffix}${path.extname(file.originalname)}`);
-    },
-  });
-
-  // Límite opcional de 10MB por seguridad
-  return multer({
-    storage,
-    limits: { fileSize: 10 * 1024 * 1024 },
+const uploadToCloudinary = (fileBuffer, folder) => {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: `almacen_grupoSP/${folder}`,
+        resource_type: 'auto', // Detecta si es PDF o Imagen automáticamente
+        public_id: `${Date.now()}-${uuidv4()}`,
+      },
+      (error, result) => {
+        if (error) reject(error);
+        else resolve(result.secure_url); // Retorna la URL https
+      },
+    );
+    uploadStream.end(fileBuffer);
   });
 };
 
-module.exports = createUploadMiddleware;
+module.exports = {
+  upload,
+  uploadToCloudinary,
+};

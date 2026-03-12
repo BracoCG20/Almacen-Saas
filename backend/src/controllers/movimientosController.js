@@ -1,22 +1,23 @@
 const movimientosService = require('../services/movimientosService');
 const emailService = require('../services/emailService');
+const { uploadToCloudinary } = require('../middlewares/uploadMiddleware');
 
 const obtenerHistorial = async (req, res) => {
   try {
     const historial = await movimientosService.getHistorial();
     res.json(historial);
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: 'Error interno al obtener el historial de movimientos.' });
+    res.status(500).json({ error: 'Error interno al obtener el historial.' });
   }
 };
 
 const registrarEntrega = async (req, res) => {
   try {
+    // Registro simple sin archivo
     const result = await movimientosService.registrarEntrega(
       req.body,
       req.user.id,
+      null,
       null,
     );
     res.status(201).json({
@@ -30,29 +31,42 @@ const registrarEntrega = async (req, res) => {
 
 const registrarEntregaConCorreo = async (req, res) => {
   try {
+    let cloudinaryUrl = null;
+    let pdfBuffer = null;
+
+    if (req.file) {
+      // 1. Subir el acta generada a Cloudinary
+      cloudinaryUrl = await uploadToCloudinary(req.file.buffer, 'Originales');
+      pdfBuffer = req.file.buffer;
+    }
+
+    // 2. Registrar en BD pasando la URL de la nube y el buffer para el email
     const result = await movimientosService.registrarEntrega(
       req.body,
       req.user.id,
-      req.file,
+      cloudinaryUrl,
+      pdfBuffer,
     );
-    if (result.emailWarning) {
-      res.status(201).json({
-        message: 'Registro guardado, pero falló el envío de correo.',
-        warning: true,
-      });
-    } else {
-      res
-        .status(201)
-        .json({ message: 'Registro guardado y correo enviado exitosamente.' });
-    }
+
+    res
+      .status(201)
+      .json({ message: 'Registro guardado y correo enviado exitosamente.' });
   } catch (error) {
-    res.status(400).json({ error: error.message || 'Error al guardar en BD' });
+    console.error('Error en registrarEntregaConCorreo:', error);
+    res
+      .status(400)
+      .json({ error: error.message || 'Error al procesar la entrega' });
   }
 };
 
 const registrarDevolucion = async (req, res) => {
   try {
-    await movimientosService.registrarDevolucion(req.body, req.user.id, null);
+    await movimientosService.registrarDevolucion(
+      req.body,
+      req.user.id,
+      null,
+      null,
+    );
     res.status(201).json({ message: 'Devolución registrada correctamente.' });
   } catch (error) {
     res
@@ -63,25 +77,30 @@ const registrarDevolucion = async (req, res) => {
 
 const registrarDevolucionConCorreo = async (req, res) => {
   try {
-    const result = await movimientosService.registrarDevolucion(
+    let cloudinaryUrl = null;
+    let pdfBuffer = null;
+
+    if (req.file) {
+      // 1. Subir el acta a Cloudinary
+      cloudinaryUrl = await uploadToCloudinary(req.file.buffer, 'Originales');
+      pdfBuffer = req.file.buffer;
+    }
+
+    // 2. Registrar en BD
+    await movimientosService.registrarDevolucion(
       req.body,
       req.user.id,
-      req.file,
+      cloudinaryUrl,
+      pdfBuffer,
     );
-    if (result.emailWarning) {
-      res.status(201).json({
-        message: 'Guardado, pero falló el envío de correo.',
-        warning: true,
-      });
-    } else {
-      res.status(201).json({
-        message: 'Devolución guardada y correo enviado exitosamente.',
-      });
-    }
+
+    res
+      .status(201)
+      .json({ message: 'Devolución guardada y correo enviado exitosamente.' });
   } catch (error) {
-    res.status(400).json({
-      error: error.message || 'Error al guardar la devolución en BD.',
-    });
+    res
+      .status(400)
+      .json({ error: error.message || 'Error al guardar la devolución.' });
   }
 };
 
@@ -95,10 +114,13 @@ const reenviarCorreoActa = async (req, res) => {
       cargador,
       estado_final_nombre,
       motivo,
+      tokenFirma,
     } = req.body;
+
     const textoCargador =
       cargador === 'true' || cargador === true ? 'SÍ' : 'NO';
 
+    // Se asume que el archivo viene en el body para reenviar
     await emailService.enviarActaCorreo(
       tipo_movimiento,
       destinatario,
@@ -108,13 +130,8 @@ const reenviarCorreoActa = async (req, res) => {
       req.file.buffer,
       estado_final_nombre,
       motivo,
+      tokenFirma,
     );
-
-    await movimientosService.actualizarFirmaDocumento(
-      req.body.movimiento_id,
-      undefined,
-      null,
-    ); // Solo actualiza el estado enviado en service
 
     res.json({ message: 'Correo reenviado exitosamente.' });
   } catch (error) {
@@ -124,15 +141,27 @@ const reenviarCorreoActa = async (req, res) => {
 
 const subirPdfFirmado = async (req, res) => {
   try {
-    if (!req.file)
+    if (!req.file) {
       return res.status(400).json({ error: 'No se recibió ningún archivo.' });
-    const url = `/uploads/Firmados/${req.file.filename}`;
-    await movimientosService.actualizarFirmaDocumento(req.params.id, url, true);
-    res.json({ message: 'Documento firmado guardado exitosamente.' });
+    }
+
+    // 1. Subir a Cloudinary en la carpeta 'Firmados'
+    const cloudinaryUrl = await uploadToCloudinary(req.file.buffer, 'Firmados');
+
+    // 2. Actualizar el registro con la URL de Cloudinary
+    await movimientosService.actualizarFirmaDocumento(
+      req.params.id,
+      cloudinaryUrl,
+      true,
+    );
+
+    res.json({
+      message: 'Documento firmado guardado en la nube exitosamente.',
+      url: cloudinaryUrl,
+    });
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: 'Error interno al guardar el archivo firmado.' });
+    console.error('Error Cloudinary:', error);
+    res.status(500).json({ error: 'Error al subir el archivo a la nube.' });
   }
 };
 
@@ -141,7 +170,6 @@ const invalidarFirma = async (req, res) => {
     const { id } = req.params;
     const usuarioId = req.user.id;
 
-    // 1. Ejecutar el servicio
     await movimientosService.actualizarFirmaDocumento(
       id,
       null,
@@ -149,10 +177,8 @@ const invalidarFirma = async (req, res) => {
       usuarioId,
     );
 
-    // 2. Emitir el evento de Socket.io correctamente
     const io = req.app.get('io');
     if (io) {
-      console.log(`Emitiendo actualización para movimiento: ${id}`);
       io.emit('documento_firmado', { id, status: 'pendente' });
     }
 

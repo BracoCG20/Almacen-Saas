@@ -1,6 +1,7 @@
 const { Router } = require('express');
 const verifyToken = require('../middlewares/authMiddleware');
-const createUploadMiddleware = require('../middlewares/uploadMiddleware');
+// Importamos el nuevo middleware de memoria RAM
+const { upload } = require('../middlewares/uploadMiddleware');
 
 const {
   getServicios,
@@ -16,8 +17,6 @@ const {
 
 const router = Router();
 
-const uploadFactura = createUploadMiddleware('Facturas', 'factura');
-
 router.use(verifyToken);
 
 router.get('/', getServicios);
@@ -29,7 +28,10 @@ router.put('/:id/estado', cambiarEstadoServicio);
 router.get('/:id/auditoria', getAuditoriaServicio);
 
 router.get('/:id/pagos', getPagosPorServicio);
-router.post('/:id/pagos', uploadFactura.single('comprobante'), registrarPago);
+
+// Usamos upload.single para el comprobante de pago (Factura)
+router.post('/:id/pagos', upload.single('comprobante'), registrarPago);
+
 router.put('/pagos/:pagoId/anular', anularPago);
 
 module.exports = router;

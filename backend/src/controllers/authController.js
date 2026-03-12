@@ -1,4 +1,5 @@
 const authService = require('../services/authService');
+const { uploadToCloudinary } = require('../middlewares/uploadMiddleware');
 
 const login = async (req, res) => {
   try {
@@ -32,14 +33,23 @@ const getPerfil = async (req, res) => {
 
 const updatePerfil = async (req, res) => {
   try {
-    const newFotoUrl = await authService.updateUserProfile(
+    let fotoUrl = null;
+
+    // Si el usuario subió una nueva foto, la subimos a Cloudinary
+    if (req.file) {
+      fotoUrl = await uploadToCloudinary(req.file.buffer, 'FotoPerfil');
+    }
+
+    // Llamamos al servicio pasando la URL de Cloudinary (si existe) en lugar del archivo físico
+    const updatedFotoUrl = await authService.updateUserProfile(
       req.user.id,
       req.body,
-      req.file,
+      fotoUrl || req.file, // Mandamos la URL si se subió, o el archivo para que el service decida
     );
+
     res.json({
       message: 'Perfil actualizado correctamente.',
-      foto_url: newFotoUrl,
+      foto_url: updatedFotoUrl,
     });
   } catch (error) {
     console.error('Error actualizando perfil:', error);

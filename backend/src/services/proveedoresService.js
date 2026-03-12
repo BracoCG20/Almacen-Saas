@@ -17,7 +17,7 @@ const getAllProveedores = async () => {
   return response.rows;
 };
 
-const createProveedor = async (data, creadorId, file) => {
+const createProveedor = async (data, creadorId, contratoUrl) => {
   const {
     razon_social,
     nombre_comercial,
@@ -34,58 +34,39 @@ const createProveedor = async (data, creadorId, file) => {
     fecha_inicio_contrato,
     fecha_fin_contrato,
   } = data;
-
-  const contratoUrl = file
-    ? `/uploads/ContratosProveedores/${file.filename}`
-    : null;
   const client = await pool.connect();
-
   try {
     await client.query('BEGIN');
     const check = await client.query(
       'SELECT id FROM proveedores WHERE ruc = $1',
       [ruc],
     );
-    if (check.rows.length > 0)
-      throw new Error('El RUC ingresado ya está registrado en el sistema.');
+    if (check.rows.length > 0) throw new Error('El RUC ya está registrado.');
 
-    const query = `
-      INSERT INTO proveedores (
-        razon_social, nombre_comercial, ruc, direccion, departamento, provincia, distrito, 
-        nombre_contacto, email_contacto, telefono_contacto, sitio_web, tipo_servicio, 
-        fecha_inicio_contrato, fecha_fin_contrato, contrato_url, usuario_creacion_id
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
-      RETURNING *;
-    `;
-    const values = [
+    const query = `INSERT INTO proveedores (razon_social, nombre_comercial, ruc, direccion, departamento, provincia, distrito, nombre_contacto, email_contacto, telefono_contacto, sitio_web, tipo_servicio, fecha_inicio_contrato, fecha_fin_contrato, contrato_url, usuario_creacion_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) RETURNING *;`;
+    const newProv = await client.query(query, [
       razon_social,
-      nombre_comercial || null,
+      nombre_comercial,
       ruc,
-      direccion || null,
-      departamento || null,
-      provincia || null,
-      distrito || null,
-      nombre_contacto || null,
-      email_contacto || null,
-      telefono_contacto || null,
-      sitio_web || null,
-      tipo_servicio || null,
-      fecha_inicio_contrato || null,
-      fecha_fin_contrato || null,
+      direccion,
+      departamento,
+      provincia,
+      distrito,
+      nombre_contacto,
+      email_contacto,
+      telefono_contacto,
+      sitio_web,
+      tipo_servicio,
+      fecha_inicio_contrato,
+      fecha_fin_contrato,
       contratoUrl,
       creadorId,
-    ];
+    ]);
 
-    const newProv = await client.query(query, values);
-    const provId = newProv.rows[0].id;
-
-    // Historial
     await client.query(
-      `INSERT INTO historial_proveedores (proveedor_id, accion_realizada, descripcion_cambio, usuario_accion_id, cambio_contrato, archivo_contrato_url) 
-       VALUES ($1, 'REGISTRO INICIAL', 'Proveedor creado en el sistema.', $2, $3, $4)`,
-      [provId, creadorId, !!contratoUrl, contratoUrl],
+      `INSERT INTO historial_proveedores (proveedor_id, accion_realizada, descripcion_cambio, usuario_accion_id, cambio_contrato, archivo_contrato_url) VALUES ($1, 'REGISTRO INICIAL', 'Proveedor creado.', $2, $3, $4)`,
+      [newProv.rows[0].id, creadorId, !!contratoUrl, contratoUrl],
     );
-
     await client.query('COMMIT');
     return newProv.rows[0];
   } catch (error) {
@@ -96,88 +77,43 @@ const createProveedor = async (data, creadorId, file) => {
   }
 };
 
-const updateProveedor = async (id, data, modificadorId, file) => {
-  const {
-    razon_social,
-    nombre_comercial,
-    ruc,
-    direccion,
-    departamento,
-    provincia,
-    distrito,
-    nombre_contacto,
-    email_contacto,
-    telefono_contacto,
-    sitio_web,
-    tipo_servicio,
-    fecha_inicio_contrato,
-    fecha_fin_contrato,
-    eliminar_contrato,
-  } = data;
-
+const updateProveedor = async (id, data, modificadorId, newContratoUrl) => {
   const client = await pool.connect();
-
   try {
     await client.query('BEGIN');
-    const currentProv = await client.query(
+    const current = await client.query(
       'SELECT contrato_url FROM proveedores WHERE id = $1',
       [id],
     );
-    if (currentProv.rows.length === 0)
-      throw new Error('Proveedor no encontrado.');
+    let contratoUrl =
+      newContratoUrl ||
+      (data.eliminar_contrato === 'true' ? null : current.rows[0].contrato_url);
 
-    let contratoUrl = currentProv.rows[0].contrato_url;
-    let cambioContrato = false;
-    let descripcion = 'Se modificaron los datos del proveedor.';
-
-    if (eliminar_contrato === 'true') {
-      contratoUrl = null;
-      cambioContrato = true;
-      descripcion =
-        'Se modificaron los datos y se eliminó el contrato adjunto.';
-    }
-    if (file) {
-      contratoUrl = `/uploads/ContratosProveedores/${file.filename}`;
-      cambioContrato = true;
-      descripcion =
-        'Se modificaron los datos y se actualizó el contrato adjunto.';
-    }
-
-    const query = `
-      UPDATE proveedores SET 
-        razon_social=$1, nombre_comercial=$2, ruc=$3, direccion=$4, departamento=$5, provincia=$6, distrito=$7, nombre_contacto=$8, 
-        email_contacto=$9, telefono_contacto=$10, sitio_web=$11, tipo_servicio=$12, fecha_inicio_contrato=$13, fecha_fin_contrato=$14, contrato_url=$15,
-        fecha_modificacion=NOW(), usuario_modificacion_id=$16
-      WHERE id=$17 RETURNING *;
-    `;
-    const values = [
-      razon_social,
-      nombre_comercial || null,
-      ruc,
-      direccion || null,
-      departamento || null,
-      provincia || null,
-      distrito || null,
-      nombre_contacto || null,
-      email_contacto || null,
-      telefono_contacto || null,
-      sitio_web || null,
-      tipo_servicio || null,
-      fecha_inicio_contrato || null,
-      fecha_fin_contrato || null,
+    const query = `UPDATE proveedores SET razon_social=$1, nombre_comercial=$2, ruc=$3, direccion=$4, departamento=$5, provincia=$6, distrito=$7, nombre_contacto=$8, email_contacto=$9, telefono_contacto=$10, sitio_web=$11, tipo_servicio=$12, fecha_inicio_contrato=$13, fecha_fin_contrato=$14, contrato_url=$15, fecha_modificacion=NOW(), usuario_modificacion_id=$16 WHERE id=$17 RETURNING *;`;
+    const result = await client.query(query, [
+      data.razon_social,
+      data.nombre_comercial,
+      data.ruc,
+      data.direccion,
+      data.departamento,
+      data.provincia,
+      data.distrito,
+      data.nombre_contacto,
+      data.email_contacto,
+      data.telefono_contacto,
+      data.sitio_web,
+      data.tipo_servicio,
+      data.fecha_inicio_contrato,
+      data.fecha_fin_contrato,
       contratoUrl,
       modificadorId,
       id,
-    ];
-
-    const result = await client.query(query, values);
+    ]);
 
     await client.query(
-      `INSERT INTO historial_proveedores (proveedor_id, accion_realizada, descripcion_cambio, usuario_accion_id, cambio_contrato, archivo_contrato_url) 
-       VALUES ($1, 'ACTUALIZACIÓN', $2, $3, $4, $5)`,
-      [id, descripcion, modificadorId, cambioContrato, contratoUrl],
+      `INSERT INTO historial_proveedores (proveedor_id, accion_realizada, descripcion_cambio, usuario_accion_id, cambio_contrato, archivo_contrato_url) VALUES ($1, 'ACTUALIZACIÓN', 'Datos actualizados Cloudinary', $2, $3, $4)`,
+      [id, modificadorId, !!newContratoUrl, contratoUrl],
     );
-
     await client.query('COMMIT');
     return result.rows[0];
   } catch (error) {

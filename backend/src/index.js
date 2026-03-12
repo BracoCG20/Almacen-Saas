@@ -32,8 +32,6 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
-
 // EVENTOS DE SOCKET.IO
 io.on('connection', (socket) => {
   console.log('🟢 Cliente conectado a WebSocket:', socket.id);

@@ -1,4 +1,5 @@
 const proveedoresService = require('../services/proveedoresService');
+const { uploadToCloudinary } = require('../middlewares/uploadMiddleware');
 
 const getProveedores = async (req, res) => {
   try {
@@ -12,40 +13,50 @@ const getProveedores = async (req, res) => {
 
 const createProveedor = async (req, res) => {
   try {
+    let contratoUrl = null;
+    if (req.file) {
+      contratoUrl = await uploadToCloudinary(
+        req.file.buffer,
+        'ContratosProveedores',
+      );
+    }
     const nuevoProveedor = await proveedoresService.createProveedor(
       req.body,
       req.user.id,
-      req.file,
+      contratoUrl,
     );
     res.status(201).json({
       message: 'Proveedor registrado exitosamente.',
       proveedor: nuevoProveedor,
     });
   } catch (error) {
-    console.error('Error al crear proveedor:', error);
-    if (error.message.includes('RUC'))
-      return res.status(400).json({ error: error.message });
-    res.status(500).json({ error: 'Error interno al registrar el proveedor.' });
+    res
+      .status(500)
+      .json({ error: error.message || 'Error interno al registrar.' });
   }
 };
 
 const updateProveedor = async (req, res) => {
   try {
+    let contratoUrl = null;
+    if (req.file) {
+      contratoUrl = await uploadToCloudinary(
+        req.file.buffer,
+        'ContratosProveedores',
+      );
+    }
     const proveedorActualizado = await proveedoresService.updateProveedor(
       req.params.id,
       req.body,
       req.user.id,
-      req.file,
+      contratoUrl,
     );
     res.json({
       message: 'Proveedor actualizado correctamente.',
       proveedor: proveedorActualizado,
     });
   } catch (error) {
-    console.error('Error al actualizar proveedor:', error);
-    res
-      .status(400)
-      .json({ error: error.message || 'Error interno al actualizar.' });
+    res.status(400).json({ error: error.message || 'Error al actualizar.' });
   }
 };
 

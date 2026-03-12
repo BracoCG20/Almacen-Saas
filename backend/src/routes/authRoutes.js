@@ -10,16 +10,16 @@ const {
 } = require('../controllers/authController');
 
 const verifyToken = require('../middlewares/authMiddleware');
-const createUploadMiddleware = require('../middlewares/uploadMiddleware');
+// Importamos el nuevo middleware de memoria
+const { upload } = require('../middlewares/uploadMiddleware');
 
 const router = Router();
-
-const uploadPerfil = createUploadMiddleware('FotoPerfil', 'perfil');
 
 router.post('/login', login);
 
 router.get('/perfil', verifyToken, getPerfil);
-router.put('/perfil', verifyToken, uploadPerfil.single('foto'), updatePerfil);
+// Cambiamos uploadPerfil.single por upload.single
+router.put('/perfil', verifyToken, upload.single('foto'), updatePerfil);
 
 router.post('/register', verifyToken, register);
 router.get('/users', verifyToken, getAllUsers);

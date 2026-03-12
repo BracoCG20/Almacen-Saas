@@ -1,6 +1,7 @@
 const { Router } = require('express');
 const verifyToken = require('../middlewares/authMiddleware');
-const createUploadMiddleware = require('../middlewares/uploadMiddleware');
+// Importamos el nuevo middleware de memoria RAM
+const { upload } = require('../middlewares/uploadMiddleware');
 
 const {
   getProveedores,
@@ -12,17 +13,15 @@ const {
 
 const router = Router();
 
-const uploadContrato = createUploadMiddleware(
-  'ContratosProveedores',
-  'contrato_prov',
-);
-
 // Todas las rutas requieren estar autenticado
 router.use(verifyToken);
 
 router.get('/', getProveedores);
-router.post('/', uploadContrato.single('contrato_pdf'), createProveedor);
-router.put('/:id', uploadContrato.single('contrato_pdf'), updateProveedor);
+
+// Usamos upload.single para procesar en memoria y subir a Cloudinary
+router.post('/', upload.single('contrato_pdf'), createProveedor);
+router.put('/:id', upload.single('contrato_pdf'), updateProveedor);
+
 router.put('/:id/estado', toggleEstadoProveedor);
 router.get('/:id/historial', getProveedorHistorial);
 

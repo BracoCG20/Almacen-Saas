@@ -65,11 +65,10 @@ const getPagosPorServicio = async (req, res) => {
 
 const registrarPago = async (req, res) => {
   try {
-    // Si subió archivo mediante el middleware genérico, generamos la ruta correcta
-    const urlFactura = req.file
-      ? `/uploads/Facturas/${req.file.filename}`
-      : null;
-
+    let urlFactura = null;
+    if (req.file) {
+      urlFactura = await uploadToCloudinary(req.file.buffer, 'Facturas');
+    }
     await serviciosService.registrarPago(
       req.params.id,
       req.body,
@@ -78,8 +77,7 @@ const registrarPago = async (req, res) => {
     );
     res.status(201).json({ message: 'Pago registrado exitosamente.' });
   } catch (error) {
-    console.error('Error al registrar pago:', error);
-    res.status(500).json({ error: 'Error interno al registrar el pago.' });
+    res.status(500).json({ error: 'Error al registrar pago.' });
   }
 };
 

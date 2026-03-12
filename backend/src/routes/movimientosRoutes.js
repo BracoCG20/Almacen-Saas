@@ -1,9 +1,8 @@
 const { Router } = require('express');
 const router = Router();
-const multer = require('multer');
 
 const verifyToken = require('../middlewares/authMiddleware');
-const createUploadMiddleware = require('../middlewares/uploadMiddleware');
+const { upload } = require('../middlewares/uploadMiddleware'); // Importamos el de memoria
 
 const {
   registrarEntrega,
@@ -16,33 +15,28 @@ const {
   reenviarCorreoActa,
 } = require('../controllers/movimientosController');
 
-// Multer genérico que guarda físicamente en la carpeta "Firmados"
-const uploadFirmados = createUploadMiddleware('Firmados', 'firmado');
-
-// Multer en memoria (para generar el PDF al vuelo y mandarlo por email sin guardarlo en el disco)
-const uploadMem = multer({ storage: multer.memoryStorage() });
-
 router.use(verifyToken);
 
 router.get('/', obtenerHistorial);
 router.post('/entrega', registrarEntrega);
 router.post('/devolucion', registrarDevolucion);
 
+// Todas las rutas de PDF ahora usan 'upload.single' (Memoria)
 router.post(
   '/entrega-con-correo',
-  uploadMem.single('pdf'),
+  upload.single('pdf'),
   registrarEntregaConCorreo,
 );
 router.post(
   '/devolucion-con-correo',
-  uploadMem.single('pdf'),
+  upload.single('pdf'),
   registrarDevolucionConCorreo,
 );
-router.post('/reenviar-correo', uploadMem.single('pdf'), reenviarCorreoActa);
+router.post('/reenviar-correo', upload.single('pdf'), reenviarCorreoActa);
 
 router.post(
   '/:id/subir-firmado',
-  uploadFirmados.single('pdf'),
+  upload.single('pdf'), // Cambiado de uploadFirmados a upload (memoria)
   subirPdfFirmado,
 );
 router.put('/:id/invalidar', invalidarFirma);

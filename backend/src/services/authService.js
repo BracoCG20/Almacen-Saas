@@ -71,10 +71,10 @@ const getUserProfile = async (userId) => {
 const updateUserProfile = async (
   userId,
   { password, telefono, nombres, apellidos, cargo, email_login },
-  file,
+  cloudinaryUrl, // <-- Ahora recibe directamente la URL de Cloudinary
 ) => {
   const client = await pool.connect();
-  let newFotoUrl = null;
+  let finalFotoUrl = cloudinaryUrl;
 
   try {
     await client.query('BEGIN');
@@ -95,11 +95,11 @@ const updateUserProfile = async (
       userFields.push(`email_login = $${userIdx++}`);
       userValues.push(email_login);
     }
-    if (file) {
-      const fileUrl = `/uploads/FotoPerfil/${file.filename}`;
+
+    // Si hay una nueva foto desde Cloudinary, la actualizamos
+    if (cloudinaryUrl) {
       userFields.push(`foto_perfil_url = $${userIdx++}`);
-      userValues.push(fileUrl);
-      newFotoUrl = fileUrl;
+      userValues.push(cloudinaryUrl);
     }
 
     let colaborador_id = null;
@@ -146,14 +146,13 @@ const updateUserProfile = async (
       colabFields.push(`fecha_modificacion = NOW()`);
       colabFields.push(`usuario_modificacion_id = $${colabIdx++}`);
       colabValues.push(userId);
-
       const colabQuery = `UPDATE colaboradores SET ${colabFields.join(', ')} WHERE id = $${colabIdx}`;
       colabValues.push(colaborador_id);
       await client.query(colabQuery, colabValues);
     }
 
     await client.query('COMMIT');
-    return newFotoUrl;
+    return finalFotoUrl;
   } catch (error) {
     await client.query('ROLLBACK');
     throw error;
