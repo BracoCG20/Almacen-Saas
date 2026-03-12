@@ -4,7 +4,6 @@ const getAllLicencias = async () => {
   const query = `SELECT * FROM config_licencias`;
   const response = await pool.query(query);
 
-  // Lo mapeamos exactamente a los nombres de tu DB
   const result = {
     starter: 0,
     standard: 0,
@@ -23,7 +22,6 @@ const getAllLicencias = async () => {
 };
 
 const updateLicencias = async (starter, standard) => {
-  // Usamos el nombre exacto de la base de datos
   const query = `
         INSERT INTO config_licencias (tipo_licencia, cantidad_total)
         VALUES ('BUSINESS_STARTER', $1), ('BUSINESS_STANDARD', $2)

@@ -15,7 +15,6 @@ const EquipoHistorial = ({ equipo, historyData }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 3;
 
-  // Reiniciar la página a 1 si cambia el equipo seleccionado
   useEffect(() => {
     setCurrentPage(1);
   }, [equipo]);

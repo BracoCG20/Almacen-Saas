@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../service/api';
 import { toast } from 'react-toastify';
 import { X, Building2, Save } from 'lucide-react';
-import './AddEmpresaModal.scss'; // <-- IMPORTAMOS SU PROPIO SCSS
+import './AddEmpresaModal.scss';
 
 const AddEmpresaModal = ({ onClose, onSuccess, empresaToEdit }) => {
   const [empresa, setEmpresa] = useState({

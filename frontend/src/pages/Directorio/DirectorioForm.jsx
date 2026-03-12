@@ -7,7 +7,7 @@ const DirectorioForm = ({
   setFormData,
   colaboradores,
   directorio,
-  modalMode, // Recibimos el modo: ADD, EDIT, BAJA
+  modalMode,
   onSubmit,
   onCancel,
 }) => {

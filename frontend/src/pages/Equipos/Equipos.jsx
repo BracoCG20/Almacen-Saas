@@ -26,7 +26,7 @@ import {
   Cable,
   Package,
   HelpCircle,
-  Barcode, // <-- No olvides asegurarte de que Barcode esté importado si lo usas
+  Barcode,
 } from 'lucide-react';
 
 import { driver } from 'driver.js';
@@ -357,9 +357,9 @@ const Equipos = () => {
       ...provided,
       backgroundColor: 'white',
       border: state.isFocused ? '1px solid #7c3aed' : '1px solid #e2e8f0',
-      borderRadius: '8px', // Más redondeado suave
+      borderRadius: '8px',
       padding: '0px 4px',
-      height: '40px', // Altura reducida
+      height: '40px',
       minHeight: '40px',
       boxShadow: state.isFocused ? '0 0 0 2px rgba(124, 58, 237, 0.1)' : 'none',
       cursor: 'pointer',
@@ -370,7 +370,7 @@ const Equipos = () => {
       ...provided,
       color: '#1e293b',
       fontWeight: '500',
-      fontSize: '0.85rem', // Letra más pequeña
+      fontSize: '0.85rem',
     }),
     placeholder: (provided) => ({
       ...provided,
@@ -386,7 +386,7 @@ const Equipos = () => {
           : 'white',
       color: state.isSelected ? 'white' : '#334155',
       cursor: 'pointer',
-      fontSize: '0.85rem', // Letra más pequeña en las opciones
+      fontSize: '0.85rem',
       padding: '8px 12px',
     }),
     menuPortal: (base) => ({ ...base, zIndex: 9999 }),

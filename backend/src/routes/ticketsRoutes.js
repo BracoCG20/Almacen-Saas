@@ -11,7 +11,6 @@ const {
 
 const router = Router();
 
-// Todas las rutas de tickets están protegidas para usuarios logueados
 router.use(verifyToken);
 
 router.get('/', obtenerTickets);

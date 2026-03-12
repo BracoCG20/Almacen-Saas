@@ -84,7 +84,7 @@ const EmpresaListModal = ({ onClose, onEditEmpresa }) => {
   );
   const totalPages = Math.ceil(filteredEmpresas.length / itemsPerPage);
 
-  // --- FUNCIÓN EXPORTAR EXCEL ---
+  // --- FUNCIÓN EXCEL ---
   const exportarExcel = () => {
     if (filteredEmpresas.length === 0)
       return toast.info('No hay datos para exportar');

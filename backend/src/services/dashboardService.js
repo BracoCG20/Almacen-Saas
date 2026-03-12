@@ -24,13 +24,13 @@ const getDashboardData = async () => {
     FROM servicios WHERE estado = true;
   `;
 
-  // Consulta 4: Tickets de Soporte (NUEVO)
+  // Consulta 4: Tickets de Soporte
   const ticketsQuery = `
     SELECT id, estado, tipo_solicitud, prioridad, fecha_creacion, fecha_inicio_atencion, fecha_cierre 
     FROM tickets;
   `;
 
-  // Ejecutamos las 4 consultas de forma simultánea
+  // Ejecutar las 4 consultas en paralelo
   const [equiposRes, movRes, serviciosRes, ticketsRes] = await Promise.all([
     pool.query(equiposQuery),
     pool.query(movQuery),

@@ -3,7 +3,6 @@ import Select from 'react-select';
 import { Clock, Info, User } from 'lucide-react';
 import './TicketForm.scss';
 
-// CATÁLOGO DE SERVICIOS CON PRIORIDAD Y SLA AUTOMÁTICO
 const catalogoSolicitudes = [
   {
     value: 'Fallo de Hardware / Equipo no enciende',
@@ -58,7 +57,6 @@ const TicketForm = ({
 }) => {
   const handleSelectChange = (selectedOption) => {
     if (selectedOption) {
-      // Autocompletamos el tipo Y la prioridad oculta basada en el catálogo
       setFormData({
         ...formData,
         tipo_solicitud: selectedOption.value,
@@ -69,7 +67,6 @@ const TicketForm = ({
     }
   };
 
-  // Buscar la info del SLA seleccionado para mostrarla en pantalla
   const selectedService = catalogoSolicitudes.find(
     (s) => s.value === formData.tipo_solicitud,
   );

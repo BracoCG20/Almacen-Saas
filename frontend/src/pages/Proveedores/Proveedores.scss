@@ -1,7 +1,6 @@
 @use '../../styles/variables' as v;
 
 .proveedores-container {
-  // --- HEADER ---
   .page-header {
     display: flex;
     justify-content: space-between;
@@ -40,10 +39,10 @@
         justify-content: center;
         gap: 6px;
         padding: 0 14px;
-        height: 38px; // Reducido a 38px
+        height: 38px;
         border-radius: 8px;
         font-weight: 500;
-        font-size: 0.85rem; // Reducido
+        font-size: 0.85rem;
         border: none;
         cursor: pointer;
         color: white;
@@ -90,7 +89,7 @@
     margin-bottom: 24px;
     background: white;
     padding: 0 14px;
-    height: 40px; // Reducido
+    height: 40px;
     border-radius: 8px;
     border: 1px solid #e2e8f0;
     display: flex;
@@ -106,7 +105,7 @@
       border: none;
       outline: none;
       width: 100%;
-      font-size: 0.85rem; // Reducido
+      font-size: 0.85rem;
       color: v.$text-main;
       &::placeholder {
         color: #94a3b8;
@@ -114,7 +113,6 @@
     }
   }
 
-  // --- TABLA MINIMALISTA VIOLET SHADCN ---
   .table-container {
     background: #ffffff;
     border-radius: 8px;
@@ -140,9 +138,8 @@
       width: 100%;
       border-collapse: collapse;
       min-width: 1000px;
-      font-size: 0.85rem; // Tamaño reducido de tipografía general
+      font-size: 0.85rem;
 
-      /* Cabecera Violeta Suave */
       thead tr {
         background-color: v.$violet-50;
         border-bottom: 1px solid v.$violet-100;
@@ -176,7 +173,7 @@
         }
 
         td {
-          padding: 10px 16px; // Ligeramente menos padding vertical
+          padding: 10px 16px;
           vertical-align: middle;
           color: v.$text-main;
           &.center {
@@ -330,7 +327,7 @@
       gap: 4px;
 
       .action-btn {
-        width: 28px; // Reducido un poco
+        width: 28px;
         height: 28px;
         border-radius: 6px;
         border: none;
@@ -435,7 +432,6 @@
     font-size: 0.85rem;
   }
 
-  // --- MODAL DE CONFIRMACIÓN SHADCN ---
   .confirm-modal-content {
     padding: 0.5rem;
     text-align: center;
@@ -447,7 +443,7 @@
       color: #f59e0b;
       margin-bottom: 1rem;
       background-color: #fffbeb;
-      width: 56px; // Reducido
+      width: 56px;
       height: 56px;
       border-radius: 50%;
       display: flex;

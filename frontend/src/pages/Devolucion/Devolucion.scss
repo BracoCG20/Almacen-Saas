@@ -1,7 +1,6 @@
 @use '../../styles/variables' as v;
 
 .devolucion-container {
-  /* SOLUCIÓN: Limita el contenedor al 100% de la pantalla */
   width: 100%;
   box-sizing: border-box;
   overflow-x: hidden;
@@ -80,8 +79,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%; /* NUEVO */
-  box-sizing: border-box; /* NUEVO */
+  width: 100%;
+  box-sizing: border-box;
 
   .warning-icon {
     margin-bottom: 1rem;
@@ -118,7 +117,7 @@
     gap: 12px;
     justify-content: center;
     width: 100%;
-    box-sizing: border-box; /* NUEVO */
+    box-sizing: border-box;
 
     button {
       height: 38px;

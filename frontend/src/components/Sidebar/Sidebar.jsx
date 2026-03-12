@@ -43,9 +43,8 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const currentYear = new Date().getFullYear();
 
-  // Función para obtener tickets pendientes (Solo para SuperAdmin)
   const fetchUnreadCount = async () => {
-    if (Number(user?.rol_id) !== 1) return; // Seguridad extra
+    if (Number(user?.rol_id) !== 1) return;
     try {
       const res = await api.get('/tickets');
       const count = res.data.filter((t) => t.estado === 'Pendiente').length;
@@ -56,7 +55,6 @@ const Sidebar = () => {
   };
 
   useEffect(() => {
-    // SOLO SI ES SUPERADMIN (ROL 1) ACTIVAMOS SOCKETS Y FETCH
     if (Number(user?.rol_id) === 1) {
       fetchUnreadCount();
       const socket = io(SOCKET_URL);
@@ -64,7 +62,7 @@ const Sidebar = () => {
       socket.on('actualizacion_ticket', () => fetchUnreadCount());
       return () => socket.disconnect();
     }
-  }, [user]); // Se ejecuta cuando el usuario carga
+  }, [user]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -170,7 +168,7 @@ const Sidebar = () => {
       name: 'Tickets',
       icon: <Tickets size={20} />,
       isTicketRoute: true,
-    }, // Marcador para el badge
+    },
     {
       id: 'tour-nav-asignacion',
       path: '/asignacion',

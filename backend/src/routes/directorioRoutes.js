@@ -11,7 +11,7 @@ const {
 
 const router = Router();
 
-// Todas las rutas de directorio están protegidas
+// Requieren autenticación
 router.use(verifyToken);
 
 // IMPORTANTE: /estadisticas debe ir antes de las rutas con /:id

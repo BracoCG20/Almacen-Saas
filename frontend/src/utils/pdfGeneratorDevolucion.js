@@ -8,7 +8,7 @@ export const generarPDFDevolucion = (
   cargadorDevuelto,
   observaciones,
   estadoFinal,
-  motivo, // <-- NUEVO PARÁMETRO AÑADIDO
+  motivo,
 ) => {
   const doc = new jsPDF();
   const margen = 25;
@@ -73,7 +73,7 @@ export const generarPDFDevolucion = (
   }
   y += 5;
 
-  // --- NUEVO: MOTIVO DE LA DEVOLUCIÓN ---
+  // --- MOTIVO DE LA DEVOLUCIÓN ---
   doc.setFont('helvetica', 'bold');
   doc.text('Motivo de la devolución:', margen, y);
   y += 6;
@@ -133,7 +133,6 @@ export const generarPDFDevolucion = (
   doc.text('ENTREGA:', margen + anchoCaja / 2, y + 8, { align: 'center' });
   doc.text('RECIBE:', xCaja2 + anchoCaja / 2, y + 8, { align: 'center' });
 
-  // EMPLEADOR (Derecha)
   const yFirmaPierina = y + 15;
   doc.setFontSize(8);
   doc.text('Pierina Alarcón', xCaja2 + anchoCaja / 2, yFirmaPierina, {

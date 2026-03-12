@@ -3,7 +3,7 @@ const { PDFDocument, rgb, StandardFonts } = require('pdf-lib');
 const fs = require('fs');
 const path = require('path');
 
-// 1. Obtener información del documento a firmar (Público)
+// 1. Obtener información del documento a firmar
 const getInfoFirma = async (req, res) => {
   const { token } = req.params;
   try {
@@ -68,10 +68,8 @@ const procesarFirma = async (req, res) => {
     const existingPdfBytes = fs.readFileSync(originalPdfPath);
     const pdfDoc = await PDFDocument.load(existingPdfBytes);
 
-    // Incrustar fuente
     const helveticaFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-    // Obtener la última página
     const pages = pdfDoc.getPages();
     const lastPage = pages[pages.length - 1];
 
@@ -84,12 +82,11 @@ const procesarFirma = async (req, res) => {
       y: 80,
       size: 10,
       font: helveticaFont,
-      color: rgb(0.1, 0.2, 0.5), // Azul oscuro
+      color: rgb(0.1, 0.2, 0.5),
     });
 
     const pdfBytes = await pdfDoc.save();
 
-    // Guardar el nuevo PDF firmado
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
     const firmadoFileName = `firmado-${uniqueSuffix}.pdf`;
     const firmadoRelativePath = `/uploads/Firmados/${firmadoFileName}`;

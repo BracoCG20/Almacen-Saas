@@ -1,4 +1,3 @@
-// 1. Cargar variables de entorno (Siempre línea 1)
 require('dotenv').config();
 
 const express = require('express');
@@ -20,28 +19,22 @@ const server = http.createServer(app);
 // Inicializar Socket.io sobre el servidor HTTP
 const io = new Server(server, {
   cors: {
-    origin: '*', // En producción, pon aquí la URL de tu frontend (ej. 'http://localhost:5173')
+    origin: '*', // En producción, colocar la URL del frontend (ej. 'http://localhost:5173')
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
   },
 });
 
-// Hacemos que la instancia 'io' sea accesible desde cualquier controlador usando req.app.get('io')
 app.set('io', io);
 
-// ==========================================
 // MIDDLEWARES
-// ==========================================
 app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Hacer pública la carpeta de uploads (Apunta estricta y únicamente a backend/uploads)
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-// ==========================================
 // EVENTOS DE SOCKET.IO
-// ==========================================
 io.on('connection', (socket) => {
   console.log('🟢 Cliente conectado a WebSocket:', socket.id);
 

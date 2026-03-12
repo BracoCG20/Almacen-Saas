@@ -10,7 +10,7 @@ const {
 
 const router = Router();
 
-// Todas las rutas de empresas requieren autenticación
+// Requieren autenticación
 router.use(verifyToken);
 
 router.get('/', getEmpresas);

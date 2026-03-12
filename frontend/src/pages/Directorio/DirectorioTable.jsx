@@ -5,7 +5,7 @@ import {
   UserMinus,
   UserCheck,
   History,
-} from 'lucide-react'; // <-- Importar History
+} from 'lucide-react';
 import './DirectorioTable.scss';
 
 const DirectorioTable = ({
@@ -15,7 +15,6 @@ const DirectorioTable = ({
   onReactivar,
   onViewHistory,
 }) => {
-  // <-- Nuevo prop onViewHistory
   if (directorio.length === 0) {
     return (
       <div className='no-data'>

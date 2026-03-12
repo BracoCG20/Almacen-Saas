@@ -141,7 +141,7 @@ const invalidarFirma = async (req, res) => {
     const { id } = req.params;
     const usuarioId = req.user.id;
 
-    // 1. Ejecutar el servicio (Ya no le pasamos el objeto 'req' entero)
+    // 1. Ejecutar el servicio
     await movimientosService.actualizarFirmaDocumento(
       id,
       null,

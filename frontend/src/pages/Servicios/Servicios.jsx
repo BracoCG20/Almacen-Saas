@@ -96,7 +96,7 @@ const Servicios = () => {
           },
         },
         {
-          element: '.actions-cell', // Seleccionará la primera celda de acciones disponible
+          element: '.actions-cell',
           popover: {
             title: 'Acciones Múltiples',
             description:

@@ -45,10 +45,9 @@
   table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 1000px; // Un poco más ancha porque tiene más columnas
+    min-width: 1000px;
     font-size: 0.85rem;
 
-    /* Cabecera Violeta Shadcn */
     thead tr {
       background-color: v.$violet-50;
       border-bottom: 1px solid v.$violet-100;

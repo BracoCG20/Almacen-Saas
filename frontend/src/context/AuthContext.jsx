@@ -5,7 +5,7 @@ import { io } from 'socket.io-client';
 export const AuthContext = createContext();
 
 // Inicializamos el socket apuntando al backend
-// (En producción, cambia esta URL por la de tu servidor)
+// (En producción, cambiar esta URL por la del servidor)
 const socket = io(
   api.defaults.baseURL
     ? api.defaults.baseURL.replace(/\/api\/?$/, '')
@@ -41,7 +41,6 @@ export const AuthProvider = ({ children }) => {
           const parsedUser = JSON.parse(userData);
           setUser(parsedUser);
 
-          // Conectar Socket.io y unirse a la sala personal
           socket.connect();
           socket.emit('join_user_room', parsedUser.id);
         } else {
@@ -59,16 +58,14 @@ export const AuthProvider = ({ children }) => {
     checkUser();
   }, []);
 
-  // Efecto para escuchar eventos de expulsión del servidor
   useEffect(() => {
     const handleForceLogout = (data) => {
       console.log('Evento de expulsión recibido:', data);
-      setIsForceLogout(true); // Mostramos el modal de expulsión
+      setIsForceLogout(true);
     };
 
     socket.on('force_logout', handleForceLogout);
 
-    // Limpiamos el evento al desmontar
     return () => {
       socket.off('force_logout', handleForceLogout);
     };
@@ -86,7 +83,6 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('user_data', JSON.stringify(user));
         setUser(user);
 
-        // Conectar Socket.io y unirse a la sala
         socket.connect();
         socket.emit('join_user_room', user.id);
 
@@ -108,10 +104,10 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token');
     localStorage.removeItem('user_data');
     setUser(null);
-    socket.disconnect(); // Desconectamos del WebSocket
+    socket.disconnect();
   };
 
-  // 4. Función de Logout Forzado (Se llama cuando el usuario da click en "Aceptar" en el modal)
+  // 4. Función de Logout Forzado (Llama al usuario al dar click en "Aceptar" en el modal)
   const executeForceLogout = () => {
     setIsForceLogout(false);
     logout();

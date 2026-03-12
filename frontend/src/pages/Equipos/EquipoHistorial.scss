@@ -3,7 +3,7 @@
 .history-container {
   display: flex;
   flex-direction: column;
-  padding: 0.5rem; // Padding general para no pegar a los bordes
+  padding: 0.5rem;
 
   .history-header {
     display: flex;
@@ -83,17 +83,17 @@
     &::before {
       content: '';
       position: absolute;
-      left: 16px; // Eje central exacto
+      left: 16px;
       top: 10px;
       bottom: 10px;
       width: 2px;
       background-color: #e2e8f0;
-      transform: translateX(-50%); // Centra la línea matemáticamente
+      transform: translateX(-50%);
     }
 
     li {
       position: relative;
-      padding-left: 40px; // Espacio para línea y punto
+      padding-left: 40px;
       margin-bottom: 1.2rem;
 
       &:last-child {
@@ -104,7 +104,7 @@
       &::before {
         content: '';
         position: absolute;
-        left: 16px; // Mismo eje
+        left: 16px;
         top: 14px;
         width: 12px;
         height: 12px;
@@ -113,7 +113,7 @@
         border: 2px solid v.$primary;
         transform: translateX(-50%);
         z-index: 2;
-        box-shadow: 0 0 0 4px v.$white; // Corte limpio en la línea
+        box-shadow: 0 0 0 4px v.$white;
       }
 
       // --- TARJETA DE CONTENIDO ---

@@ -38,13 +38,12 @@ const getTicketHistorial = async (ticketId) => {
 };
 
 // Crear un nuevo ticket
-// Crear un nuevo ticket
 const createTicket = async (data, userId) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
 
-    // --- 1. BUSCAMOS AUTOMÁTICAMENTE QUIÉN ES EL SOLICITANTE ---
+    // --- 1. BUSCA AUTOMÁTICAMENTE QUIÉN ES EL SOLICITANTE ---
     // Usamos el userId (del token de sesión) para saber qué colaborador es.
     const userQuery = await client.query(
       'SELECT colaborador_id FROM usuarios WHERE id = $1',
@@ -55,7 +54,7 @@ const createTicket = async (data, userId) => {
     // Si el usuario administrador no se ha enlazado a sí mismo en la tabla de colaboradores, le avisamos:
     if (!colabId) {
       throw new Error(
-        'Tu cuenta de usuario no está enlazada a un empleado. Pide al administrador que edite tu usuario y te asigne un perfil de colaborador.',
+        'Tu cuenta de usuario no esta registrada. Comunicate con un Administrador.',
       );
     }
 
@@ -87,7 +86,7 @@ const createTicket = async (data, userId) => {
     return nuevoId;
   } catch (e) {
     await client.query('ROLLBACK');
-    throw e; // Pasa el error al controlador
+    throw e;
   } finally {
     client.release();
   }
@@ -98,7 +97,7 @@ const updateTicket = async (id, data, userId) => {
   try {
     await client.query('BEGIN');
 
-    // Obtener datos antiguos (Ahora traemos fecha_inicio_atencion)
+    // Obtener datos fecha_inicio_atencion
     const resOld = await client.query(
       'SELECT estado, usuario_asignado_id, fecha_inicio_atencion FROM tickets WHERE id = $1',
       [id],
@@ -189,7 +188,6 @@ const assignTicket = async (ticketId, userId) => {
   try {
     await client.query('BEGIN');
 
-    // --- SE AGREGÓ: fecha_inicio_atencion = CURRENT_TIMESTAMP ---
     const queryUpdate = `
             UPDATE tickets 
             SET usuario_asignado_id = $1, estado = 'En Proceso', 
@@ -215,7 +213,6 @@ const assignTicket = async (ticketId, userId) => {
   }
 };
 
-// No olvides exportarla al final:
 module.exports = {
   getTickets,
   getTicketHistorial,

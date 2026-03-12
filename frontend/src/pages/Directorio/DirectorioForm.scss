@@ -1,175 +1,175 @@
-@use "../../styles/variables" as v;
-@use "sass:color";
+@use '../../styles/variables' as v;
+@use 'sass:color';
 
 .directorio-form {
-	display: flex;
-	flex-direction: column;
-	gap: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 
-	.form-group {
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 
-		label {
-			font-weight: 600;
-			color: v.$text-main;
-			font-size: 0.9rem;
-		}
+    label {
+      font-weight: 600;
+      color: v.$text-main;
+      font-size: 0.9rem;
+    }
 
-		select {
-			padding: 12px;
-			border: 1px solid #cbd5e1;
-			border-radius: 8px;
-			font-size: 0.95rem;
-			outline: none;
-			background-color: #f8fafc;
-			transition: all 0.2s;
+    select {
+      padding: 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      outline: none;
+      background-color: #f8fafc;
+      transition: all 0.2s;
 
-			&:focus {
-				border-color: v.$primary;
-				background-color: #fff;
-			}
-			&:disabled {
-				opacity: 0.6;
-				cursor: not-allowed;
-			}
-		}
-	}
+      &:focus {
+        border-color: v.$primary;
+        background-color: #fff;
+      }
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+  }
 
-	.mt-10 {
-		margin-top: 10px;
-	}
+  .mt-10 {
+    margin-top: 10px;
+  }
 
-	// Toggle Switch moderno
-	.custom-toggle {
-		background: #f1f5f9;
-		padding: 15px;
-		border-radius: 10px;
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
+  // Toggle Switch moderno
+  .custom-toggle {
+    background: #f1f5f9;
+    padding: 15px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
-		.toggle-label {
-			font-weight: 600;
-			color: v.$text-main;
-		}
+    .toggle-label {
+      font-weight: 600;
+      color: v.$text-main;
+    }
 
-		.toggle-switch {
-			display: flex;
-			align-items: center;
-			gap: 12px;
+    .toggle-switch {
+      display: flex;
+      align-items: center;
+      gap: 12px;
 
-			input[type="checkbox"] {
-				display: none;
-			}
+      input[type='checkbox'] {
+        display: none;
+      }
 
-			.switch-slider {
-				position: relative;
-				width: 44px;
-				height: 24px;
-				background-color: #ef4444; // Rojo por defecto (Inactivo)
-				border-radius: 24px;
-				cursor: pointer;
-				transition: 0.3s;
+      .switch-slider {
+        position: relative;
+        width: 44px;
+        height: 24px;
+        background-color: #ef4444;
+        border-radius: 24px;
+        cursor: pointer;
+        transition: 0.3s;
 
-				&::after {
-					content: "";
-					position: absolute;
-					width: 18px;
-					height: 18px;
-					border-radius: 50%;
-					background-color: white;
-					top: 3px;
-					left: 3px;
-					transition: 0.3s;
-				}
-			}
+        &::after {
+          content: '';
+          position: absolute;
+          width: 18px;
+          height: 18px;
+          border-radius: 50%;
+          background-color: white;
+          top: 3px;
+          left: 3px;
+          transition: 0.3s;
+        }
+      }
 
-			input:checked + .switch-slider {
-				background-color: #10b981; // Verde (Activo)
-				&::after {
-					transform: translateX(20px);
-				}
-			}
+      input:checked + .switch-slider {
+        background-color: #10b981;
+        &::after {
+          transform: translateX(20px);
+        }
+      }
 
-			.status-text {
-				font-weight: 700;
-				font-size: 0.85rem;
-				width: 80px;
-			}
-		}
-	}
+      .status-text {
+        font-weight: 700;
+        font-size: 0.85rem;
+        width: 80px;
+      }
+    }
+  }
 
-	// Caja de transferencia
-	.transfer-box {
-		background: #fffbeb;
-		border: 1px dashed #fcd34d;
-		padding: 15px;
-		border-radius: 10px;
-		animation: fadeInDown 0.3s ease;
+  // Caja de transferencia
+  .transfer-box {
+    background: #fffbeb;
+    border: 1px dashed #fcd34d;
+    padding: 15px;
+    border-radius: 10px;
+    animation: fadeInDown 0.3s ease;
 
-		.checkbox-wrapper {
-			display: flex;
-			align-items: center;
-			gap: 10px;
+    .checkbox-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 10px;
 
-			input[type="checkbox"] {
-				width: 18px;
-				height: 18px;
-				cursor: pointer;
-				accent-color: #d97706;
-			}
-			label {
-				font-weight: 600;
-				color: #b45309;
-				cursor: pointer;
-			}
-		}
-	}
+      input[type='checkbox'] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        accent-color: #d97706;
+      }
+      label {
+        font-weight: 600;
+        color: #b45309;
+        cursor: pointer;
+      }
+    }
+  }
 
-	.modal-actions {
-		display: flex;
-		justify-content: flex-end;
-		gap: 12px;
-		margin-top: 10px;
-		padding-top: 20px;
-		border-top: 1px solid #e2e8f0;
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 10px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
 
-		button {
-			padding: 12px 24px;
-			border-radius: 8px;
-			font-weight: 600;
-			cursor: pointer;
-			border: none;
-			transition: background-color 0.2s;
+    button {
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: background-color 0.2s;
 
-			&.btn-cancel {
-				background-color: #f1f5f9;
-				color: #64748b;
-				&:hover {
-					background-color: #e2e8f0;
-				}
-			}
+      &.btn-cancel {
+        background-color: #f1f5f9;
+        color: #64748b;
+        &:hover {
+          background-color: #e2e8f0;
+        }
+      }
 
-			&.btn-save {
-				background-color: v.$primary;
-				color: white;
-				&:hover {
-					background-color: color.adjust(v.$primary, $lightness: -10%);
-				}
-			}
-		}
-	}
+      &.btn-save {
+        background-color: v.$primary;
+        color: white;
+        &:hover {
+          background-color: color.adjust(v.$primary, $lightness: -10%);
+        }
+      }
+    }
+  }
 }
 
 @keyframes fadeInDown {
-	from {
-		opacity: 0;
-		transform: translateY(-10px);
-	}
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

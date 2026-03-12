@@ -36,9 +36,7 @@ const getDirectorio = async () => {
   return response.rows;
 };
 
-// FUNCIÓN CORREGIDA: Obtener historial completo de auditoría
 const getHistorialDirectorio = async () => {
-  // CORRECCIÓN: Se agrego el JOIN extra hacia 'colaboradores uc' para sacar el nombre real de quien hizo el cambio
   const query = `
         SELECT 
             hd.*,

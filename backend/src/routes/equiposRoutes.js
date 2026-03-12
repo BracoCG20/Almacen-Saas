@@ -12,7 +12,7 @@ const {
 
 const router = Router();
 
-// Todas las rutas de equipos requieren autenticación
+// Requieren autenticación
 router.use(verifyToken);
 
 router.get('/marcas', getMarcas);

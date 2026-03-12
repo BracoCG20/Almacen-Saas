@@ -86,7 +86,6 @@ const RegisterAdminModal = ({ onClose }) => {
     }
   };
 
-  // --- FIX CENTRADO REACT SELECT 40PX ---
   const customSelectStyles = {
     control: (provided, state) => ({
       ...provided,

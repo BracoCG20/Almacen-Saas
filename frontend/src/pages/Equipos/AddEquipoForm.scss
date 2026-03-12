@@ -35,7 +35,6 @@
       }
     }
 
-    // Contenedor especial para proveedor si es alquilado
     &.rent-section {
       background-color: #fff7ed;
       padding: 1rem;
@@ -88,7 +87,7 @@
     }
 
     input {
-      height: 40px; // ALTURA ESTÁNDAR SHADCN
+      height: 40px;
       border: 1px solid #e2e8f0;
       border-radius: 8px;
       padding: 0 12px;
@@ -172,7 +171,7 @@
       }
 
       input {
-        height: 40px; // ALTURA ESTÁNDAR
+        height: 40px;
         border-radius: 8px;
         border: 1px solid #e2e8f0;
         padding: 0 12px;

@@ -17,7 +17,7 @@ const DirectorioHistorial = ({ historyData }) => {
     if (accion === 'CREACION') return 'success';
     if (accion === 'BAJA') return 'danger';
     if (accion === 'REACTIVACION') return 'primary';
-    return 'warning'; // EDICION
+    return 'warning';
   };
 
   return (

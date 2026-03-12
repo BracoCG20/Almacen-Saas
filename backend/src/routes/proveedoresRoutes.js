@@ -12,7 +12,6 @@ const {
 
 const router = Router();
 
-// Configuramos que este upload guardará los PDFs en "ContratosProveedores" con el prefijo "contrato_prov"
 const uploadContrato = createUploadMiddleware(
   'ContratosProveedores',
   'contrato_prov',

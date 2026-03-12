@@ -12,7 +12,7 @@ import {
   UserCheck,
   ChevronLeft,
   ChevronRight,
-  HelpCircle, // <-- Nuevo icono para el tour
+  HelpCircle,
 } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
 import TicketForm from './TicketForm';

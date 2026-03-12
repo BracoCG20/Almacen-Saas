@@ -47,10 +47,8 @@ export const generarPDFBlob = (
   doc.text(fechaTexto, margenIzq + 32, y);
   y += 12;
 
-  // --- CORRECCIÓN DE GÉNERO ---
-  // Normalizamos lo que viene de la BD (quitamos espacios y pasamos a minúscula)
   const rawGenero = (usuario.genero || '').toLowerCase().trim();
-  // Validamos si es F, Femenino o Mujer
+  // Se valida si es F, Femenino o Mujer
   const esMujer =
     rawGenero === 'f' || rawGenero === 'mujer' || rawGenero === 'femenino';
 

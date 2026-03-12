@@ -38,7 +38,7 @@ const enviarActaCorreo = async (
       </div>
     `;
   } else {
-    // --- VALIDACIÓN DE SEGURIDAD CRÍTICA AQUÍ ---
+    // --- VALIDACIÓN DE SEGURIDAD ---
     const estadoSeguro = estado_final_nombre || 'No especificado';
     const colorEstado =
       estadoSeguro.toLowerCase() === 'operativo' ? '#16a34a' : '#dc2626';

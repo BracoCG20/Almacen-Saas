@@ -9,7 +9,7 @@ import {
   CreditCard,
   TrendingUp,
   HelpCircle,
-  Ticket, // <-- CORREGIDO DE 'Tickets' a 'Ticket'
+  Ticket,
   Clock,
   LayoutList,
 } from 'lucide-react';
@@ -94,7 +94,7 @@ const Dashboard = () => {
       prevBtnText: '&larr; Anterior',
       doneBtnText: '¡Entendido!',
       allowClose: true,
-      overlayColor: 'rgba(15, 23, 42, 0.6)', // Slate-900 translúcido
+      overlayColor: 'rgba(15, 23, 42, 0.6)',
       steps: [
         {
           element: '#tour-welcome',
@@ -348,7 +348,7 @@ const Dashboard = () => {
             proceso = 0,
             resueltos = 0;
           const typeCount = {};
-          const slaStorage = {}; // Para guardar { "Hardware": { totalMins: 0, count: 0 } }
+          const slaStorage = {};
 
           tickets.forEach((t) => {
             if (t.estado === 'Pendiente') pendientes++;
@@ -394,7 +394,7 @@ const Dashboard = () => {
               .sort((a, b) => b.value - a.value),
           );
 
-          // NUEVO: Creamos el array para el gráfico de promedios por categoría
+          // NUEVO: Se crea el array para el gráfico de promedios por categoría
           const promediosPorTipo = Object.entries(slaStorage)
             .map(([name, data]) => ({
               name,
@@ -402,7 +402,7 @@ const Dashboard = () => {
             }))
             .sort((a, b) => b.promedio - a.promedio);
 
-          setAverageResolutionTime(promediosPorTipo); // Ahora guardamos un array, no un número
+          setAverageResolutionTime(promediosPorTipo);
         }
       } catch (error) {
         console.error(error);

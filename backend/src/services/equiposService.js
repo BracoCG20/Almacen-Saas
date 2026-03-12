@@ -39,7 +39,7 @@ const createEquipo = async (data, creadorId) => {
   try {
     await client.query('BEGIN');
 
-    // 1. Validar unicidad del número de serie
+    // 1. Validar el número de serie
     const check = await client.query(
       'SELECT id FROM equipos WHERE numero_serie = $1',
       [numero_serie],
@@ -48,7 +48,7 @@ const createEquipo = async (data, creadorId) => {
       throw new Error('El número de serie ingresado ya existe en el sistema.');
     }
 
-    // 2. Generar Código Patrimonial correlativo
+    // 2. Generar Código correlativo
     const prefijo = es_propio ? 'EQP-' : 'EQAL-';
     const lastCodeRes = await client.query(
       `SELECT codigo_patrimonial FROM equipos WHERE codigo_patrimonial LIKE $1 ORDER BY id DESC LIMIT 1`,

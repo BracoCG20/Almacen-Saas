@@ -1,7 +1,7 @@
 @use '../../styles/variables' as v;
 
 .ticket-details-container {
-  position: relative; // Necesario para la capa flotante en móvil
+  position: relative;
   display: flex;
   flex-direction: row;
   height: 65vh;
@@ -17,14 +17,14 @@
 
   /* --- BOTÓN EXCLUSIVO PARA MÓVILES --- */
   .mobile-details-header {
-    display: none; // Oculto en PC
+    display: none;
 
     @media (max-width: 768px) {
       display: flex;
       padding: 10px;
       background: white;
       border-bottom: 1px solid #e2e8f0;
-      z-index: 20; // Siempre arriba
+      z-index: 20;
 
       .btn-toggle-details {
         width: 100%;
@@ -68,20 +68,18 @@
     transition: all 0.3s ease-in-out;
 
     @media (max-width: 768px) {
-      /* EN MÓVIL SE VUELVE UNA CAPA FLOTANTE */
       position: absolute;
-      top: 60px; // Debajo del botón móvil
+      top: 60px;
       left: 0;
       right: 0;
       bottom: 0;
       width: 100%;
       z-index: 10;
-      background: rgba(255, 255, 255, 0.98); // Fondo sólido
+      background: rgba(255, 255, 255, 0.98);
       backdrop-filter: blur(5px);
       border-right: none;
       padding: 1.5rem 1rem;
 
-      /* Oculto por defecto en celular */
       transform: translateY(-100%);
       opacity: 0;
       pointer-events: none;
@@ -93,7 +91,6 @@
       }
     }
 
-    /* Ocultar barra de scroll en móviles para diseño limpio */
     &::-webkit-scrollbar {
       @media (max-width: 768px) {
         display: none;
@@ -226,7 +223,6 @@
         gap: 1rem;
       }
 
-      /* Ocultar scrollbars visibles en móviles para usar touch nativo */
       &::-webkit-scrollbar {
         @media (max-width: 768px) {
           display: none;
@@ -317,7 +313,6 @@
       }
     }
 
-    /* Caja de escritura SIEMPRE visible abajo */
     .chat-input-area {
       flex-shrink: 0;
       padding: 1rem;

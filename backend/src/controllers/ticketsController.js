@@ -5,7 +5,7 @@ const obtenerTickets = async (req, res) => {
     const tickets = await ticketsService.getTickets();
     res.json(tickets);
   } catch (error) {
-    console.error('🔥 Error en obtenerTickets:', error);
+    console.error('Error en obtenerTickets:', error);
     res.status(500).json({ error: 'Error al obtener la lista de tickets' });
   }
 };
@@ -16,7 +16,7 @@ const obtenerHistorialTicket = async (req, res) => {
     const historial = await ticketsService.getTicketHistorial(id);
     res.json(historial);
   } catch (error) {
-    console.error('🔥 Error en obtenerHistorialTicket:', error);
+    console.error('Error en obtenerHistorialTicket:', error);
     res.status(500).json({ error: 'Error al obtener el historial del ticket' });
   }
 };
@@ -25,15 +25,15 @@ const crearTicket = async (req, res) => {
   try {
     await ticketsService.createTicket(req.body, req.user.id);
 
-    // --- EMITIR AVISO POR SOCKET.IO DE NUEVO TICKET ---
+    // --- AVISO POR SOCKET.IO DE NUEVO TICKET ---
     const io = req.app.get('io');
     if (io) {
-      io.emit('nuevo_ticket'); // Grita por el megáfono que hay uno nuevo
+      io.emit('nuevo_ticket');
     }
 
     res.status(201).json({ message: 'Ticket generado exitosamente.' });
   } catch (error) {
-    console.error('🔥 Error en crearTicket:', error);
+    console.error('Error en crearTicket:', error);
     res
       .status(400)
       .json({ error: error.message || 'Error al generar el ticket.' });
@@ -53,7 +53,7 @@ const actualizarTicket = async (req, res) => {
 
     res.json({ message: 'Ticket actualizado correctamente.' });
   } catch (error) {
-    console.error('🔥 Error en actualizarTicket:', error);
+    console.error('Error en actualizarTicket:', error);
     res.status(400).json({ error: 'Error al actualizar el ticket.' });
   }
 };
@@ -79,7 +79,7 @@ const agregarComentarioTicket = async (req, res) => {
 
     res.json({ message: 'Comentario agregado correctamente.' });
   } catch (error) {
-    console.error('🔥 Error en agregarComentarioTicket:', error);
+    console.error('Error en agregarComentarioTicket:', error);
     res.status(400).json({ error: 'Error al agregar el comentario.' });
   }
 };
@@ -98,17 +98,16 @@ const asignarTicket = async (req, res) => {
 
     res.json({ message: 'Ticket asignado correctamente.' });
   } catch (error) {
-    console.error('🔥 Error al asignar ticket:', error);
+    console.error('Error al asignar ticket:', error);
     res.status(400).json({ error: 'Error al tomar el ticket.' });
   }
 };
 
-// Y expórtalo al final:
 module.exports = {
   obtenerTickets,
   obtenerHistorialTicket,
   crearTicket,
   actualizarTicket,
   agregarComentarioTicket,
-  asignarTicket, // <-- NUEVO
+  asignarTicket,
 };

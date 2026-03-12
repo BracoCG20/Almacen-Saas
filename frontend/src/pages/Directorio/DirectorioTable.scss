@@ -13,18 +13,18 @@
     width: 100%;
     border-collapse: collapse;
     text-align: left;
-    font-size: 0.85rem; // Letra un poco más sutil
+    font-size: 0.85rem;
 
     /* CABECERA CON ESTILO VIOLETA SUAVE */
     thead tr {
-      background-color: v.$violet-50; // Usando la variable centralizada
+      background-color: v.$violet-50;
       border-bottom: 1px solid v.$violet-100;
 
       th {
         padding: 12px 16px;
         text-align: left;
         font-weight: 600;
-        color: v.$violet-800; // Letra oscura
+        color: v.$violet-800;
         white-space: nowrap;
 
         &.center {
@@ -84,7 +84,7 @@
     justify-content: center;
     padding: 2px 10px;
     border-radius: 9999px;
-    font-size: 0.7rem; // Más comprimido
+    font-size: 0.7rem;
     font-weight: 600;
     border: 1px solid transparent;
 
@@ -174,7 +174,7 @@
       }
 
       &.baja:hover {
-        background-color: #ffedd5; /* Naranja muy suave */
+        background-color: #ffedd5;
         color: #d97706;
       }
     }

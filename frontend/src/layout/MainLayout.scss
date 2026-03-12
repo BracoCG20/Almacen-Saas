@@ -22,9 +22,7 @@
     padding: 2rem 1.5rem;
   }
 
-  // RESPONSIVE: En celulares (La pantalla ahora toma el 100% del ancho)
   @media (max-width: 768px) {
-    // Aumentamos el padding 'Top' a 4.5rem para dejarle espacio libre al botón hamburguesa
     padding: 4.5rem 1rem 1.5rem 1rem;
   }
 }

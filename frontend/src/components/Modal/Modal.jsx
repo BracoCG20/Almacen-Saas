@@ -1,39 +1,42 @@
-import { useEffect } from "react";
-import { X } from "lucide-react";
-import "./Modal.scss";
+import { useEffect } from 'react';
+import { X } from 'lucide-react';
+import './Modal.scss';
 
-const Modal = ({ isOpen, onClose, title, children, maxWidth = "600px" }) => {
-	useEffect(() => {
-		const handleEsc = (e) => {
-			if (e.key === "Escape") onClose();
-		};
-		window.addEventListener("keydown", handleEsc);
-		return () => window.removeEventListener("keydown", handleEsc);
-	}, [onClose]);
+const Modal = ({ isOpen, onClose, title, children, maxWidth = '600px' }) => {
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [onClose]);
 
-	if (!isOpen) return null;
+  if (!isOpen) return null;
 
-	return (
-		<div className='modal-overlay' onClick={onClose}>
-			<div
-				className='modal-container'
-				onClick={(e) => e.stopPropagation()}
-				style={{ maxWidth: maxWidth }} // Aplicamos el ancho dinámico aquí
-			>
-				<div className='modal-header'>
-					<h2>{title}</h2>
-					<button
-						className='btn-close'
-						onClick={onClose}
-						aria-label='Cerrar modal'
-					>
-						<X size={20} />
-					</button>
-				</div>
-				<div className='modal-body'>{children}</div>
-			</div>
-		</div>
-	);
+  return (
+    <div
+      className='modal-overlay'
+      onClick={onClose}
+    >
+      <div
+        className='modal-container'
+        onClick={(e) => e.stopPropagation()}
+        style={{ maxWidth: maxWidth }}
+      >
+        <div className='modal-header'>
+          <h2>{title}</h2>
+          <button
+            className='btn-close'
+            onClick={onClose}
+            aria-label='Cerrar modal'
+          >
+            <X size={20} />
+          </button>
+        </div>
+        <div className='modal-body'>{children}</div>
+      </div>
+    </div>
+  );
 };
 
 export default Modal;

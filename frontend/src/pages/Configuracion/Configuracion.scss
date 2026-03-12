@@ -46,11 +46,11 @@
   // --- GRILLA ESTRICTA A 2 COLUMNAS ---
   .config-cards-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); // <--- FORZAMOS 2 COLUMNAS
+    grid-template-columns: repeat(2, 1fr);
     gap: 20px;
 
     @media (max-width: 850px) {
-      grid-template-columns: 1fr; // En tablets/celulares pasa a 1 columna
+      grid-template-columns: 1fr;
     }
   }
 
@@ -115,7 +115,7 @@
           font-size: 0.8rem;
           color: #64748b;
           font-weight: 600;
-          flex: 1; // Empuja el valor hacia la derecha
+          flex: 1;
         }
 
         .limit-value {
@@ -143,7 +143,7 @@
         font-weight: 600;
         font-size: 0.85rem;
         padding: 0 16px;
-        height: 40px; // ALTURA UNIFICADA
+        height: 40px;
         transition: all 0.2s ease;
         color: v.$white;
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);

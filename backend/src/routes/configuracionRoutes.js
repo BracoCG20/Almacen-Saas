@@ -7,7 +7,7 @@ const {
 
 const router = Router();
 
-// Todas las rutas de configuración requieren autenticación
+// Requieren autenticación
 router.use(verifyToken);
 
 router.get('/', getLicencias);

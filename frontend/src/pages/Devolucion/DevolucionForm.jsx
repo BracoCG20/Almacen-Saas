@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import Select from 'react-select';
 import CreatableSelect from 'react-select/creatable';
-import './DevolucionForm.scss'; // <-- IMPORTAMOS SU PROPIO SCSS
+import './DevolucionForm.scss';
 
 const DevolucionForm = ({
   usuariosOptions,
@@ -47,7 +47,7 @@ const DevolucionForm = ({
     control: (provided, state) => ({
       ...provided,
       borderRadius: '8px',
-      borderColor: state.isFocused ? '#7c3aed' : '#e2e8f0', // Violeta
+      borderColor: state.isFocused ? '#7c3aed' : '#e2e8f0',
       boxShadow: state.isFocused ? '0 0 0 2px rgba(124, 58, 237, 0.1)' : 'none',
       height: '40px',
       minHeight: '40px',

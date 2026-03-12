@@ -11,7 +11,7 @@ const {
   getColaboradorHistorial,
 } = require('../controllers/colaboradoresController');
 
-// Todas las rutas requieren estar autenticado
+// Requieren autenticación
 router.use(verifyToken);
 
 router.get('/', getColaboradores);

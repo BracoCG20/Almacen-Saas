@@ -6,7 +6,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(15, 23, 42, 0.6); // Slate 900 oscuro con opacidad
+  background: rgba(15, 23, 42, 0.6);
   backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
@@ -109,7 +109,7 @@
 
       input {
         width: 100%;
-        height: 40px; // ALTURA 40px
+        height: 40px;
         padding: 0 12px;
         border-radius: 8px;
         border: 1px solid #e2e8f0;
@@ -150,7 +150,7 @@
       }
 
       button {
-        height: 40px; // ALTURA 40px
+        height: 40px;
         padding: 0 20px;
         border-radius: 8px;
         font-weight: 600;
@@ -199,8 +199,6 @@
     }
   }
 }
-
-// Animaciones base (puedes dejarlas si las tienes globales, sino aquí aseguran que funcione)
 @keyframes fadeIn {
   from {
     opacity: 0;

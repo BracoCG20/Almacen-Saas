@@ -7,7 +7,6 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   border: 1px solid #e2e8f0;
 
-  /* SOLUCIÓN: Limita el padding para que no exceda el ancho del celular */
   width: 100%;
   box-sizing: border-box;
 
@@ -90,7 +89,7 @@
     .info-wrapper {
       display: flex;
       flex-direction: column;
-      overflow: hidden; /* Evita que textos largos rompan la caja */
+      overflow: hidden;
 
       .subtitle {
         font-size: 0.7rem;
@@ -158,7 +157,7 @@
       }
       input {
         accent-color: #e11d48;
-        width: 18px; /* Un poco más grande para tocar fácil */
+        width: 18px;
         height: 18px;
         cursor: pointer;
         flex-shrink: 0;
@@ -187,7 +186,6 @@
 
     .btn-action {
       width: 100%;
-      /* SOLUCIÓN: min-height permite que el texto baje de línea si el móvil es estrecho */
       min-height: 40px;
       height: auto;
       padding: 8px 12px;

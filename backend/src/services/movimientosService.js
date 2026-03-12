@@ -252,7 +252,6 @@ const actualizarFirmaDocumento = async (
       // --- LÓGICA DE INVALIDACIÓN ---
       const nuevoToken = uuidv4();
 
-      // MEJORA CLAVE: Añadimos st.nombre como estado_final_nombre para las devoluciones
       const infoQuery = `
                 SELECT m.tipo_movimiento, m.cargador_incluido, m.pdf_generado_url, m.motivo_movimiento,
                        c.email_contacto, c.nombres, c.apellidos, e.marca, e.modelo,
@@ -296,8 +295,8 @@ const actualizarFirmaDocumento = async (
             `${mov.marca} ${mov.modelo}`,
             mov.cargador_incluido ? 'SÍ' : 'NO',
             pdfBuffer,
-            mov.estado_final_nombre, // Pasamos el estado recuperado
-            mov.motivo_movimiento, // Pasamos el motivo recuperado
+            mov.estado_final_nombre,
+            mov.motivo_movimiento,
             nuevoToken,
           );
         }
@@ -317,7 +316,7 @@ const actualizarFirmaDocumento = async (
     return true;
   } catch (error) {
     await client.query('ROLLBACK');
-    console.error('ERROR EN INVALIDACIÓN:', error); // <-- Dejamos este console log temporal en backend para ver por qué falla si sigue fallando
+    console.error('ERROR EN INVALIDACIÓN:', error);
     throw error;
   } finally {
     client.release();

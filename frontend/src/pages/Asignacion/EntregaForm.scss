@@ -6,8 +6,6 @@
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   border: 1px solid #e2e8f0;
-
-  /* SOLUCIÓN: Limita el padding para que no exceda el ancho del celular */
   width: 100%;
   box-sizing: border-box;
 
@@ -55,7 +53,7 @@
       width: 16px;
       height: 16px;
       cursor: pointer;
-      flex-shrink: 0; /* Evita que el checkbox se deforme en móviles estrechos */
+      flex-shrink: 0;
     }
     span {
       font-weight: 500;
@@ -76,7 +74,7 @@
 
     .btn-action {
       width: 100%;
-      /* SOLUCIÓN: min-height en vez de height, así si el texto salta a 2 líneas, el botón se ajusta y no se rompe */
+
       min-height: 40px;
       height: auto;
       padding: 8px 12px;
@@ -93,13 +91,12 @@
       transition: all 0.2s ease;
       box-sizing: border-box;
 
-      /* Permite que el texto baje de línea si el móvil es muy estrecho */
       white-space: normal;
       text-align: center;
       line-height: 1.3;
 
       svg {
-        flex-shrink: 0; /* Protege el icono para que no se apachurre */
+        flex-shrink: 0;
       }
 
       &:disabled {

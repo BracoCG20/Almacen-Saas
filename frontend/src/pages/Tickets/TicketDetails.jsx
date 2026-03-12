@@ -26,7 +26,6 @@ const TicketDetails = ({ ticket, onClose, onUpdate }) => {
   const [loading, setLoading] = useState(true);
   const [estadoActual, setEstadoActual] = useState(ticket.estado);
 
-  // NUEVO ESTADO: Controla si se muestran los detalles en la versión móvil
   const [showMobileDetails, setShowMobileDetails] = useState(false);
 
   const fetchHistorial = async () => {
@@ -42,7 +41,6 @@ const TicketDetails = ({ ticket, onClose, onUpdate }) => {
 
   useEffect(() => {
     fetchHistorial();
-    // eslint-disable-next-line
   }, [ticket.id]);
 
   useEffect(() => {
@@ -54,7 +52,6 @@ const TicketDetails = ({ ticket, onClose, onUpdate }) => {
       }
     });
     return () => socket.disconnect();
-    // eslint-disable-next-line
   }, [ticket.id]);
 
   const handleEnviarComentario = async (e) => {

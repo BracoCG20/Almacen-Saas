@@ -10,11 +10,10 @@ const {
 } = require('../controllers/authController');
 
 const verifyToken = require('../middlewares/authMiddleware');
-const createUploadMiddleware = require('../middlewares/uploadMiddleware'); // Importamos el genérico
+const createUploadMiddleware = require('../middlewares/uploadMiddleware');
 
 const router = Router();
 
-// Configuramos que este upload guardará en "FotoPerfil" con el prefijo "perfil"
 const uploadPerfil = createUploadMiddleware('FotoPerfil', 'perfil');
 
 router.post('/login', login);
