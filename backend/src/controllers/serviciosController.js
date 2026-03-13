@@ -1,4 +1,6 @@
 const serviciosService = require('../services/serviciosService');
+// IMPORTACIÓN FALTANTE:
+const { uploadToCloudinary } = require('../middlewares/uploadMiddleware');
 
 const getServicios = async (req, res) => {
   try {
@@ -77,6 +79,7 @@ const registrarPago = async (req, res) => {
     );
     res.status(201).json({ message: 'Pago registrado exitosamente.' });
   } catch (error) {
+    console.error('Error al subir pago a Cloudinary:', error);
     res.status(500).json({ error: 'Error al registrar pago.' });
   }
 };

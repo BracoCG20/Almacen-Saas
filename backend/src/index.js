@@ -100,8 +100,8 @@ app.use('/api/tickets', ticketsRoutes);
 const PORT = process.env.PORT || 4000;
 
 server.listen(PORT, () => {
-  console.log(`===========================================`);
+  console.log(`-------------------------------------------`);
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
   console.log(`🔌 WebSockets habilitados y escuchando`);
-  console.log(`===========================================`);
+  console.log(`-------------------------------------------`);
 });

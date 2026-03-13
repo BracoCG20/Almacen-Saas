@@ -93,11 +93,17 @@ const PagoServicioModal = ({ servicio, onClose }) => {
 
   const getBackendFileUrl = (path) => {
     if (!path) return null;
-    if (path.startsWith('http')) return path;
+
+    // Si el string contiene 'cloudinary' o empieza con http, es de la nube
+    if (path.includes('cloudinary.com') || path.includes('http')) {
+      return path.startsWith('/') ? path.substring(1) : path;
+    }
+
+    // Archivos locales antiguos
     const baseUrl = api.defaults.baseURL
       ? api.defaults.baseURL.replace(/\/api\/?$/, '')
       : 'http://localhost:4000';
-    return `${baseUrl}${path}`;
+    return `${baseUrl}${path.startsWith('/') ? path : `/${path}`}`;
   };
 
   const formatDate = (dateString) => {
@@ -191,7 +197,7 @@ const PagoServicioModal = ({ servicio, onClose }) => {
     }
   };
 
-  // --- SOLUCIÓN DEFINITIVA CENTRADO REACT-SELECT ---
+  // --- REACT-SELECT ---
   const customSelectStyles = {
     control: (provided, state) => ({
       ...provided,
