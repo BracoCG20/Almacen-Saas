@@ -25,7 +25,7 @@ const MainLayout = () => {
   // Configuración del hook
   useIdleTimer({
     onIdle,
-    timeout: 1000 * 60 * 5, // 5 minutos de inactividad (en milisegundos)
+    timeout: 1000 * 60 * 10, // 1 minutos de inactividad (en milisegundos)
     throttle: 500,
   });
 

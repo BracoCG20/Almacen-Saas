@@ -3,10 +3,10 @@ import { useParams } from 'react-router-dom';
 import api from '../../service/api';
 import {
   FileText,
-  ShieldCheck,
-  CheckCircle,
-  AlertOctagon,
+  CheckCircle2,
+  AlertCircle,
   Loader2,
+  PenTool,
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import './FirmarDocumento.scss';
@@ -45,7 +45,6 @@ const FirmarDocumento = () => {
       toast.success('¡Documento firmado correctamente!');
     } catch (error) {
       toast.error(error.response?.data?.error || 'Error al procesar la firma.');
-    } finally {
       setFirmando(false);
     }
   };
@@ -56,15 +55,11 @@ const FirmarDocumento = () => {
       <div className='firma-public-container'>
         <div className='status-screen'>
           <Loader2
-            className='animate-spin'
-            size={50}
-            color='#4f46e5'
-            style={{ margin: '0 auto 20px auto' }}
+            className='animate-spin spinner'
+            size={40}
           />
-          <h2>Cargando Documento</h2>
-          <p>
-            Espere un momento mientras verificamos la seguridad del enlace...
-          </p>
+          <h2>Verificando enlace</h2>
+          <p>Espera un momento mientras validamos el documento...</p>
         </div>
       </div>
     );
@@ -75,12 +70,15 @@ const FirmarDocumento = () => {
       <div className='firma-public-container'>
         <div className='status-screen'>
           <div className='icon-box success'>
-            <CheckCircle size={50} />
+            <CheckCircle2
+              size={48}
+              strokeWidth={1.5}
+            />
           </div>
-          <h2>¡Firma Completada!</h2>
+          <h2>Documento Firmado</h2>
           <p>
             Tu firma digital ha sido registrada y validada exitosamente por el
-            sistema de <strong>Grupo SP</strong>. Ya puedes cerrar esta ventana.
+            sistema. Ya puedes cerrar esta pestaña.
           </p>
         </div>
       </div>
@@ -92,12 +90,15 @@ const FirmarDocumento = () => {
       <div className='firma-public-container'>
         <div className='status-screen'>
           <div className='icon-box error'>
-            <AlertOctagon size={50} />
+            <AlertCircle
+              size={48}
+              strokeWidth={1.5}
+            />
           </div>
-          <h2>Enlace no válido</h2>
+          <h2>Enlace no válido o expirado</h2>
           <p>
-            Lo sentimos, este enlace ha expirado, el token es incorrecto o el
-            documento ya ha sido firmado anteriormente.
+            El documento que intentas abrir ya fue firmado anteriormente o el
+            enlace ha caducado por seguridad.
           </p>
         </div>
       </div>
@@ -107,22 +108,36 @@ const FirmarDocumento = () => {
     ? api.defaults.baseURL.replace(/\/api\/?$/, '')
     : 'http://localhost:4000';
 
+  const isEntrega = docInfo.tipo_movimiento === 'entrega';
+
   return (
     <div className='firma-public-container'>
       <div className='firma-card'>
-        {/* Cabecera dinámica según tipo de movimiento */}
-        <div className={`firma-header ${docInfo.tipo_movimiento}`}>
-          <FileText size={48} />
-          <h1>
-            {docInfo.tipo_movimiento === 'entrega'
-              ? 'Acta de Entrega de Equipo'
-              : 'Constancia de Devolución'}
-          </h1>
-          <p>Valida la recepción o devolución de tus herramientas de trabajo</p>
+        {/* CABECERA MINIMALISTA */}
+        <div className='firma-header'>
+          <div className='header-title'>
+            <div className='icon-wrapper'>
+              <FileText
+                size={24}
+                strokeWidth={1.5}
+              />
+            </div>
+            <div>
+              <h1>
+                {isEntrega ? 'Acta de Entrega' : 'Constancia de Devolución'}
+              </h1>
+              <p>Valida la recepción o devolución de tus herramientas.</p>
+            </div>
+          </div>
+          <span
+            className={`badge-tipo ${isEntrega ? 'badge-entrega' : 'badge-devolucion'}`}
+          >
+            {isEntrega ? 'Entrega' : 'Devolución'}
+          </span>
         </div>
 
         <div className='firma-body'>
-          {/* Resumen de Información */}
+          {/* RESUMEN DE INFORMACIÓN */}
           <div className='info-summary'>
             <div className='info-item'>
               <label>Colaborador</label>
@@ -138,58 +153,64 @@ const FirmarDocumento = () => {
             </div>
           </div>
 
-          {/* Vista previa del PDF Original */}
+          {/* VISOR PDF */}
           <div className='pdf-preview-container'>
             <iframe
-              src={`${baseUrl}${docInfo.pdf_generado_url}#toolbar=0&navpanes=0`}
+              src={
+                docInfo.pdf_generado_url?.startsWith('http')
+                  ? `${docInfo.pdf_generado_url}#toolbar=0&navpanes=0`
+                  : `${baseUrl}${docInfo.pdf_generado_url}#toolbar=0&navpanes=0`
+              }
               width='100%'
               height='100%'
               title='Vista previa del documento'
             />
           </div>
 
-          {/* Formulario de Firma */}
-          <form
-            onSubmit={handleFirmar}
-            className='firma-form'
-          >
-            <div className='input-group'>
-              <label htmlFor='dniInput'>
-                Confirma tu identidad con tu DNI:
-              </label>
-              <input
-                id='dniInput'
-                type='text'
-                maxLength='8'
-                inputMode='numeric'
-                required
-                value={dni}
-                onChange={(e) => setDni(e.target.value.replace(/\D/g, ''))}
-                placeholder='Ingresa tus 8 dígitos'
-                autoComplete='off'
+          {/* FORMULARIO DE FIRMA / ANIMACIÓN DE CARGA */}
+          {firmando ? (
+            <div className='signing-animation-container'>
+              <Loader2
+                className='spinner-icon'
+                size={40}
+                strokeWidth={1.5}
               />
+              <p className='signing-text'>Aplicando firma digital...</p>
+              <span className='signing-subtext'>
+                Asegurando el documento con tu DNI
+              </span>
             </div>
-
-            <button
-              type='submit'
-              disabled={firmando || dni.length < 8}
-              className='btn-firmar'
+          ) : (
+            <form
+              onSubmit={handleFirmar}
+              className='firma-form'
             >
-              {firmando ? (
-                <>
-                  <Loader2
-                    className='animate-spin'
-                    size={20}
-                  />{' '}
-                  Procesando firma...
-                </>
-              ) : (
-                <>
-                  <ShieldCheck size={22} /> Firmar Documento Digitalmente
-                </>
-              )}
-            </button>
-          </form>
+              <div className='input-group'>
+                <label htmlFor='dniInput'>
+                  Confirma tu identidad con tu DNI
+                </label>
+                <input
+                  id='dniInput'
+                  type='text'
+                  maxLength='8'
+                  inputMode='numeric'
+                  required
+                  value={dni}
+                  onChange={(e) => setDni(e.target.value.replace(/\D/g, ''))}
+                  placeholder='Ingresa tus 8 dígitos'
+                  autoComplete='off'
+                />
+              </div>
+
+              <button
+                type='submit'
+                disabled={dni.length < 8}
+                className='btn-firmar-shadcn'
+              >
+                <PenTool size={18} /> Firmar Documento
+              </button>
+            </form>
+          )}
         </div>
       </div>
     </div>

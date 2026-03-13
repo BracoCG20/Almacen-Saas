@@ -1,56 +1,89 @@
-@use '../../styles/variables' as v;
-
 .firma-public-container {
   min-height: 100vh;
-  background-color: #f1f5f9;
+  background-color: #f8fafc;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 20px;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
+    sans-serif;
 
   .firma-card {
     width: 100%;
-    max-width: 750px;
-    background: v.$white;
-    border-radius: 20px;
+    max-width: 700px;
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
     overflow: hidden;
     box-shadow:
-      0 20px 25px -5px rgba(0, 0, 0, 0.1),
-      0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      0 1px 3px 0 rgba(0, 0, 0, 0.1),
+      0 1px 2px -1px rgba(0, 0, 0, 0.1);
 
     .firma-header {
-      padding: 40px 20px;
-      color: v.$white;
-      text-align: center;
+      padding: 30px;
+      border-bottom: 1px solid #e2e8f0;
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 15px;
 
-      &.entrega {
-        background: linear-gradient(135deg, v.$primary 0%, #4f46e5 100%);
+      @media (max-width: 600px) {
+        flex-direction: column;
       }
 
-      &.devolucion {
-        background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+      .header-title {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+
+        .icon-wrapper {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 48px;
+          height: 48px;
+          border-radius: 10px;
+          background-color: #f1f5f9;
+          color: #0f172a;
+        }
+
+        h1 {
+          margin: 0;
+          font-size: 1.25rem;
+          font-weight: 600;
+          color: #0f172a;
+          letter-spacing: -0.025em;
+        }
+
+        p {
+          margin: 4px 0 0 0;
+          font-size: 0.875rem;
+          color: #64748b;
+        }
       }
 
-      h1 {
-        margin: 0;
-        font-size: 1.8rem;
-        font-weight: 800;
-        letter-spacing: -0.025em;
-      }
+      .badge-tipo {
+        padding: 4px 12px;
+        border-radius: 99px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
 
-      p {
-        margin: 0;
-        opacity: 0.9;
-        font-size: 1rem;
+        &.badge-entrega {
+          background-color: #f1f5f9;
+          color: #0f172a;
+        }
+        &.badge-devolucion {
+          background-color: #fef2f2;
+          color: #991b1b;
+        }
       }
     }
 
     .firma-body {
-      padding: 35px;
+      padding: 30px;
 
       @media (max-width: 600px) {
         padding: 20px;
@@ -60,15 +93,15 @@
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 20px;
-        background: #f8fafc;
+        background: #fafafa;
         padding: 20px;
-        border-radius: 12px;
+        border-radius: 8px;
         border: 1px solid #e2e8f0;
         margin-bottom: 25px;
 
         @media (max-width: 600px) {
           grid-template-columns: 1fr;
-          gap: 10px;
+          gap: 15px;
         }
 
         .info-item {
@@ -76,25 +109,26 @@
             display: block;
             font-size: 0.75rem;
             text-transform: uppercase;
-            font-weight: 700;
-            color: v.$text-muted;
+            font-weight: 600;
+            color: #64748b;
             margin-bottom: 4px;
+            letter-spacing: 0.05em;
           }
           span {
-            font-size: 1rem;
-            font-weight: 600;
-            color: v.$text-main;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #0f172a;
           }
         }
       }
 
       .pdf-preview-container {
         height: 450px;
-        border: 2px solid #e2e8f0;
-        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
         overflow: hidden;
         margin-bottom: 25px;
-        background: #94a3b8;
+        background: #f8fafc;
 
         iframe {
           border: none;
@@ -109,109 +143,170 @@
         .input-group {
           label {
             display: block;
-            font-weight: 700;
-            color: v.$text-main;
+            font-weight: 500;
+            color: #0f172a;
             margin-bottom: 8px;
-            font-size: 0.95rem;
+            font-size: 0.875rem;
           }
 
           input {
             width: 100%;
-            padding: 14px 18px;
-            border-radius: 10px;
-            border: 2px solid #e2e8f0;
-            font-size: 1.1rem;
-            transition: all 0.2s;
+            padding: 10px 14px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            font-size: 1rem;
+            color: #0f172a;
+            transition:
+              border-color 0.2s,
+              box-shadow 0.2s;
             outline: none;
-            font-weight: 600;
-            color: v.$primary;
-            text-align: center;
+            box-sizing: border-box;
+            background-color: #ffffff;
             letter-spacing: 2px;
+            text-align: center;
 
             &:focus {
-              border-color: v.$primary;
-              box-shadow: 0 0 0 4px rgba(v.$primary, 0.1);
+              border-color: #0f172a;
+              box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.1);
             }
 
             &::placeholder {
               letter-spacing: normal;
-              color: #cbd5e1;
-              font-weight: 400;
+              color: #94a3b8;
             }
           }
         }
 
-        .btn-firmar {
+        .btn-firmar-shadcn {
           width: 100%;
-          padding: 16px;
-          border-radius: 12px;
-          background-color: #10b981;
-          color: v.$white;
+          padding: 12px 16px;
+          border-radius: 6px;
+          background-color: #0f172a;
+          color: #ffffff;
           border: none;
-          font-weight: 700;
-          font-size: 1.1rem;
+          font-weight: 500;
+          font-size: 0.95rem;
           cursor: pointer;
           display: flex;
           justify-content: center;
           align-items: center;
-          gap: 10px;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);
+          gap: 8px;
+          transition: background-color 0.2s;
 
           &:hover:not(:disabled) {
-            background-color: #059669;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
+            background-color: #1e293b;
           }
 
           &:disabled {
             background-color: #94a3b8;
             cursor: not-allowed;
-            opacity: 0.7;
+            opacity: 0.8;
           }
+        }
+      }
+
+      // NUEVA ANIMACIÓN DE FIRMA ESTILO SHADCN
+      .signing-animation-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 30px 0 10px 0;
+        gap: 12px;
+        animation: fadeInFadeUp 0.4s ease-out forwards;
+
+        .spinner-icon {
+          color: #0f172a;
+          animation: spin 1s linear infinite;
+        }
+
+        .signing-text {
+          margin: 0;
+          font-size: 1.05rem;
+          font-weight: 600;
+          color: #0f172a;
+        }
+
+        .signing-subtext {
+          font-size: 0.85rem;
+          color: #64748b;
+          animation: pulseOpacity 2s ease-in-out infinite;
         }
       }
     }
   }
 
-  // Pantallas de Estado (Éxito / Error)
+  // PANTALLAS DE ESTADO
   .status-screen {
-    background: v.$white;
-    padding: 50px 30px;
-    border-radius: 20px;
+    background: #ffffff;
+    padding: 40px 30px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
     text-align: center;
-    max-width: 450px;
+    max-width: 420px;
     width: 100%;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    box-shadow:
+      0 1px 3px 0 rgba(0, 0, 0, 0.1),
+      0 1px 2px -1px rgba(0, 0, 0, 0.1);
+
+    .spinner {
+      color: #0f172a;
+      margin: 0 auto 20px auto;
+    }
 
     .icon-box {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       margin: 0 auto 20px auto;
+      display: inline-flex;
 
       &.success {
-        background-color: #ecfdf5;
-        color: #10b981;
+        color: #16a34a;
       }
       &.error {
-        background-color: #fef2f2;
-        color: #ef4444;
+        color: #dc2626;
       }
     }
 
     h2 {
-      margin-bottom: 12px;
-      color: v.$text-main;
-      font-weight: 800;
+      margin: 0 0 12px 0;
+      color: #0f172a;
+      font-weight: 600;
+      font-size: 1.25rem;
+      letter-spacing: -0.025em;
     }
 
     p {
-      color: v.$text-muted;
-      line-height: 1.6;
+      margin: 0;
+      color: #64748b;
+      line-height: 1.5;
+      font-size: 0.95rem;
     }
+  }
+}
+
+// KEYFRAMES ANIMACIONES
+@keyframes fadeInFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulseOpacity {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
   }
 }

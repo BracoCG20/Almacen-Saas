@@ -209,7 +209,19 @@ const Asignacion = () => {
   };
 
   const handleVerFirmado = (url) => {
-    setPdfUrl(`http://localhost:4000${url}`);
+    if (!url) return;
+
+    // Verificamos si la URL ya es un enlace externo (Cloudinary)
+    if (url.startsWith('http')) {
+      setPdfUrl(url);
+    } else {
+      // Si es un archivo local antiguo, usamos el baseUrl
+      const baseUrl = api.defaults.baseURL
+        ? api.defaults.baseURL.replace(/\/api\/?$/, '')
+        : 'http://localhost:4000';
+      setPdfUrl(`${baseUrl}${url}`);
+    }
+
     setShowPdfModal(true);
   };
 

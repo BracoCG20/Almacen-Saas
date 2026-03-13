@@ -14,8 +14,8 @@ const enviarActaCorreo = async (
 ) => {
   const isEntrega = tipo_movimiento === 'entrega';
   const subject = isEntrega
-    ? `📢 Entrega de Equipo: ${tipoEquipo}`
-    : `🔄 Devolución Registrada: ${tipoEquipo}`;
+    ? `Acción requerida: Firma tu Acta de Entrega`
+    : `Acción requerida: Firma tu Constancia de Devolución`;
   const fileName = isEntrega ? 'Acta_Entrega.pdf' : 'Constancia_Devolucion.pdf';
 
   const logoPath = path.join(__dirname, '../assets/logo_gruposp.png');
@@ -26,41 +26,59 @@ const enviarActaCorreo = async (
 
   if (isEntrega) {
     contenidoEspecifico = `
-      <div style="background-color: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 12px; padding: 25px; margin: 20px 0;">
-        <div style="margin-bottom: 15px;">
-          <p style="margin: 0; font-size: 11px; font-weight: 700; color: #7c3aed;">EQUIPO ASIGNADO</p>
-          <p style="margin: 4px 0 0 0; font-size: 18px; font-weight: 700; color: #1e293b;">${tipoEquipo}</p>
-        </div>
-        <div style="border-top: 1px solid #ddd6fe; padding-top: 15px;">
-          <p style="margin: 0; font-size: 11px; font-weight: 700; color: #7c3aed;">¿INCLUYE CARGADOR?</p>
-          <p style="margin: 4px 0 0 0; font-size: 16px; font-weight: 600; color: #4b5563;">${textoCargador}</p>
-        </div>
+      <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px; margin: 24px 0; background-color: #fafafa;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+          <tr>
+            <td style="padding-bottom: 16px;">
+              <p style="margin: 0; font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Equipo Asignado</p>
+              <p style="margin: 4px 0 0 0; font-size: 15px; font-weight: 500; color: #0f172a;">${tipoEquipo}</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding-top: 16px; border-top: 1px solid #e2e8f0;">
+              <p style="margin: 0; font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Incluye Cargador / Accesorios</p>
+              <p style="margin: 4px 0 0 0; font-size: 15px; font-weight: 500; color: #0f172a;">${textoCargador}</p>
+            </td>
+          </tr>
+        </table>
       </div>
     `;
   } else {
-    // --- VALIDACIÓN DE SEGURIDAD ---
+    // Para devoluciones
     const estadoSeguro = estado_final_nombre || 'No especificado';
-    const colorEstado =
-      estadoSeguro.toLowerCase() === 'operativo' ? '#16a34a' : '#dc2626';
+    const estadoBg =
+      estadoSeguro.toLowerCase() === 'operativo' ? '#dcfce7' : '#fee2e2';
+    const estadoColor =
+      estadoSeguro.toLowerCase() === 'operativo' ? '#166534' : '#991b1b';
 
     contenidoEspecifico = `
-      <div style="background-color: #fef2f2; border: 1px solid #ddd6fe; border-radius: 12px; padding: 25px; margin: 20px 0;">
-        <p style="margin:0; font-size:11px; font-weight:700; color:#dc2626;">EQUIPO DEVUELTO</p>
-        <p style="margin:4px 0 15px 0; font-size:18px; font-weight:700; color:#1e293b;">${tipoEquipo}</p>
-        <div style="display:flex; justify-content:space-between; border-top:1px solid #ddd6fe; padding-top:15px; margin-bottom:15px;">
-          <div>
-            <p style="margin:0; font-size:11px; font-weight:700; color:#dc2626;">ESTADO FINAL</p>
-            <p style="margin:4px 0 0 0; font-size:15px; font-weight:600; color:${colorEstado}; text-transform:uppercase;">${estadoSeguro}</p>
-          </div>
-          <div>
-            <p style="margin:0; font-size:11px; font-weight:700; color:#dc2626;">CARGADOR</p>
-            <p style="margin:4px 0 0 0; font-size:15px; font-weight:600; color:#4b5563;">${textoCargador}</p>
-          </div>
-        </div>
-        <div style="border-top:1px solid #ddd6fe; padding-top:15px;">
-          <p style="margin:0; font-size:11px; font-weight:700; color:#dc2626;">MOTIVO</p>
-          <p style="margin:4px 0 0 0; font-size:15px; font-weight:600; color:#4b5563;">${motivo || 'Devolución regular'}</p>
-        </div>
+      <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px; margin: 24px 0; background-color: #fafafa;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+          <tr>
+            <td colspan="2" style="padding-bottom: 16px;">
+              <p style="margin: 0; font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Equipo Devuelto</p>
+              <p style="margin: 4px 0 0 0; font-size: 15px; font-weight: 500; color: #0f172a;">${tipoEquipo}</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding-top: 16px; padding-bottom: 16px; border-top: 1px solid #e2e8f0; width: 50%;">
+              <p style="margin: 0; font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Estado Final</p>
+              <div style="margin-top: 6px;">
+                <span style="background-color: ${estadoBg}; color: ${estadoColor}; font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 16px; display: inline-block;">${estadoSeguro}</span>
+              </div>
+            </td>
+            <td style="padding-top: 16px; padding-bottom: 16px; border-top: 1px solid #e2e8f0; width: 50%;">
+              <p style="margin: 0; font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Cargador</p>
+              <p style="margin: 4px 0 0 0; font-size: 15px; font-weight: 500; color: #0f172a;">${textoCargador}</p>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2" style="padding-top: 16px; border-top: 1px solid #e2e8f0;">
+              <p style="margin: 0; font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Motivo</p>
+              <p style="margin: 4px 0 0 0; font-size: 15px; font-weight: 500; color: #0f172a;">${motivo || 'Devolución regular'}</p>
+            </td>
+          </tr>
+        </table>
       </div>
     `;
   }
@@ -68,36 +86,57 @@ const enviarActaCorreo = async (
   const htmlTemplate = `
     <!DOCTYPE html>
     <html>
-    <head><style>body { font-family: 'Segoe UI', sans-serif; background-color: #f3f4f6; }</style></head>
-    <body style="padding: 40px 0;">
-      <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0, 0.1);">
-        <div style="background-color: ${isEntrega ? '#7c3aed' : '#dc2626'}; padding: 40px 20px; text-align: center;">
-          <img src="cid:logo" alt="Logo" style="max-width: 180px; display: block; background-color: #ffffff; border-radius: 20px; padding: 5px 20px; margin: 0 auto 15px auto; filter: brightness(0) invert(1);" />
-          <h1 style="color: #ffffff; margin: 0; font-size: 24px; text-transform: uppercase;">${isEntrega ? 'Acta de Asignación' : 'Constancia de Devolución'}</h1>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+      </style>
+    </head>
+    <body style="padding: 40px 20px;">
+      <div style="max-width: 560px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
+        
+        <div style="padding: 32px; background-color: #f8fafc; text-align: center;">
+          <img src="cid:logo" alt="Grupo SP" style="height: 40px; display: block; margin: 0 auto;" />
         </div>
-        <div style="padding: 40px 30px; color: #334155;">
-          <h2 style="color: #1e293b; margin-top: 0;">Hola, ${nombreEmpleado} 👋</h2>
-          <p style="font-size: 16px; color: #475569;">Se ha registrado la ${isEntrega ? 'entrega' : 'devolución'} de una herramienta de trabajo a tu nombre.</p>
+
+        <div style="padding: 32px;">
+          <h1 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600; color: #0f172a;">
+            Hola, ${nombreEmpleado}
+          </h1>
+          
+          <p style="margin: 0 0 8px 0; font-size: 15px; line-height: 1.6; color: #475569;">
+            Se ha registrado la <strong>${isEntrega ? 'entrega' : 'devolución'}</strong> de una herramienta de trabajo a tu nombre en nuestro sistema.
+          </p>
+          <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #475569;">
+            Para completar el proceso, requerimos tu firma digital en el documento generado.
+          </p>
           
           ${contenidoEspecifico}
 
-          <div style="text-align: center; margin-top: 30px; margin-bottom: 20px;">
-            <a href="${urlFirma}" style="background-color: #10b981; color: white; padding: 16px 30px; border-radius: 8px; font-size: 16px; font-weight: bold; text-decoration: none; display: inline-block; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.25);">
-              ✍️ Hacer clic aquí para Revisar y Firmar
+          <div style="text-align: center; margin: 32px 0 16px 0;">
+            <a href="${urlFirma}" style="background-color: #0f172a; color: #ffffff; padding: 12px 28px; border-radius: 6px; font-size: 14px; font-weight: 500; text-decoration: none; display: inline-block;">
+              Revisar y Firmar Documento
             </a>
           </div>
+        </div>
 
-          <p style="font-size: 13px; color: #94a3b8; text-align: center; margin-top: 20px;">
-            Se adjunta una copia de lectura del documento en PDF.</br> Para validarlo, utilice el botón verde de arriba.
+        <div style="padding: 24px 32px; background-color: #f8fafc; border-top: 1px solid #e2e8f0; text-align: center;">
+          <p style="margin: 0 0 8px 0; font-size: 13px; color: #64748b;">
+            Se ha adjuntado una copia de lectura en formato PDF a este correo.
+          </p>
+          <p style="margin: 0; font-size: 12px; color: #94a3b8;">
+            © ${new Date().getFullYear()} Grupo SP. Todos los derechos reservados.
           </p>
         </div>
+
       </div>
     </body>
     </html>
   `;
 
   await transporter.sendMail({
-    from: `"SISTEMA GTH" <${process.env.EMAIL_USER}>`,
+    from: `"Soporte TI - Grupo SP" <${process.env.EMAIL_USER}>`,
     to: destinatario,
     subject: subject,
     html: htmlTemplate,
