@@ -120,15 +120,29 @@ const Tickets = () => {
   };
 
   const filteredTickets = tickets.filter((t) => {
+    // 1. Validamos si es Admin (En tu consola vimos que la variable se llama 'rol')
+    // Asumiendo que el rol '1' es Admin/TI y el '2' es un Usuario normal
+    const rolUsuario = user?.rol?.toString() || user?.rol_id?.toString();
+    const isAdmin = rolUsuario === '1';
+
+    // 2. Comparamos el ID del usuario logueado con el ID del usuario que creó el ticket
+    const userId = user?.id?.toString();
+    const ticketCreadorId = t.creador_usuario_id?.toString();
+
+    const matchUser = isAdmin ? true : ticketCreadorId === userId;
+
+    // Búsqueda por texto
     const matchSearch =
-      t.asunto.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      t.asunto?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       t.solicitante_nombres?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       `TKT-${t.id}`.toLowerCase().includes(searchTerm.toLowerCase());
+
+    // Búsqueda por select
     const matchTipo =
       filtroTipo.value === 'todos' || t.tipo_solicitud === filtroTipo.value;
-    return matchSearch && matchTipo;
-  });
 
+    return matchUser && matchSearch && matchTipo;
+  });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 

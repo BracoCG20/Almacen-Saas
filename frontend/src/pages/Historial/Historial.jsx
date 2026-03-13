@@ -166,10 +166,18 @@ const Historial = () => {
   const formatDuration = (intervalObj) => {
     if (!intervalObj) return '-';
     let texto = [];
+
+    // Solo tomamos en cuenta años, meses y días
     if (intervalObj.years) texto.push(`${intervalObj.years} años`);
     if (intervalObj.months) texto.push(`${intervalObj.months} meses`);
     if (intervalObj.days) texto.push(`${intervalObj.days} días`);
-    if (texto.length === 0) return 'Reciente';
+
+    // Si el arreglo está vacío (porque el tiempo fue menor a 24 horas),
+    // mostramos simplemente "0 días" y descartamos horas/minutos/segundos.
+    if (texto.length === 0) {
+      return 'Recientes'; // También podrías poner 'Menos de 1 día' o 'Mismo día'
+    }
+
     return texto.join(', ');
   };
 

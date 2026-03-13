@@ -153,21 +153,23 @@ const TicketsTable = ({
           </div>
           <div className='controls'>
             <button
-              className='btn-paginate'
+              className='btn-paginate-text'
               onClick={() => setCurrentPage(currentPage - 1)}
               disabled={currentPage === 1}
             >
-              <ChevronLeft size={16} />
+              <ChevronLeft size={16} /> Anterior
             </button>
+
             <span className='page-text'>
-              {currentPage} / {totalPages}
+              Página {currentPage} de {totalPages}
             </span>
+
             <button
-              className='btn-paginate'
+              className='btn-paginate-text'
               onClick={() => setCurrentPage(currentPage + 1)}
               disabled={currentPage === totalPages}
             >
-              <ChevronRight size={16} />
+              Siguiente <ChevronRight size={16} />
             </button>
           </div>
         </div>

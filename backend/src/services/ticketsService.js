@@ -7,10 +7,12 @@ const getTickets = async () => {
             t.*,
             c.nombres as solicitante_nombres, c.apellidos as solicitante_apellidos,
             uc.nombres as asignado_nombres, uc.apellidos as asignado_apellidos,
+            u_creador.id as creador_usuario_id, /* <-- NUEVO: TRAEMOS EL ID DEL USUARIO QUE ENTRÓ AL SISTEMA */
             e.modelo as equipo_nombre,
             s.nombre as servicio_nombre
         FROM tickets t
         JOIN colaboradores c ON t.colaborador_id = c.id
+        LEFT JOIN usuarios u_creador ON u_creador.colaborador_id = c.id /* <-- NUEVO: ENLAZAMOS CON EL USUARIO REQUERIDOR */
         LEFT JOIN usuarios u ON t.usuario_asignado_id = u.id
         LEFT JOIN colaboradores uc ON u.colaborador_id = uc.id
         LEFT JOIN equipos e ON t.equipo_id = e.id

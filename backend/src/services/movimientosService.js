@@ -4,7 +4,6 @@ const { v4: uuidv4 } = require('uuid');
 const axios = require('axios'); // Necesitarás instalar axios: npm install axios
 
 const getHistorial = async () => {
-  // Mismo query de antes, no cambia
   const query = `
     SELECT 
       m.id, m.fecha_movimiento, m.tipo_movimiento as tipo, m.cargador_incluido as cargador, 
@@ -12,7 +11,27 @@ const getHistorial = async () => {
       m.equipo_id, m.pdf_firmado_url, m.pdf_generado_url, m.firma_valida, m.correo_enviado, m.estado_equipo_id,
       st.nombre as estado_equipo_momento, e.marca, e.modelo, e.numero_serie as serie, 
       c.nombres as empleado_nombre, c.apellidos as empleado_apellido, c.dni, c.email_contacto as empleado_correo,
-      u.nombres as admin_nombre, uc.email_login as admin_correo
+      u.nombres as admin_nombre, uc.email_login as admin_correo,
+      
+      CASE 
+        WHEN m.tipo_movimiento = 'entrega' THEN
+          AGE(
+            COALESCE(
+              -- Buscamos la fecha de la devolución correspondiente a esta entrega
+              (SELECT MIN(d.fecha_movimiento)
+               FROM historial_movimientos d
+               WHERE d.equipo_id = m.equipo_id
+                 AND d.colaborador_id = m.colaborador_id
+                 AND d.tipo_movimiento = 'devolucion'
+                 AND d.fecha_movimiento > m.fecha_movimiento),
+              -- Si no hay devolución, usamos la fecha de hoy
+              CURRENT_TIMESTAMP
+            ),
+            m.fecha_movimiento
+          )
+        ELSE NULL
+      END as tiempo_uso
+
     FROM historial_movimientos m
     JOIN equipos e ON m.equipo_id = e.id
     JOIN colaboradores c ON m.colaborador_id = c.id
