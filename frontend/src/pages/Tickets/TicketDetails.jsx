@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import api from '../../service/api';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../context/AuthContext';
@@ -11,6 +11,8 @@ import {
   Info,
   ChevronDown,
   ChevronUp,
+  Paperclip, // Nuevo ícono para adjuntar
+  X, // Nuevo ícono para quitar el archivo seleccionado
 } from 'lucide-react';
 import { io } from 'socket.io-client';
 import './TicketDetails.scss';
@@ -23,10 +25,12 @@ const TicketDetails = ({ ticket, onClose, onUpdate }) => {
   const { user } = useAuth();
   const [historial, setHistorial] = useState([]);
   const [comentario, setComentario] = useState('');
+  const [archivoAdjunto, setArchivoAdjunto] = useState(null); // Estado para el archivo
   const [loading, setLoading] = useState(true);
   const [estadoActual, setEstadoActual] = useState(ticket.estado);
-
   const [showMobileDetails, setShowMobileDetails] = useState(false);
+
+  const fileInputRef = useRef(null); // Referencia al input de archivo oculto
 
   const fetchHistorial = async () => {
     try {
@@ -54,14 +58,60 @@ const TicketDetails = ({ ticket, onClose, onUpdate }) => {
     return () => socket.disconnect();
   }, [ticket.id]);
 
+  // --- Función para detectar y convertir enlaces ---
+  const renderTextWithLinks = (text) => {
+    if (!text) return null;
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const parts = text.split(urlRegex);
+
+    return parts.map((part, index) => {
+      if (part.match(urlRegex)) {
+        return (
+          <a
+            key={index}
+            href={part}
+            target='_blank'
+            rel='noopener noreferrer'
+            className='chat-link'
+          >
+            {part}
+          </a>
+        );
+      }
+      return part;
+    });
+  };
+
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setArchivoAdjunto(e.target.files[0]);
+    }
+  };
+
   const handleEnviarComentario = async (e) => {
     e.preventDefault();
-    if (!comentario.trim()) return;
+    if (!comentario.trim() && !archivoAdjunto) return; // Permitir enviar si solo hay archivo o solo texto
+
     try {
-      await api.post(`/tickets/${ticket.id}/comentarios`, { comentario });
+      // Usamos FormData para poder enviar el archivo adjunto
+      const formData = new FormData();
+      formData.append('comentario', comentario);
+
+      if (archivoAdjunto) {
+        formData.append('archivo', archivoAdjunto);
+      }
+
+      await api.post(`/tickets/${ticket.id}/comentarios`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
       setComentario('');
+      setArchivoAdjunto(null);
+      if (fileInputRef.current) fileInputRef.current.value = ''; // Limpiar el input file
     } catch (error) {
-      toast.error('Error al enviar el comentario');
+      toast.error('Error al enviar el mensaje');
     }
   };
 
@@ -83,7 +133,6 @@ const TicketDetails = ({ ticket, onClose, onUpdate }) => {
 
   return (
     <div className='ticket-details-container'>
-      {/* --- BOTÓN EXCLUSIVO PARA MÓVILES --- */}
       <div className='mobile-details-header'>
         <button
           className='btn-toggle-details'
@@ -103,13 +152,15 @@ const TicketDetails = ({ ticket, onClose, onUpdate }) => {
         </button>
       </div>
 
-      {/* --- COLUMNA IZQUIERDA (INFO DEL TICKET) --- */}
+      {/* --- COLUMNA IZQUIERDA --- */}
       <div
         className={`ticket-info-sidebar ${showMobileDetails ? 'show-in-mobile' : ''}`}
       >
         <div className='info-block'>
           <h4>Descripción Original</h4>
-          <p className='descripcion-original'>{ticket.descripcion}</p>
+          <p className='descripcion-original'>
+            {renderTextWithLinks(ticket.descripcion)}
+          </p>
         </div>
 
         <div className='info-block divider'>
@@ -153,7 +204,7 @@ const TicketDetails = ({ ticket, onClose, onUpdate }) => {
         )}
       </div>
 
-      {/* --- COLUMNA DERECHA (CHAT Y LÍNEA DE TIEMPO) --- */}
+      {/* --- COLUMNA DERECHA (CHAT) --- */}
       <div className='ticket-chat-area'>
         <div className='chat-history'>
           {historial.map((item) => {
@@ -198,7 +249,20 @@ const TicketDetails = ({ ticket, onClose, onUpdate }) => {
                           )}
                         </span>
                       </div>
-                      <p>{item.detalles}</p>
+                      {/* Aplicamos la función para parsear links aquí */}
+                      <p>{renderTextWithLinks(item.detalles)}</p>
+
+                      {/* Si el backend envía la URL del archivo, lo mostramos (Ajusta 'item.archivo_url' según tu BD) */}
+                      {item.archivo_url && (
+                        <a
+                          href={item.archivo_url}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                          className='attachment-link'
+                        >
+                          <Paperclip size={14} /> Ver archivo adjunto
+                        </a>
+                      )}
                     </div>
                   </div>
                 )}
@@ -207,25 +271,60 @@ const TicketDetails = ({ ticket, onClose, onUpdate }) => {
           })}
         </div>
 
-        {/* INPUT DE CHAT */}
-        <form
-          className='chat-input-area'
-          onSubmit={handleEnviarComentario}
-        >
-          <textarea
-            placeholder='Escribe un mensaje aquí...'
-            value={comentario}
-            onChange={(e) => setComentario(e.target.value)}
-            rows='1'
-          ></textarea>
-          <button
-            type='submit'
-            disabled={!comentario.trim()}
-            className='btn-send'
+        {/* --- CONTENEDOR DEL INPUT --- */}
+        <div className='chat-input-wrapper'>
+          {/* Vista previa del archivo seleccionado */}
+          {archivoAdjunto && (
+            <div className='file-preview-badge'>
+              <span className='file-name'>
+                <Paperclip size={12} /> {archivoAdjunto.name}
+              </span>
+              <button
+                onClick={() => setArchivoAdjunto(null)}
+                title='Quitar archivo'
+              >
+                <X size={14} />
+              </button>
+            </div>
+          )}
+
+          <form
+            className='chat-input-area'
+            onSubmit={handleEnviarComentario}
           >
-            <Send size={18} />
-          </button>
-        </form>
+            <input
+              type='file'
+              ref={fileInputRef}
+              style={{ display: 'none' }}
+              onChange={handleFileChange}
+              accept='image/*,.pdf,.doc,.docx,.xls,.xlsx' // Limita los tipos si lo deseas
+            />
+
+            <button
+              type='button'
+              className='btn-attach'
+              onClick={() => fileInputRef.current.click()}
+              title='Adjuntar archivo'
+            >
+              <Paperclip size={18} />
+            </button>
+
+            <textarea
+              placeholder='Escribe un mensaje aquí...'
+              value={comentario}
+              onChange={(e) => setComentario(e.target.value)}
+              rows='1'
+            ></textarea>
+
+            <button
+              type='submit'
+              disabled={!comentario.trim() && !archivoAdjunto}
+              className='btn-send'
+            >
+              <Send size={18} />
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );

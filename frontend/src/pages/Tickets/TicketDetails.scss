@@ -313,6 +313,117 @@
       }
     }
 
+    .chat-link {
+      color: v.$primary;
+      text-decoration: underline;
+      font-weight: 500;
+      transition: color 0.2s;
+      word-break: break-all;
+
+      &:hover {
+        color: v.$violet-800;
+      }
+    }
+
+    .attachment-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      padding: 6px 10px;
+      background: #f1f5f9;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #475569;
+      text-decoration: none;
+      transition: 0.2s;
+
+      &:hover {
+        background: #e2e8f0;
+        color: v.$primary;
+      }
+    }
+
+    .chat-input-wrapper {
+      flex-shrink: 0;
+      background: white;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      flex-direction: column;
+
+      .file-preview-badge {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 10px 15px 0 15px;
+        padding: 6px 12px;
+        background: #e0f2fe;
+        border: 1px solid #bae6fd;
+        border-radius: 6px;
+        color: #0284c7;
+
+        .file-name {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 0.8rem;
+          font-weight: 600;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 90%;
+        }
+
+        button {
+          background: transparent;
+          border: none;
+          color: #0284c7;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          padding: 2px;
+          border-radius: 4px;
+
+          &:hover {
+            background: #bae6fd;
+            color: #0369a1;
+          }
+        }
+      }
+
+      .chat-input-area {
+        padding: 1rem;
+        display: flex;
+        gap: 10px;
+        align-items: flex-end;
+
+        @media (max-width: 768px) {
+          padding: 0.8rem;
+        }
+
+        .btn-attach {
+          background: #f8fafc;
+          color: #64748b;
+          border: 1px solid #e2e8f0;
+          border-radius: 8px;
+          width: 44px;
+          height: 44px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: 0.2s;
+          flex-shrink: 0;
+
+          &:hover {
+            background: #e2e8f0;
+            color: #334155;
+          }
+        }
+      }
+    }
+
     .chat-input-area {
       flex-shrink: 0;
       padding: 1rem;

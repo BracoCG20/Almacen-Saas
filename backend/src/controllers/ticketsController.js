@@ -1,4 +1,6 @@
 const ticketsService = require('../services/ticketsService');
+// IMPORTAMOS TU FUNCIÓN EXACTAMENTE COMO EN SERVICIOS
+const { uploadToCloudinary } = require('../middlewares/uploadMiddleware');
 
 const obtenerTickets = async (req, res) => {
   try {
@@ -24,13 +26,10 @@ const obtenerHistorialTicket = async (req, res) => {
 const crearTicket = async (req, res) => {
   try {
     await ticketsService.createTicket(req.body, req.user.id);
-
-    // --- AVISO POR SOCKET.IO DE NUEVO TICKET ---
     const io = req.app.get('io');
     if (io) {
       io.emit('nuevo_ticket');
     }
-
     res.status(201).json({ message: 'Ticket generado exitosamente.' });
   } catch (error) {
     console.error('Error en crearTicket:', error);
@@ -44,13 +43,10 @@ const actualizarTicket = async (req, res) => {
   try {
     const { id } = req.params;
     await ticketsService.updateTicket(id, req.body, req.user.id);
-
-    // --- EMITIR AVISO POR SOCKET.IO ---
     const io = req.app.get('io');
     if (io) {
       io.emit('actualizacion_ticket', { ticketId: Number(id) });
     }
-
     res.json({ message: 'Ticket actualizado correctamente.' });
   } catch (error) {
     console.error('Error en actualizarTicket:', error);
@@ -58,44 +54,57 @@ const actualizarTicket = async (req, res) => {
   }
 };
 
+// --- AQUÍ APLICAMOS TU LÓGICA EXISTENTE ---
 const agregarComentarioTicket = async (req, res) => {
   try {
     const { id } = req.params;
     const { comentario } = req.body;
 
-    if (!comentario || comentario.trim() === '') {
+    if ((!comentario || comentario.trim() === '') && !req.file) {
       return res
         .status(400)
-        .json({ error: 'El comentario no puede estar vacío.' });
+        .json({ error: 'Debe enviar un mensaje o un archivo adjunto.' });
     }
 
-    await ticketsService.addComentario(id, comentario, req.user.id);
+    let archivoUrl = null;
 
-    // --- EMITIR AVISO POR SOCKET.IO ---
+    // Si viene un archivo, usamos tu helper igual que en "registrarPago"
+    if (req.file) {
+      archivoUrl = await uploadToCloudinary(req.file.buffer, 'TicketsAdjuntos');
+    }
+
+    const textoComentario = comentario || '';
+
+    // Guardamos en la BD enviando el archivoUrl
+    await ticketsService.addComentario(
+      id,
+      textoComentario,
+      archivoUrl,
+      req.user.id,
+    );
+
     const io = req.app.get('io');
     if (io) {
       io.emit('actualizacion_ticket', { ticketId: Number(id) });
     }
 
-    res.json({ message: 'Comentario agregado correctamente.' });
+    res.json({ message: 'Comentario agregado correctamente.', archivoUrl });
   } catch (error) {
     console.error('Error en agregarComentarioTicket:', error);
-    res.status(400).json({ error: 'Error al agregar el comentario.' });
+    res
+      .status(500)
+      .json({ error: 'Error al agregar el comentario o subir el archivo.' });
   }
 };
 
 const asignarTicket = async (req, res) => {
   try {
     const { id } = req.params;
-    // req.user.id es el ID del usuario logueado (el SuperAdmin de TI)
     await ticketsService.assignTicket(id, req.user.id);
-
-    // Emitir alerta por sockets para que todos vean la actualización
     const io = req.app.get('io');
     if (io) {
       io.emit('actualizacion_ticket', { ticketId: Number(id) });
     }
-
     res.json({ message: 'Ticket asignado correctamente.' });
   } catch (error) {
     console.error('Error al asignar ticket:', error);

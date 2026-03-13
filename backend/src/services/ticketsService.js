@@ -166,12 +166,18 @@ const updateTicket = async (id, data, userId) => {
 };
 
 // Añadir un comentario (respuesta) al ticket
-const addComentario = async (ticketId, detalles, userId) => {
+const addComentario = async (ticketId, detalles, archivoUrl, userId) => {
   const queryHistorial = `
-        INSERT INTO historial_tickets (ticket_id, accion, detalles, usuario_registro_id) 
-        VALUES ($1, 'COMENTARIO', $2, $3) RETURNING *
+        INSERT INTO historial_tickets (ticket_id, accion, detalles, archivo_url, usuario_registro_id) 
+        VALUES ($1, 'COMENTARIO', $2, $3, $4) RETURNING *
     `;
-  const res = await pool.query(queryHistorial, [ticketId, detalles, userId]);
+  // Pasamos el archivoUrl como $3 y userId como $4
+  const res = await pool.query(queryHistorial, [
+    ticketId,
+    detalles,
+    archivoUrl,
+    userId,
+  ]);
 
   // Actualizar la fecha de modificación del ticket para que suba en la lista
   await pool.query(

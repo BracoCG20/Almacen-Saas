@@ -1,0 +1,211 @@
+@use '../../styles/variables' as v;
+
+.table-container {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  overflow-x: auto;
+  width: 100%;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 900px;
+
+    thead tr {
+      background-color: v.$violet-50;
+      th {
+        padding: 14px 16px;
+        color: v.$violet-800;
+        font-weight: 600;
+        text-align: left;
+        white-space: nowrap;
+        &.center {
+          text-align: center;
+        }
+      }
+    }
+    tbody tr {
+      border-bottom: 1px solid #e2e8f0;
+      &:hover {
+        background-color: #f8fafc;
+      }
+    }
+    td {
+      padding: 12px 16px;
+      vertical-align: middle;
+      &.center {
+        text-align: center;
+      }
+    }
+  }
+
+  .tkt-number {
+    background: #f1f5f9;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-family: monospace;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #475569;
+    white-space: nowrap;
+  }
+
+  .asunto-text {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 600;
+    color: #1e293b;
+  }
+
+  .info-cell {
+    display: flex;
+    flex-direction: column;
+    .name {
+      font-weight: 600;
+      color: #0f172a;
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+    .audit-text {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      white-space: nowrap;
+    }
+  }
+
+  .tecnico-badge {
+    background: v.$violet-100;
+    color: v.$violet-800;
+    padding: 4px 8px;
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .badge-pill {
+    padding: 4px 10px;
+    border-radius: 99px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    white-space: nowrap;
+
+    &.prio-critica {
+      background: #fef2f2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+    &.prio-alta {
+      background: #fff7ed;
+      color: #c2410c;
+      border: 1px solid #fed7aa;
+    }
+    &.prio-media {
+      background: #f0fdfa;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+    }
+    &.prio-baja {
+      background: #f8fafc;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+    }
+
+    &.est-proceso {
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+    &.est-resuelto {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+    &.est-pendiente {
+      background: #fef3c7;
+      color: #b45309;
+    }
+    &.est-rechazado {
+      background: #f3f4f6;
+      color: #475569;
+      text-decoration: line-through;
+    }
+  }
+
+  .pagination-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #fff;
+    border-top: 1px solid #e2e8f0;
+
+    @media (max-width: 600px) {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .info {
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      .page-text {
+        font-size: 0.85rem;
+        color: #475569;
+        font-weight: 500;
+      }
+    }
+
+    .btn-paginate {
+      border: 1px solid #e2e8f0;
+      background: white;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: #475569;
+      display: flex;
+      align-items: center;
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .actions-cell {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    .action-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: #64748b;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.2s;
+      &:hover {
+        background-color: v.$violet-50;
+        color: v.$primary;
+      }
+      &.assign:hover {
+        background-color: #dcfce7;
+        color: #16a34a;
+      }
+    }
+  }
+}
