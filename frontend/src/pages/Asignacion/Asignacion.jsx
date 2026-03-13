@@ -108,15 +108,6 @@ const Asignacion = () => {
           (u) => u.estado === true && !ocupados.has(u.id),
         ),
       );
-
-      const entregas = resMovimientos.data
-        .filter((h) => h.tipo === 'entrega')
-        .sort(
-          (a, b) => new Date(b.fecha_movimiento) - new Date(a.fecha_movimiento),
-        )
-        .slice(0, 20);
-
-      setHistorialVisual(entregas);
     } catch (error) {
       toast.error('Error al cargar datos');
     } finally {
