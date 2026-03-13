@@ -13,7 +13,7 @@ const getDocumentoByToken = async (token) => {
     WHERE m.token_firma = $1 AND m.firma_valida = false
   `;
   const result = await pool.query(query, [token]);
-  return result.rows[0]; // Retorna undefined si no encuentra nada
+  return result.rows[0];
 };
 
 // 2. Procesar la firma digital con DNI
@@ -44,17 +44,15 @@ const procesarFirmaDigital = async (token, dni_ingresado) => {
       );
     }
 
-    // 2. Obtener el PDF original (Descargarlo desde Cloudinary)
+    // 2. Obtener el PDF original
     let pdfBufferOriginal;
     try {
       if (mov.pdf_generado_url.startsWith('http')) {
-        // Es un enlace web (Cloudinary)
         const response = await axios.get(mov.pdf_generado_url, {
           responseType: 'arraybuffer',
         });
         pdfBufferOriginal = response.data;
       } else {
-        // Fallback: Por si hay PDFs viejos guardados de forma local
         const fs = require('fs');
         const path = require('path');
         const localPath = path.join(__dirname, '../../', mov.pdf_generado_url);
@@ -89,12 +87,11 @@ const procesarFirmaDigital = async (token, dni_ingresado) => {
     // Normalizamos el texto por si viene con mayúsculas o tildes
     const tipoMov = mov.tipo_movimiento.toLowerCase();
 
-    let subcarpeta = 'Entregas'; // Carpeta por defecto
+    let subcarpeta = 'Entregas';
     if (tipoMov.includes('devolucion') || tipoMov.includes('devolución')) {
       subcarpeta = 'Devoluciones';
     }
 
-    // Ruta final en Cloudinary: "Actas Firmadas/Entregas" o "Actas Firmadas/Devoluciones"
     const rutaCloudinary = `Actas Firmadas/${subcarpeta}`;
 
     const pdfFirmadoUrl = await uploadToCloudinary(

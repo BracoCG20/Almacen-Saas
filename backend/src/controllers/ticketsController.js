@@ -1,5 +1,4 @@
 const ticketsService = require('../services/ticketsService');
-// IMPORTAMOS TU FUNCIÓN EXACTAMENTE COMO EN SERVICIOS
 const { uploadToCloudinary } = require('../middlewares/uploadMiddleware');
 
 const obtenerTickets = async (req, res) => {
@@ -54,7 +53,6 @@ const actualizarTicket = async (req, res) => {
   }
 };
 
-// --- AQUÍ APLICAMOS TU LÓGICA EXISTENTE ---
 const agregarComentarioTicket = async (req, res) => {
   try {
     const { id } = req.params;
@@ -68,14 +66,12 @@ const agregarComentarioTicket = async (req, res) => {
 
     let archivoUrl = null;
 
-    // Si viene un archivo, usamos tu helper igual que en "registrarPago"
     if (req.file) {
       archivoUrl = await uploadToCloudinary(req.file.buffer, 'TicketsAdjuntos');
     }
 
     const textoComentario = comentario || '';
 
-    // Guardamos en la BD enviando el archivoUrl
     await ticketsService.addComentario(
       id,
       textoComentario,

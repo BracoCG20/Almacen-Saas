@@ -181,11 +181,17 @@ const Historial = () => {
     return texto.join(', ');
   };
 
-  const getBackendUrl = () => {
+  const getBackendUrl = (path) => {
+    if (!path) return 'No disponible';
+
+    if (path.includes('cloudinary.com') || path.includes('http')) {
+      return path.startsWith('/') ? path.substring(1) : path;
+    }
+
     const baseUrl = api.defaults.baseURL
       ? api.defaults.baseURL.replace(/\/api\/?$/, '')
       : 'http://localhost:4000';
-    return baseUrl;
+    return `${baseUrl}${path.startsWith('/') ? path : `/${path}`}`;
   };
 
   // --- LÓGICA DE FILTRADO Y PAGINACIÓN ---
@@ -237,9 +243,7 @@ const Historial = () => {
         : h.pdf_firmado_url
           ? 'SIN VALIDAR'
           : 'NO SUBIDO',
-      'Enlace Documento (Acta)': h.pdf_firmado_url
-        ? `${getBackendUrl()}${h.pdf_firmado_url}`
-        : 'No disponible',
+      'Enlace Documento (Acta)': getBackendUrl(h.pdf_firmado_url),
     }));
 
     const ws = XLSX.utils.json_to_sheet(dataParaExcel);

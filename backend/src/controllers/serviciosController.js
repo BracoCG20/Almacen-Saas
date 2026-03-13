@@ -1,5 +1,4 @@
 const serviciosService = require('../services/serviciosService');
-// IMPORTACIÓN FALTANTE:
 const { uploadToCloudinary } = require('../middlewares/uploadMiddleware');
 
 const getServicios = async (req, res) => {

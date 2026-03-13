@@ -7,11 +7,11 @@ const storage = multer.memoryStorage();
 
 const upload = multer({
   storage,
-  limits: { fileSize: 15 * 1024 * 1024 }, // Aumentamos a 15MB por si los PDFs son pesados
+  limits: { fileSize: 15 * 1024 * 1024 },
 });
 
 /**
- * Función universal para subir a Cloudinary
+ * Función para subir a Cloudinary
  * @param {Buffer} fileBuffer Buffer del archivo
  * @param {string} folder Carpeta destino en Cloudinary
  */

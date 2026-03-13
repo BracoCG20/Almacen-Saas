@@ -139,8 +139,6 @@ const actualizarRegistro = async (id, data, adminId) => {
 
     let accionAuditoria = 'EDICION';
     let detallesAuditoria = 'Cambio de tipo de licencia';
-
-    // Obtener estado anterior para saber si es Baja o Reactivación
     const oldQuery = await client.query(
       'SELECT estado, colaborador_id FROM directorio WHERE id = $1',
       [id],

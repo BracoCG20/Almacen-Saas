@@ -9,10 +9,8 @@ import EntregaTable from './EntregaTable';
 import { generarPDFBlob } from '../../utils/pdfGeneratorAsignacion';
 
 import { io } from 'socket.io-client';
-
 import { AlertTriangle, X, Check, HelpCircle } from 'lucide-react';
 
-// --- IMPORTACIONES PARA EL TOUR ---
 import { driver } from 'driver.js';
 import 'driver.js/dist/driver.css';
 
@@ -32,14 +30,13 @@ const Asignacion = () => {
   const fileInputRef = useRef(null);
   const [selectedMovimientoId, setSelectedMovimientoId] = useState(null);
 
+  // ESTADO ACTUALIZADO PARA MÚLTIPLES EQUIPOS
   const [formData, setFormData] = useState({
-    equipo_id: '',
     empleado_id: '',
-    cargador: true,
+    equipos: [{ equipo_id: '', cargador: true }],
     observaciones: '',
   });
 
-  // --- FUNCIÓN DEL TOUR GUIADO ---
   const startAsignacionTour = () => {
     const driverObj = driver({
       showProgress: true,
@@ -54,7 +51,7 @@ const Asignacion = () => {
           popover: {
             title: 'Formulario de Entrega',
             description:
-              'Selecciona el equipo disponible y el colaborador al que se lo asignarás. Añade observaciones si es necesario.',
+              'Selecciona el equipo disponible y el colaborador al que se lo asignarás.',
             side: 'right',
             align: 'start',
           },
@@ -64,7 +61,7 @@ const Asignacion = () => {
           popover: {
             title: 'Generar Acta',
             description:
-              'Una vez completado el formulario, puedes guardar y descargar el PDF, enviarlo directamente por Email, o abrir un chat de WhatsApp.',
+              'Guarda y descarga el PDF, envíalo por Email o WhatsApp.',
             side: 'right',
             align: 'start',
           },
@@ -73,8 +70,7 @@ const Asignacion = () => {
           element: '#tour-asignacion-tabla',
           popover: {
             title: 'Historial Reciente',
-            description:
-              'Aquí aparecerán las últimas entregas que has realizado. Verás el estado de la firma y podrás subir el documento escaneado.',
+            description: 'Aquí aparecerán las últimas entregas realizadas.',
             side: 'left',
             align: 'start',
           },
@@ -118,11 +114,10 @@ const Asignacion = () => {
         .sort(
           (a, b) => new Date(b.fecha_movimiento) - new Date(a.fecha_movimiento),
         )
-        .slice(0, 10);
+        .slice(0, 20);
 
       setHistorialVisual(entregas);
     } catch (error) {
-      console.error(error);
       toast.error('Error al cargar datos');
     } finally {
       setLoading(false);
@@ -131,19 +126,14 @@ const Asignacion = () => {
 
   useEffect(() => {
     let isMounted = true;
-
-    // 1. Cargar datos
     fetchData();
 
-    // 2. Configurar Socket de forma segura
     const baseUrl = api.defaults.baseURL
       ? api.defaults.baseURL.replace(/\/api\/?$/, '')
       : 'http://localhost:4000';
-
     const socket = io(baseUrl);
 
     socket.on('documento_firmado', (data) => {
-      // Solo se actualiza si el componente sigue en pantalla
       if (isMounted) {
         toast.info('Actualizando estados de firma...', { icon: '📝' });
         fetchData();
@@ -162,6 +152,11 @@ const Asignacion = () => {
     fileInputRef.current.click();
   };
 
+  const onInvalidarClick = (id) => {
+    setMovimientoToInvalidar(id);
+    setIsRejectModalOpen(true);
+  };
+
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file || !selectedMovimientoId) return;
@@ -172,7 +167,9 @@ const Asignacion = () => {
       await api.post(
         `/movimientos/${selectedMovimientoId}/subir-firmado`,
         form,
-        { headers: { 'Content-Type': 'multipart/form-data' } },
+        {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        },
       );
       toast.update(toastId, {
         render: 'Guardado ✅',
@@ -192,11 +189,6 @@ const Asignacion = () => {
     e.target.value = null;
   };
 
-  const onInvalidarClick = (id) => {
-    setMovimientoToInvalidar(id);
-    setIsRejectModalOpen(true);
-  };
-
   const handleInvalidar = async () => {
     try {
       await api.put(`/movimientos/${movimientoToInvalidar}/invalidar`);
@@ -210,57 +202,60 @@ const Asignacion = () => {
 
   const handleVerFirmado = (url) => {
     if (!url) return;
-
-    // Verificamos si la URL ya es un enlace externo (Cloudinary)
     if (url.startsWith('http')) {
       setPdfUrl(url);
     } else {
-      // Si es un archivo local antiguo, usamos el baseUrl
       const baseUrl = api.defaults.baseURL
         ? api.defaults.baseURL.replace(/\/api\/?$/, '')
         : 'http://localhost:4000';
       setPdfUrl(`${baseUrl}${url}`);
     }
-
     setShowPdfModal(true);
   };
 
   const handleAction = async (tipoAccion) => {
-    if (!formData.equipo_id || !formData.empleado_id) return;
+    if (!formData.empleado_id || formData.equipos.length === 0) return;
 
     const us = usuariosLibres.find(
       (u) => u.id === parseInt(formData.empleado_id),
     );
-    const eq = equiposDisponibles.find(
-      (e) => e.id === parseInt(formData.equipo_id),
-    );
-
     if (tipoAccion === 'EMAIL' && !us.email_contacto) {
       return toast.error('El colaborador no tiene correo registrado');
     }
 
-    const equipoParaPdf = { ...eq, serie: eq.numero_serie };
-    const docPdf = generarPDFBlob(equipoParaPdf, us, null, formData.cargador);
+    const equiposParaPdf = formData.equipos.map((item) => {
+      const eq = equiposDisponibles.find(
+        (e) => e.id === parseInt(item.equipo_id),
+      );
+      return { ...eq, serie: eq.numero_serie, cargador: item.cargador };
+    });
+
+    const docPdf = generarPDFBlob(equiposParaPdf, us, null);
     const pdfBlob = docPdf.output('blob');
 
     try {
-      if (tipoAccion === 'GUARDAR' || tipoAccion === 'WHATSAPP') {
-        await api.post('/movimientos/entrega', {
-          ...formData,
-          equipo_id: parseInt(formData.equipo_id),
-          empleado_id: parseInt(formData.empleado_id),
-          fecha: new Date().toISOString(),
-        });
+      const payload = {
+        empleado_id: parseInt(formData.empleado_id),
+        equipos: formData.equipos.map((eq) => ({
+          equipo_id: parseInt(eq.equipo_id),
+          cargador: eq.cargador,
+        })),
+        observaciones: formData.observaciones,
+        fecha: new Date().toISOString(),
+      };
 
-        toast.success('Entrega guardada exitosamente');
+      if (tipoAccion === 'GUARDAR' || tipoAccion === 'WHATSAPP') {
+        await api.post('/movimientos/entrega', payload);
+
+        toast.success('Entregas guardadas exitosamente');
         setPdfUrl(URL.createObjectURL(pdfBlob));
         setShowPdfModal(true);
 
         if (tipoAccion === 'WHATSAPP') {
-          const nombreArchivo = `Acta_${us.nombres.split(' ')[0]}_${eq.modelo}.pdf`;
+          const nombreArchivo = `Acta_${us.nombres.split(' ')[0]}_Equipos.pdf`;
           docPdf.save(nombreArchivo);
           const numero = us.telefono ? us.telefono.replace(/\D/g, '') : '';
-          const mensaje = `Hola ${us.nombres}, te hago entrega del acta de tu equipo ${eq.modelo}.`;
+          const mensaje = `Hola ${us.nombres}, te hago entrega del acta de asignación de tus equipos.`;
           const link = numero
             ? `https://wa.me/51${numero}?text=${encodeURIComponent(mensaje)}`
             : `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
@@ -270,17 +265,16 @@ const Asignacion = () => {
         const loadingToast = toast.loading('Guardando y enviando correo...');
         const formDataEmail = new FormData();
         formDataEmail.append('pdf', pdfBlob, 'Acta_Entrega.pdf');
-        formDataEmail.append('equipo_id', formData.equipo_id);
-        formDataEmail.append('empleado_id', formData.empleado_id);
-        formDataEmail.append('cargador', formData.cargador);
+        formDataEmail.append('payload', JSON.stringify(payload));
         formDataEmail.append('destinatario', us.email_contacto);
         formDataEmail.append('nombreEmpleado', us.nombres);
-        formDataEmail.append('tipoEquipo', eq.modelo);
 
         const response = await api.post(
           '/movimientos/entrega-con-correo',
           formDataEmail,
-          { headers: { 'Content-Type': 'multipart/form-data' } },
+          {
+            headers: { 'Content-Type': 'multipart/form-data' },
+          },
         );
 
         if (response.data.warning) {
@@ -303,25 +297,24 @@ const Asignacion = () => {
       }
 
       setFormData({
-        equipo_id: '',
         empleado_id: '',
-        cargador: true,
+        equipos: [{ equipo_id: '', cargador: true }],
         observaciones: '',
       });
       fetchData();
     } catch (error) {
-      console.error(error);
       toast.error(error.response?.data?.error || 'Error en el proceso');
-      toast.dismiss();
     }
   };
 
   if (loading)
     return <div className='loading-state'>Cargando asignaciones...</div>;
 
+  // PASAMOS TODO EL OBJETO PARA QUE EL FORMULARIO PUEDA LEER LA CATEGORÍA
   const equiposOptions = equiposDisponibles.map((e) => ({
     value: e.id,
     label: `${e.marca} ${e.modelo} - ${e.numero_serie}`,
+    equipoFullData: e,
   }));
 
   const usuariosOptions = usuariosLibres.map((u) => ({
@@ -333,8 +326,6 @@ const Asignacion = () => {
     <div className='entrega-container'>
       <div className='page-header'>
         <h1>Registrar Entrega</h1>
-
-        {/* BOTÓN TOUR */}
         <button
           onClick={startAsignacionTour}
           className='btn-tour-header'
@@ -342,7 +333,6 @@ const Asignacion = () => {
           <HelpCircle size={18} />
         </button>
       </div>
-
       <input
         type='file'
         ref={fileInputRef}
@@ -350,9 +340,7 @@ const Asignacion = () => {
         accept='application/pdf'
         onChange={handleFileChange}
       />
-
       <div className='content-grid'>
-        {/* Envolvemos el form en un div con id para el tour */}
         <div id='tour-asignacion-form'>
           <EntregaForm
             equiposOptions={equiposOptions}
@@ -362,22 +350,38 @@ const Asignacion = () => {
             onAction={handleAction}
           />
         </div>
-
-        {/* Envolvemos la tabla en un div con id para el tour */}
         <div id='tour-asignacion-tabla'>
           <EntregaTable
             historial={historialVisual}
             onVerPdfOriginal={(item) => {
+              // --- AGRUPACIÓN PARA EL PDF ---
+              let equiposAImprimir = [];
+              if (item.equipos_agrupados) {
+                equiposAImprimir = item.equipos_agrupados.map((eq) => ({
+                  serie: eq.serie,
+                  marca: eq.marca,
+                  modelo: eq.modelo,
+                  cargador: eq.cargador,
+                }));
+              } else {
+                equiposAImprimir = [
+                  {
+                    serie: item.serie,
+                    marca: item.marca,
+                    modelo: item.modelo,
+                    cargador: item.cargador,
+                  },
+                ];
+              }
+
               const doc = generarPDFBlob(
-                { serie: item.serie, marca: item.marca, modelo: item.modelo },
+                equiposAImprimir,
                 {
                   nombres: item.empleado_nombre,
                   apellidos: item.empleado_apellido,
                   dni: item.dni || '---',
-                  genero: item.genero || 'hombre',
                 },
                 item.fecha_movimiento,
-                item.cargador,
               );
               setPdfUrl(doc.output('bloburl'));
               setShowPdfModal(true);
@@ -388,7 +392,6 @@ const Asignacion = () => {
           />
         </div>
       </div>
-
       <Modal
         isOpen={isRejectModalOpen}
         onClose={() => setIsRejectModalOpen(false)}
@@ -421,7 +424,6 @@ const Asignacion = () => {
           </div>
         </div>
       </Modal>
-
       <PdfModal
         isOpen={showPdfModal}
         onClose={() => setShowPdfModal(false)}

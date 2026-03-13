@@ -29,7 +29,6 @@ router.get('/:id/auditoria', getAuditoriaServicio);
 
 router.get('/:id/pagos', getPagosPorServicio);
 
-// Usamos upload.single para el comprobante de pago (Factura)
 router.post('/:id/pagos', upload.single('comprobante'), registrarPago);
 
 router.put('/pagos/:pagoId/anular', anularPago);

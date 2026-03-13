@@ -1,4 +1,12 @@
-import { Save, Mail, MessageCircle, Laptop, User } from 'lucide-react';
+import {
+  Save,
+  Mail,
+  MessageCircle,
+  Laptop,
+  User,
+  Plus,
+  Trash2,
+} from 'lucide-react';
 import Select from 'react-select';
 import './EntregaForm.scss';
 
@@ -9,9 +17,11 @@ const EntregaForm = ({
   setFormData,
   onAction,
 }) => {
-  const isFormValid = formData.equipo_id && formData.empleado_id;
+  const isFormValid =
+    formData.empleado_id &&
+    formData.equipos.length > 0 &&
+    formData.equipos.every((eq) => eq.equipo_id !== '');
 
-  // --- FIX CENTRADO REACT SELECT 40PX ---
   const customSelectStyles = {
     control: (provided, state) => ({
       ...provided,
@@ -76,32 +86,63 @@ const EntregaForm = ({
     menuPortal: (base) => ({ ...base, zIndex: 9999 }),
   };
 
+  const handleAddEquipo = () => {
+    setFormData({
+      ...formData,
+      equipos: [...formData.equipos, { equipo_id: '', cargador: true }],
+    });
+  };
+
+  const handleRemoveEquipo = (index) => {
+    const nuevosEquipos = [...formData.equipos];
+    nuevosEquipos.splice(index, 1);
+    setFormData({ ...formData, equipos: nuevosEquipos });
+  };
+
+  const checkRequiereCargador = (equipoId) => {
+    if (!equipoId) return true;
+    const option = equiposOptions.find((op) => op.value === equipoId);
+    if (!option || !option.equipoFullData) return true;
+
+    const categoria = option.equipoFullData.categoria;
+
+    if (categoria === 'Laptop/PC' || categoria === 'Celular/Tablet') {
+      return true;
+    }
+    return false;
+  };
+
+  const handleChangeEquipo = (index, equipoId) => {
+    const nuevosEquipos = [...formData.equipos];
+    nuevosEquipos[index].equipo_id = equipoId;
+
+    if (!checkRequiereCargador(equipoId)) {
+      nuevosEquipos[index].cargador = null;
+    } else {
+      nuevosEquipos[index].cargador = true;
+    }
+
+    setFormData({ ...formData, equipos: nuevosEquipos });
+  };
+
+  const handleChangeCargador = (index, value) => {
+    const nuevosEquipos = [...formData.equipos];
+    nuevosEquipos[index].cargador = value;
+    setFormData({ ...formData, equipos: nuevosEquipos });
+  };
+
+  const getOpcionesDisponibles = (currentIndex) => {
+    const idsSeleccionados = formData.equipos.map((eq, i) =>
+      i !== currentIndex ? eq.equipo_id : null,
+    );
+    return equiposOptions.filter((op) => !idsSeleccionados.includes(op.value));
+  };
+
   return (
     <div className='form-card'>
-      <div className='input-group'>
+      <div className='input-group spacing-bottom'>
         <label>
-          <Laptop size={16} /> Equipo (Disponibles)
-        </label>
-        <Select
-          options={equiposOptions}
-          value={
-            equiposOptions.find((op) => op.value === formData.equipo_id) || null
-          }
-          onChange={(op) =>
-            setFormData({ ...formData, equipo_id: op?.value || '' })
-          }
-          placeholder='Seleccione un equipo...'
-          styles={customSelectStyles}
-          menuPortalTarget={document.body}
-        />
-      </div>
-
-      <div
-        className='input-group'
-        style={{ marginTop: '1.5rem' }}
-      >
-        <label>
-          <User size={16} /> Colaborador (Sin equipo)
+          <User size={16} /> Colaborador (Destinatario)
         </label>
         <Select
           options={usuariosOptions}
@@ -118,16 +159,76 @@ const EntregaForm = ({
         />
       </div>
 
-      <label className='checkbox-card'>
-        <input
-          type='checkbox'
-          checked={formData.cargador}
-          onChange={(e) =>
-            setFormData({ ...formData, cargador: e.target.checked })
-          }
-        />
-        <span>¿Incluye Cargador / Accesorios?</span>
-      </label>
+      <div className='equipos-section'>
+        <label className='section-title'>
+          <Laptop size={16} /> Equipos a Asignar
+        </label>
+
+        {formData.equipos.map((item, index) => {
+          const requiereCargador = checkRequiereCargador(item.equipo_id);
+
+          return (
+            <div
+              key={index}
+              className='equipo-item-card'
+            >
+              {/* Contenido Izquierdo (Select + Checkbox) */}
+              <div className='equipo-item-content'>
+                <div className='input-group'>
+                  <Select
+                    options={getOpcionesDisponibles(index)}
+                    value={
+                      equiposOptions.find(
+                        (op) => op.value === item.equipo_id,
+                      ) || null
+                    }
+                    onChange={(op) =>
+                      handleChangeEquipo(index, op?.value || '')
+                    }
+                    placeholder={`Seleccione el equipo #${index + 1}...`}
+                    styles={customSelectStyles}
+                    menuPortalTarget={document.body}
+                  />
+                </div>
+
+                {requiereCargador && (
+                  <label className='checkbox-card compact-checkbox'>
+                    <input
+                      type='checkbox'
+                      checked={item.cargador === true}
+                      onChange={(e) =>
+                        handleChangeCargador(index, e.target.checked)
+                      }
+                    />
+                    <span>¿Incluye Cargador / Accesorios?</span>
+                  </label>
+                )}
+              </div>
+
+              {/* Botón Eliminar Derecho (Centrado Verticalmente) */}
+              {formData.equipos.length > 1 && (
+                <button
+                  type='button'
+                  onClick={() => handleRemoveEquipo(index)}
+                  className='btn-remove-equipo'
+                  title='Quitar equipo'
+                >
+                  <Trash2 size={18} />
+                </button>
+              )}
+            </div>
+          );
+        })}
+
+        {/* BOTÓN SHADCN OUTLINE */}
+        <button
+          type='button'
+          onClick={handleAddEquipo}
+          className='btn-add-equipo-shadcn'
+        >
+          <Plus size={16} /> Añadir equipo adicional
+        </button>
+      </div>
 
       <div
         className='actions-container'

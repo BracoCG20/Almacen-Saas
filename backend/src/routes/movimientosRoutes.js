@@ -2,7 +2,7 @@ const { Router } = require('express');
 const router = Router();
 
 const verifyToken = require('../middlewares/authMiddleware');
-const { upload } = require('../middlewares/uploadMiddleware'); // Importamos el de memoria
+const { upload } = require('../middlewares/uploadMiddleware');
 
 const {
   registrarEntrega,
@@ -21,7 +21,6 @@ router.get('/', obtenerHistorial);
 router.post('/entrega', registrarEntrega);
 router.post('/devolucion', registrarDevolucion);
 
-// Todas las rutas de PDF ahora usan 'upload.single' (Memoria)
 router.post(
   '/entrega-con-correo',
   upload.single('pdf'),
@@ -34,11 +33,7 @@ router.post(
 );
 router.post('/reenviar-correo', upload.single('pdf'), reenviarCorreoActa);
 
-router.post(
-  '/:id/subir-firmado',
-  upload.single('pdf'), // Cambiado de uploadFirmados a upload (memoria)
-  subirPdfFirmado,
-);
+router.post('/:id/subir-firmado', upload.single('pdf'), subirPdfFirmado);
 router.put('/:id/invalidar', invalidarFirma);
 
 module.exports = router;

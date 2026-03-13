@@ -10,7 +10,6 @@ const {
 } = require('../controllers/authController');
 
 const verifyToken = require('../middlewares/authMiddleware');
-// Importamos el nuevo middleware de memoria
 const { upload } = require('../middlewares/uploadMiddleware');
 
 const router = Router();
@@ -18,7 +17,6 @@ const router = Router();
 router.post('/login', login);
 
 router.get('/perfil', verifyToken, getPerfil);
-// Cambiamos uploadPerfil.single por upload.single
 router.put('/perfil', verifyToken, upload.single('foto'), updatePerfil);
 
 router.post('/register', verifyToken, register);

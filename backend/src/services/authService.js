@@ -71,7 +71,7 @@ const getUserProfile = async (userId) => {
 const updateUserProfile = async (
   userId,
   { password, telefono, nombres, apellidos, cargo, email_login },
-  cloudinaryUrl, // <-- Ahora recibe directamente la URL de Cloudinary
+  cloudinaryUrl,
 ) => {
   const client = await pool.connect();
   let finalFotoUrl = cloudinaryUrl;
@@ -96,7 +96,6 @@ const updateUserProfile = async (
       userValues.push(email_login);
     }
 
-    // Si hay una nueva foto desde Cloudinary, la actualizamos
     if (cloudinaryUrl) {
       userFields.push(`foto_perfil_url = $${userIdx++}`);
       userValues.push(cloudinaryUrl);

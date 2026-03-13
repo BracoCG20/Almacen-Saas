@@ -227,3 +227,177 @@
     font-size: 0.85rem;
   }
 }
+
+// ESTILOS DEL TOOLTIP SHADCN
+.multiple-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #f1f5f9;
+  color: #3b82f6;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: help;
+  border: 1px solid #e2e8f0;
+  transition: background-color 0.2s;
+  svg {
+    color: #3b82f6;
+  }
+  &:hover {
+    background-color: #e2e8f0;
+  }
+}
+
+.tooltip-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+
+  .tooltip-content {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(5px);
+    background-color: #0f172a;
+    color: #f8fafc;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    min-width: 220px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 50;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 5px;
+      border-style: solid;
+      border-color: #0f172a transparent transparent transparent;
+    }
+
+    .tooltip-item {
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 8px;
+      margin-bottom: 8px;
+      border-bottom: 1px solid #334155;
+      &:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+      }
+      strong {
+        font-size: 0.85rem;
+        color: #f8fafc;
+        font-weight: 500;
+      }
+      span {
+        font-size: 0.7rem;
+        color: #94a3b8;
+        font-family: monospace;
+      }
+    }
+  }
+
+  &:hover .tooltip-content {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+// ESTILOS TOOLTIP SHADCN PARA MÚLTIPLES EQUIPOS
+.multiple-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #f1f5f9;
+  color: #0f172a;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: default;
+  border: 1px solid #e2e8f0;
+  transition: background-color 0.2s;
+  svg {
+    color: #64748b;
+  }
+  &:hover {
+    background-color: #e2e8f0;
+  }
+}
+
+.shadcn-tooltip-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+
+  .shadcn-tooltip-content {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(5px);
+    background-color: #0f172a;
+    color: #f8fafc;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    min-width: 200px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 50;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 5px;
+      border-style: solid;
+      border-color: #0f172a transparent transparent transparent;
+    }
+
+    .tooltip-item {
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 8px;
+      margin-bottom: 8px;
+      border-bottom: 1px solid #334155;
+      &:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+      }
+      strong {
+        font-size: 0.8rem;
+        color: #f8fafc;
+        font-weight: 500;
+        line-height: 1.2;
+      }
+      span {
+        font-size: 0.7rem;
+        color: #94a3b8;
+        font-family: monospace;
+        margin-top: 2px;
+      }
+    }
+  }
+
+  &:hover .shadcn-tooltip-content {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+}

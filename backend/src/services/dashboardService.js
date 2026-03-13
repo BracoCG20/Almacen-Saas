@@ -42,7 +42,7 @@ const getDashboardData = async () => {
     equipos: equiposRes.rows,
     movimientos: movRes.rows,
     servicios: serviciosRes.rows,
-    tickets: ticketsRes.rows, // <-- Devolvemos los tickets
+    tickets: ticketsRes.rows,
   };
 };
 

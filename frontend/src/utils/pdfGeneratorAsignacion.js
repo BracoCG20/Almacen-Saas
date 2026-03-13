@@ -3,7 +3,7 @@ import logoImg from '../assets/logo_gruposp.png';
 import firmaImg from '../assets/firma_pierina.png';
 
 export const generarPDFBlob = (
-  equipo,
+  equipos, // AHORA RECIBE UN ARREGLO DE EQUIPOS
   usuario,
   fechaOverride = null,
   cargadorOverride = null,
@@ -14,6 +14,11 @@ export const generarPDFBlob = (
   const anchoPagina = 210;
   const anchoUtil = anchoPagina - margenIzq - margenDer;
   let y = 20;
+
+  // Si envían un solo equipo (por compatibilidad), lo convertimos en arreglo
+  const listaEquipos = Array.isArray(equipos)
+    ? equipos
+    : [{ ...equipos, cargador: cargadorOverride }];
 
   // 1. Logo
   doc.addImage(logoImg, 'PNG', margenIzq, 10, 40, 15);
@@ -48,7 +53,6 @@ export const generarPDFBlob = (
   y += 12;
 
   const rawGenero = (usuario.genero || '').toLowerCase().trim();
-  // Se valida si es F, Femenino o Mujer
   const esMujer =
     rawGenero === 'f' || rawGenero === 'mujer' || rawGenero === 'femenino';
 
@@ -62,7 +66,7 @@ export const generarPDFBlob = (
   doc.text(splitIntro, margenIzq, y);
   y += splitIntro.length * 5 + 5;
 
-  // 5. Tabla
+  // 5. Tabla (Multiples filas)
   const altoFila = 10;
   const col1 = margenIzq;
   const col2 = margenIzq + 50;
@@ -81,25 +85,33 @@ export const generarPDFBlob = (
   doc.text('CANTIDAD', col3 + 2, y + 6);
   y += altoFila;
 
-  // Datos
+  // Datos - Bucle por cada equipo
   doc.setFont('helvetica', 'normal');
-  doc.rect(col1, y, 50, altoFila);
-  doc.rect(col2, y, 70, altoFila);
-  doc.rect(col3, y, anchoCol3, altoFila);
+  listaEquipos.forEach((eq) => {
+    if (y > 250) {
+      doc.addPage();
+      y = 20;
+    }
 
-  const tieneCargador =
-    cargadorOverride !== null && cargadorOverride !== undefined
-      ? cargadorOverride
-      : true;
+    doc.rect(col1, y, 50, altoFila);
+    doc.rect(col2, y, 70, altoFila);
+    doc.rect(col3, y, anchoCol3, altoFila);
 
-  const itemTexto = tieneCargador
-    ? 'Laptop y cargador'
-    : 'Laptop (sólo equipo)';
+    // LÓGICA DE TEXTO SEGÚN EL CARGADOR
+    const tieneCargador = eq.cargador !== undefined ? eq.cargador : true;
+    let itemTexto = eq.modelo;
+    if (tieneCargador === true) itemTexto += ' y accesorios';
+    else if (tieneCargador === false) itemTexto += ' (sólo equipo)';
+    // Si es null, simplemente imprime el modelo.
 
-  doc.text(itemTexto, col1 + 2, y + 6);
-  doc.text(`código de equipo: ${equipo.serie}`, col2 + 2, y + 6);
-  doc.text('1', col3 + anchoCol3 / 2, y + 6, { align: 'center' });
-  y += altoFila + 10;
+    const textoItemRecortado = doc.splitTextToSize(itemTexto, 46);
+    doc.text(textoItemRecortado, col1 + 2, y + 5);
+    doc.text(`Cod/Serie: ${eq.serie || eq.numero_serie}`, col2 + 2, y + 6);
+    doc.text('1', col3 + anchoCol3 / 2, y + 6, { align: 'center' });
+    y += altoFila;
+  });
+
+  y += 10;
 
   // 6. Legal
   doc.setFontSize(9);
@@ -140,7 +152,7 @@ export const generarPDFBlob = (
   doc.text(cierre, margenIzq, y);
 
   // 7. Firmas
-  const yFirma = 240;
+  const yFirma = Math.max(y + 30, 240);
   doc.line(margenIzq, yFirma, margenIzq + 60, yFirma);
   doc.setFont('helvetica', 'bold');
   doc.text(`DNI/PTP/C.E N° ${dni}`, margenIzq, yFirma + 5);

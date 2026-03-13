@@ -14,7 +14,6 @@ const router = Router();
 // Requieren autenticación
 router.use(verifyToken);
 
-// IMPORTANTE: /estadisticas debe ir antes de las rutas con /:id
 router.get('/estadisticas', obtenerEstadisticas);
 router.get('/historial', obtenerHistorialCompleto);
 router.get('/', obtenerDirectorio);

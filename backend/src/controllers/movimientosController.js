@@ -15,14 +15,14 @@ const registrarEntrega = async (req, res) => {
   try {
     // Registro simple sin archivo
     const result = await movimientosService.registrarEntrega(
-      req.body,
+      req.body, // Ya viene con formato { empleado_id, equipos: [...] }
       req.user.id,
       null,
       null,
     );
     res.status(201).json({
-      message: 'Entrega registrada correctamente.',
-      movimiento_id: result.movimientoId,
+      message: 'Entrega múltiple registrada correctamente.',
+      movimientos_ids: result.movimientoIds,
     });
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -35,14 +35,18 @@ const registrarEntregaConCorreo = async (req, res) => {
     let pdfBuffer = null;
 
     if (req.file) {
-      // 1. Subir el acta generada a Cloudinary
       cloudinaryUrl = await uploadToCloudinary(req.file.buffer, 'Originales');
       pdfBuffer = req.file.buffer;
     }
 
-    // 2. Registrar en BD pasando la URL de la nube y el buffer para el email
+    // EXTRAEMOS Y PARSEAMOS EL PAYLOAD
+    const data = JSON.parse(req.body.payload);
+    // Añadimos destinatario y nombre que vienen fuera del JSON
+    data.destinatario = req.body.destinatario;
+    data.nombreEmpleado = req.body.nombreEmpleado;
+
     const result = await movimientosService.registrarEntrega(
-      req.body,
+      data,
       req.user.id,
       cloudinaryUrl,
       pdfBuffer,
@@ -53,9 +57,9 @@ const registrarEntregaConCorreo = async (req, res) => {
       .json({ message: 'Registro guardado y correo enviado exitosamente.' });
   } catch (error) {
     console.error('Error en registrarEntregaConCorreo:', error);
-    res
-      .status(400)
-      .json({ error: error.message || 'Error al procesar la entrega' });
+    res.status(400).json({
+      error: error.message || 'Error al procesar la entrega múltiple',
+    });
   }
 };
 

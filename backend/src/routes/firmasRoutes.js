@@ -6,7 +6,6 @@ const {
 
 const router = Router();
 
-// RUTAS PÚBLICAS (NO llevan verifyToken)
 router.get('/:token', getInfoFirma);
 router.post('/:token', procesarFirma);
 

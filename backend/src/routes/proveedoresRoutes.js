@@ -13,12 +13,11 @@ const {
 
 const router = Router();
 
-// Todas las rutas requieren estar autenticado
+// Requieren autenticación
 router.use(verifyToken);
 
 router.get('/', getProveedores);
 
-// Usamos upload.single para procesar en memoria y subir a Cloudinary
 router.post('/', upload.single('contrato_pdf'), createProveedor);
 router.put('/:id', upload.single('contrato_pdf'), updateProveedor);
 

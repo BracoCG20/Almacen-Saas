@@ -11,6 +11,7 @@ import {
   CalendarDays,
   Clock,
   Barcode,
+  Layers,
 } from 'lucide-react';
 import './EntregaTable.scss';
 
@@ -47,6 +48,20 @@ const EntregaTable = ({
     });
   };
 
+  // AGRUPACIÓN: Agrupa registros del mismo usuario realizados en la misma transacción (minuto exacto)
+  const historialAgrupado = Object.values(
+    historial.reduce((acc, h) => {
+      // Usamos los primeros 16 caracteres de ISO (YYYY-MM-DDTHH:mm) como llave de transacción
+      const key = `${h.empleado_id}-${h.fecha_movimiento.substring(0, 16)}`;
+      if (!acc[key]) {
+        acc[key] = { ...h, equipos_agrupados: [h] };
+      } else {
+        acc[key].equipos_agrupados.push(h);
+      }
+      return acc;
+    }, {}),
+  ).sort((a, b) => new Date(b.fecha_movimiento) - new Date(a.fecha_movimiento));
+
   return (
     <div className='table-container'>
       <div className='table-header-title'>
@@ -58,7 +73,7 @@ const EntregaTable = ({
         <thead>
           <tr>
             <th>Fecha y Hora</th>
-            <th>Equipo Entregado</th>
+            <th>Equipo(s) Entregado(s)</th>
             <th>Usuario</th>
             <th className='center'>Carg.</th>
             <th className='center'>Correo</th>
@@ -67,7 +82,7 @@ const EntregaTable = ({
           </tr>
         </thead>
         <tbody>
-          {historial.length === 0 ? (
+          {historialAgrupado.length === 0 ? (
             <tr>
               <td
                 colSpan='7'
@@ -77,7 +92,7 @@ const EntregaTable = ({
               </td>
             </tr>
           ) : (
-            historial.map((h) => (
+            historialAgrupado.map((h) => (
               <tr key={h.id}>
                 <td>
                   <div className='date-time-cell'>
@@ -92,10 +107,32 @@ const EntregaTable = ({
                 </td>
                 <td>
                   <div className='info-cell'>
-                    <span className='name'>{h.modelo}</span>
-                    <span className='audit-text'>
-                      <Barcode size={12} /> {h.serie}
-                    </span>
+                    {h.equipos_agrupados.length > 1 ? (
+                      <div className='shadcn-tooltip-container'>
+                        <span className='multiple-badge'>
+                          <Layers size={14} /> Varios (
+                          {h.equipos_agrupados.length})
+                        </span>
+                        <div className='shadcn-tooltip-content'>
+                          {h.equipos_agrupados.map((eq, i) => (
+                            <div
+                              key={i}
+                              className='tooltip-item'
+                            >
+                              <strong>{eq.modelo}</strong>
+                              <span>SN: {eq.serie}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <span className='name'>{h.modelo}</span>
+                        <span className='audit-text'>
+                          <Barcode size={12} /> {h.serie}
+                        </span>
+                      </>
+                    )}
                   </div>
                 </td>
                 <td>
@@ -106,13 +143,22 @@ const EntregaTable = ({
                   </div>
                 </td>
                 <td className='center'>
-                  {h.cargador ? (
+                  {h.equipos_agrupados.length > 1 ? (
+                    <span className='dash'>Varios</span>
+                  ) : h.cargador === true ? (
                     <Check
                       size={16}
                       className='check-icon'
                     />
+                  ) : h.cargador === false ? (
+                    <span
+                      className='dash'
+                      style={{ fontWeight: 'bold' }}
+                    >
+                      NO
+                    </span>
                   ) : (
-                    <span className='dash'>-</span>
+                    <span className='dash'>N/A</span>
                   )}
                 </td>
                 <td className='center'>
@@ -165,7 +211,7 @@ const EntregaTable = ({
                     ) : h.token_firma ? (
                       <div
                         className='status-pending-signature'
-                        title='Esperando firma del colaborador...'
+                        title='Esperando firma...'
                       >
                         <Clock
                           size={14}

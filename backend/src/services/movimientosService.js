@@ -1,7 +1,7 @@
 const { pool } = require('../config/db');
 const emailService = require('./emailService');
 const { v4: uuidv4 } = require('uuid');
-const axios = require('axios'); // Necesitarás instalar axios: npm install axios
+const axios = require('axios');
 
 const getHistorial = async () => {
   const query = `
@@ -46,52 +46,64 @@ const getHistorial = async () => {
 
 const registrarEntrega = async (data, adminId, cloudinaryUrl, pdfBuffer) => {
   const client = await pool.connect();
-  let movimientoId = null;
+  let movimientoIds = [];
   let tokenFirma = cloudinaryUrl ? uuidv4() : null;
 
   try {
     await client.query('BEGIN');
-    const checkEquipo = await client.query(
-      'SELECT disponible FROM equipos WHERE id = $1',
-      [data.equipo_id],
-    );
-    if (checkEquipo.rows.length === 0 || !checkEquipo.rows[0].disponible)
-      throw new Error('El equipo no está disponible.');
 
-    const insertMov = `
-      INSERT INTO historial_movimientos (
-        equipo_id, colaborador_id, tipo_movimiento, fecha_movimiento, 
-        cargador_incluido, observaciones, correo_enviado, usuario_creacion_id, 
-        pdf_generado_url, token_firma, firma_valida
-      ) VALUES ($1, $2, 'entrega', $3, $4, $5, $6, $7, $8, $9, false) RETURNING id
-    `;
-    const movResult = await client.query(insertMov, [
-      data.equipo_id,
-      data.empleado_id,
-      data.fecha || new Date(),
-      data.cargador,
-      data.observaciones || null,
-      !!pdfBuffer,
-      adminId,
-      cloudinaryUrl,
-      tokenFirma,
-    ]);
-    movimientoId = movResult.rows[0].id;
+    // BUCLE: Por cada equipo asignado
+    for (const item of data.equipos) {
+      // 1. Validar disponibilidad
+      const checkEquipo = await client.query(
+        'SELECT disponible FROM equipos WHERE id = $1',
+        [item.equipo_id],
+      );
+      if (checkEquipo.rows.length === 0 || !checkEquipo.rows[0].disponible) {
+        throw new Error(
+          `Uno de los equipos seleccionados ya no está disponible.`,
+        );
+      }
 
-    await client.query('UPDATE equipos SET disponible = false WHERE id = $1', [
-      data.equipo_id,
-    ]);
-
-    await client.query(
-      `INSERT INTO historial_equipos (equipo_id, disponible, observaciones_equipo, accion_realizada, descripcion_cambio, usuario_accion_id) 
-       VALUES ($1, false, $2, 'ENTREGA', $3, $4)`,
-      [
-        data.equipo_id,
-        data.observaciones,
-        `Asignación Cloudinary. Token: ${tokenFirma || 'N/A'}`,
+      // 2. Insertar Movimiento
+      const insertMov = `
+        INSERT INTO historial_movimientos (
+          equipo_id, colaborador_id, tipo_movimiento, fecha_movimiento, 
+          cargador_incluido, observaciones, correo_enviado, usuario_creacion_id, 
+          pdf_generado_url, token_firma, firma_valida
+        ) VALUES ($1, $2, 'entrega', $3, $4, $5, $6, $7, $8, $9, false) RETURNING id
+      `;
+      const movResult = await client.query(insertMov, [
+        item.equipo_id,
+        data.empleado_id,
+        data.fecha || new Date(),
+        item.cargador,
+        data.observaciones || null,
+        !!pdfBuffer,
         adminId,
-      ],
-    );
+        cloudinaryUrl,
+        tokenFirma,
+      ]);
+      movimientoIds.push(movResult.rows[0].id);
+
+      // 3. Actualizar Equipo a "Ocupado"
+      await client.query(
+        'UPDATE equipos SET disponible = false WHERE id = $1',
+        [item.equipo_id],
+      );
+
+      // 4. Auditoría de Equipo
+      await client.query(
+        `INSERT INTO historial_equipos (equipo_id, disponible, observaciones_equipo, accion_realizada, descripcion_cambio, usuario_accion_id) 
+         VALUES ($1, false, $2, 'ENTREGA', $3, $4)`,
+        [
+          item.equipo_id,
+          data.observaciones,
+          `Asignación registrada en lote. Token: ${tokenFirma || 'N/A'}`,
+          adminId,
+        ],
+      );
+    }
 
     await client.query('COMMIT');
   } catch (error) {
@@ -101,17 +113,20 @@ const registrarEntrega = async (data, adminId, cloudinaryUrl, pdfBuffer) => {
     client.release();
   }
 
+  // Enviar Correo Electrónico
   if (pdfBuffer && data.destinatario) {
     try {
-      const textoCargador =
-        data.cargador === 'true' || data.cargador === true
-          ? 'SÍ (Incluido)'
-          : 'NO (Solo equipo)';
+      const textoCargador = 'Ver detalles en el PDF adjunto';
+      const tipoEquipo =
+        data.equipos.length > 1
+          ? 'Múltiples Equipos de Trabajo'
+          : 'Equipo de Trabajo';
+
       await emailService.enviarActaCorreo(
         'entrega',
         data.destinatario,
         data.nombreEmpleado,
-        data.tipoEquipo,
+        tipoEquipo,
         textoCargador,
         pdfBuffer,
         null,
@@ -122,7 +137,7 @@ const registrarEntrega = async (data, adminId, cloudinaryUrl, pdfBuffer) => {
       console.error('Error enviando email:', error);
     }
   }
-  return { movimientoId };
+  return { movimientoIds };
 };
 
 const registrarDevolucion = async (data, adminId, cloudinaryUrl, pdfBuffer) => {
@@ -245,7 +260,6 @@ const actualizarFirmaDocumento = async (
         [nuevoToken, usuarioModificadorId, id],
       );
 
-      // NUEVO: Descargar PDF de Cloudinary para reenviarlo
       if (mov.email_contacto && mov.pdf_generado_url) {
         const response = await axios.get(mov.pdf_generado_url, {
           responseType: 'arraybuffer',

@@ -1,6 +1,5 @@
 const { pool } = require('../config/db');
 
-// Obtener todos los tickets con los nombres del solicitante y del asignado
 const getTickets = async () => {
   const query = `
         SELECT 
@@ -45,15 +44,12 @@ const createTicket = async (data, userId) => {
   try {
     await client.query('BEGIN');
 
-    // --- 1. BUSCA AUTOMÁTICAMENTE QUIÉN ES EL SOLICITANTE ---
-    // Usamos el userId (del token de sesión) para saber qué colaborador es.
     const userQuery = await client.query(
       'SELECT colaborador_id FROM usuarios WHERE id = $1',
       [userId],
     );
     const colabId = userQuery.rows[0]?.colaborador_id;
 
-    // Si el usuario administrador no se ha enlazado a sí mismo en la tabla de colaboradores, le avisamos:
     if (!colabId) {
       throw new Error(
         'Tu cuenta de usuario no esta registrada. Comunicate con un Administrador.',
@@ -135,7 +131,7 @@ const updateTicket = async (id, data, userId) => {
         );
       }
 
-      // Si alguien lo pasa a "En Proceso" manualmente desde el modal y no tenía hora de inicio, iniciamos el reloj
+      // Si alguien lo pasa a "En Proceso" manualmente desde el modal y no tenía hora de inicio, se inicia el reloj
       if (data.estado === 'En Proceso' && !oldData.fecha_inicio_atencion) {
         await client.query(
           'UPDATE tickets SET fecha_inicio_atencion = CURRENT_TIMESTAMP WHERE id = $1',
@@ -167,13 +163,12 @@ const updateTicket = async (id, data, userId) => {
   }
 };
 
-// Añadir un comentario (respuesta) al ticket
 const addComentario = async (ticketId, detalles, archivoUrl, userId) => {
   const queryHistorial = `
         INSERT INTO historial_tickets (ticket_id, accion, detalles, archivo_url, usuario_registro_id) 
         VALUES ($1, 'COMENTARIO', $2, $3, $4) RETURNING *
     `;
-  // Pasamos el archivoUrl como $3 y userId como $4
+
   const res = await pool.query(queryHistorial, [
     ticketId,
     detalles,
@@ -181,7 +176,6 @@ const addComentario = async (ticketId, detalles, archivoUrl, userId) => {
     userId,
   ]);
 
-  // Actualizar la fecha de modificación del ticket para que suba en la lista
   await pool.query(
     'UPDATE tickets SET fecha_actualizacion = CURRENT_TIMESTAMP WHERE id = $1',
     [ticketId],
@@ -190,7 +184,6 @@ const addComentario = async (ticketId, detalles, archivoUrl, userId) => {
   return res.rows[0];
 };
 
-// Asignar ticket al técnico actual (Tomar ticket)
 const assignTicket = async (ticketId, userId) => {
   const client = await pool.connect();
   try {

@@ -29,36 +29,131 @@
     }
   }
 
-  .checkbox-card {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 14px;
-    border-radius: 8px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    width: 100%;
-    cursor: pointer;
-    margin-top: 1.5rem;
-    transition: all 0.2s ease;
-    box-sizing: border-box;
+  .spacing-bottom {
+    margin-bottom: 1.5rem;
+  }
 
-    &:hover {
-      background: #f1f5f9;
-      border-color: #cbd5e1;
+  .equipos-section {
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: #475569;
     }
 
-    input {
-      accent-color: v.$primary;
-      width: 16px;
-      height: 16px;
+    /* NUEVA ESTRUCTURA FLEX PARA CENTRAR EL BASURERO */
+    .equipo-item-card {
+      background: #f8fafc;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #e2e8f0;
+      transition: border-color 0.2s;
+
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      &:hover {
+        border-color: #cbd5e1;
+      }
+    }
+
+    /* Contenedor izquierdo que ocupa todo el espacio restante */
+    .equipo-item-content {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+      min-width: 0; /* Previene overflow en flexbox */
+    }
+
+    // CHECKBOX ESTILO SHADCN
+    .checkbox-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      background: white;
+      border: 1px solid #e2e8f0;
       cursor: pointer;
-      flex-shrink: 0;
+      transition: all 0.2s ease;
+      width: 100%;
+      box-sizing: border-box;
+
+      &:hover {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+      }
+
+      input {
+        accent-color: v.$primary;
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+      span {
+        font-weight: 500;
+        color: #334155;
+        font-size: 0.85rem;
+      }
     }
-    span {
-      font-weight: 500;
-      color: #334155;
+
+    .compact-checkbox {
+      padding: 10px 12px;
+      margin-top: 0;
+    }
+
+    // BOTÓN BASURERO ESTILO SHADCN (Outline/Icon)
+    .btn-remove-equipo {
+      background: white;
+      border: 1px solid #e2e8f0;
+      color: #ef4444;
+      cursor: pointer;
+      padding: 10px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      height: fit-content; // Asegura que no se estire
+
+      &:hover {
+        color: #dc2626;
+        background-color: #fef2f2;
+        border-color: #fca5a5;
+      }
+    }
+
+    // BOTÓN AGREGAR TIPO SHADCN OUTLINE
+    .btn-add-equipo-shadcn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      padding: 10px;
+      margin-top: 12px;
       font-size: 0.85rem;
+      font-weight: 600;
+      color: #0f172a;
+      background-color: transparent;
+      border: 1px dashed #cbd5e1;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background-color: #f8fafc;
+        border-color: #94a3b8;
+      }
+      svg {
+        color: #64748b;
+      }
     }
   }
 
@@ -66,7 +161,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    margin-top: 2rem;
+    margin-top: 20px;
     border-top: 1px dashed #e2e8f0;
     padding-top: 1.5rem;
     width: 100%;
@@ -74,7 +169,6 @@
 
     .btn-action {
       width: 100%;
-
       min-height: 40px;
       height: auto;
       padding: 8px 12px;
@@ -90,7 +184,6 @@
       color: white;
       transition: all 0.2s ease;
       box-sizing: border-box;
-
       white-space: normal;
       text-align: center;
       line-height: 1.3;
