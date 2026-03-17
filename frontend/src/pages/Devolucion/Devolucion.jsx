@@ -9,13 +9,10 @@ import DevolucionTable from './DevolucionTable';
 import { generarPDFDevolucion } from '../../utils/pdfGeneratorDevolucion';
 
 import { AlertTriangle, X, Check, HelpCircle } from 'lucide-react';
-
 import { io } from 'socket.io-client';
 
-// --- IMPORTACIONES PARA EL TOUR ---
 import { driver } from 'driver.js';
 import 'driver.js/dist/driver.css';
-
 import './Devolucion.scss';
 
 const Devolucion = () => {
@@ -23,31 +20,31 @@ const Devolucion = () => {
   const [allUsuarios, setAllUsuarios] = useState([]);
   const [estadosEquipos, setEstadosEquipos] = useState([]);
 
-  const [usuariosConEquipo, setUsuariosConEquipo] = useState([]);
-  const [mapaAsignaciones, setMapaAsignaciones] = useState({});
+  // Ahora guardará TODOS los equipos que tiene cada usuario (puede ser más de 1)
+  const [usuariosConEquipos, setUsuariosConEquipos] = useState([]);
+  const [mapaAsignacionesMutiples, setMapaAsignacionesMutiples] = useState({});
   const [historialVisual, setHistorialVisual] = useState([]);
 
   const [loading, setLoading] = useState(true);
   const [showPdfModal, setShowPdfModal] = useState(false);
   const [pdfUrl, setPdfUrl] = useState('');
-  const [equipoDetectado, setEquipoDetectado] = useState(null);
+
+  // Lista de equipos que tiene el usuario seleccionado actualmente
+  const [equiposDetectados, setEquiposDetectados] = useState([]);
 
   const fileInputRef = useRef(null);
   const [selectedMovimientoId, setSelectedMovimientoId] = useState(null);
 
+  // NUEVO STATE: Soporta un arreglo de devoluciones parciales
   const [formData, setFormData] = useState({
-    equipo_id: '',
     empleado_id: '',
-    cargador: true,
-    observaciones: '',
-    estado_fisico_id: '',
     motivo: '',
+    equiposADevolver: [], // { equipo_id, cargador: true/false/null, estado_fisico_id, observaciones }
   });
 
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const [movimientoToInvalidar, setMovimientoToInvalidar] = useState(null);
 
-  // --- FUNCIÓN DEL TOUR GUIADO ---
   const startDevolucionTour = () => {
     const driverObj = driver({
       showProgress: true,
@@ -62,7 +59,7 @@ const Devolucion = () => {
           popover: {
             title: 'Formulario de Devolución',
             description:
-              'Selecciona al colaborador; el sistema detectará automáticamente qué equipo tiene asignado. Llena el motivo y el estado físico en el que lo devuelve.',
+              'Selecciona al colaborador; el sistema detectará todos los equipos que tiene. Marca solo los que va a devolver.',
             side: 'right',
             align: 'start',
           },
@@ -72,7 +69,7 @@ const Devolucion = () => {
           popover: {
             title: 'Generar Constancia',
             description:
-              'Guarda la devolución para descargar el PDF, o envíalo directamente por correo electrónico o WhatsApp al colaborador.',
+              'Guarda la devolución para descargar el PDF, o envíalo por correo o WhatsApp.',
             side: 'right',
             align: 'start',
           },
@@ -82,7 +79,7 @@ const Devolucion = () => {
           popover: {
             title: 'Historial Reciente',
             description:
-              'Aquí verás las últimas devoluciones. Si el empleado ya firmó la constancia, puedes escanearla y subirla haciendo clic aquí.',
+              'Aquí verás las últimas devoluciones y podrás subir las actas firmadas.',
             side: 'left',
             align: 'start',
           },
@@ -109,44 +106,51 @@ const Devolucion = () => {
         (a, b) => new Date(a.fecha_movimiento) - new Date(b.fecha_movimiento),
       );
 
-      const asignacionesTemp = {};
+      // Mapa para saber qué equipos tiene EXACTAMENTE cada usuario
+      // formato: { 1: [2, 5], 3: [1] } -> Usuario 1 tiene equipos 2 y 5.
+      const asignaciones = {};
       sortedHistory.forEach((mov) => {
+        if (!asignaciones[mov.empleado_id])
+          asignaciones[mov.empleado_id] = new Set();
+
         if (mov.tipo === 'entrega') {
-          asignacionesTemp[mov.empleado_id] = mov.equipo_id;
+          asignaciones[mov.empleado_id].add(mov.equipo_id);
         } else if (mov.tipo === 'devolucion') {
-          delete asignacionesTemp[mov.empleado_id];
+          asignaciones[mov.empleado_id].delete(mov.equipo_id);
         }
       });
 
       const usuariosList = [];
       const mapaCompleto = {};
 
-      Object.keys(asignacionesTemp).forEach((userIdStr) => {
+      // Filtramos y llenamos
+      Object.keys(asignaciones).forEach((userIdStr) => {
         const uId = parseInt(userIdStr);
-        const eqId = asignacionesTemp[userIdStr];
+        const eqIds = Array.from(asignaciones[userIdStr]);
 
-        const usuario = resUs.data.find((u) => u.id === uId);
-        const equipo = resEq.data.find((e) => e.id === eqId);
-
-        if (usuario && equipo && usuario.estado) {
-          usuariosList.push(usuario);
-          mapaCompleto[uId] = equipo;
+        if (eqIds.length > 0) {
+          const usuario = resUs.data.find((u) => u.id === uId);
+          if (usuario && usuario.estado) {
+            usuariosList.push(usuario);
+            // Guardamos todos los objetos de equipo que tiene este usuario
+            mapaCompleto[uId] = eqIds
+              .map((id) => resEq.data.find((e) => e.id === id))
+              .filter(Boolean);
+          }
         }
       });
 
-      setUsuariosConEquipo(usuariosList);
-      setMapaAsignaciones(mapaCompleto);
+      setUsuariosConEquipos(usuariosList);
+      setMapaAsignacionesMutiples(mapaCompleto);
 
       const ultimasDevoluciones = resHis.data
         .filter((h) => h.tipo === 'devolucion')
         .sort(
           (a, b) => new Date(b.fecha_movimiento) - new Date(a.fecha_movimiento),
-        )
-        .slice(0, 10);
+        );
 
       setHistorialVisual(ultimasDevoluciones);
     } catch (e) {
-      console.error(e);
       toast.error('Error cargando datos');
     } finally {
       setLoading(false);
@@ -155,27 +159,21 @@ const Devolucion = () => {
 
   useEffect(() => {
     let isMounted = true;
-
-    // 1. Cargar datos
     fetchData();
-
-    // 2. Configurar Socket de forma segura
     const baseUrl = api.defaults.baseURL
       ? api.defaults.baseURL.replace(/\/api\/?$/, '')
       : 'http://localhost:4000';
-
     const socket = io(baseUrl);
 
-    socket.on('documento_firmado', (data) => {
+    socket.on('documento_firmado', () => {
       if (isMounted) {
-        toast.info('Actualizando estados de firma...', { icon: '📝' });
+        toast.info('Actualizando estados...', { icon: '📝' });
         fetchData();
       }
     });
 
     return () => {
       isMounted = false;
-      socket.off('documento_firmado');
       socket.disconnect();
     };
   }, []);
@@ -184,15 +182,17 @@ const Devolucion = () => {
     setSelectedMovimientoId(id);
     fileInputRef.current.click();
   };
+  const onInvalidarClick = (id) => {
+    setMovimientoToInvalidar(id);
+    setIsRejectModalOpen(true);
+  };
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file || !selectedMovimientoId) return;
-
     const toastId = toast.loading('Subiendo...');
     const form = new FormData();
     form.append('pdf', file);
-
     try {
       await api.post(
         `/movimientos/${selectedMovimientoId}/subir-firmado`,
@@ -217,11 +217,6 @@ const Devolucion = () => {
     e.target.value = null;
   };
 
-  const onInvalidarClick = (id) => {
-    setMovimientoToInvalidar(id);
-    setIsRejectModalOpen(true);
-  };
-
   const handleInvalidar = async () => {
     try {
       await api.put(`/movimientos/${movimientoToInvalidar}/invalidar`);
@@ -238,7 +233,7 @@ const Devolucion = () => {
     if (url.startsWith('http')) return url;
     const baseUrl = api.defaults.baseURL
       ? api.defaults.baseURL.replace(/\/api\/?$/, '')
-      : 'http://localhost:5000';
+      : 'http://localhost:4000';
     return `${baseUrl}${url}`;
   };
 
@@ -250,33 +245,18 @@ const Devolucion = () => {
   const handleUserChange = (selectedOption) => {
     const userId = selectedOption?.value;
     if (userId) {
-      const eq = mapaAsignaciones[userId];
-      if (eq) {
-        setEquipoDetectado(eq);
-        const operativoId =
-          estadosEquipos.find((est) => est.nombre.toLowerCase() === 'operativo')
-            ?.id || '';
-        setFormData({
-          ...formData,
-          empleado_id: userId,
-          equipo_id: eq.id,
-          estado_fisico_id: operativoId,
-          observaciones: '',
-          motivo: '',
-        });
-      } else {
-        toast.error('Error de sincronización de datos.');
-      }
-    } else {
-      setEquipoDetectado(null);
+      const equipos = mapaAsignacionesMutiples[userId] || [];
+      setEquiposDetectados(equipos);
+
+      // Reseteamos el form con la lista vacía de devoluciones
       setFormData({
-        ...formData,
-        empleado_id: '',
-        equipo_id: '',
-        estado_fisico_id: '',
-        observaciones: '',
+        empleado_id: userId,
         motivo: '',
+        equiposADevolver: [],
       });
+    } else {
+      setEquiposDetectados([]);
+      setFormData({ empleado_id: '', motivo: '', equiposADevolver: [] });
     }
   };
 
@@ -286,46 +266,69 @@ const Devolucion = () => {
       apellidos: item.empleado_apellido,
       dni: item.dni || '---',
     };
-    const eq = {
-      marca: item.marca,
-      modelo: item.modelo,
-      serie: item.serie,
-    };
 
-    const url = generarPDFDevolucion(
-      eq,
-      us,
-      item.cargador,
-      item.observaciones,
-      item.estado_equipo_momento,
-      item.motivo,
-    );
+    // Creamos arreglo para el PDF
+    let equiposAImprimir = [];
+    if (item.equipos_agrupados) {
+      equiposAImprimir = item.equipos_agrupados.map((eq) => ({
+        serie: eq.serie,
+        marca: eq.marca,
+        modelo: eq.modelo,
+        cargador: eq.cargador,
+        observaciones: eq.observaciones,
+      }));
+    } else {
+      equiposAImprimir = [
+        {
+          serie: item.serie,
+          marca: item.marca,
+          modelo: item.modelo,
+          cargador: item.cargador,
+          observaciones: item.observaciones,
+        },
+      ];
+    }
+
+    const url = generarPDFDevolucion(equiposAImprimir, us, item.motivo);
     setPdfUrl(url);
     setShowPdfModal(true);
   };
 
   const handleReenviarCorreo = async (item) => {
-    if (!item.empleado_correo) {
-      return toast.error(
-        'Este colaborador no tiene correo registrado en el sistema.',
-      );
-    }
-
-    const toastId = toast.loading('Reintentando envío de correo...');
+    if (!item.empleado_correo)
+      return toast.error('Colaborador sin correo registrado.');
+    const toastId = toast.loading('Reintentando...');
     try {
       const us = {
         nombres: item.empleado_nombre,
         apellidos: item.empleado_apellido,
         dni: item.dni || '---',
       };
-      const eq = { marca: item.marca, modelo: item.modelo, serie: item.serie };
+
+      let equiposAImprimir = [];
+      if (item.equipos_agrupados) {
+        equiposAImprimir = item.equipos_agrupados.map((eq) => ({
+          serie: eq.serie,
+          marca: eq.marca,
+          modelo: eq.modelo,
+          cargador: eq.cargador,
+          observaciones: eq.observaciones,
+        }));
+      } else {
+        equiposAImprimir = [
+          {
+            serie: item.serie,
+            marca: item.marca,
+            modelo: item.modelo,
+            cargador: item.cargador,
+            observaciones: item.observaciones,
+          },
+        ];
+      }
 
       const pdfUrlBlob = generarPDFDevolucion(
-        eq,
+        equiposAImprimir,
         us,
-        item.cargador,
-        item.observaciones,
-        item.estado_equipo_momento,
         item.motivo,
       );
       const blob = await fetch(pdfUrlBlob).then((r) => r.blob());
@@ -335,15 +338,14 @@ const Devolucion = () => {
       form.append('movimiento_id', item.id);
       form.append('destinatario', item.empleado_correo);
       form.append('nombreEmpleado', item.empleado_nombre);
-      form.append('tipoEquipo', item.modelo);
+      form.append('tipoEquipo', 'Equipos Varios');
       form.append('tipo_movimiento', 'devolucion');
 
       await api.post('/movimientos/reenviar-correo', form, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-
       toast.update(toastId, {
-        render: '¡Correo reenviado con éxito!',
+        render: 'Reenviado con éxito!',
         type: 'success',
         isLoading: false,
         autoClose: 3000,
@@ -351,7 +353,7 @@ const Devolucion = () => {
       fetchData();
     } catch (e) {
       toast.update(toastId, {
-        render: 'Volvió a fallar el envío.',
+        render: 'Volvió a fallar.',
         type: 'error',
         isLoading: false,
         autoClose: 3000,
@@ -361,44 +363,48 @@ const Devolucion = () => {
 
   const handleAction = async (tipoAccion) => {
     if (
-      !formData.equipo_id ||
       !formData.empleado_id ||
-      !formData.estado_fisico_id ||
-      !formData.motivo
+      !formData.motivo ||
+      formData.equiposADevolver.length === 0
     ) {
-      return toast.warning('Faltan datos por completar');
+      return toast.warning(
+        'Faltan datos o no has seleccionado ningún equipo para devolver',
+      );
     }
 
     const us = allUsuarios.find((u) => u.id === formData.empleado_id);
-    const eq = allEquipos.find((e) => e.id === formData.equipo_id);
-    const estadoNombre =
-      estadosEquipos.find((est) => est.id === formData.estado_fisico_id)
-        ?.nombre || 'Desconocido';
-
     if (tipoAccion === 'EMAIL' && !us.email_contacto)
-      return toast.error('Usuario sin correo registrado');
+      return toast.error('Usuario sin correo');
 
-    const equipoParaPdf = { ...eq, serie: eq.numero_serie };
+    // Preparamos datos para el PDF (Solo los que marcó para devolver)
+    const equiposParaPdf = formData.equiposADevolver.map((dev) => {
+      const eqOriginal = equiposDetectados.find((e) => e.id === dev.equipo_id);
+      return {
+        ...eqOriginal,
+        serie: eqOriginal.numero_serie,
+        cargador: dev.cargador,
+        observaciones: dev.observaciones,
+      };
+    });
+
     const pdfUrlBlob = generarPDFDevolucion(
-      equipoParaPdf,
+      equiposParaPdf,
       us,
-      formData.cargador,
-      formData.observaciones,
-      estadoNombre,
       formData.motivo,
     );
-
     const blob = await fetch(pdfUrlBlob).then((r) => r.blob());
 
     try {
-      if (tipoAccion === 'GUARDAR' || tipoAccion === 'WHATSAPP') {
-        await api.post('/movimientos/devolucion', {
-          ...formData,
-          estado_final_nombre: estadoNombre,
-          fecha: new Date().toISOString(),
-        });
-        toast.success('Devolución registrada');
+      const payload = {
+        empleado_id: formData.empleado_id,
+        motivo: formData.motivo,
+        fecha: new Date().toISOString(),
+        equipos: formData.equiposADevolver,
+      };
 
+      if (tipoAccion === 'GUARDAR' || tipoAccion === 'WHATSAPP') {
+        await api.post('/movimientos/devolucion', payload);
+        toast.success('Devolución parcial/total registrada');
         setPdfUrl(pdfUrlBlob);
         setShowPdfModal(true);
 
@@ -407,80 +413,58 @@ const Devolucion = () => {
           link.href = pdfUrlBlob;
           link.download = `Constancia_Devolucion_${us.nombres}.pdf`;
           link.click();
-
           const numero = us.telefono ? us.telefono.replace(/\D/g, '') : '';
-          const msg = `Hola ${us.nombres}, adjunto constancia de devolución del equipo ${eq.modelo}.`;
+          const msg = `Hola ${us.nombres}, adjunto constancia de devolución de equipos.`;
           const waLink = numero
             ? `https://wa.me/51${numero}?text=${encodeURIComponent(msg)}`
             : `https://wa.me/?text=${encodeURIComponent(msg)}`;
           window.open(waLink, '_blank');
-          toast.info('PDF Descargado. Arrástralo al chat.', {
-            autoClose: 5000,
-          });
         }
       } else if (tipoAccion === 'EMAIL') {
         const toastId = toast.loading('Enviando correo...');
         const form = new FormData();
         form.append('pdf', blob, 'Constancia_Devolucion.pdf');
-        form.append('equipo_id', formData.equipo_id);
-        form.append('empleado_id', formData.empleado_id);
-        form.append('cargador', formData.cargador);
-        form.append('observaciones', formData.observaciones);
-        form.append('estado_fisico_id', formData.estado_fisico_id);
-        form.append('estado_final_nombre', estadoNombre);
-        form.append('motivo', formData.motivo);
+        form.append('payload', JSON.stringify(payload));
         form.append('destinatario', us.email_contacto);
         form.append('nombreEmpleado', us.nombres);
-        form.append('tipoEquipo', eq.modelo);
 
         const res = await api.post('/movimientos/devolucion-con-correo', form, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
-
-        if (res.data.warning) {
+        if (res.data.warning)
           toast.update(toastId, {
-            render: 'Guardado, pero correo falló ⚠️',
+            render: 'Guardado, correo falló ⚠️',
             type: 'warning',
             isLoading: false,
             autoClose: 4000,
           });
-        } else {
+        else
           toast.update(toastId, {
-            render: '¡Enviado con éxito! ✅',
+            render: 'Enviado con éxito! ✅',
             type: 'success',
             isLoading: false,
             autoClose: 3000,
           });
-        }
+
         setPdfUrl(pdfUrlBlob);
         setShowPdfModal(true);
       }
 
-      setFormData({
-        equipo_id: '',
-        empleado_id: '',
-        cargador: true,
-        observaciones: '',
-        estado_fisico_id: '',
-        motivo: '',
-      });
-      setEquipoDetectado(null);
+      setFormData({ empleado_id: '', motivo: '', equiposADevolver: [] });
+      setEquiposDetectados([]);
       fetchData();
     } catch (e) {
-      console.error(e);
       toast.error(e.response?.data?.error || 'Error procesando solicitud');
-      toast.dismiss();
     }
   };
 
   if (loading)
     return <div className='loading-state'>Cargando devoluciones...</div>;
 
-  const usuariosOptions = usuariosConEquipo.map((us) => ({
+  const usuariosOptions = usuariosConEquipos.map((us) => ({
     value: us.id,
     label: `${us.nombres} ${us.apellidos}`,
   }));
-
   const estadosOptions = estadosEquipos.map((est) => ({
     value: est.id,
     label: est.nombre,
@@ -490,8 +474,6 @@ const Devolucion = () => {
     <div className='devolucion-container'>
       <div className='page-header'>
         <h1>Registrar Devolución</h1>
-
-        {/* BOTÓN TOUR */}
         <button
           onClick={startDevolucionTour}
           className='btn-tour-header'
@@ -499,7 +481,6 @@ const Devolucion = () => {
           <HelpCircle size={18} />
         </button>
       </div>
-
       <input
         type='file'
         ref={fileInputRef}
@@ -507,7 +488,6 @@ const Devolucion = () => {
         accept='application/pdf'
         onChange={handleFileChange}
       />
-
       <div className='content-grid'>
         <div id='tour-devolucion-form'>
           <DevolucionForm
@@ -515,12 +495,11 @@ const Devolucion = () => {
             estadosOptions={estadosOptions}
             formData={formData}
             setFormData={setFormData}
-            equipoDetectado={equipoDetectado}
+            equiposDetectados={equiposDetectados}
             handleUserChange={handleUserChange}
             onAction={handleAction}
           />
         </div>
-
         <div id='tour-devolucion-tabla'>
           <DevolucionTable
             historial={historialVisual}
@@ -531,7 +510,6 @@ const Devolucion = () => {
             onReenviarCorreo={handleReenviarCorreo}
           />
         </div>
-
         <Modal
           isOpen={isRejectModalOpen}
           onClose={() => setIsRejectModalOpen(false)}
@@ -565,7 +543,6 @@ const Devolucion = () => {
           </div>
         </Modal>
       </div>
-
       <PdfModal
         isOpen={showPdfModal}
         onClose={() => setShowPdfModal(false)}

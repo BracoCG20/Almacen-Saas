@@ -108,6 +108,15 @@ const Asignacion = () => {
           (u) => u.estado === true && !ocupados.has(u.id),
         ),
       );
+
+      // SIN .slice() AQUÍ: Pasamos todo el historial de entregas a la tabla para que ella pagine.
+      const entregas = resMovimientos.data
+        .filter((h) => h.tipo === 'entrega')
+        .sort(
+          (a, b) => new Date(b.fecha_movimiento) - new Date(a.fecha_movimiento),
+        );
+
+      setHistorialVisual(entregas);
     } catch (error) {
       toast.error('Error al cargar datos');
     } finally {
@@ -301,7 +310,6 @@ const Asignacion = () => {
   if (loading)
     return <div className='loading-state'>Cargando asignaciones...</div>;
 
-  // PASAMOS TODO EL OBJETO PARA QUE EL FORMULARIO PUEDA LEER LA CATEGORÍA
   const equiposOptions = equiposDisponibles.map((e) => ({
     value: e.id,
     label: `${e.marca} ${e.modelo} - ${e.numero_serie}`,
@@ -345,7 +353,6 @@ const Asignacion = () => {
           <EntregaTable
             historial={historialVisual}
             onVerPdfOriginal={(item) => {
-              // --- AGRUPACIÓN PARA EL PDF ---
               let equiposAImprimir = [];
               if (item.equipos_agrupados) {
                 equiposAImprimir = item.equipos_agrupados.map((eq) => ({

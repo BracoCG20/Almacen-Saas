@@ -16,6 +16,7 @@ import {
   CalendarDays,
   HelpCircle,
   Barcode,
+  Layers,
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 
@@ -28,14 +29,12 @@ const Historial = () => {
   const [historial, setHistorial] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // --- ESTADOS DE FILTRO ---
   const [filtroTexto, setFiltroTexto] = useState('');
   const [filtroTipo, setFiltroTipo] = useState({
     value: 'todos',
     label: 'Todos los movimientos',
   });
 
-  // --- ESTADOS DE PAGINACIÓN ---
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
@@ -58,8 +57,7 @@ const Historial = () => {
           element: '#tour-historial-filtros',
           popover: {
             title: 'Busca y Filtra',
-            description:
-              'Encuentra rápidamente el historial de un empleado específico, o filtra para ver solamente Entregas o solo Devoluciones.',
+            description: 'Encuentra rápidamente el historial o filtra.',
             side: 'bottom',
             align: 'start',
           },
@@ -68,8 +66,7 @@ const Historial = () => {
           element: '#tour-historial-tabla',
           popover: {
             title: 'Auditoría Total',
-            description:
-              'Aquí queda el registro inmutable. Podrás ver exactamente en qué fecha y hora se hizo el movimiento y qué administrador lo ejecutó.',
+            description: 'Aquí queda el registro inmutable.',
             side: 'top',
             align: 'start',
           },
@@ -78,8 +75,7 @@ const Historial = () => {
           element: '#tour-historial-estado',
           popover: {
             title: 'Estado del Equipo',
-            description:
-              'En el caso de las devoluciones, esta columna te indicará si el equipo regresó Operativo, Dañado o Perdido.',
+            description: 'Si el equipo regresó Operativo, Dañado o Perdido.',
             side: 'left',
             align: 'center',
           },
@@ -150,7 +146,6 @@ const Historial = () => {
         const res = await api.get('/movimientos');
         setHistorial(res.data);
       } catch (error) {
-        console.error(error);
         toast.error('Error cargando el historial');
       } finally {
         setLoading(false);
@@ -166,41 +161,45 @@ const Historial = () => {
   const formatDuration = (intervalObj) => {
     if (!intervalObj) return '-';
     let texto = [];
-
-    // Solo tomamos en cuenta años, meses y días
     if (intervalObj.years) texto.push(`${intervalObj.years} años`);
     if (intervalObj.months) texto.push(`${intervalObj.months} meses`);
     if (intervalObj.days) texto.push(`${intervalObj.days} días`);
-
-    // Si el arreglo está vacío (porque el tiempo fue menor a 24 horas),
-    // mostramos simplemente "0 días" y descartamos horas/minutos/segundos.
-    if (texto.length === 0) {
-      return 'Recientes'; // También podrías poner 'Menos de 1 día' o 'Mismo día'
-    }
-
+    if (texto.length === 0) return 'Recientes';
     return texto.join(', ');
   };
 
   const getBackendUrl = (path) => {
     if (!path) return 'No disponible';
-
-    if (path.includes('cloudinary.com') || path.includes('http')) {
+    if (path.includes('cloudinary.com') || path.includes('http'))
       return path.startsWith('/') ? path.substring(1) : path;
-    }
-
     const baseUrl = api.defaults.baseURL
       ? api.defaults.baseURL.replace(/\/api\/?$/, '')
       : 'http://localhost:4000';
     return `${baseUrl}${path.startsWith('/') ? path : `/${path}`}`;
   };
 
-  // --- LÓGICA DE FILTRADO Y PAGINACIÓN ---
-  const historialFiltrado = historial.filter((h) => {
-    const coincideTexto =
-      h.empleado_nombre?.toLowerCase().includes(filtroTexto.toLowerCase()) ||
-      h.empleado_apellido?.toLowerCase().includes(filtroTexto.toLowerCase()) ||
-      h.serie?.toLowerCase().includes(filtroTexto.toLowerCase()) ||
-      h.modelo?.toLowerCase().includes(filtroTexto.toLowerCase());
+  // --- AGRUPACIÓN (Igual que en asignaciones y devoluciones) ---
+  const historialAgrupadoCrudo = Object.values(
+    historial.reduce((acc, h) => {
+      const key = `${h.tipo}-${h.empleado_id}-${h.fecha_movimiento.substring(0, 16)}`;
+      if (!acc[key]) acc[key] = { ...h, equipos_agrupados: [h] };
+      else acc[key].equipos_agrupados.push(h);
+      return acc;
+    }, {}),
+  ).sort((a, b) => new Date(b.fecha_movimiento) - new Date(a.fecha_movimiento));
+
+  // --- FILTRADO ---
+  const historialFiltrado = historialAgrupadoCrudo.filter((h) => {
+    // Si algún equipo dentro de este grupo coincide con el texto
+    const coincideTexto = h.equipos_agrupados.some(
+      (eq) =>
+        eq.empleado_nombre?.toLowerCase().includes(filtroTexto.toLowerCase()) ||
+        eq.empleado_apellido
+          ?.toLowerCase()
+          .includes(filtroTexto.toLowerCase()) ||
+        eq.serie?.toLowerCase().includes(filtroTexto.toLowerCase()) ||
+        eq.modelo?.toLowerCase().includes(filtroTexto.toLowerCase()),
+    );
     const coincideTipo =
       filtroTipo.value === 'todos' || h.tipo.toLowerCase() === filtroTipo.value;
     return coincideTexto && coincideTipo;
@@ -215,58 +214,54 @@ const Historial = () => {
   const totalPages = Math.ceil(historialFiltrado.length / itemsPerPage);
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  // --- EXPORTAR EXCEL ---
   const exportarExcel = () => {
     if (historialFiltrado.length === 0)
       return toast.info('No hay datos para exportar');
 
-    const dataParaExcel = historialFiltrado.map((h) => ({
-      'ID Registro': h.id,
-      'Fecha y Hora': new Date(h.fecha_movimiento).toLocaleString('es-PE'),
-      'Tipo de Acción': h.tipo === 'entrega' ? 'ASIGNACIÓN' : 'DEVOLUCIÓN',
-      'Equipo (Marca/Modelo)': `${h.marca} ${h.modelo}`,
-      'N° Serie': h.serie,
-      'Estado Físico Reportado': h.estado_equipo_momento || 'Operativo',
-      '¿Incluyó Cargador?': h.cargador ? 'SÍ' : 'NO',
-      'Tiempo de Uso':
-        h.tipo === 'entrega' ? formatDuration(h.tiempo_uso) : 'N/A',
-      'Colaborador Asignado': `${h.empleado_nombre} ${h.empleado_apellido}`,
-      'DNI Colaborador': h.dni || '-',
-      'Correo Colaborador': h.empleado_correo || '-',
-      'Observaciones del Movimiento': h.observaciones || 'Ninguna',
-      'Registrado Por': h.admin_nombre
-        ? `${h.admin_nombre} (${h.admin_correo})`
-        : 'Sistema',
-      'Auditoría: Correo Enviado': h.correo_enviado ? 'SÍ' : 'NO',
-      'Auditoría: Firma PDF': h.firma_valida
-        ? 'VÁLIDO'
-        : h.pdf_firmado_url
-          ? 'SIN VALIDAR'
-          : 'NO SUBIDO',
-      'Enlace Documento (Acta)': getBackendUrl(h.pdf_firmado_url),
-    }));
+    // Excel requiere todo plano, así que desarmamos el grupo aquí
+    const dataPlana = [];
+    historialFiltrado.forEach((h) => {
+      h.equipos_agrupados.forEach((eq) => {
+        dataPlana.push({
+          'ID Registro': eq.id,
+          'Fecha y Hora': new Date(eq.fecha_movimiento).toLocaleString('es-PE'),
+          'Tipo de Acción': eq.tipo === 'entrega' ? 'ASIGNACIÓN' : 'DEVOLUCIÓN',
+          'Equipo (Marca/Modelo)': `${eq.marca} ${eq.modelo}`,
+          'N° Serie': eq.serie,
+          'Estado Físico Reportado': eq.estado_equipo_momento || 'Operativo',
+          '¿Incluyó Cargador?': eq.cargador ? 'SÍ' : 'NO',
+          'Tiempo de Uso':
+            eq.tipo === 'entrega' ? formatDuration(eq.tiempo_uso) : 'N/A',
+          'Colaborador Asignado': `${eq.empleado_nombre} ${eq.empleado_apellido}`,
+          'DNI Colaborador': eq.dni || '-',
+          Observaciones: eq.observaciones || 'Ninguna',
+          'Registrado Por': eq.admin_nombre
+            ? `${eq.admin_nombre} (${eq.admin_correo})`
+            : 'Sistema',
+          'Auditoría: Correo Enviado': eq.correo_enviado ? 'SÍ' : 'NO',
+          'Enlace Documento (Acta)': getBackendUrl(eq.pdf_firmado_url),
+        });
+      });
+    });
 
-    const ws = XLSX.utils.json_to_sheet(dataParaExcel);
+    const ws = XLSX.utils.json_to_sheet(dataPlana);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Auditoria_Movimientos');
     XLSX.writeFile(wb, 'Reporte_Auditoria_Equipos.xlsx');
-    toast.success('Reporte de Auditoría generado exitosamente');
+    toast.success('Reporte generado exitosamente');
   };
 
   const formatDateOnly = (isoString) => {
     if (!isoString) return '-';
-    const date = new Date(isoString);
-    return date.toLocaleDateString('es-PE', {
+    return new Date(isoString).toLocaleDateString('es-PE', {
       day: '2-digit',
       month: 'short',
       year: 'numeric',
     });
   };
-
   const formatTimeOnly = (isoString) => {
     if (!isoString) return '';
-    const date = new Date(isoString);
-    return date.toLocaleTimeString('es-PE', {
+    return new Date(isoString).toLocaleTimeString('es-PE', {
       hour: '2-digit',
       minute: '2-digit',
       hour12: true,
@@ -328,147 +323,175 @@ const Historial = () => {
         className='table-container'
         id='tour-historial-tabla'
       >
-        {currentItems.length === 0 ? (
-          <div className='no-data'>
-            No se encontraron registros que coincidan.
-          </div>
-        ) : (
-          <table>
-            <thead>
-              <tr>
-                <th>Fecha y Hora</th>
-                <th className='center'>Tipo</th>
-                <th>Equipo</th>
-                <th>Colaborador</th>
-                <th>Registrado Por</th>
-                <th>Tiempo de Uso</th>
-                <th className='center'>Estado</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentItems.map((h, index) => {
-                const isEntrega = h.tipo === 'entrega';
-                const estLower = (h.estado_equipo_momento || '')
-                  .toLowerCase()
-                  .trim();
-                let estadoClass = 'neutro';
+        <div
+          className='table-responsive-wrapper'
+          style={{ overflow: 'visible' }}
+        >
+          {currentItems.length === 0 ? (
+            <div className='no-data'>
+              No se encontraron registros que coincidan.
+            </div>
+          ) : (
+            <table>
+              <thead>
+                <tr>
+                  <th>Fecha y Hora</th>
+                  <th className='center'>Tipo</th>
+                  <th>Equipo(s)</th>
+                  <th>Colaborador</th>
+                  <th>Registrado Por</th>
+                  <th>Tiempo de Uso</th>
+                  <th className='center'>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentItems.map((h, index) => {
+                  const isEntrega = h.tipo === 'entrega';
+                  let estadoClass = 'neutro';
+                  const estLower = (h.estado_equipo_momento || '')
+                    .toLowerCase()
+                    .trim();
+                  if (estLower === 'operativo') estadoClass = 'operativo';
+                  else if (estLower === 'inoperativo')
+                    estadoClass = 'inoperativo';
+                  else if (
+                    estLower === 'mantenimiento' ||
+                    estLower === 'malogrado'
+                  )
+                    estadoClass = 'malogrado';
+                  else if (estLower === 'robado' || estLower === 'perdido')
+                    estadoClass = 'robado';
 
-                if (estLower === 'operativo') estadoClass = 'operativo';
-                else if (estLower === 'inoperativo')
-                  estadoClass = 'inoperativo';
-                else if (
-                  estLower === 'mantenimiento' ||
-                  estLower === 'malogrado'
-                )
-                  estadoClass = 'malogrado';
-                else if (estLower === 'robado' || estLower === 'perdido')
-                  estadoClass = 'robado';
-
-                return (
-                  <tr key={h.id}>
-                    <td>
-                      <div className='date-time-cell'>
-                        <span className='date-part'>
-                          <CalendarDays size={13} />{' '}
-                          {formatDateOnly(h.fecha_movimiento)}
-                        </span>
-                        <span className='time-part'>
-                          <Clock size={12} />{' '}
-                          {formatTimeOnly(h.fecha_movimiento)}
-                        </span>
-                      </div>
-                    </td>
-                    <td className='center'>
-                      <span className={`status-badge ${h.tipo}`}>
-                        {isEntrega ? (
-                          <ArrowUpRight
-                            size={12}
-                            style={{ marginRight: '4px' }}
-                          />
-                        ) : (
-                          <ArrowDownLeft
-                            size={12}
-                            style={{ marginRight: '4px' }}
-                          />
-                        )}
-                        {isEntrega ? 'ASIGNADO' : 'DEVOLUCIÓN'}
-                      </span>
-                    </td>
-                    <td>
-                      <div className='info-cell'>
-                        <span className='name'>
-                          <Laptop
-                            size={14}
-                            style={{ color: '#64748b' }}
-                          />{' '}
-                          {h.marca} {h.modelo}
-                        </span>
-                        <span className='audit-text'>
-                          <Barcode size={12} /> {h.serie}
-                        </span>
-                      </div>
-                    </td>
-                    <td>
-                      <div className='info-cell'>
-                        <span className='name'>
-                          <User
-                            size={14}
-                            style={{ color: '#64748b' }}
-                          />{' '}
-                          {h.empleado_nombre} {h.empleado_apellido}
-                        </span>
-                        {h.dni && (
-                          <span className='audit-text'>DNI: {h.dni}</span>
-                        )}
-                      </div>
-                    </td>
-                    <td>
-                      <div className='audit-cell'>
-                        {h.admin_nombre ? (
-                          <div className='user-info'>
-                            <span className='name'>
-                              <ShieldCheck
-                                size={14}
-                                style={{ color: '#7c3aed' }}
-                              />{' '}
-                              {h.admin_nombre}
-                            </span>
-                            <span className='audit-text'>{h.admin_correo}</span>
-                          </div>
-                        ) : (
-                          <span className='system-text'>Sistema</span>
-                        )}
-                      </div>
-                    </td>
-                    <td>
-                      {isEntrega ? (
-                        <div className='info-cell'>
-                          <span className='name time-use'>
-                            <Clock size={12} /> {formatDuration(h.tiempo_uso)}
+                  return (
+                    <tr key={h.id}>
+                      <td>
+                        <div className='date-time-cell'>
+                          <span className='date-part'>
+                            <CalendarDays size={13} />{' '}
+                            {formatDateOnly(h.fecha_movimiento)}
+                          </span>
+                          <span className='time-part'>
+                            <Clock size={12} />{' '}
+                            {formatTimeOnly(h.fecha_movimiento)}
                           </span>
                         </div>
-                      ) : (
-                        <span className='dash'>-</span>
-                      )}
-                    </td>
-                    <td
-                      className='center'
-                      id={index === 0 ? 'tour-historial-estado' : undefined}
-                    >
-                      {!isEntrega && h.estado_equipo_momento ? (
-                        <span className={`status-badge-mini ${estadoClass}`}>
-                          {h.estado_equipo_momento}
+                      </td>
+                      <td className='center'>
+                        <span className={`status-badge ${h.tipo}`}>
+                          {isEntrega ? (
+                            <ArrowUpRight
+                              size={12}
+                              style={{ marginRight: '4px' }}
+                            />
+                          ) : (
+                            <ArrowDownLeft
+                              size={12}
+                              style={{ marginRight: '4px' }}
+                            />
+                          )}
+                          {isEntrega ? 'ASIGNADO' : 'DEVOLUCIÓN'}
                         </span>
-                      ) : (
-                        <span className='dash'>-</span>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        )}
+                      </td>
+                      <td>
+                        <div className='info-cell'>
+                          {h.equipos_agrupados.length > 1 ? (
+                            <div className='shadcn-tooltip-container'>
+                              <span className='multiple-badge'>
+                                <Layers size={14} /> Varios (
+                                {h.equipos_agrupados.length})
+                              </span>
+                              <div className='shadcn-tooltip-content'>
+                                {h.equipos_agrupados.map((eq, i) => (
+                                  <div
+                                    key={i}
+                                    className='tooltip-item'
+                                  >
+                                    <strong>{eq.modelo}</strong>
+                                    <span>SN: {eq.serie}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          ) : (
+                            <>
+                              <span className='name'>
+                                <Laptop
+                                  size={14}
+                                  style={{ color: '#64748b' }}
+                                />{' '}
+                                {h.marca} {h.modelo}
+                              </span>
+                              <span className='audit-text'>
+                                <Barcode size={12} /> {h.serie}
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        <div className='info-cell'>
+                          <span className='name'>
+                            <User
+                              size={14}
+                              style={{ color: '#64748b' }}
+                            />{' '}
+                            {h.empleado_nombre} {h.empleado_apellido}
+                          </span>
+                          {h.dni && (
+                            <span className='audit-text'>DNI: {h.dni}</span>
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        <div className='audit-cell'>
+                          {h.admin_nombre ? (
+                            <div className='user-info'>
+                              <span className='name'>
+                                <ShieldCheck
+                                  size={14}
+                                  style={{ color: '#7c3aed' }}
+                                />{' '}
+                                {h.admin_nombre}
+                              </span>
+                              <span className='audit-text'>
+                                {h.admin_correo}
+                              </span>
+                            </div>
+                          ) : (
+                            <span className='system-text'>Sistema</span>
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        {isEntrega ? (
+                          <div className='info-cell'>
+                            <span className='name time-use'>
+                              <Clock size={12} /> {formatDuration(h.tiempo_uso)}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className='dash'>-</span>
+                        )}
+                      </td>
+                      <td
+                        className='center'
+                        id={index === 0 ? 'tour-historial-estado' : undefined}
+                      >
+                        {!isEntrega && h.estado_equipo_momento ? (
+                          <span className={`status-badge-mini ${estadoClass}`}>
+                            {h.estado_equipo_momento}
+                          </span>
+                        ) : (
+                          <span className='dash'>-</span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
+        </div>
 
         {historialFiltrado.length > itemsPerPage && (
           <div className='pagination-footer'>
@@ -483,6 +506,7 @@ const Historial = () => {
               <button
                 onClick={() => paginate(currentPage - 1)}
                 disabled={currentPage === 1}
+                className='btn-paginate'
               >
                 <ChevronLeft size={16} /> Anterior
               </button>
@@ -492,6 +516,7 @@ const Historial = () => {
               <button
                 onClick={() => paginate(currentPage + 1)}
                 disabled={currentPage === totalPages}
+                className='btn-paginate'
               >
                 Siguiente <ChevronRight size={16} />
               </button>
