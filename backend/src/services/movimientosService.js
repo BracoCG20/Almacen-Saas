@@ -125,12 +125,24 @@ const registrarDevolucion = async (data, adminId, cloudinaryUrl, pdfBuffer) => {
   let movimientoIds = [];
   let tokenFirma = cloudinaryUrl ? uuidv4() : null;
 
+  // Guardaremos los estados físicos para el correo
+  let estadosReportados = new Set();
+
   try {
     await client.query('BEGIN');
 
     // BUCLE DE DEVOLUCIÓN: Por cada equipo devuelto
     for (const item of data.equipos) {
       const estaDisponible = parseInt(item.estado_fisico_id) === 1;
+
+      // Consultamos el nombre del estado físico para guardarlo en la variable del correo
+      const estadoQuery = await client.query(
+        'SELECT nombre FROM estados_equipos WHERE id = $1',
+        [item.estado_fisico_id],
+      );
+      if (estadoQuery.rows.length > 0) {
+        estadosReportados.add(estadoQuery.rows[0].nombre);
+      }
 
       const insertMov = `
         INSERT INTO historial_movimientos (
@@ -185,6 +197,7 @@ const registrarDevolucion = async (data, adminId, cloudinaryUrl, pdfBuffer) => {
     client.release();
   }
 
+  // --- ENVÍO DE CORREO CORREGIDO ---
   if (pdfBuffer && data.destinatario) {
     try {
       const textoCargador = 'Ver detalles en el PDF adjunto';
@@ -193,6 +206,18 @@ const registrarDevolucion = async (data, adminId, cloudinaryUrl, pdfBuffer) => {
           ? 'Múltiples Equipos de Trabajo'
           : 'Equipo de Trabajo';
 
+      // Determinamos el Estado Final para el correo
+      let estadoParaCorreo = 'No especificado';
+      const estadosArray = Array.from(estadosReportados);
+
+      if (estadosArray.length === 1) {
+        // Si todos los equipos tienen el mismo estado (ej. "Operativo"), mostramos ese.
+        estadoParaCorreo = estadosArray[0];
+      } else if (estadosArray.length > 1) {
+        // Si devolvió un teclado Operativo y un mouse Malogrado
+        estadoParaCorreo = 'Múltiples (Ver PDF)';
+      }
+
       await emailService.enviarActaCorreo(
         'devolucion',
         data.destinatario,
@@ -200,7 +225,7 @@ const registrarDevolucion = async (data, adminId, cloudinaryUrl, pdfBuffer) => {
         tipoEquipo,
         textoCargador,
         pdfBuffer,
-        null, // Ya no mandamos estado_final_nombre porque hay varios
+        estadoParaCorreo, // <--- AHORA SÍ ENVIAMOS EL ESTADO REAL
         data.motivo,
         tokenFirma,
       );
@@ -220,20 +245,51 @@ const actualizarFirmaDocumento = async (
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
+
+    // 1. Primero, obtenemos la información del movimiento base que se quiere actualizar
+    // Necesitamos el token_firma original para buscar a todos los "hermanos" de la misma asignación.
+    const infoRes = await client.query(
+      `SELECT token_firma, tipo_movimiento, cargador_incluido, pdf_generado_url, motivo_movimiento, 
+              c.email_contacto, c.nombres, c.apellidos, e.marca, e.modelo, st.nombre as estado_final_nombre
+       FROM historial_movimientos m 
+       JOIN colaboradores c ON m.colaborador_id = c.id 
+       JOIN equipos e ON m.equipo_id = e.id 
+       LEFT JOIN estados_equipos st ON m.estado_equipo_id = st.id 
+       WHERE m.id = $1`,
+      [id],
+    );
+
+    const mov = infoRes.rows[0];
+    if (!mov) throw new Error('No se encontró el registro.');
+
+    const tokenActual = mov.token_firma;
+
     if (firmaValida === false) {
+      // --- LÓGICA PARA INVALIDAR ---
+      // Generamos un NUEVO token para todo el paquete
       const nuevoToken = uuidv4();
-      const infoRes = await client.query(
-        `SELECT m.tipo_movimiento, m.cargador_incluido, m.pdf_generado_url, m.motivo_movimiento, c.email_contacto, c.nombres, c.apellidos, e.marca, e.modelo, st.nombre as estado_final_nombre FROM historial_movimientos m JOIN colaboradores c ON m.colaborador_id = c.id JOIN equipos e ON m.equipo_id = e.id LEFT JOIN estados_equipos st ON m.estado_equipo_id = st.id WHERE m.id = $1`,
-        [id],
-      );
-      const mov = infoRes.rows[0];
-      if (!mov) throw new Error('No se encontró el registro.');
 
-      await client.query(
-        `UPDATE historial_movimientos SET pdf_firmado_url = NULL, firma_valida = false, token_firma = $1, fecha_modificacion = NOW(), usuario_modificacion_id = $2 WHERE id = $3`,
-        [nuevoToken, usuarioModificadorId, id],
-      );
+      // Si el movimiento tenía un token (era de un paquete), actualizamos todos los que compartan el token.
+      // Si por alguna razón no tenía token (registros muy antiguos), solo actualizamos su ID.
+      if (tokenActual) {
+        await client.query(
+          `UPDATE historial_movimientos 
+           SET pdf_firmado_url = NULL, firma_valida = false, token_firma = $1, 
+               fecha_modificacion = NOW(), usuario_modificacion_id = $2 
+           WHERE token_firma = $3`,
+          [nuevoToken, usuarioModificadorId, tokenActual],
+        );
+      } else {
+        await client.query(
+          `UPDATE historial_movimientos 
+           SET pdf_firmado_url = NULL, firma_valida = false, token_firma = $1, 
+               fecha_modificacion = NOW(), usuario_modificacion_id = $2 
+           WHERE id = $3`,
+          [nuevoToken, usuarioModificadorId, id],
+        );
+      }
 
+      // Reenvío de correo...
       if (mov.email_contacto && mov.pdf_generado_url) {
         const response = await axios.get(mov.pdf_generado_url, {
           responseType: 'arraybuffer',
@@ -252,10 +308,24 @@ const actualizarFirmaDocumento = async (
         );
       }
     } else {
-      await client.query(
-        `UPDATE historial_movimientos SET pdf_firmado_url = $1, firma_valida = true, token_firma = NULL WHERE id = $2`,
-        [cloudinaryUrl, id],
-      );
+      // --- LÓGICA PARA CONFIRMAR FIRMA (Subida manual o webhook) ---
+      if (tokenActual) {
+        // Actualizamos TODOS los registros que tengan el mismo token de transacción
+        await client.query(
+          `UPDATE historial_movimientos 
+           SET pdf_firmado_url = $1, firma_valida = true, token_firma = NULL 
+           WHERE token_firma = $2`,
+          [cloudinaryUrl, tokenActual],
+        );
+      } else {
+        // Fallback por si es un registro antiguo sin token
+        await client.query(
+          `UPDATE historial_movimientos 
+           SET pdf_firmado_url = $1, firma_valida = true, token_firma = NULL 
+           WHERE id = $2`,
+          [cloudinaryUrl, id],
+        );
+      }
     }
     await client.query('COMMIT');
     return true;

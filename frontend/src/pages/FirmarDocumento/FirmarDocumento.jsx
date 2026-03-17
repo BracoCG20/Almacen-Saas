@@ -191,7 +191,7 @@ const FirmarDocumento = () => {
                 </label>
                 <input
                   id='dniInput'
-                  type='text'
+                  type='password'
                   maxLength='8'
                   inputMode='numeric'
                   required

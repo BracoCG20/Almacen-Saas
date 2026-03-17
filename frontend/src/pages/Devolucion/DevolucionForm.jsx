@@ -5,7 +5,6 @@ import {
   MessageCircle,
   UserCheck,
   Laptop,
-  BatteryFull,
   CheckCircle,
   AlertTriangle,
   HelpCircle,
@@ -26,7 +25,7 @@ const DevolucionForm = ({
   handleUserChange,
   onAction,
 }) => {
-  // Validamos que haya motivo y al menos un equipo marcado, y que todos los marcados tengan estado físico
+  // VALIDACIÓN: Empleado, motivo, al menos 1 equipo y todos los marcados con estado
   const isFormValid =
     formData.empleado_id &&
     formData.motivo &&
@@ -42,6 +41,12 @@ const DevolucionForm = ({
     },
   ];
 
+  const opcionesCargador = [
+    { value: true, label: 'Sí, devuelto' },
+    { value: false, label: 'No (Falta)' },
+  ];
+
+  // --- ESTILOS PARA SELECTS PRINCIPALES (40px) ---
   const customSelectStyles = {
     control: (provided, state) => ({
       ...provided,
@@ -67,7 +72,7 @@ const DevolucionForm = ({
       ...provided,
       margin: '0px',
       padding: '0px',
-      height: '40px',
+      height: '100%',
       color: 'transparent',
     }),
     indicatorSeparator: () => ({ display: 'none' }),
@@ -106,6 +111,18 @@ const DevolucionForm = ({
     menuPortal: (base) => ({ ...base, zIndex: 9999 }),
   };
 
+  // --- ESTILOS PARA SELECTS INTERNOS MINI (36px) ---
+  const miniSelectStyles = {
+    ...customSelectStyles,
+    control: (provided, state) => ({
+      ...customSelectStyles.control(provided, state),
+      height: '36px',
+      minHeight: '36px',
+      borderRadius: '6px',
+    }),
+    indicatorsContainer: (provided) => ({ ...provided, height: '36px' }),
+  };
+
   const checkRequiereCargador = (categoria) => {
     return categoria === 'Laptop/PC' || categoria === 'Celular/Tablet';
   };
@@ -115,7 +132,6 @@ const DevolucionForm = ({
       (e) => e.equipo_id === equipo.id,
     );
     if (yaEsta) {
-      // Lo quitamos
       setFormData({
         ...formData,
         equiposADevolver: formData.equiposADevolver.filter(
@@ -123,7 +139,6 @@ const DevolucionForm = ({
         ),
       });
     } else {
-      // Lo agregamos por defecto en estado Operativo
       const operativoId =
         estadosOptions.find((est) => est.label.toLowerCase() === 'operativo')
           ?.value || '';
@@ -172,16 +187,9 @@ const DevolucionForm = ({
           />
         </div>
 
-        {/* LISTA DE EQUIPOS QUE TIENE EN SU PODER */}
         {equiposDetectados.length > 0 ? (
-          <div
-            className='equipos-list-container'
-            style={{ marginTop: '1.5rem' }}
-          >
-            <label
-              className='label-highlight primary'
-              style={{ marginBottom: '10px' }}
-            >
+          <div className='equipos-list-container'>
+            <label className='label-highlight primary mb-small'>
               <Laptop size={16} /> Seleccione equipos a devolver
             </label>
 
@@ -197,7 +205,6 @@ const DevolucionForm = ({
                   key={eq.id}
                   className={`detected-equipment-card ${isSelected ? 'selected' : ''}`}
                 >
-                  {/* Encabezado Clickable */}
                   <div
                     className='equipo-header'
                     onClick={() => handleToggleEquipo(eq)}
@@ -225,14 +232,11 @@ const DevolucionForm = ({
                     </div>
                   </div>
 
-                  {/* Opciones Adicionales (Solo si está seleccionado) */}
                   {isSelected && (
                     <div className='equipo-options'>
-                      <div className='input-group-row'>
-                        <div className='flex-1'>
-                          <label
-                            style={{ fontSize: '0.75rem', marginBottom: '4px' }}
-                          >
+                      <div className='input-group-grid'>
+                        <div className='grid-col'>
+                          <label className='mini-label'>
                             Estado de Recepción *
                           </label>
                           <Select
@@ -249,57 +253,41 @@ const DevolucionForm = ({
                                 o?.value || '',
                               )
                             }
-                            styles={{
-                              ...customSelectStyles,
-                              control: (p, s) => ({
-                                ...customSelectStyles.control(p, s),
-                                height: '36px',
-                                minHeight: '36px',
-                              }),
-                            }}
+                            styles={miniSelectStyles}
                             menuPortalTarget={document.body}
                           />
                         </div>
 
                         {requiereCargador ? (
-                          <div className='flex-1'>
-                            <label
-                              style={{
-                                fontSize: '0.75rem',
-                                marginBottom: '4px',
-                              }}
-                            >
+                          <div className='grid-col'>
+                            <label className='mini-label'>
                               ¿Trajo Cargador?
                             </label>
-                            <select
-                              className='select-accesorios-mini'
-                              value={devData.cargador ? 'SI' : 'NO'}
-                              onChange={(e) =>
-                                updateEquipoDetalle(
-                                  eq.id,
-                                  'cargador',
-                                  e.target.value === 'SI',
-                                )
+                            <Select
+                              options={opcionesCargador}
+                              value={
+                                opcionesCargador.find(
+                                  (o) => o.value === devData.cargador,
+                                ) || null
                               }
-                            >
-                              <option value='SI'>Sí, incluye</option>
-                              <option value='NO'>No (Falta)</option>
-                            </select>
+                              onChange={(o) =>
+                                updateEquipoDetalle(eq.id, 'cargador', o.value)
+                              }
+                              styles={miniSelectStyles}
+                              isSearchable={false}
+                              menuPortalTarget={document.body}
+                            />
                           </div>
                         ) : (
-                          <div className='flex-1 no-aplica-cargador'>
-                            No requiere cargador
+                          <div className='grid-col no-aplica-cargador'>
+                            <span>No requiere cargador</span>
                           </div>
                         )}
                       </div>
 
-                      {/* Observaciones si está dañado */}
                       {devData.estado_fisico_id &&
                         parseInt(devData.estado_fisico_id) !== 1 && (
-                          <div
-                            className='input-group'
-                            style={{ marginTop: '10px' }}
-                          >
+                          <div className='input-group mt-small'>
                             <textarea
                               className='danger-textarea-mini'
                               placeholder='Describa el daño o problema...'
@@ -322,19 +310,13 @@ const DevolucionForm = ({
             })}
           </div>
         ) : (
-          <div
-            className='empty-equipment-card'
-            style={{ marginTop: '1.5rem' }}
-          >
+          <div className='empty-equipment-card'>
             Seleccione un usuario para ver los equipos que tiene pendientes por
             devolver.
           </div>
         )}
 
-        <div
-          className='input-group'
-          style={{ marginTop: '1.5rem' }}
-        >
+        <div className='input-group mt-medium'>
           <label className='label-highlight blue'>
             <HelpCircle size={16} /> Motivo General de la Devolución *
           </label>

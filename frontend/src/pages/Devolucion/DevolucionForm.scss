@@ -16,6 +16,17 @@
     width: 100%;
   }
 
+  /* CLASES DE UTILIDAD PARA MÁRGENES */
+  .mb-small {
+    margin-bottom: 10px;
+  }
+  .mt-small {
+    margin-top: 10px;
+  }
+  .mt-medium {
+    margin-top: 1.5rem;
+  }
+
   .label-highlight {
     display: inline-flex;
     align-items: center;
@@ -57,13 +68,15 @@
     text-align: center;
     color: #64748b;
     font-size: 0.85rem;
+    margin-top: 1.5rem;
   }
 
-  // --- NUEVOS ESTILOS PARA LISTA CHECKLIST ---
+  // --- ESTILOS PARA LISTA CHECKLIST ---
   .equipos-list-container {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    margin-top: 1.5rem;
   }
 
   .detected-equipment-card {
@@ -85,6 +98,7 @@
       padding: 12px 15px;
       cursor: pointer;
       background: #f8fafc;
+      transition: background 0.2s;
       &:hover {
         background: #f1f5f9;
       }
@@ -113,42 +127,47 @@
       border-top: 1px solid #e2e8f0;
       background: #ffffff;
 
-      .input-group-row {
-        display: flex;
+      /* CSS GRID para alinear perfectamente los Selects */
+      .input-group-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         gap: 15px;
-        .flex-1 {
-          flex: 1;
+        align-items: end; /* Alinea los elementos al fondo en caso de que un label ocupe 2 líneas */
+
+        .grid-col {
           display: flex;
           flex-direction: column;
+          justify-content: flex-end; /* Asegura que el contenido (el Select) baje */
+          gap: 6px;
         }
       }
 
-      .select-accesorios-mini {
-        padding: 0 10px;
-        height: 36px;
-        border-radius: 8px;
-        border: 1px solid #e2e8f0;
-        font-size: 0.8rem;
-        color: #334155;
-        outline: none;
-        background: white;
-        &:focus {
-          border-color: v.$primary;
-        }
+      .mini-label {
+        font-size: 0.75rem;
+        color: #475569;
+        font-weight: 600;
+        margin: 0;
+        padding: 0;
+        line-height: 1;
       }
 
       .no-aplica-cargador {
-        justify-content: flex-end;
-        padding-bottom: 8px;
-        font-size: 0.75rem;
-        color: #94a3b8;
-        font-style: italic;
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-start;
+        height: 36px; /* Misma altura que el Select para cuadrar visualmente */
+        span {
+          font-size: 0.75rem;
+          color: #94a3b8;
+          font-style: italic;
+          margin-bottom: 8px;
+        }
       }
 
       .danger-textarea-mini {
         width: 100%;
         border: 1px solid #fca5a5;
-        border-radius: 8px;
+        border-radius: 6px;
         padding: 10px;
         font-size: 0.8rem;
         background-color: #fef2f2;
