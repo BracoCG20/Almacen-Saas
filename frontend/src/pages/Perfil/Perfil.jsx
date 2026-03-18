@@ -16,6 +16,7 @@ import {
 import './Perfil.scss';
 
 const Perfil = () => {
+  // --- 1. ESTADOS Y CONTEXTO ---
   const { updateUser, user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [preview, setPreview] = useState(null);
@@ -35,19 +36,22 @@ const Perfil = () => {
 
   const isSuperAdmin = userRole === 1;
 
-  // --- SOLUCIÓN CLOUDINARY ---
-  // Esta función es idéntica a la del Sidebar. Detecta si es Cloudinary (http) o archivo local (blob)
+  /**
+   * MANEJO DE RUTAS DE IMÁGENES (CLOUDINARY VS LOCAL)
+   * Función crítica para asegurar que las URLs que vienen de BD se dibujen
+   * correctamente, ya sean URLs absolutas (Cloudinary) o relativas (Local).
+   */
   const getAvatarUrl = (path) => {
     if (!path) return null;
     if (path.startsWith('http') || path.startsWith('blob:')) return path;
 
-    // Fallback por si en algún momento hay rutas locales
     const baseUrl = api.defaults.baseURL
       ? api.defaults.baseURL.replace(/\/api\/?$/, '')
       : 'http://localhost:4000';
     return `${baseUrl}${path}`;
   };
 
+  // --- 2. CARGA INICIAL DE DATOS ---
   useEffect(() => {
     const fetchPerfil = async () => {
       try {
@@ -66,7 +70,6 @@ const Perfil = () => {
           empresa_nombre: u.empresa_nombre || 'No asignada',
         });
 
-        // Asignamos la imagen correctamente formateada desde la BD
         if (u.foto_perfil_url) {
           setPreview(getAvatarUrl(u.foto_perfil_url));
         }
@@ -79,6 +82,7 @@ const Perfil = () => {
     fetchPerfil();
   }, []);
 
+  // --- 3. MANEJADORES DE INPUTS ---
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -88,7 +92,7 @@ const Perfil = () => {
     setFormData({ ...formData, telefono: onlyNums });
   };
 
-  // Cuando se selecciona una imagen, creamos un blob local temporal para la previsualización rápida
+  // Cuando escojo una foto, creo un blob local temporal para previsualizarla antes de guardar
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -97,6 +101,7 @@ const Perfil = () => {
     }
   };
 
+  // --- 4. ENVÍO DE DATOS AL SERVIDOR ---
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.password && formData.password.length < 6) {
@@ -106,6 +111,7 @@ const Perfil = () => {
     const toastId = toast.loading('Guardando perfil...');
     const data = new FormData();
 
+    // Solo envío lo que se ha modificado o está permitido para este rol
     if (formData.password) data.append('password', formData.password);
     if (formData.telefono) data.append('telefono', formData.telefono);
     if (fotoFile) data.append('foto', fotoFile);
@@ -122,21 +128,19 @@ const Perfil = () => {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      // El backend nos devuelve la nueva URL de Cloudinary
+      // Recupero la URL procesada por el backend (ej: Cloudinary)
       const nuevaFotoUrl = res.data.foto_url || user?.foto_url;
 
       if (fotoFile || isSuperAdmin) {
-        // 1. Actualizamos el Sidebar global
+        // Actualizo el Contexto global para que el Sidebar refleje los cambios al instante
         updateUser({
           foto_url: nuevaFotoUrl,
           nombre: `${formData.nombres} ${formData.apellidos}`,
           email: formData.email_login,
         });
 
-        // 2. Actualizamos la imagen central del Perfil
-        if (nuevaFotoUrl) {
-          setPreview(getAvatarUrl(nuevaFotoUrl));
-        }
+        // Actualizo la imagen de este mismo componente
+        if (nuevaFotoUrl) setPreview(getAvatarUrl(nuevaFotoUrl));
       }
 
       toast.update(toastId, {
@@ -146,7 +150,7 @@ const Perfil = () => {
         autoClose: 3000,
       });
 
-      // Limpiamos estados temporales
+      // Reseteo campos temporales de seguridad
       setFormData((prev) => ({ ...prev, password: '' }));
       setFotoFile(null);
     } catch (error) {
@@ -161,6 +165,7 @@ const Perfil = () => {
 
   if (loading) return <div className='loading-state'>Cargando perfil...</div>;
 
+  // Avatar por defecto generado con las iniciales si el usuario no tiene foto
   const defaultImage = `https://ui-avatars.com/api/?name=${formData.nombres}+${formData.apellidos}&background=random`;
 
   return (
@@ -174,6 +179,7 @@ const Perfil = () => {
         onSubmit={handleSubmit}
         className='perfil-grid'
       >
+        {/* --- TARJETA IZQUIERDA: Avatar y Rol --- */}
         <div className='card profile-card'>
           <div className='photo-wrapper'>
             <img
@@ -216,6 +222,7 @@ const Perfil = () => {
           </div>
         </div>
 
+        {/* --- TARJETA DERECHA: Datos de Contacto y Seguridad --- */}
         <div className='card details-card'>
           <h3 className='section-title'>Datos de Contacto</h3>
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import api from '../../service/api';
 import * as XLSX from 'xlsx';
 import { toast } from 'react-toastify';
@@ -8,7 +8,6 @@ import {
   Edit,
   Building2,
   Phone,
-  Truck,
   Undo2,
   Mail,
   MapPin,
@@ -20,7 +19,6 @@ import {
   Laptop,
   ChevronLeft,
   ChevronRight,
-  ExternalLink,
   FileDown,
   History,
   HelpCircle,
@@ -35,13 +33,16 @@ import ProveedorHistorial from './ProveedorHistorial';
 import './Proveedores.scss';
 
 const Proveedores = () => {
+  // --- 1. ESTADOS DE DATOS ---
   const [proveedores, setProveedores] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
 
+  // --- 2. ESTADOS DE BÚSQUEDA Y PAGINACIÓN ---
+  const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
+  // --- 3. ESTADOS DE MODALES ---
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
@@ -50,7 +51,10 @@ const Proveedores = () => {
   const [providerToAction, setProviderToAction] = useState(null);
   const [historyData, setHistoryData] = useState([]);
 
-  // --- FUNCIÓN DEL TOUR  ---
+  /**
+   * TOUR GUIADO
+   * Muestra paso a paso cómo interactuar con el panel de proveedores.
+   */
   const startProveedoresTour = () => {
     const driverObj = driver({
       showProgress: true,
@@ -64,8 +68,7 @@ const Proveedores = () => {
           element: '#tour-prov-buscador',
           popover: {
             title: 'Búsqueda Rápida',
-            description:
-              'Usa esta barra para encontrar un proveedor por su Razón Social o RUC.',
+            description: 'Encuentra un proveedor por Razón Social o RUC.',
             side: 'bottom',
             align: 'start',
           },
@@ -75,7 +78,7 @@ const Proveedores = () => {
           popover: {
             title: 'Panel de Proveedores',
             description:
-              'Aquí ves todos los datos. Fíjate en la columna de "Contrato" para descargar el PDF y en "Equipos" para ver cuántos te han alquilado.',
+              'Descarga el contrato en PDF y revisa la cantidad de equipos que te han alquilado.',
             side: 'top',
             align: 'start',
           },
@@ -85,7 +88,7 @@ const Proveedores = () => {
           popover: {
             title: 'Auditoría y Edición',
             description:
-              'Desde aquí puedes ver el historial de cambios, actualizar su contrato o darlo de baja del sistema.',
+              'Ve el historial de cambios, actualiza contratos o dalos de baja.',
             side: 'left',
             align: 'center',
           },
@@ -95,7 +98,7 @@ const Proveedores = () => {
           popover: {
             title: 'Reporte Gerencial',
             description:
-              'Exporta todos los datos, fechas de contrato y contactos a un Excel.',
+              'Exporta todos los datos, fechas y contactos a un Excel.',
             side: 'bottom',
             align: 'center',
           },
@@ -105,7 +108,7 @@ const Proveedores = () => {
           popover: {
             title: 'Registrar Proveedor',
             description:
-              'Agrega una nueva empresa a tu red para luego poder registrarle equipos alquilados.',
+              'Agrega una nueva empresa para luego poder registrarle equipos alquilados.',
             side: 'left',
             align: 'start',
           },
@@ -115,6 +118,10 @@ const Proveedores = () => {
     driverObj.drive();
   };
 
+  /**
+   * CARGA INICIAL DE DATOS
+   * Solicita al backend la lista de proveedores y la ordena, poniendo a los activos primero.
+   */
   const fetchProveedores = async () => {
     setLoading(true);
     try {
@@ -136,10 +143,12 @@ const Proveedores = () => {
     fetchProveedores();
   }, []);
 
+  // Si busco algo en la barra, devuelvo la paginación a la primera página
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm]);
 
+  // --- FILTRADO Y PAGINACIÓN MATEMÁTICA ---
   const filtered = proveedores.filter(
     (p) =>
       p.razon_social.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -152,11 +161,7 @@ const Proveedores = () => {
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  const formatUrl = (url) => {
-    if (!url) return '#';
-    return url.startsWith('http') ? url : `https://${url}`;
-  };
-
+  // --- HELPERS DE URL Y FECHAS ---
   const getBackendFileUrl = (path) => {
     if (!path) return null;
     if (path.startsWith('http')) return path;
@@ -166,6 +171,7 @@ const Proveedores = () => {
     return `${baseUrl}${path}`;
   };
 
+  // Fuerzo la zona horaria UTC para que la fecha (ej: "2026-10-15") no se reduzca un día por diferencia horaria
   const formatLocalDate = (isoString) => {
     if (!isoString) return '-';
     const date = new Date(
@@ -174,6 +180,9 @@ const Proveedores = () => {
     return date.toLocaleDateString('es-PE');
   };
 
+  /**
+   * EXPORTACIÓN A EXCEL
+   */
   const exportarExcel = () => {
     if (filtered.length === 0) return toast.info('No hay datos para exportar');
 
@@ -212,6 +221,8 @@ const Proveedores = () => {
     XLSX.writeFile(wb, 'Reporte_Gerencial_Proveedores.xlsx');
     toast.success('Reporte gerencial generado exitosamente');
   };
+
+  // --- MANEJADORES DE MODALES Y ACCIONES CRUD ---
 
   const handleAdd = () => {
     setProviderToEdit(null);
@@ -253,6 +264,7 @@ const Proveedores = () => {
     }
   };
 
+  // Se ejecuta desde dentro del AddProveedorForm cuando se guarda exitosamente
   const handleFormSuccess = () => {
     setIsModalOpen(false);
     fetchProveedores();
@@ -268,14 +280,12 @@ const Proveedores = () => {
           Gestión de Proveedores
         </h1>
         <div className='header-actions'>
-          {/* BOTÓN TOUR */}
           <button
             onClick={startProveedoresTour}
             className='btn-action-header btn-tour'
           >
             <HelpCircle size={18} />
           </button>
-
           <button
             id='tour-prov-excel'
             className='btn-action-header btn-excel'
@@ -389,6 +399,7 @@ const Proveedores = () => {
                     )}
                   </td>
                   <td className='center'>
+                    {/* Si tiene contrato adjunto, permito descargarlo directamente */}
                     {prov.contrato_url ? (
                       <a
                         href={getBackendFileUrl(prov.contrato_url)}
@@ -421,6 +432,8 @@ const Proveedores = () => {
                       >
                         <History size={16} />
                       </button>
+
+                      {/* Si está activo permito editar o suspender. Si está inactivo, solo puedo reactivarlo. */}
                       {prov.estado ? (
                         <>
                           <button
@@ -458,7 +471,6 @@ const Proveedores = () => {
           </table>
         )}
 
-        {/* --- CONTROLES DE PAGINACIÓN --- */}
         {filtered.length > itemsPerPage && (
           <div className='pagination-footer'>
             <div className='info'>
@@ -470,6 +482,7 @@ const Proveedores = () => {
               <button
                 onClick={() => paginate(currentPage - 1)}
                 disabled={currentPage === 1}
+                className='btn-paginate'
               >
                 <ChevronLeft size={16} /> Anterior
               </button>
@@ -479,6 +492,7 @@ const Proveedores = () => {
               <button
                 onClick={() => paginate(currentPage + 1)}
                 disabled={currentPage === totalPages}
+                className='btn-paginate'
               >
                 Siguiente <ChevronRight size={16} />
               </button>
@@ -487,7 +501,9 @@ const Proveedores = () => {
         )}
       </div>
 
-      {/* MODAL CREAR / EDITAR PROVEEDOR */}
+      {/* --- MODALES --- */}
+
+      {/* Modal Principal: Add/Edit */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -499,7 +515,7 @@ const Proveedores = () => {
         />
       </Modal>
 
-      {/* MODAL HISTORIAL DE PROVEEDOR */}
+      {/* Modal de Auditoría */}
       <Modal
         isOpen={isHistoryModalOpen}
         onClose={() => setIsHistoryModalOpen(false)}
@@ -508,7 +524,7 @@ const Proveedores = () => {
         <ProveedorHistorial historyData={historyData} />
       </Modal>
 
-      {/* MODAL CONFIRMACIÓN DAR DE BAJA */}
+      {/* Modal Confirmación Crítica (Baja) */}
       <Modal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}

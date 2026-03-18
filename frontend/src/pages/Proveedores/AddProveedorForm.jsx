@@ -17,6 +17,7 @@ import FileUploader from '../../components/FileUploader/FileUploader';
 import './AddProveedorForm.scss';
 
 const AddProveedorForm = ({ onSuccess, providerToEdit }) => {
+  // --- 1. ESTADO PRINCIPAL ---
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     razon_social: '',
@@ -35,9 +36,14 @@ const AddProveedorForm = ({ onSuccess, providerToEdit }) => {
     fecha_fin_contrato: '',
   });
 
+  // --- 2. ESTADOS PARA ARCHIVO ADJUNTO (PDF) ---
   const [archivoContrato, setArchivoContrato] = useState(null);
   const [removeExisting, setRemoveExisting] = useState(false);
 
+  /**
+   * 3. CARGA DE DATOS (MODO EDICIÓN)
+   * Si recibo un proveedor por props, lleno el formulario automáticamente.
+   */
   useEffect(() => {
     if (providerToEdit) {
       setFormData({
@@ -53,6 +59,7 @@ const AddProveedorForm = ({ onSuccess, providerToEdit }) => {
         telefono_contacto: providerToEdit.telefono_contacto || '',
         sitio_web: providerToEdit.sitio_web || '',
         tipo_servicio: providerToEdit.tipo_servicio || '',
+        // Separo la hora (T00:00:00) para que el input type="date" acepte el formato YYYY-MM-DD
         fecha_inicio_contrato: providerToEdit.fecha_inicio_contrato
           ? providerToEdit.fecha_inicio_contrato.split('T')[0]
           : '',
@@ -65,30 +72,39 @@ const AddProveedorForm = ({ onSuccess, providerToEdit }) => {
     }
   }, [providerToEdit]);
 
+  // Manejador genérico para inputs de texto
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  /**
+   * HELPER: FORMATO DE URL DEL PDF
+   * Determino si el PDF guardado viene de un bucket (Cloudinary) o si está en mi servidor local.
+   */
   const getBackendFileUrl = (path) => {
     if (!path) return null;
 
-    // CORRECCIÓN A PRUEBA DE BALAS
     if (path.includes('cloudinary.com') || path.includes('http')) {
       return path.startsWith('/') ? path.substring(1) : path;
     }
 
     const baseUrl = api.defaults.baseURL
       ? api.defaults.baseURL.replace(/\/api\/?$/, '')
-      : 'http://localhost:4000'; // Asegúrate que tu backend corre en el 4000
+      : 'http://localhost:4000';
 
     return `${baseUrl}${path.startsWith('/') ? path : `/${path}`}`;
   };
 
+  /**
+   * 4. ENVÍO AL SERVIDOR (SUBMIT)
+   * Valido datos críticos, verifico la lógica de fechas y empaqueto todo (incluido el PDF) en un FormData.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.razon_social || !formData.ruc)
       return toast.warning('Razón Social y RUC son obligatorios');
 
+    // Valido que no viajen en el tiempo
     if (formData.fecha_inicio_contrato && formData.fecha_fin_contrato) {
       if (
         new Date(formData.fecha_inicio_contrato) >
@@ -102,11 +118,16 @@ const AddProveedorForm = ({ onSuccess, providerToEdit }) => {
 
     setLoading(true);
     const dataToSend = new FormData();
+
+    // Adjunto solo los campos que tienen valor
     Object.keys(formData).forEach((key) => {
       if (formData[key]) dataToSend.append(key, formData[key]);
     });
 
+    // Adjunto el archivo físico si subieron uno nuevo
     if (archivoContrato) dataToSend.append('contrato_pdf', archivoContrato);
+
+    // Bandera para decirle al backend que borre el archivo viejo
     if (removeExisting) dataToSend.append('eliminar_contrato', 'true');
 
     try {
@@ -134,7 +155,7 @@ const AddProveedorForm = ({ onSuccess, providerToEdit }) => {
       className='proveedor-form-modern'
       onSubmit={handleSubmit}
     >
-      {/* SECCIÓN 1: DATOS GENERALES */}
+      {/* SECCIÓN 1: DATOS GENERALES EMPRESARIALES */}
       <div className='form-section'>
         <div className='section-header'>
           <div className='indicator' />
@@ -193,7 +214,7 @@ const AddProveedorForm = ({ onSuccess, providerToEdit }) => {
         </div>
       </div>
 
-      {/* SECCIÓN 2: CONTRATO */}
+      {/* SECCIÓN 2: CONTRATO FÍSICO Y VIGENCIA */}
       <div className='form-section'>
         <div className='section-header'>
           <div className='indicator' />
@@ -227,13 +248,12 @@ const AddProveedorForm = ({ onSuccess, providerToEdit }) => {
             <label>
               <FileText size={14} /> Documento Adjunto (PDF)
             </label>
-            {/* El FileUploader se mantiene exactamente igual en funcionamiento */}
             <FileUploader
               accept='.pdf'
               newFile={archivoContrato}
               onFileSelect={(file) => {
                 if (file.type !== 'application/pdf')
-                  toast.error('El contrato debe ser un PDF.');
+                  toast.error('El contrato debe ser un archivo PDF.');
                 else setArchivoContrato(file);
               }}
               onFileRemove={() => setArchivoContrato(null)}
@@ -254,7 +274,7 @@ const AddProveedorForm = ({ onSuccess, providerToEdit }) => {
         </div>
       </div>
 
-      {/* SECCIÓN 3: CONTACTO */}
+      {/* SECCIÓN 3: UBICACIÓN Y CONTACTO DIRECTO */}
       <div className='form-section'>
         <div className='section-header'>
           <div className='indicator' />

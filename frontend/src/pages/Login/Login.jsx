@@ -8,13 +8,20 @@ import './Login.scss';
 import logo from '../../assets/logo_grupoSP.png';
 
 const Login = () => {
+  // --- 1. ESTADOS DEL FORMULARIO ---
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  // Consumo el contexto de autenticación y el hook de enrutamiento
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
+  /**
+   * 2. MANEJADOR DE INICIO DE SESIÓN
+   * Envío las credenciales al contexto para validarlas contra el backend.
+   * Si todo es correcto, redirijo al dashboard.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -26,6 +33,7 @@ const Login = () => {
         toast.success('Bienvenido al sistema');
         navigate('/');
       } else {
+        // Muestro el mensaje de error exacto que devuelve el backend (ej: "Contraseña incorrecta" o "Usuario inactivo")
         toast.error(result?.message || 'Credenciales incorrectas');
         setIsLoading(false);
       }
@@ -38,7 +46,7 @@ const Login = () => {
   return (
     <div className='modern-login-container'>
       <div className='login-box'>
-        {/* --- PANEL IZQUIERDO (Branding) --- */}
+        {/* --- PANEL IZQUIERDO (Branding y Diseño Visual) --- */}
         <div className='login-brand-panel'>
           <div className='brand-content'>
             <span className='brand-badge'>Plataforma Centralizada</span>
@@ -52,14 +60,16 @@ const Login = () => {
               equipos y servicios de <strong>Grupo SP</strong>.
             </p>
           </div>
+
           {/* Elementos decorativos de fondo para el panel */}
           <div className='circle-decoration circle-1'></div>
           <div className='circle-decoration circle-2'></div>
         </div>
 
-        {/* --- PANEL DERECHO (Formulario) --- */}
+        {/* --- PANEL DERECHO (Formulario de Acceso) --- */}
         <div className='login-form-panel'>
           <div className='form-wrapper'>
+            {/* Cabecera del formulario */}
             <div className='form-header'>
               <div className='logo-container'>
                 <img
@@ -72,7 +82,8 @@ const Login = () => {
             </div>
 
             <form onSubmit={handleSubmit}>
-              {/* Input Correo */}
+              {/* Input: Correo Electrónico */}
+              {/* Uso la clase 'has-value' para animar el label cuando el usuario escribe algo */}
               <div className={`modern-input-group ${email ? 'has-value' : ''}`}>
                 <div className='input-content'>
                   <label>Correo Electrónico</label>
@@ -90,7 +101,7 @@ const Login = () => {
                 </div>
               </div>
 
-              {/* Input Contraseña */}
+              {/* Input: Contraseña */}
               <div
                 className={`modern-input-group ${password ? 'has-value' : ''}`}
               >
@@ -110,6 +121,7 @@ const Login = () => {
                 </div>
               </div>
 
+              {/* Botón de Ingreso con estado de carga (Spinner) */}
               <div className='form-actions'>
                 <button
                   type='submit'
@@ -134,7 +146,8 @@ const Login = () => {
             </form>
 
             <div className='footer-copy'>
-              @ Copyright 2026, Grupo SP - Todos los derechos reservados.
+              @ Copyright {new Date().getFullYear()}, Grupo SP - Todos los
+              derechos reservados.
             </div>
           </div>
         </div>
