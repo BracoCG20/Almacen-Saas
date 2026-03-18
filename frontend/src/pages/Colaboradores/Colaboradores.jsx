@@ -24,7 +24,6 @@ import {
   Barcode,
 } from 'lucide-react';
 
-// --- IMPORTACIONES PARA EL TOUR ---
 import { driver } from 'driver.js';
 import 'driver.js/dist/driver.css';
 
@@ -34,20 +33,26 @@ import ColaboradorHistorial from './ColaboradorHistorial';
 import './Colaboradores.scss';
 
 const Colaboradores = () => {
+  // --- 1. ESTADOS DE DATOS ---
+  // Aquí guardo la lista maestra del personal, las empresas (para el filtro) y mi rol para permisos.
   const [colaboradores, setColaboradores] = useState([]);
   const [empresasOptions, setEmpresasOptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState(null);
 
+  // --- 2. ESTADOS DE BÚSQUEDA Y FILTRADO ---
   const [searchTerm, setSearchTerm] = useState('');
   const [filterEmpresa, setFilterEmpresa] = useState({
     value: 'todas',
     label: 'Todas las Empresas',
   });
 
+  // --- 3. ESTADOS DE PAGINACIÓN ---
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
+  // --- 4. ESTADOS DE MODALES Y ACCIONES ---
+  // Controlo qué modales están abiertos y sobre qué colaborador estoy actuando.
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
@@ -57,7 +62,10 @@ const Colaboradores = () => {
   const [colabToAction, setColabToAction] = useState(null);
   const [historyData, setHistoryData] = useState([]);
 
-  // --- FUNCIÓN DEL TOUR GUIADO ---
+  /**
+   * TOUR GUIADO
+   * Configuro los pasos para enseñar cómo funciona el directorio de personal.
+   */
   const startColaboradoresTour = () => {
     const driverObj = driver({
       showProgress: true,
@@ -71,8 +79,7 @@ const Colaboradores = () => {
           element: '#tour-colab-filtros',
           popover: {
             title: 'Búsqueda de Personal',
-            description:
-              'Escribe el nombre o DNI de un empleado, o filtra por la empresa a la que pertenece.',
+            description: 'Escribe el nombre o DNI, o filtra por empresa.',
             side: 'bottom',
             align: 'start',
           },
@@ -82,7 +89,7 @@ const Colaboradores = () => {
           popover: {
             title: 'Directorio Activo',
             description:
-              'Aquí verás a todo el personal. Si el ícono de WhatsApp está verde, puedes hacer clic para enviarle un mensaje directo.',
+              'Aquí verás a todo el personal. Usa el ícono verde para chatear por WhatsApp.',
             side: 'top',
             align: 'start',
           },
@@ -92,7 +99,7 @@ const Colaboradores = () => {
           popover: {
             title: 'Gestión del Empleado',
             description:
-              'Usa estos botones para ver el historial de cambios, editar sus datos de contacto, o dar de baja al colaborador si se retira de la empresa.',
+              'Ve su historial, edita sus datos o dalo de baja del sistema.',
             side: 'left',
             align: 'center',
           },
@@ -102,7 +109,7 @@ const Colaboradores = () => {
           popover: {
             title: 'Exportar Reporte',
             description:
-              'Genera un archivo Excel con la lista completa del personal y sus datos de contacto.',
+              'Genera un archivo Excel con la lista completa del personal.',
             side: 'bottom',
             align: 'center',
           },
@@ -111,8 +118,7 @@ const Colaboradores = () => {
           element: '#tour-colab-nuevo',
           popover: {
             title: 'Nuevo Ingreso',
-            description:
-              'Haz clic aquí para registrar a un nuevo colaborador antes de asignarle sus equipos físicos.',
+            description: 'Registra un colaborador antes de asignarle equipos.',
             side: 'left',
             align: 'start',
           },
@@ -122,12 +128,17 @@ const Colaboradores = () => {
     driverObj.drive();
   };
 
+  /**
+   * CARGA INICIAL DE DATOS
+   * Obtengo mi rol, las empresas habilitadas y la lista de colaboradores ordenados.
+   */
   const fetchData = async () => {
     setLoading(true);
     try {
       const resPerfil = await api.get('/auth/perfil');
       setUserRole(Number(resPerfil.data.rol_id));
 
+      // Intento cargar el catálogo de empresas para el select de filtros
       try {
         const resEmpresas = await api.get('/empresas');
         const options = resEmpresas.data
@@ -141,6 +152,7 @@ const Colaboradores = () => {
         setEmpresasOptions([{ value: 'todas', label: 'Todas las Empresas' }]);
       }
 
+      // Traigo al personal y ordeno: Primero los Activos, luego alfabéticamente.
       const res = await api.get('/colaboradores');
       const sorted = res.data.sort((a, b) => {
         if (a.estado === b.estado) return a.nombres.localeCompare(b.nombres);
@@ -158,23 +170,31 @@ const Colaboradores = () => {
     fetchData();
   }, []);
 
+  // Si escribo algo en el buscador o cambio de empresa, me regreso a la página 1 automáticamente
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, filterEmpresa]);
 
+  /**
+   * LÓGICA DE FILTRADO Y PAGINACIÓN
+   * Combino la búsqueda por texto (nombre/DNI) con el filtro del Select de Empresa.
+   */
   const filteredColaboradores = colaboradores.filter((c) => {
     const term = searchTerm.toLowerCase();
     const matchesSearch =
       c.nombres.toLowerCase().includes(term) ||
       c.apellidos.toLowerCase().includes(term) ||
       (c.dni && c.dni.includes(term));
+
     let matchesEmpresa = true;
     if (filterEmpresa.value !== 'todas') {
       matchesEmpresa = c.empresa_id === filterEmpresa.value;
     }
+
     return matchesSearch && matchesEmpresa;
   });
 
+  // Corto el arreglo filtrado matemáticamente para mostrar solo la página actual
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredColaboradores.slice(
@@ -184,6 +204,10 @@ const Colaboradores = () => {
   const totalPages = Math.ceil(filteredColaboradores.length / itemsPerPage);
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  /**
+   * EXPORTACIÓN A EXCEL
+   * Armo un objeto plano con la información legible y lo descargo.
+   */
   const exportarExcel = () => {
     if (colaboradores.length === 0)
       return toast.info('No hay datos para exportar');
@@ -211,14 +235,18 @@ const Colaboradores = () => {
     toast.success('Reporte gerencial generado exitosamente');
   };
 
+  // --- MANEJADORES DE MODALES Y ACCIONES CRUD ---
+
   const handleAdd = () => {
     setColaboradorToEdit(null);
     setIsFormModalOpen(true);
   };
+
   const handleEdit = (colab) => {
     setColaboradorToEdit(colab);
     setIsFormModalOpen(true);
   };
+
   const confirmDelete = (colab) => {
     setColaboradorToDelete(colab);
     setIsDeleteModalOpen(true);
@@ -259,11 +287,13 @@ const Colaboradores = () => {
     }
   };
 
+  // Cierro el modal y refresco la tabla si el formulario guardó con éxito
   const handleFormSuccess = () => {
     setIsFormModalOpen(false);
     fetchData();
   };
 
+  // Estilos de Shadcn para el filtro de empresas
   const customFilterStyles = {
     control: (provided, state) => ({
       ...provided,
@@ -520,7 +550,6 @@ const Colaboradores = () => {
           </table>
         )}
 
-        {/* RESTAURADA LA PAGINACIÓN ORIGINAL SIN ESTILOS EN LÍNEA */}
         {filteredColaboradores.length > itemsPerPage && (
           <div className='pagination-footer'>
             <div className='info'>
@@ -535,6 +564,7 @@ const Colaboradores = () => {
               <button
                 onClick={() => paginate(currentPage - 1)}
                 disabled={currentPage === 1}
+                className='btn-paginate'
               >
                 <ChevronLeft size={16} /> Anterior
               </button>
@@ -546,6 +576,7 @@ const Colaboradores = () => {
               <button
                 onClick={() => paginate(currentPage + 1)}
                 disabled={currentPage === totalPages}
+                className='btn-paginate'
               >
                 Siguiente <ChevronRight size={16} />
               </button>
@@ -553,6 +584,8 @@ const Colaboradores = () => {
           </div>
         )}
       </div>
+
+      {/* --- MODALES --- */}
 
       <Modal
         isOpen={isFormModalOpen}
