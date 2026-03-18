@@ -24,9 +24,11 @@ const EntregaTable = ({
   onSubirClick,
   onInvalidar,
 }) => {
+  // Controlo la paginación local de la tabla
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
+  // Formateo la fecha para mostrar el día, mes y año usando mi zona horaria local
   const formatDateOnly = (isoString) => {
     if (!isoString) return '-';
     const date = new Date(
@@ -40,6 +42,7 @@ const EntregaTable = ({
     });
   };
 
+  // Formateo la hora extraída de la cadena ISO a formato 12H (AM/PM)
   const formatTimeOnly = (isoString) => {
     if (!isoString) return '';
     const date = new Date(
@@ -53,7 +56,12 @@ const EntregaTable = ({
     });
   };
 
-  // AGRUPACIÓN: Agrupa registros del mismo usuario realizados en la misma transacción
+  /**
+   * AGRUPACIÓN DE HISTORIAL
+   * Recibo una lista plana de asignaciones desde la BD. Aquí las agrupo si se
+   * hicieron en el mismo minuto y para el mismo usuario. Así, una asignación
+   * múltiple de 3 equipos se dibuja como una sola fila en la UI.
+   */
   const historialAgrupado = Object.values(
     historial.reduce((acc, h) => {
       const key = `${h.empleado_id}-${h.fecha_movimiento.substring(0, 16)}`;
@@ -66,6 +74,7 @@ const EntregaTable = ({
     }, {}),
   ).sort((a, b) => new Date(b.fecha_movimiento) - new Date(a.fecha_movimiento));
 
+  // Lógica matemática para cortar el arreglo agrupado y mostrar solo los ítems de la página actual
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = historialAgrupado.slice(
@@ -108,15 +117,18 @@ const EntregaTable = ({
               </tr>
             ) : (
               currentItems.map((h) => {
-                // VERIFICACIÓN GLOBAL DEL PAQUETE:
+                // VERIFICACIÓN DE FIRMA DEL PAQUETE:
+                // Reviso si ALGUNO de los equipos dentro de este grupo ya tiene una firma válida confirmada en BD.
                 const estaFirmado = h.equipos_agrupados.some(
                   (eq) => eq.firma_valida === true,
                 );
+
+                // Si está firmado, capturo esa URL de Cloudinary para abrir el modal
                 const urlFirma = h.equipos_agrupados.find(
                   (eq) => eq.pdf_firmado_url,
                 )?.pdf_firmado_url;
 
-                // Usamos el ID del primer equipo del grupo para operaciones globales (Subir/Invalidar)
+                // Para subir actas nuevas o invalidar, usaré el ID del primer equipo del grupo
                 const mainId = h.id;
 
                 return (
@@ -135,6 +147,7 @@ const EntregaTable = ({
                     </td>
                     <td>
                       <div className='info-cell'>
+                        {/* Lógica de Renderizado Condicional: Si es paquete muestro el Tooltip, si es uno, el nombre directo */}
                         {h.equipos_agrupados.length > 1 ? (
                           <div className='shadcn-tooltip-container'>
                             <span className='multiple-badge'>
@@ -221,7 +234,7 @@ const EntregaTable = ({
                     </td>
                     <td className='center'>
                       <div className='actions-cell'>
-                        {/* AQUÍ ESTÁ EL AJUSTE: Si no está firmado, siempre sale el botón "Subir" */}
+                        {/* ACCIONES DE FIRMA: Si está firmado muestro 'Ver', sino, permito la subida manual */}
                         {estaFirmado ? (
                           <>
                             <button

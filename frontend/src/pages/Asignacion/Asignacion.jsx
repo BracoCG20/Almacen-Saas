@@ -17,26 +17,35 @@ import 'driver.js/dist/driver.css';
 import './Asignacion.scss';
 
 const Asignacion = () => {
+  // --- 1. ESTADOS DE DATOS (CATÁLOGOS E HISTORIAL) ---
+  // Aquí guardo los equipos disponibles, usuarios que aún no tienen equipos y el historial general.
   const [equiposDisponibles, setEquiposDisponibles] = useState([]);
   const [usuariosLibres, setUsuariosLibres] = useState([]);
   const [historialVisual, setHistorialVisual] = useState([]);
+
+  // --- 2. ESTADOS DE INTERFAZ Y MODALES ---
   const [loading, setLoading] = useState(true);
   const [showPdfModal, setShowPdfModal] = useState(false);
   const [pdfUrl, setPdfUrl] = useState('');
-
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+
+  // --- 3. ESTADOS DE CONTROL DE OPERACIONES ---
   const [movimientoToInvalidar, setMovimientoToInvalidar] = useState(null);
-
-  const fileInputRef = useRef(null);
   const [selectedMovimientoId, setSelectedMovimientoId] = useState(null);
+  const fileInputRef = useRef(null);
 
-  // ESTADO ACTUALIZADO PARA MÚLTIPLES EQUIPOS
+  // --- 4. ESTADO DEL FORMULARIO ---
+  // Lo preparo desde el inicio para soportar múltiples equipos mediante un arreglo.
   const [formData, setFormData] = useState({
     empleado_id: '',
     equipos: [{ equipo_id: '', cargador: true }],
     observaciones: '',
   });
 
+  /**
+   * TOUR GUIADO DE LA PANTALLA
+   * Utilizo driver.js para mostrar a los usuarios nuevos cómo funciona el módulo.
+   */
   const startAsignacionTour = () => {
     const driverObj = driver({
       showProgress: true,
@@ -80,6 +89,11 @@ const Asignacion = () => {
     driverObj.drive();
   };
 
+  /**
+   * CARGA PRINCIPAL DE DATOS
+   * Traigo los catálogos en paralelo. Además, deduzco qué usuarios están "ocupados"
+   * revisando el historial, para mostrar en el select únicamente a los que están libres.
+   */
   const fetchData = async () => {
     try {
       const [resEquipos, resColaboradores, resMovimientos] = await Promise.all([
@@ -109,7 +123,7 @@ const Asignacion = () => {
         ),
       );
 
-      // SIN .slice() AQUÍ: Pasamos todo el historial de entregas a la tabla para que ella pagine.
+      // Filtro solo las entregas y se las mando enteras a la tabla (ella se encarga de la paginación)
       const entregas = resMovimientos.data
         .filter((h) => h.tipo === 'entrega')
         .sort(
@@ -124,6 +138,11 @@ const Asignacion = () => {
     }
   };
 
+  /**
+   * EFECTO DE MONTAJE Y WEBSOCKET
+   * Cargo los datos iniciales y me conecto al socket para enterarme en tiempo real
+   * cuando un trabajador firma su acta desde el correo.
+   */
   useEffect(() => {
     let isMounted = true;
     fetchData();
@@ -133,7 +152,7 @@ const Asignacion = () => {
       : 'http://localhost:4000';
     const socket = io(baseUrl);
 
-    socket.on('documento_firmado', (data) => {
+    socket.on('documento_firmado', () => {
       if (isMounted) {
         toast.info('Actualizando estados de firma...', { icon: '📝' });
         fetchData();
@@ -147,9 +166,12 @@ const Asignacion = () => {
     };
   }, []);
 
+  /**
+   * ACCIONES DE TABLA: SUBIR ACTA FÍSICA E INVALIDAR
+   */
   const handleSubirClick = (id) => {
     setSelectedMovimientoId(id);
-    fileInputRef.current.click();
+    fileInputRef.current.click(); // Simulo click en el input oculto
   };
 
   const onInvalidarClick = (id) => {
@@ -160,9 +182,11 @@ const Asignacion = () => {
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file || !selectedMovimientoId) return;
+
     const toastId = toast.loading('Subiendo archivo...');
     const form = new FormData();
     form.append('pdf', file);
+
     try {
       await api.post(
         `/movimientos/${selectedMovimientoId}/subir-firmado`,
@@ -186,7 +210,7 @@ const Asignacion = () => {
         autoClose: 2000,
       });
     }
-    e.target.value = null;
+    e.target.value = null; // Limpio el input por si subo el mismo archivo otra vez
   };
 
   const handleInvalidar = async () => {
@@ -200,6 +224,10 @@ const Asignacion = () => {
     }
   };
 
+  /**
+   * VISUALIZACIÓN DE PDF
+   * Prepara la URL completa del backend si es necesario y abre el modal.
+   */
   const handleVerFirmado = (url) => {
     if (!url) return;
     if (url.startsWith('http')) {
@@ -213,6 +241,11 @@ const Asignacion = () => {
     setShowPdfModal(true);
   };
 
+  /**
+   * FUNCIÓN MAESTRA DE ASIGNACIÓN
+   * Dependiendo del botón pulsado, genero el PDF en memoria y envío los datos al backend
+   * para solo guardar, enviar por correo o mandar vía WhatsApp.
+   */
   const handleAction = async (tipoAccion) => {
     if (!formData.empleado_id || formData.equipos.length === 0) return;
 
@@ -223,6 +256,7 @@ const Asignacion = () => {
       return toast.error('El colaborador no tiene correo registrado');
     }
 
+    // Enriquezco los datos de los equipos con la información del catálogo para generar el PDF
     const equiposParaPdf = formData.equipos.map((item) => {
       const eq = equiposDisponibles.find(
         (e) => e.id === parseInt(item.equipo_id),
@@ -246,14 +280,15 @@ const Asignacion = () => {
 
       if (tipoAccion === 'GUARDAR' || tipoAccion === 'WHATSAPP') {
         await api.post('/movimientos/entrega', payload);
-
         toast.success('Entregas guardadas exitosamente');
+
         setPdfUrl(URL.createObjectURL(pdfBlob));
         setShowPdfModal(true);
 
         if (tipoAccion === 'WHATSAPP') {
           const nombreArchivo = `Acta_${us.nombres.split(' ')[0]}_Equipos.pdf`;
-          docPdf.save(nombreArchivo);
+          docPdf.save(nombreArchivo); // Descargo el archivo para que lo adjunten
+
           const numero = us.telefono ? us.telefono.replace(/\D/g, '') : '';
           const mensaje = `Hola ${us.nombres}, te hago entrega del acta de asignación de tus equipos.`;
           const link = numero
@@ -292,10 +327,12 @@ const Asignacion = () => {
             autoClose: 3000,
           });
         }
+
         setPdfUrl(URL.createObjectURL(pdfBlob));
         setShowPdfModal(true);
       }
 
+      // Limpio el formulario para la siguiente asignación
       setFormData({
         empleado_id: '',
         equipos: [{ equipo_id: '', cargador: true }],
@@ -310,6 +347,7 @@ const Asignacion = () => {
   if (loading)
     return <div className='loading-state'>Cargando asignaciones...</div>;
 
+  // Mapeo los datos para los Selects del formulario
   const equiposOptions = equiposDisponibles.map((e) => ({
     value: e.id,
     label: `${e.marca} ${e.modelo} - ${e.numero_serie}`,
@@ -332,6 +370,8 @@ const Asignacion = () => {
           <HelpCircle size={18} />
         </button>
       </div>
+
+      {/* Input oculto para la subida de actas firmadas */}
       <input
         type='file'
         ref={fileInputRef}
@@ -339,6 +379,7 @@ const Asignacion = () => {
         accept='application/pdf'
         onChange={handleFileChange}
       />
+
       <div className='content-grid'>
         <div id='tour-asignacion-form'>
           <EntregaForm
@@ -353,6 +394,7 @@ const Asignacion = () => {
           <EntregaTable
             historial={historialVisual}
             onVerPdfOriginal={(item) => {
+              // Reconstruyo el PDF original de la transacción a partir de los datos en la tabla
               let equiposAImprimir = [];
               if (item.equipos_agrupados) {
                 equiposAImprimir = item.equipos_agrupados.map((eq) => ({
@@ -390,6 +432,7 @@ const Asignacion = () => {
           />
         </div>
       </div>
+
       <Modal
         isOpen={isRejectModalOpen}
         onClose={() => setIsRejectModalOpen(false)}
@@ -422,6 +465,7 @@ const Asignacion = () => {
           </div>
         </div>
       </Modal>
+
       <PdfModal
         isOpen={showPdfModal}
         onClose={() => setShowPdfModal(false)}

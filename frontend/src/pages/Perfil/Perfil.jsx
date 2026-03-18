@@ -16,7 +16,7 @@ import {
 import './Perfil.scss';
 
 const Perfil = () => {
-  const { updateUser } = useAuth();
+  const { updateUser, user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [preview, setPreview] = useState(null);
   const [userRole, setUserRole] = useState(null);
@@ -34,6 +34,19 @@ const Perfil = () => {
   });
 
   const isSuperAdmin = userRole === 1;
+
+  // --- SOLUCIÓN CLOUDINARY ---
+  // Esta función es idéntica a la del Sidebar. Detecta si es Cloudinary (http) o archivo local (blob)
+  const getAvatarUrl = (path) => {
+    if (!path) return null;
+    if (path.startsWith('http') || path.startsWith('blob:')) return path;
+
+    // Fallback por si en algún momento hay rutas locales
+    const baseUrl = api.defaults.baseURL
+      ? api.defaults.baseURL.replace(/\/api\/?$/, '')
+      : 'http://localhost:4000';
+    return `${baseUrl}${path}`;
+  };
 
   useEffect(() => {
     const fetchPerfil = async () => {
@@ -53,11 +66,9 @@ const Perfil = () => {
           empresa_nombre: u.empresa_nombre || 'No asignada',
         });
 
+        // Asignamos la imagen correctamente formateada desde la BD
         if (u.foto_perfil_url) {
-          const baseUrl = api.defaults.baseURL
-            ? api.defaults.baseURL.replace(/\/api\/?$/, '')
-            : 'http://localhost:5000';
-          setPreview(`${baseUrl}${u.foto_perfil_url}`);
+          setPreview(getAvatarUrl(u.foto_perfil_url));
         }
       } catch (error) {
         toast.error('Error al cargar tu perfil');
@@ -77,6 +88,7 @@ const Perfil = () => {
     setFormData({ ...formData, telefono: onlyNums });
   };
 
+  // Cuando se selecciona una imagen, creamos un blob local temporal para la previsualización rápida
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -110,12 +122,21 @@ const Perfil = () => {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
+      // El backend nos devuelve la nueva URL de Cloudinary
+      const nuevaFotoUrl = res.data.foto_url || user?.foto_url;
+
       if (fotoFile || isSuperAdmin) {
+        // 1. Actualizamos el Sidebar global
         updateUser({
-          foto_url: res.data.foto_url || userRole.foto_url,
+          foto_url: nuevaFotoUrl,
           nombre: `${formData.nombres} ${formData.apellidos}`,
           email: formData.email_login,
         });
+
+        // 2. Actualizamos la imagen central del Perfil
+        if (nuevaFotoUrl) {
+          setPreview(getAvatarUrl(nuevaFotoUrl));
+        }
       }
 
       toast.update(toastId, {
@@ -124,7 +145,10 @@ const Perfil = () => {
         isLoading: false,
         autoClose: 3000,
       });
+
+      // Limpiamos estados temporales
       setFormData((prev) => ({ ...prev, password: '' }));
+      setFotoFile(null);
     } catch (error) {
       toast.update(toastId, {
         render: 'Error al guardar',
@@ -136,6 +160,7 @@ const Perfil = () => {
   };
 
   if (loading) return <div className='loading-state'>Cargando perfil...</div>;
+
   const defaultImage = `https://ui-avatars.com/api/?name=${formData.nombres}+${formData.apellidos}&background=random`;
 
   return (

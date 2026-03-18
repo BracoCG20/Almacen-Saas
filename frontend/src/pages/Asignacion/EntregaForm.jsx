@@ -17,11 +17,13 @@ const EntregaForm = ({
   setFormData,
   onAction,
 }) => {
+  // Valido que el formulario tenga un destinatario y al menos un equipo seleccionado correctamente.
   const isFormValid =
     formData.empleado_id &&
     formData.equipos.length > 0 &&
     formData.equipos.every((eq) => eq.equipo_id !== '');
 
+  // Defino los estilos personalizados para react-select manteniendo nuestro diseño limpio.
   const customSelectStyles = {
     control: (provided, state) => ({
       ...provided,
@@ -86,6 +88,7 @@ const EntregaForm = ({
     menuPortal: (base) => ({ ...base, zIndex: 9999 }),
   };
 
+  // Agrego una nueva fila vacía al arreglo de equipos para realizar asignaciones múltiples.
   const handleAddEquipo = () => {
     setFormData({
       ...formData,
@@ -93,44 +96,45 @@ const EntregaForm = ({
     });
   };
 
+  // Elimino una fila específica del arreglo de equipos según su índice.
   const handleRemoveEquipo = (index) => {
     const nuevosEquipos = [...formData.equipos];
     nuevosEquipos.splice(index, 1);
     setFormData({ ...formData, equipos: nuevosEquipos });
   };
 
+  // Verifico si la categoría del equipo requiere que mostremos el checkbox de "Cargador/Accesorios".
   const checkRequiereCargador = (equipoId) => {
     if (!equipoId) return true;
     const option = equiposOptions.find((op) => op.value === equipoId);
     if (!option || !option.equipoFullData) return true;
 
     const categoria = option.equipoFullData.categoria;
-
-    if (categoria === 'Laptop/PC' || categoria === 'Celular/Tablet') {
-      return true;
-    }
-    return false;
+    return categoria === 'Laptop/PC' || categoria === 'Celular/Tablet';
   };
 
+  // Actualizo el ID del equipo en una fila específica y configuro si requiere cargador automáticamente.
   const handleChangeEquipo = (index, equipoId) => {
     const nuevosEquipos = [...formData.equipos];
     nuevosEquipos[index].equipo_id = equipoId;
 
     if (!checkRequiereCargador(equipoId)) {
-      nuevosEquipos[index].cargador = null;
+      nuevosEquipos[index].cargador = null; // No aplica
     } else {
-      nuevosEquipos[index].cargador = true;
+      nuevosEquipos[index].cargador = true; // Aplica y se marca por defecto
     }
 
     setFormData({ ...formData, equipos: nuevosEquipos });
   };
 
+  // Alterno el valor del checkbox de cargador para una fila en concreto.
   const handleChangeCargador = (index, value) => {
     const nuevosEquipos = [...formData.equipos];
     nuevosEquipos[index].cargador = value;
     setFormData({ ...formData, equipos: nuevosEquipos });
   };
 
+  // Filtro el Select para que no se pueda elegir un equipo que ya seleccioné en otra de las filas.
   const getOpcionesDisponibles = (currentIndex) => {
     const idsSeleccionados = formData.equipos.map((eq, i) =>
       i !== currentIndex ? eq.equipo_id : null,
@@ -172,7 +176,6 @@ const EntregaForm = ({
               key={index}
               className='equipo-item-card'
             >
-              {/* Contenido Izquierdo (Select + Checkbox) */}
               <div className='equipo-item-content'>
                 <div className='input-group'>
                   <Select
@@ -205,7 +208,6 @@ const EntregaForm = ({
                 )}
               </div>
 
-              {/* Botón Eliminar Derecho (Centrado Verticalmente) */}
               {formData.equipos.length > 1 && (
                 <button
                   type='button'
@@ -220,7 +222,6 @@ const EntregaForm = ({
           );
         })}
 
-        {/* BOTÓN SHADCN OUTLINE */}
         <button
           type='button'
           onClick={handleAddEquipo}
