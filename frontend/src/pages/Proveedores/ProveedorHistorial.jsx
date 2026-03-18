@@ -1,12 +1,22 @@
 import React, { useState } from 'react';
-import { Clock, UserCheck, FileText, FileX } from 'lucide-react';
+import {
+  Clock,
+  UserCheck,
+  FileText,
+  FileX,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
 import api from '../../service/api';
 import './ProveedorHistorial.scss';
 
 const ProveedorHistorial = ({ historyData }) => {
+  // --- 1. ESTADOS DE PAGINACIÓN ---
+  // Muestro un máximo de 3 registros por página para que el modal no se desborde visualmente.
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 3;
 
+  // --- 2. LÓGICA DE CORTE (SLICE) ---
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = historyData.slice(indexOfFirstItem, indexOfLastItem);
@@ -14,7 +24,11 @@ const ProveedorHistorial = ({ historyData }) => {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  // --- CORRECCIÓN A PRUEBA DE BALAS ---
+  /**
+   * --- 3. MANEJO DE RUTAS DE ARCHIVOS ---
+   * Esta función es a prueba de balas: verifica si el contrato está alojado en Cloudinary (nube)
+   * o si viene de una ruta local, ajustando las barras (/) para evitar enlaces rotos.
+   */
   const getBackendFileUrl = (path) => {
     if (!path) return null;
 
@@ -35,15 +49,18 @@ const ProveedorHistorial = ({ historyData }) => {
   return (
     <div className='audit-modal-content'>
       {historyData.length === 0 ? (
+        // Estado vacío: No hay movimientos previos
         <div className='empty-audit'>
           <p>No hay registros en el historial de este proveedor.</p>
         </div>
       ) : (
         <>
+          {/* --- LÍNEA DE TIEMPO DE AUDITORÍA --- */}
           <ul className='audit-timeline'>
             {currentItems.map((log) => (
               <li
                 key={log.id}
+                // Si la acción fue una desactivación o baja, pinto la línea de rojo para resaltarlo
                 className={
                   log.accion_realizada.includes('BAJA') ||
                   log.accion_realizada.includes('INACTIVACIÓN')
@@ -52,6 +69,7 @@ const ProveedorHistorial = ({ historyData }) => {
                 }
               >
                 <div className='audit-card'>
+                  {/* Cabecera del log */}
                   <div className='log-header'>
                     <strong>{log.accion_realizada}</strong>
                     <span className='date-badge'>
@@ -60,6 +78,7 @@ const ProveedorHistorial = ({ historyData }) => {
                     </span>
                   </div>
 
+                  {/* Descripción de los cambios realizados */}
                   <p
                     className='log-description'
                     style={{
@@ -69,6 +88,7 @@ const ProveedorHistorial = ({ historyData }) => {
                     {log.descripcion_cambio}
                   </p>
 
+                  {/* Renderizado condicional: Si hubo un cambio en el archivo de contrato, muestro el estado del PDF */}
                   {log.cambio_contrato && (
                     <div className='contract-status-container'>
                       {log.archivo_contrato_url ? (
@@ -88,6 +108,7 @@ const ProveedorHistorial = ({ historyData }) => {
                     </div>
                   )}
 
+                  {/* Pie de tarjeta: ¿Quién ejecutó esta acción? */}
                   <div className='log-footer-grid'>
                     <div className='footer-item'>
                       <UserCheck
@@ -109,6 +130,7 @@ const ProveedorHistorial = ({ historyData }) => {
             ))}
           </ul>
 
+          {/* --- CONTROLES DE PAGINACIÓN SHADCN --- */}
           {historyData.length > itemsPerPage && (
             <div className='pagination-footer'>
               <div className='info'>
@@ -118,19 +140,23 @@ const ProveedorHistorial = ({ historyData }) => {
               </div>
               <div className='controls'>
                 <button
+                  className='btn-paginate'
                   onClick={() => paginate(currentPage - 1)}
                   disabled={currentPage === 1}
+                  title='Anterior'
                 >
-                  Ant
+                  <ChevronLeft size={16} />
                 </button>
                 <span>
                   {currentPage} / {totalPages}
                 </span>
                 <button
+                  className='btn-paginate'
                   onClick={() => paginate(currentPage + 1)}
                   disabled={currentPage === totalPages}
+                  title='Siguiente'
                 >
-                  Sig
+                  <ChevronRight size={16} />
                 </button>
               </div>
             </div>
