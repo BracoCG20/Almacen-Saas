@@ -36,13 +36,17 @@ import './Dashboard.scss';
 
 const Dashboard = () => {
   const { user } = useContext(AuthContext);
+
+  // --- 1. ESTADOS DE MÉTRICAS GLOBALES ---
+  const [loading, setLoading] = useState(true);
+
+  // Inventario físico
   const [stats, setStats] = useState({
     total: 0,
     disponibles: 0,
     ocupados: 0,
     inoperativos: 0,
   });
-
   const [movementsData, setMovementsData] = useState([]);
   const [statusData, setStatusData] = useState([]);
   const [ageData, setAgeData] = useState([]);
@@ -52,16 +56,7 @@ const Dashboard = () => {
   const [inventoryOriginData, setInventoryOriginData] = useState([]);
   const [globalInventoryData, setGlobalInventoryData] = useState([]);
 
-  const [serviciosActivos, setServiciosActivos] = useState([]);
-  const [frecuenciaCosto, setFrecuenciaCosto] = useState('Todos');
-  const [costosAgrupados, setCostosAgrupados] = useState({});
-
-  const [chartCurrency, setChartCurrency] = useState('USD');
-  const [categoryCostData, setCategoryCostData] = useState([]);
-  const [serviceCostData, setServiceCostData] = useState([]);
-
-  const [loading, setLoading] = useState(true);
-
+  // Soporte TI (Tickets)
   const [ticketStats, setTicketStats] = useState({
     total: 0,
     pendientes: 0,
@@ -71,6 +66,15 @@ const Dashboard = () => {
   const [ticketTypeData, setTicketTypeData] = useState([]);
   const [averageResolutionTime, setAverageResolutionTime] = useState(0);
 
+  // Finanzas y Servicios SaaS
+  const [serviciosActivos, setServiciosActivos] = useState([]);
+  const [frecuenciaCosto, setFrecuenciaCosto] = useState('Todos');
+  const [costosAgrupados, setCostosAgrupados] = useState({});
+  const [chartCurrency, setChartCurrency] = useState('USD');
+  const [categoryCostData, setCategoryCostData] = useState([]);
+  const [serviceCostData, setServiceCostData] = useState([]);
+
+  // Constantes de ayuda
   const MESES = [
     'Ene',
     'Feb',
@@ -87,6 +91,10 @@ const Dashboard = () => {
   ];
   const currencySymbols = { USD: '$', PEN: 'S/', EUR: '€' };
 
+  /**
+   * TOUR GUIADO
+   * Muestro a los usuarios las diferentes secciones del Dashboard.
+   */
   const startDashboardTour = () => {
     const driverObj = driver({
       showProgress: true,
@@ -146,21 +154,24 @@ const Dashboard = () => {
     driverObj.drive();
   };
 
+  /**
+   * PROCESAMIENTO DE GRÁFICOS DE INVENTARIO
+   * Tomo la data cruda y la transformo en arreglos compatibles con Recharts.
+   */
   const processData = (equipos, historial) => {
-    // 1. MOVIMIENTOS
+    // Movimientos (Entregas y Devoluciones por mes)
     const months = {};
     historial.forEach((h) => {
       const date = new Date(h.fecha_movimiento);
-      const mesNombre = MESES[date.getMonth()];
-      const anio = date.getFullYear();
-      const key = `${mesNombre} ${anio}`;
-      if (!months[key])
+      const key = `${MESES[date.getMonth()]} ${date.getFullYear()}`;
+      if (!months[key]) {
         months[key] = {
           name: key,
           entregas: 0,
           devoluciones: 0,
-          sort: anio * 100 + date.getMonth(),
+          sort: date.getFullYear() * 100 + date.getMonth(),
         };
+      }
       if (h.tipo_movimiento === 'entrega') months[key].entregas += 1;
       if (h.tipo_movimiento === 'devolucion') months[key].devoluciones += 1;
     });
@@ -170,17 +181,16 @@ const Dashboard = () => {
         .slice(-6),
     );
 
-    // 2. ESTADO DEL INVENTARIO
+    // Estados físicos del inventario
     const statusCounts = { operativo: 0, mantenimiento: 0, inoperativo: 0 };
     equipos.forEach((e) => {
-      const estadoFisico = (e.estado_fisico || '').toLowerCase().trim();
-      const esOperativo =
-        e.estado_fisico_id === 1 || estadoFisico === 'operativo';
-      if (esOperativo) statusCounts.operativo++;
+      const est = (e.estado_fisico || '').toLowerCase();
+      if (e.estado_fisico_id === 1 || est === 'operativo')
+        statusCounts.operativo++;
       else if (
-        estadoFisico.includes('inoperativo') ||
-        estadoFisico.includes('robado') ||
-        estadoFisico.includes('perdido')
+        est.includes('inoperativo') ||
+        est.includes('robado') ||
+        est.includes('perdido')
       )
         statusCounts.inoperativo++;
       else statusCounts.mantenimiento++;
@@ -193,30 +203,25 @@ const Dashboard = () => {
       ].filter((i) => i.value > 0),
     );
 
-    // 3. ESTADO POR ORIGEN DE INVENTARIO
+    // Origen del equipo (Propio vs Proveedor)
     let propiosDisp = 0,
       propiosOcup = 0,
       propiosInop = 0;
     let provDisp = 0,
       provOcup = 0,
       provInop = 0;
-
     equipos.forEach((e) => {
-      const isOperativo =
+      const isOp =
         e.estado_fisico_id === 1 ||
         (e.estado_fisico || '').toLowerCase() === 'operativo';
-      const isDisponible = e.disponible === true && isOperativo;
-      const isOcupado = e.disponible === false && isOperativo;
-      const isInoperativo = !isOperativo;
-
       if (e.es_propio) {
-        if (isDisponible) propiosDisp++;
-        else if (isOcupado) propiosOcup++;
-        else if (isInoperativo) propiosInop++;
+        if (e.disponible && isOp) propiosDisp++;
+        else if (!e.disponible && isOp) propiosOcup++;
+        else propiosInop++;
       } else {
-        if (isDisponible) provDisp++;
-        else if (isOcupado) provOcup++;
-        else if (isInoperativo) provInop++;
+        if (e.disponible && isOp) provDisp++;
+        else if (!e.disponible && isOp) provOcup++;
+        else provInop++;
       }
     });
 
@@ -241,10 +246,10 @@ const Dashboard = () => {
         { name: 'Propios (Asignados)', value: propiosOcup },
         { name: 'Proveedor (Almacén)', value: provDisp + provInop },
         { name: 'Proveedor (Asignados)', value: provOcup },
-      ].filter((item) => item.value > 0),
+      ].filter((i) => i.value > 0),
     );
 
-    // 4. ANTIGÜEDAD
+    // Antigüedad de equipos (Agrupación por año)
     const yearsCount = {};
     equipos.forEach((e) => {
       if (e.fecha_adquisicion) {
@@ -258,7 +263,7 @@ const Dashboard = () => {
         .sort((a, b) => a.year - b.year),
     );
 
-    // 5. CUMPLIMIENTO DE FIRMAS
+    // Estado de las actas de entrega/devolución
     let firmados = 0,
       pendientes = 0,
       rechazados = 0;
@@ -280,9 +285,9 @@ const Dashboard = () => {
       ].filter((i) => i.value > 0),
     );
 
-    // 6. TOP EMPRESAS Y PROVEEDORES
-    const companyCount = {};
-    const providerCount = {};
+    // Top 5 Empresas y Proveedores
+    const companyCount = {},
+      providerCount = {};
     equipos.forEach((e) => {
       if (e.es_propio) {
         const n = e.empresa_nombre
@@ -310,21 +315,22 @@ const Dashboard = () => {
     );
   };
 
+  /**
+   * CARGA PRINCIPAL DE DATOS
+   * Obtengo todo desde el endpoint consolidado del dashboard y distribuyo.
+   */
   useEffect(() => {
     const fetchStats = async () => {
       try {
         const res = await api.get('/dashboard');
-        const equipos = res.data.equipos || [];
-        const movimientos = res.data.movimientos || [];
-        const serviciosSaaS = res.data.servicios || [];
-        const tickets = res.data.tickets || [];
+        const {
+          equipos = [],
+          movimientos = [],
+          servicios: serviciosSaaS = [],
+          tickets = [],
+        } = res.data;
 
-        const total = equipos.length;
-        const inoperativos = equipos.filter(
-          (e) =>
-            e.estado_fisico_id !== 1 &&
-            (e.estado_fisico || '').toLowerCase() !== 'operativo',
-        ).length;
+        // Tarjetas superiores
         const disponibles = equipos.filter(
           (e) =>
             e.disponible === true &&
@@ -338,40 +344,43 @@ const Dashboard = () => {
               (e.estado_fisico || '').toLowerCase() === 'operativo'),
         ).length;
 
-        setStats({ total, ocupados, disponibles, inoperativos });
+        setStats({
+          total: equipos.length,
+          disponibles,
+          ocupados,
+          inoperativos: equipos.length - disponibles - ocupados,
+        });
+
         processData(equipos, movimientos);
         setServiciosActivos(serviciosSaaS);
 
-        // --- LÓGICA DE TICKETS ---
+        // Procesamiento de métricas de Mesa de Ayuda (SLA)
         if (tickets) {
           let pendientes = 0,
             proceso = 0,
             resueltos = 0;
-          const typeCount = {};
-          const slaStorage = {};
+          const typeCount = {},
+            slaStorage = {};
 
           tickets.forEach((t) => {
             if (t.estado === 'Pendiente') pendientes++;
             else if (t.estado === 'En Proceso') proceso++;
             else if (t.estado === 'Resuelto') resueltos++;
 
-            const tipo = t.tipo_solicitud || 'Otro';
-            const tipoShort = tipo
+            const tipoShort = (t.tipo_solicitud || 'Otro')
               .split('/')[0]
               .trim()
               .replace(/[^\w\s]/gi, '');
             typeCount[tipoShort] = (typeCount[tipoShort] || 0) + 1;
 
-            // Agrupación por tipo para el promedio
             if (
               t.estado === 'Resuelto' &&
               t.fecha_inicio_atencion &&
               t.fecha_cierre
             ) {
-              const start = new Date(t.fecha_inicio_atencion).getTime();
-              const end = new Date(t.fecha_cierre).getTime();
-              const diffMins = (end - start) / (1000 * 60);
-
+              const diffMins =
+                (new Date(t.fecha_cierre) - new Date(t.fecha_inicio_atencion)) /
+                60000;
               if (diffMins > 0) {
                 if (!slaStorage[tipoShort])
                   slaStorage[tipoShort] = { total: 0, count: 0 };
@@ -387,22 +396,19 @@ const Dashboard = () => {
             proceso,
             resueltos,
           });
-
           setTicketTypeData(
             Object.entries(typeCount)
               .map(([name, value]) => ({ name, value }))
               .sort((a, b) => b.value - a.value),
           );
-
-          // NUEVO: Se crea el array para el gráfico de promedios por categoría
-          const promediosPorTipo = Object.entries(slaStorage)
-            .map(([name, data]) => ({
-              name,
-              promedio: data.total / data.count,
-            }))
-            .sort((a, b) => b.promedio - a.promedio);
-
-          setAverageResolutionTime(promediosPorTipo);
+          setAverageResolutionTime(
+            Object.entries(slaStorage)
+              .map(([name, data]) => ({
+                name,
+                promedio: data.total / data.count,
+              }))
+              .sort((a, b) => b.promedio - a.promedio),
+          );
         }
       } catch (error) {
         console.error(error);
@@ -413,6 +419,10 @@ const Dashboard = () => {
     fetchStats();
   }, []);
 
+  /**
+   * CÁLCULO DE COSTOS POR MONEDA Y FRECUENCIA
+   * Agrupo los precios de los servicios SaaS de acuerdo al filtro de frecuencia seleccionado.
+   */
   useEffect(() => {
     if (!serviciosActivos.length) return;
     const sumasPorMoneda = {};
@@ -422,17 +432,22 @@ const Dashboard = () => {
         s.frecuencia_pago === frecuenciaCosto
       ) {
         const mon = s.moneda || 'USD';
-        if (!sumasPorMoneda[mon]) sumasPorMoneda[mon] = 0;
-        sumasPorMoneda[mon] += Number(s.precio || 0);
+        sumasPorMoneda[mon] =
+          (sumasPorMoneda[mon] || 0) + Number(s.precio || 0);
       }
     });
     setCostosAgrupados(sumasPorMoneda);
   }, [serviciosActivos, frecuenciaCosto]);
 
+  /**
+   * ANÁLISIS MENSUAL DE GASTOS SAAS
+   * Convierto todos los pagos (anuales, trimestrales) a valor mensual para graficar
+   * el top de categorías y servicios más caros según la moneda seleccionada.
+   */
   useEffect(() => {
     if (!serviciosActivos.length) return;
-    const catMap = {};
-    const servMap = {};
+    const catMap = {},
+      servMap = {};
 
     serviciosActivos.forEach((s) => {
       if (s.moneda !== chartCurrency) return;
@@ -531,7 +546,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* TARJETA DE COSTOS */}
+      {/* TARJETA DE COSTOS FINANCIEROS */}
       <div
         className='cost-summary-modern'
         id='tour-costs'
@@ -650,6 +665,8 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* MESA DE AYUDA (TICKETS) */}
       <div className='section-title-modern'>
         <div className='title-block'>
           <h2>Mesa de Ayuda (Soporte TI)</h2>
@@ -657,7 +674,6 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Tarjetas de Tickets */}
       <div
         className='stats-grid-modern'
         style={{ marginBottom: '1.5rem' }}
@@ -700,7 +716,6 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Gráficos de Tickets */}
       <div
         className='charts-grid-modern'
         style={{ marginBottom: '3rem' }}
@@ -718,7 +733,6 @@ const Dashboard = () => {
             )}
           </div>
         </div>
-
         <div className='chart-card'>
           <div className='chart-header'>
             <div className='indicator success'></div>
@@ -742,7 +756,6 @@ const Dashboard = () => {
         className='charts-masonry-modern'
         id='tour-equipment-charts'
       >
-        {/* Fila 1: Principales */}
         <div className='chart-card span-2-col'>
           <div className='chart-header'>
             <div className='indicator'></div>
@@ -761,8 +774,6 @@ const Dashboard = () => {
             <StatusChart data={statusData} />
           </div>
         </div>
-
-        {/* Fila 2 y 3: Secundarios */}
         <div className='chart-card'>
           <div className='chart-header'>
             <div className='indicator'></div>

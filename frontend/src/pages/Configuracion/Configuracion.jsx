@@ -17,23 +17,33 @@ import AddEmpresaModal from '../../components/AddEmpresaModal/AddEmpresaModal';
 import EmpresaListModal from '../../components/EmpresaListModal/EmpresaListModal';
 
 const Configuracion = () => {
+  // --- 1. ESTADOS DE MODALES ---
+  // Controlo la visibilidad de las ventanas flotantes para crear o listar entidades.
   const [showUserModal, setShowUserModal] = useState(false);
   const [showUserList, setShowUserList] = useState(false);
   const [showEmpresaModal, setShowEmpresaModal] = useState(false);
   const [showEmpresaList, setShowEmpresaList] = useState(false);
-  const [empresaToEdit, setEmpresaToEdit] = useState(null);
-
-  // Estados para Google Workspace
   const [showLicensesModal, setShowLicensesModal] = useState(false);
+
+  // --- 2. ESTADOS DE DATOS ---
+  const [empresaToEdit, setEmpresaToEdit] = useState(null);
+  const [userRole, setUserRole] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Estados para visualizar y editar las licencias de Google Workspace
   const [licenciasStarter, setLicenciasStarter] = useState(0);
   const [licenciasStandard, setLicenciasStandard] = useState(0);
-
   const [editStarter, setEditStarter] = useState('');
   const [editStandard, setEditStandard] = useState('');
 
-  const [loading, setLoading] = useState(true);
-  const [userRole, setUserRole] = useState(null);
+  // Identifico si tengo permisos máximos en el sistema
+  const isSuperAdmin = userRole === 1;
 
+  /**
+   * CARGA INICIAL
+   * Verifico mi rol actual y, si tengo permisos, traigo la configuración global
+   * (como los límites de licencias) desde la base de datos.
+   */
   useEffect(() => {
     const fetchConfiguracionGlobal = async () => {
       try {
@@ -56,6 +66,10 @@ const Configuracion = () => {
     fetchConfiguracionGlobal();
   }, []);
 
+  /**
+   * ACTUALIZAR LICENCIAS
+   * Envío los nuevos límites de licencias de Google al backend y actualizo la UI.
+   */
   const handleSaveLicenses = async (e) => {
     e.preventDefault();
 
@@ -80,11 +94,12 @@ const Configuracion = () => {
     }
   };
 
-  const isSuperAdmin = userRole === 1;
+  // --- RENDERIZADO CONDICIONAL ---
 
   if (loading)
     return <div className='loading-state'>Cargando configuración...</div>;
 
+  // Bloqueo de seguridad: Si no soy SuperAdmin, muestro pantalla de acceso denegado.
   if (!isSuperAdmin) {
     return (
       <div className='config-container restricted'>
@@ -171,11 +186,9 @@ const Configuracion = () => {
                   size={16}
                   className='icon-cloud'
                 />
-                <span className='type-label'>
-                  Google Workspace Business Starter:
-                </span>
+                <span className='type-label'>Business Starter:</span>
                 <strong className='limit-value'>
-                  {licenciasStarter} Aquiridas
+                  {licenciasStarter} Adquiridas
                 </strong>
               </div>
               <div className='stat-row'>
@@ -183,11 +196,9 @@ const Configuracion = () => {
                   size={16}
                   className='icon-cloud'
                 />
-                <span className='type-label'>
-                  Google Workspace Business Standard:
-                </span>
+                <span className='type-label'>Business Standard:</span>
                 <strong className='limit-value'>
-                  {licenciasStandard} Aquiridas
+                  {licenciasStandard} Adquiridas
                 </strong>
               </div>
             </div>
@@ -204,10 +215,13 @@ const Configuracion = () => {
         </div>
       </div>
 
+      {/* --- MODALES RENDERIZADOS FUERA DEL GRID --- */}
+
       {showUserModal && (
         <RegisterAdminModal onClose={() => setShowUserModal(false)} />
       )}
       {showUserList && <UserListModal onClose={() => setShowUserList(false)} />}
+
       {showEmpresaModal && (
         <AddEmpresaModal
           empresaToEdit={empresaToEdit}
@@ -218,6 +232,7 @@ const Configuracion = () => {
           }}
         />
       )}
+
       {showEmpresaList && (
         <EmpresaListModal
           onClose={() => setShowEmpresaList(false)}

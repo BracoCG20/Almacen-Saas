@@ -15,6 +15,7 @@ const DirectorioTable = ({
   onReactivar,
   onViewHistory,
 }) => {
+  // Manejo de estado vacío: Si no hay nadie registrado en Workspace aún
   if (directorio.length === 0) {
     return (
       <div className='no-data'>
@@ -40,6 +41,7 @@ const DirectorioTable = ({
           {directorio.map((d) => (
             <tr
               key={d.id}
+              // Aplico un estilo atenuado si la cuenta fue suspendida/dada de baja
               className={!d.estado ? 'row-inactive' : ''}
             >
               <td>
@@ -47,11 +49,13 @@ const DirectorioTable = ({
                   {d.colaborador_nombres} {d.colaborador_apellidos}
                 </span>
               </td>
+
               <td>
                 <span className='email-badge'>
                   <Mail size={14} /> {d.email_corporativo || 'Sin correo'}
                 </span>
               </td>
+
               <td className='center'>
                 <span
                   className={`lic-badge ${d.tipo_licencia === 'BUSINESS_STARTER' ? 'starter' : 'standard'}`}
@@ -61,6 +65,7 @@ const DirectorioTable = ({
                     : 'STANDARD'}
                 </span>
               </td>
+
               <td className='center'>
                 <span
                   className={`status-badge ${d.estado ? 'active' : 'inactive'}`}
@@ -68,7 +73,11 @@ const DirectorioTable = ({
                   {d.estado ? 'ACTIVA' : 'SUSPENDIDA'}
                 </span>
               </td>
+
               <td>
+                {/* Renderizado de Transferencias: 
+                    Solo si está suspendido, verifico si los datos fueron transferidos 
+                    a otro compañero y pinto una pequeña flecha indicativa. */}
                 {!d.estado &&
                 d.datos_transferidos &&
                 d.colaborador_destino_id ? (
@@ -87,12 +96,14 @@ const DirectorioTable = ({
                 ) : !d.estado ? (
                   <span className='no-transfer'>Sin transferencia</span>
                 ) : (
+                  // Si la cuenta está activa, esta columna no aplica
                   <span className='dash'>-</span>
                 )}
               </td>
+
               <td className='center'>
                 <div className='actions-cell'>
-                  {/* BOTÓN HISTORIAL (Siempre visible) */}
+                  {/* BOTÓN HISTORIAL: Siempre visible sin importar el estado */}
                   <button
                     className='action-btn history'
                     onClick={() => onViewHistory(d)}
@@ -101,7 +112,9 @@ const DirectorioTable = ({
                     <History size={16} />
                   </button>
 
-                  {/* BOTONES SEGÚN ESTADO */}
+                  {/* LÓGICA CONDICIONAL DE BOTONES: 
+                      Si está Activa -> Permito Editar plan o Suspender. 
+                      Si está Suspendida -> Solo permito Reactivar. */}
                   {d.estado ? (
                     <>
                       <button

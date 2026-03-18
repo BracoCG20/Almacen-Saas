@@ -228,7 +228,7 @@ const AddColaboradorForm = ({ onSuccess, colaboradorToEdit }) => {
             required
             disabled={isEdit}
             style={isEdit ? disabledStyle : {}}
-            placeholder='Ej: 12345678'
+            placeholder='Ej: 77123456'
           />
         </div>
         <div className='input-group'>

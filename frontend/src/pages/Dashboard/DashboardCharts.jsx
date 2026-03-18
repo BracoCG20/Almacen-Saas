@@ -15,6 +15,9 @@ import {
   Area,
 } from 'recharts';
 
+// --- CONSTANTES GLOBALES ---
+// Defino la paleta de colores y el estilo base de los tooltips para
+// garantizar que todos los gráficos compartan la misma identidad visual de la app.
 const COLORS = {
   primary: '#7c3aed',
   primaryLight: '#ddd6fe',
@@ -36,7 +39,10 @@ const tooltipStyle = {
   fontSize: '0.85rem',
 };
 
-// 1. Gráfico de Barras: Entregas vs Devoluciones
+/**
+ * MOVIMIENTOS: Gráfico de barras
+ * Muestro una comparativa mensual entre las entregas realizadas y las devoluciones recibidas.
+ */
 export const MovementsChart = ({ data }) => {
   return (
     <ResponsiveContainer
@@ -98,7 +104,10 @@ export const MovementsChart = ({ data }) => {
   );
 };
 
-// 2. Gráfico de Dona: Estado del Inventario
+/**
+ * ESTADO DEL INVENTARIO: Gráfico de dona
+ * Visualizo rápidamente la proporción de equipos operativos, inoperativos y en mantenimiento.
+ */
 export const StatusChart = ({ data }) => {
   const STATUS_COLORS = {
     Operativos: COLORS.success,
@@ -144,7 +153,10 @@ export const StatusChart = ({ data }) => {
   );
 };
 
-// 3. Gráfico de Barras Apiladas: Disponibilidad
+/**
+ * ORIGEN DEL INVENTARIO: Gráfico de barras apiladas
+ * Separo la disponibilidad física de los equipos comparando los que son de la empresa vs alquilados/proveedor.
+ */
 export const InventoryOriginChart = ({ data }) => {
   return (
     <ResponsiveContainer
@@ -207,7 +219,10 @@ export const InventoryOriginChart = ({ data }) => {
   );
 };
 
-// 4. Gráfico de Área: Antigüedad
+/**
+ * ANTIGÜEDAD: Gráfico de área
+ * Dibujo la curva de crecimiento del inventario mostrando cuántos equipos adquirimos por año.
+ */
 export const AgeChart = ({ data }) => {
   return (
     <ResponsiveContainer
@@ -272,7 +287,10 @@ export const AgeChart = ({ data }) => {
   );
 };
 
-// 5. Gráfico Pie: Estado de Firmas
+/**
+ * CUMPLIMIENTO LEGAL (FIRMAS): Gráfico de semi-dona
+ * Muestro la proporción de actas que ya están firmadas, pendientes o rechazadas por los usuarios.
+ */
 export const SignaturesChart = ({ data }) => {
   const STATUS_COLORS = {
     Firmados: COLORS.success,
@@ -317,7 +335,10 @@ export const SignaturesChart = ({ data }) => {
   );
 };
 
-// 6. Top Empresas
+/**
+ * TOP EMPRESAS: Barras horizontales
+ * Destaco cuáles son las empresas internas (razones sociales) con mayor cantidad de equipos asignados.
+ */
 export const CompanyChart = ({ data }) => {
   return (
     <ResponsiveContainer
@@ -364,7 +385,10 @@ export const CompanyChart = ({ data }) => {
   );
 };
 
-// 7. Top Proveedores
+/**
+ * TOP PROVEEDORES: Barras horizontales
+ * Muestro qué proveedores de hardware nos están alquilando/suministrando la mayor cantidad de equipos.
+ */
 export const ProviderChart = ({ data }) => {
   return (
     <ResponsiveContainer
@@ -411,7 +435,10 @@ export const ProviderChart = ({ data }) => {
   );
 };
 
-// 8. Gráfico de Dona: Resumen Total
+/**
+ * RESUMEN GLOBAL: Gráfico de dona
+ * Obtengo una "foto" general de todo mi universo de equipos: qué está en almacén vs asignado, y qué es propio vs proveedor.
+ */
 export const GlobalInventoryChart = ({ data }) => {
   const PIE_COLORS = {
     'Propios (Almacén)': COLORS.primaryLight,
@@ -455,7 +482,10 @@ export const GlobalInventoryChart = ({ data }) => {
   );
 };
 
-// 9. Gasto por Categoría de Servicio
+/**
+ * COSTOS POR CATEGORÍA SAAS: Barras horizontales
+ * Comparo el gasto mensual distribuido entre distintas categorías de software (Ej: Diseño, Desarrollo, Nube).
+ */
 export const CategoryCostChart = ({ data, currency }) => {
   return (
     <ResponsiveContainer
@@ -506,7 +536,10 @@ export const CategoryCostChart = ({ data, currency }) => {
   );
 };
 
-// 10. Top Servicios más costosos
+/**
+ * TOP SERVICIOS COSTOSOS: Barras horizontales
+ * Enumero los servicios de software individuales que consumen mayor parte de mi presupuesto mensual.
+ */
 export const ServiceCostChart = ({ data, currency }) => {
   return (
     <ResponsiveContainer
@@ -557,7 +590,10 @@ export const ServiceCostChart = ({ data, currency }) => {
   );
 };
 
-// 11. Gráfico de Dona: Distribución de Tipos de Ticket
+/**
+ * TIPOS DE TICKETS: Gráfico de dona
+ * Muestro la proporción de las incidencias o requerimientos más comunes en la mesa de ayuda.
+ */
 export const TicketsTypeChart = ({ data }) => {
   const TICKET_COLORS = [
     COLORS.primary,
@@ -607,11 +643,21 @@ export const TicketsTypeChart = ({ data }) => {
   );
 };
 
-// 12. Gráfico de Eficiencia por Categoría (SLA por Tipo)
+/**
+ * RENDIMIENTO (SLA) POR CATEGORÍA: Barras horizontales
+ * Mido la agilidad de mi equipo de soporte graficando el tiempo promedio de resolución (en minutos/horas) por cada tipo de problema.
+ */
 export const SLACategoryChart = ({ data }) => {
+  // Manejo el caso en el que no haya tickets resueltos para calcular un promedio
   if (!data || data.length === 0) {
     return (
-      <div style={{ textAlign: 'center', color: COLORS.textMuted }}>
+      <div
+        style={{
+          textAlign: 'center',
+          color: COLORS.textMuted,
+          paddingTop: '100px',
+        }}
+      >
         No hay suficientes tickets resueltos
       </div>
     );
@@ -650,6 +696,7 @@ export const SLACategoryChart = ({ data }) => {
           cursor={{ fill: '#f8fafc' }}
           contentStyle={tooltipStyle}
           formatter={(value) => {
+            // Convierto los minutos planos a formato Horas/Minutos para mejor lectura en el tooltip
             const h = Math.floor(value / 60);
             const m = Math.round(value % 60);
             return [`${h > 0 ? h + 'h ' : ''}${m}m`, 'Promedio de Resolución'];

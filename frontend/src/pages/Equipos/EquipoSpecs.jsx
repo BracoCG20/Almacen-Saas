@@ -10,10 +10,13 @@ import {
 import './EquipoSpecs.scss';
 
 const EquipoSpecs = ({ equipo, calcularAntiguedad, formatDate }) => {
+  // Guard clause: Si por alguna razón el modal se abre sin un equipo cargado, no renderizo nada.
   if (!equipo) return null;
 
   return (
     <div className='specs-grid-modern'>
+      {/* --- CABECERA PRINCIPAL --- */}
+      {/* Muestro la marca, modelo y etiquetas visuales (badges) para saber su estado rápidamente */}
       <div className='header-specs'>
         <div className='big-icon'>
           <Laptop size={32} />
@@ -42,6 +45,8 @@ const EquipoSpecs = ({ equipo, calcularAntiguedad, formatDate }) => {
               )}
             </span>
           </div>
+
+          {/* Identifico a quién le pertenece el equipo realmente */}
           <div className='owner-info-text'>
             {equipo.es_propio
               ? `Empresa: ${equipo.empresa_nombre}`
@@ -50,6 +55,8 @@ const EquipoSpecs = ({ equipo, calcularAntiguedad, formatDate }) => {
         </div>
       </div>
 
+      {/* --- ALERTAS / OBSERVACIONES --- */}
+      {/* Solo renderizo este bloque si el equipo tiene alguna nota sobre daños o detalles físicos */}
       {equipo.observaciones && (
         <div className='observation-alert'>
           <h5>
@@ -59,6 +66,7 @@ const EquipoSpecs = ({ equipo, calcularAntiguedad, formatDate }) => {
         </div>
       )}
 
+      {/* --- SECCIÓN 1: IDENTIFICACIÓN Y TIEMPO DE VIDA --- */}
       <h4 className='section-subtitle'>Identificación y Adquisición</h4>
 
       <div className='grid-2-col'>
@@ -102,6 +110,8 @@ const EquipoSpecs = ({ equipo, calcularAntiguedad, formatDate }) => {
         </div>
       </div>
 
+      {/* --- SECCIÓN 2: ESPECIFICACIONES TÉCNICAS DINÁMICAS --- */}
+      {/* Verifico si el objeto de especificaciones existe y tiene al menos una llave antes de pintar la sección */}
       {equipo.especificaciones &&
         Object.keys(equipo.especificaciones).length > 0 && (
           <>
@@ -111,6 +121,7 @@ const EquipoSpecs = ({ equipo, calcularAntiguedad, formatDate }) => {
                 ([key, value], index) => (
                   <div
                     key={key}
+                    // Intercalo los colores de fondo para simular un estilo de tabla (Zebra striping)
                     className={`spec-item ${index % 2 !== 0 ? 'odd' : ''}`}
                   >
                     <strong>{key}:</strong> <span>{value || 'N/A'}</span>

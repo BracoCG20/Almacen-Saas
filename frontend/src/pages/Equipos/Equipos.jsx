@@ -39,10 +39,13 @@ import EquipoSpecs from './EquipoSpecs';
 import './Equipos.scss';
 
 const Equipos = () => {
+  // --- 1. ESTADOS DE DATOS ---
+  // Guardo todo el inventario, mi rol para permisos y controlo la pantalla de carga.
   const [equipos, setEquipos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState(null);
 
+  // --- 2. ESTADOS DE BÚSQUEDA Y FILTRADO ---
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCondicion, setFilterCondicion] = useState({
     value: 'todos',
@@ -53,18 +56,20 @@ const Equipos = () => {
     label: 'Todas las Categorías',
   });
 
+  // --- 3. ESTADOS DE PAGINACIÓN ---
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
+  // --- 4. ESTADOS DE MODALES Y ACCIONES ---
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [modalType, setModalType] = useState('specs');
+  const [modalType, setModalType] = useState('specs'); // 'specs' | 'history' | 'form'
   const [historyData, setHistoryData] = useState([]);
-
   const [selectedEquipo, setSelectedEquipo] = useState(null);
   const [equipoToEdit, setEquipoToEdit] = useState(null);
   const [equipoToDelete, setEquipoToDelete] = useState(null);
 
+  // --- Opciones Estáticas para Filtros ---
   const condicionOptions = [
     { value: 'todos', label: 'Todos (Propiedad)' },
     { value: 'propios', label: 'Propios' },
@@ -82,6 +87,10 @@ const Equipos = () => {
     { value: 'Otros', label: 'Otros' },
   ];
 
+  /**
+   * TOUR GUIADO
+   * Guío al usuario para que sepa cómo buscar, filtrar y exportar su inventario.
+   */
   const startInventarioTour = () => {
     const driverObj = driver({
       showProgress: true,
@@ -96,7 +105,7 @@ const Equipos = () => {
           popover: {
             title: 'Búsqueda Inteligente',
             description:
-              'Usa esta barra para buscar por serie, modelo o marca. También puedes filtrar por categoría o tipo de contrato.',
+              'Busca por serie, modelo o filtra por categoría y propiedad.',
             side: 'bottom',
             align: 'start',
           },
@@ -105,8 +114,7 @@ const Equipos = () => {
           element: '#tour-inventario-tabla',
           popover: {
             title: 'Tabla Principal',
-            description:
-              'Aquí verás el listado de tus equipos. Observa el estado físico y si el equipo es propio o alquilado.',
+            description: 'Aquí verás el listado de tus equipos y su estado.',
             side: 'top',
             align: 'start',
           },
@@ -115,8 +123,7 @@ const Equipos = () => {
           element: '#tour-inventario-acciones',
           popover: {
             title: 'Acciones de Equipo',
-            description:
-              'En cada fila encontrarás botones para ver el historial, especificaciones técnicas, editar o dar de baja.',
+            description: 'Ve el historial, ficha técnica, edita o da de baja.',
             side: 'left',
             align: 'center',
           },
@@ -125,8 +132,7 @@ const Equipos = () => {
           element: '#tour-inventario-excel',
           popover: {
             title: 'Exportar Reporte',
-            description:
-              'Haz clic aquí para descargar un Excel detallado del inventario filtrado en tu pantalla.',
+            description: 'Descarga un Excel detallado del inventario filtrado.',
             side: 'bottom',
             align: 'center',
           },
@@ -135,8 +141,7 @@ const Equipos = () => {
           element: '#tour-inventario-nuevo',
           popover: {
             title: 'Registrar Ítem',
-            description:
-              'Desde aquí puedes agregar nuevos equipos o accesorios al almacén general.',
+            description: 'Agrega nuevos equipos o accesorios al almacén.',
             side: 'left',
             align: 'start',
           },
@@ -146,6 +151,11 @@ const Equipos = () => {
     driverObj.drive();
   };
 
+  /**
+   * CARGA INICIAL
+   * Traigo mi perfil de usuario y la lista completa de equipos, ordenándolos para que
+   * los inactivos/dados de baja aparezcan al final.
+   */
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -169,14 +179,15 @@ const Equipos = () => {
     fetchData();
   }, []);
 
+  // Si busco algo o cambio de filtro, regreso a la página 1.
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, filterCondicion, filterCategoria]);
 
+  // --- HELPERS DE FORMATEO ---
   const formatDate = (dateString) => {
     if (!dateString) return '-';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-PE', {
+    return new Date(dateString).toLocaleDateString('es-PE', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
@@ -220,6 +231,7 @@ const Equipos = () => {
     }
   };
 
+  // --- LÓGICA DE FILTRADO ---
   const filteredEquipos = equipos.filter((item) => {
     const term = searchTerm.toLowerCase();
     const matchesSearch =
@@ -242,11 +254,16 @@ const Equipos = () => {
     return matchesSearch && matchesCondicion && matchesCat;
   });
 
+  // --- PAGINACIÓN ---
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredEquipos.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(filteredEquipos.length / itemsPerPage);
 
+  /**
+   * EXPORTACIÓN A EXCEL
+   * Genero un reporte detallado "desempaquetando" el JSON de especificaciones técnicas.
+   */
   const exportarExcel = () => {
     if (equipos.length === 0) return toast.info('No hay datos para exportar');
 
@@ -297,21 +314,25 @@ const Equipos = () => {
     toast.success('Reporte generado exitosamente');
   };
 
+  // --- MANEJADORES DE MODALES ---
   const handleViewSpecs = (equipo) => {
     setModalType('specs');
     setSelectedEquipo(equipo);
     setIsModalOpen(true);
   };
+
   const handleAddEquipo = () => {
     setModalType('form');
     setEquipoToEdit(null);
     setIsModalOpen(true);
   };
+
   const handleEditEquipo = (equipo) => {
     setModalType('form');
     setEquipoToEdit(equipo);
     setIsModalOpen(true);
   };
+
   const confirmDelete = (equipo) => {
     setEquipoToDelete(equipo);
     setIsDeleteModalOpen(true);
@@ -330,6 +351,7 @@ const Equipos = () => {
     }
   };
 
+  // --- ACCIONES CRUD ---
   const toggleDisponibilidad = async (equipo, nuevaDisponibilidad) => {
     try {
       await api.put(`/equipos/${equipo.id}/disponibilidad`, {
@@ -351,7 +373,7 @@ const Equipos = () => {
     fetchData();
   };
 
-  // --- ESTILOS COMPACTOS PARA REACT SELECT ---
+  // --- ESTILOS DE SELECT ---
   const customFilterStyles = {
     control: (provided, state) => ({
       ...provided,
@@ -423,6 +445,7 @@ const Equipos = () => {
         </div>
       </div>
 
+      {/* BARRA DE BÚSQUEDA Y FILTROS */}
       <div
         className='filters-bar'
         id='tour-inventario-filtros'
@@ -459,6 +482,7 @@ const Equipos = () => {
         </div>
       </div>
 
+      {/* TABLA PRINCIPAL */}
       <div
         className='table-container'
         id='tour-inventario-tabla'
@@ -503,7 +527,6 @@ const Equipos = () => {
                   <td>
                     <div className='info-cell'>
                       <span className='name mono-font'>
-                        {/* Agregado ícono de código de barras aquí en vez de texto libre */}
                         <Barcode size={12} /> {item.numero_serie}
                       </span>
                       <span className='audit-text'>
@@ -559,6 +582,8 @@ const Equipos = () => {
                       >
                         <Eye size={16} />
                       </button>
+
+                      {/* ACCIONES CRÍTICAS (Editar, Dar de Baja, Reactivar) */}
                       {item.disponible ? (
                         <>
                           <button
@@ -597,7 +622,8 @@ const Equipos = () => {
           </table>
         )}
 
-        {filteredEquipos.length > 0 && (
+        {/* PAGINACIÓN */}
+        {filteredEquipos.length > itemsPerPage && (
           <div className='pagination-footer'>
             <div className='info'>
               Mostrando <strong>{indexOfFirstItem + 1}</strong> a{' '}
@@ -606,44 +632,21 @@ const Equipos = () => {
               </strong>{' '}
               de <strong>{filteredEquipos.length}</strong>
             </div>
-            <div
-              className='controls'
-              style={{ display: 'flex', alignItems: 'center', gap: '15px' }}
-            >
+            <div className='controls'>
               <button
                 onClick={() => setCurrentPage(currentPage - 1)}
                 disabled={currentPage === 1}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '5px',
-                  padding: '6px 12px',
-                  borderRadius: '8px',
-                  fontWeight: '600',
-                }}
+                className='btn-paginate'
               >
                 <ChevronLeft size={16} /> Anterior
               </button>
-              <span
-                style={{
-                  fontSize: '0.9rem',
-                  color: '#64748b',
-                  fontWeight: '600',
-                }}
-              >
+              <span>
                 Página {currentPage} de {totalPages}
               </span>
               <button
                 onClick={() => setCurrentPage(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '5px',
-                  padding: '6px 12px',
-                  borderRadius: '8px',
-                  fontWeight: '600',
-                }}
+                className='btn-paginate'
               >
                 Siguiente <ChevronRight size={16} />
               </button>
@@ -652,6 +655,9 @@ const Equipos = () => {
         )}
       </div>
 
+      {/* --- MODALES --- */}
+
+      {/* Modal Principal Multipropósito */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -684,6 +690,7 @@ const Equipos = () => {
         )}
       </Modal>
 
+      {/* Modal Confirmación de Baja */}
       <Modal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}

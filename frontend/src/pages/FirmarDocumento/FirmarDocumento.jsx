@@ -12,6 +12,8 @@ import { toast } from 'react-toastify';
 import './FirmarDocumento.scss';
 
 const FirmarDocumento = () => {
+  // --- 1. PARÁMETROS Y ESTADOS ---
+  // Capturo el token único de la URL para identificar qué documento se va a firmar.
   const { token } = useParams();
   const [docInfo, setDocInfo] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -19,13 +21,18 @@ const FirmarDocumento = () => {
   const [firmando, setFirmando] = useState(false);
   const [firmadoSuccess, setFirmadoSuccess] = useState(false);
 
+  /**
+   * 2. VALIDACIÓN INICIAL DEL TOKEN
+   * Al cargar la página, envío el token al backend para verificar si es válido,
+   * si el documento ya fue firmado o si el enlace ha expirado.
+   */
   useEffect(() => {
     const fetchInfo = async () => {
       try {
         const res = await api.get(`/firmas/${token}`);
         setDocInfo(res.data);
       } catch (error) {
-        console.error(error);
+        console.error('Error al validar token de firma:', error);
       } finally {
         setLoading(false);
       }
@@ -33,6 +40,11 @@ const FirmarDocumento = () => {
     fetchInfo();
   }, [token]);
 
+  /**
+   * 3. PROCESO DE FIRMA DIGITAL
+   * Valido que el DNI ingresado coincida con los registros para autorizar
+   * la generación del nuevo PDF con la estampa de la firma.
+   */
   const handleFirmar = async (e) => {
     e.preventDefault();
     if (!dni || dni.length < 8)
@@ -40,6 +52,7 @@ const FirmarDocumento = () => {
 
     setFirmando(true);
     try {
+      // Envío el DNI como factor de autenticación para aplicar la firma
       await api.post(`/firmas/${token}`, { dni_ingresado: dni });
       setFirmadoSuccess(true);
       toast.success('¡Documento firmado correctamente!');
@@ -49,7 +62,9 @@ const FirmarDocumento = () => {
     }
   };
 
-  // --- ESTADO: CARGANDO ---
+  // --- RENDERIZADO DE ESTADOS DE INTERFAZ ---
+
+  // Pantalla de carga mientras valido el enlace
   if (loading)
     return (
       <div className='firma-public-container'>
@@ -64,7 +79,7 @@ const FirmarDocumento = () => {
       </div>
     );
 
-  // --- ESTADO: ÉXITO ---
+  // Pantalla de éxito tras confirmar la firma en el servidor
   if (firmadoSuccess)
     return (
       <div className='firma-public-container'>
@@ -77,14 +92,14 @@ const FirmarDocumento = () => {
           </div>
           <h2>Documento Firmado</h2>
           <p>
-            Tu firma digital ha sido registrada y validada exitosamente por el
-            sistema. Ya puedes cerrar esta pestaña.
+            Tu firma digital ha sido registrada y validada exitosamente. Ya
+            puedes cerrar esta pestaña.
           </p>
         </div>
       </div>
     );
 
-  // --- ESTADO: ENLACE INVÁLIDO ---
+  // Pantalla de error si el token no existe o ya se usó
   if (!docInfo)
     return (
       <div className='firma-public-container'>
@@ -97,13 +112,14 @@ const FirmarDocumento = () => {
           </div>
           <h2>Enlace no válido o expirado</h2>
           <p>
-            El documento que intentas abrir ya fue firmado anteriormente o el
-            enlace ha caducado por seguridad.
+            El documento ya fue firmado anteriormente o el enlace ha caducado
+            por seguridad.
           </p>
         </div>
       </div>
     );
 
+  // --- CONFIGURACIÓN DE VISTA PREVIA ---
   const baseUrl = api.defaults.baseURL
     ? api.defaults.baseURL.replace(/\/api\/?$/, '')
     : 'http://localhost:4000';
@@ -113,7 +129,7 @@ const FirmarDocumento = () => {
   return (
     <div className='firma-public-container'>
       <div className='firma-card'>
-        {/* CABECERA MINIMALISTA */}
+        {/* Cabecera dinámica según el tipo de movimiento */}
         <div className='firma-header'>
           <div className='header-title'>
             <div className='icon-wrapper'>
@@ -137,7 +153,7 @@ const FirmarDocumento = () => {
         </div>
 
         <div className='firma-body'>
-          {/* RESUMEN DE INFORMACIÓN */}
+          {/* Resumen de los datos del documento a firmar */}
           <div className='info-summary'>
             <div className='info-item'>
               <label>Colaborador</label>
@@ -146,14 +162,14 @@ const FirmarDocumento = () => {
               </span>
             </div>
             <div className='info-item'>
-              <label>Equipo asignado</label>
+              <label>Equipo involucrado</label>
               <span>
                 {docInfo.marca} {docInfo.modelo}
               </span>
             </div>
           </div>
 
-          {/* VISOR PDF */}
+          {/* Visor de PDF: Muestro el documento original antes de ser firmado */}
           <div className='pdf-preview-container'>
             <iframe
               src={
@@ -167,7 +183,7 @@ const FirmarDocumento = () => {
             />
           </div>
 
-          {/* FORMULARIO DE FIRMA / ANIMACIÓN DE CARGA */}
+          {/* Sección de acción: Formulario de DNI o animación de procesamiento */}
           {firmando ? (
             <div className='signing-animation-container'>
               <Loader2
@@ -196,6 +212,7 @@ const FirmarDocumento = () => {
                   inputMode='numeric'
                   required
                   value={dni}
+                  // Solo permito números en el campo de DNI
                   onChange={(e) => setDni(e.target.value.replace(/\D/g, ''))}
                   placeholder='Ingresa tus 8 dígitos'
                   autoComplete='off'

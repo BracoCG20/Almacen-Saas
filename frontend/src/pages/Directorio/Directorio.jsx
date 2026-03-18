@@ -21,23 +21,26 @@ import DirectorioHistorial from './DirectorioHistorial';
 import './Directorio.scss';
 
 const Directorio = () => {
+  // --- 1. ESTADOS DE DATOS ---
+  // Guardo las listas principales: correos, personal, estadísticas de licencias y el historial de cambios.
   const [directorio, setDirectorio] = useState([]);
   const [colaboradores, setColaboradores] = useState([]);
   const [estadisticas, setEstadisticas] = useState([]);
   const [historialAuditoria, setHistorialAuditoria] = useState([]);
-
   const [loading, setLoading] = useState(true);
 
+  // --- 2. ESTADOS DE CONTROL DE MODALES (FORMULARIOS) ---
+  // Defino qué modal está abierto, en qué modo (ADD, EDIT, BAJA) y sobre qué registro actúo.
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState('ADD');
   const [currentId, setCurrentId] = useState(null);
 
+  // --- 3. ESTADOS DE HISTORIAL Y ALERTAS ---
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [selectedHistory, setSelectedHistory] = useState([]);
-
-  // --- NUEVO ESTADO PARA LA ALERTA DE CONFIRMACIÓN ---
   const [confirmBajaOpen, setConfirmBajaOpen] = useState(false);
 
+  // --- 4. ESTADO DEL FORMULARIO ---
   const [formData, setFormData] = useState({
     colaborador_id: '',
     tipo_licencia: 'BUSINESS_STARTER',
@@ -46,6 +49,10 @@ const Directorio = () => {
     colaborador_destino_id: '',
   });
 
+  /**
+   * TOUR GUIADO
+   * Enseño al usuario rápidamente para qué sirve cada bloque de esta pantalla.
+   */
   const startDirectorioTour = () => {
     const driverObj = driver({
       showProgress: true,
@@ -60,7 +67,7 @@ const Directorio = () => {
           popover: {
             title: 'Directorio Workspace',
             description:
-              'Aquí puedes asignar nuevas licencias o exportar el historial de auditoría a Excel.',
+              'Aquí puedes asignar nuevas licencias o exportar el historial a Excel.',
             side: 'bottom',
             align: 'start',
           },
@@ -70,7 +77,7 @@ const Directorio = () => {
           popover: {
             title: 'Límites en Tiempo Real',
             description:
-              'Observa cuántas licencias te quedan disponibles de cada plan. Si llegas a 0, el sistema bloqueará nuevas asignaciones.',
+              'Observa cuántas licencias te quedan disponibles. Si llegas a 0, se bloquean nuevas asignaciones.',
             side: 'bottom',
             align: 'start',
           },
@@ -80,7 +87,7 @@ const Directorio = () => {
           popover: {
             title: 'Control de Cuentas',
             description:
-              'Revisa el estado de cada correo. En la columna de Acciones puedes Editar, Dar de Baja, o ver el Historial individual de la cuenta.',
+              'Revisa el estado de cada correo. Edita, da de baja o mira la auditoría de la cuenta.',
             side: 'top',
             align: 'start',
           },
@@ -90,6 +97,10 @@ const Directorio = () => {
     driverObj.drive();
   };
 
+  /**
+   * CARGA PRINCIPAL
+   * Ejecuto las 4 consultas necesarias en paralelo para cargar la pantalla sin cuellos de botella.
+   */
   const fetchData = async () => {
     try {
       const [resDir, resCol, resStats, resHist] = await Promise.all([
@@ -113,9 +124,14 @@ const Directorio = () => {
     fetchData();
   }, []);
 
+  /**
+   * EXPORTAR A EXCEL
+   * Limpio el formato del historial y lo convierto en un archivo descargable.
+   */
   const exportarHistorialExcel = () => {
     if (historialAuditoria.length === 0)
       return toast.info('No hay historial para exportar.');
+
     const data = historialAuditoria.map((h) => ({
       'Fecha Registro': new Date(h.fecha_registro).toLocaleString('es-PE'),
       Acción: h.accion,
@@ -130,12 +146,15 @@ const Directorio = () => {
         ? `${h.resp_nombres} ${h.resp_apellidos}`
         : 'Sistema',
     }));
+
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Auditoria');
     XLSX.writeFile(wb, 'Historial_Directorio.xlsx');
     toast.success('Excel generado correctamente');
   };
+
+  // --- CONTROLADORES DE APERTURA DE MODALES ---
 
   const openAddModal = () => {
     setModalMode('ADD');
@@ -148,6 +167,7 @@ const Directorio = () => {
     });
     setModalOpen(true);
   };
+
   const openEditModal = (registro) => {
     setModalMode('EDIT');
     setCurrentId(registro.id);
@@ -160,6 +180,7 @@ const Directorio = () => {
     });
     setModalOpen(true);
   };
+
   const openBajaModal = (registro) => {
     setModalMode('BAJA');
     setCurrentId(registro.id);
@@ -173,6 +194,7 @@ const Directorio = () => {
     setModalOpen(true);
   };
 
+  // Filtro el historial global para mostrar solo el del registro seleccionado
   const handleViewHistory = (registro) => {
     const historialFiltrado = historialAuditoria.filter(
       (h) => h.directorio_id === registro.id,
@@ -181,6 +203,12 @@ const Directorio = () => {
     setShowHistoryModal(true);
   };
 
+  // --- LÓGICA DE NEGOCIO Y GUARDADO ---
+
+  /**
+   * REACTIVAR LICENCIA
+   * Antes de reactivar, compruebo si tenemos espacio ("cupos") para ese tipo de licencia.
+   */
   const handleReactivar = async (registro) => {
     const statsLicencia = estadisticas.find(
       (s) => s.tipo_licencia === registro.tipo_licencia,
@@ -204,11 +232,16 @@ const Directorio = () => {
     }
   };
 
+  /**
+   * VALIDACIÓN PREVIA AL GUARDADO
+   * Determino si voy a lanzar una alerta de error (sin stock), un modal de confirmación (baja) o ejecutar directo.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.colaborador_id)
       return toast.warning('Selecciona un colaborador');
 
+    // Valido disponibilidad si es una cuenta activa
     if ((modalMode === 'ADD' || modalMode === 'EDIT') && formData.estado) {
       const statsLicencia = estadisticas.find(
         (s) => s.tipo_licencia === formData.tipo_licencia,
@@ -220,6 +253,7 @@ const Directorio = () => {
       }
     }
 
+    // Valido el flujo de baja de usuario
     if (modalMode === 'BAJA') {
       if (formData.datos_transferidos && !formData.colaborador_destino_id) {
         return toast.warning(
@@ -227,7 +261,7 @@ const Directorio = () => {
         );
       }
       setConfirmBajaOpen(true);
-      return;
+      return; // Detengo aquí para esperar confirmación del modal
     }
 
     executeSave();
@@ -313,6 +347,9 @@ const Directorio = () => {
         />
       </div>
 
+      {/* --- MODALES --- */}
+
+      {/* Modal Principal: Add/Edit/Baja */}
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
@@ -335,6 +372,7 @@ const Directorio = () => {
         />
       </Modal>
 
+      {/* Modal de Auditoría */}
       <Modal
         isOpen={showHistoryModal}
         onClose={() => setShowHistoryModal(false)}
@@ -343,6 +381,7 @@ const Directorio = () => {
         <DirectorioHistorial historyData={selectedHistory} />
       </Modal>
 
+      {/* Modal de Confirmación Crítica (Baja) */}
       <Modal
         isOpen={confirmBajaOpen}
         onClose={() => setConfirmBajaOpen(false)}

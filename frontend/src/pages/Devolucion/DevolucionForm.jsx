@@ -25,13 +25,16 @@ const DevolucionForm = ({
   handleUserChange,
   onAction,
 }) => {
-  // VALIDACIÓN: Empleado, motivo, al menos 1 equipo y todos los marcados con estado
+  // --- 1. VALIDACIÓN DEL FORMULARIO ---
+  // Valido que el formulario esté completo: debe haber un usuario, un motivo,
+  // al menos un equipo marcado para devolver y todos los equipos marcados deben tener su estado físico definido.
   const isFormValid =
     formData.empleado_id &&
     formData.motivo &&
     formData.equiposADevolver.length > 0 &&
     formData.equiposADevolver.every((eq) => eq.estado_fisico_id !== '');
 
+  // Catálogos locales
   const motivoOptions = [
     { value: 'Cese de Vínculo Laboral', label: 'Cese de Vínculo Laboral' },
     { value: 'Renovación de Equipo', label: 'Renovación de Equipo' },
@@ -46,7 +49,8 @@ const DevolucionForm = ({
     { value: false, label: 'No (Falta)' },
   ];
 
-  // --- ESTILOS PARA SELECTS PRINCIPALES (40px) ---
+  // --- 2. ESTILOS SHADCN PARA REACT-SELECT ---
+  // Estilo principal para los selects grandes (40px de altura)
   const customSelectStyles = {
     control: (provided, state) => ({
       ...provided,
@@ -111,7 +115,7 @@ const DevolucionForm = ({
     menuPortal: (base) => ({ ...base, zIndex: 9999 }),
   };
 
-  // --- ESTILOS PARA SELECTS INTERNOS MINI (36px) ---
+  // Estilo ajustado para los selects internos de cada equipo (36px de altura para encajar mejor)
   const miniSelectStyles = {
     ...customSelectStyles,
     control: (provided, state) => ({
@@ -123,15 +127,21 @@ const DevolucionForm = ({
     indicatorsContainer: (provided) => ({ ...provided, height: '36px' }),
   };
 
+  // --- 3. LÓGICA DE SELECCIÓN DE EQUIPOS ---
+
+  // Verifico si por la categoría del equipo es obligatorio preguntar si devolvió el cargador/accesorios
   const checkRequiereCargador = (categoria) => {
     return categoria === 'Laptop/PC' || categoria === 'Celular/Tablet';
   };
 
+  // Agrego o quito un equipo del carrito de "equipos a devolver" al hacer clic en su fila
   const handleToggleEquipo = (equipo) => {
     const yaEsta = formData.equiposADevolver.find(
       (e) => e.equipo_id === equipo.id,
     );
+
     if (yaEsta) {
+      // Si ya estaba, lo quito del arreglo
       setFormData({
         ...formData,
         equiposADevolver: formData.equiposADevolver.filter(
@@ -139,6 +149,7 @@ const DevolucionForm = ({
         ),
       });
     } else {
+      // Si no estaba, lo agrego por defecto como "Operativo"
       const operativoId =
         estadosOptions.find((est) => est.label.toLowerCase() === 'operativo')
           ?.value || '';
@@ -159,6 +170,7 @@ const DevolucionForm = ({
     }
   };
 
+  // Actualizo dinámicamente cualquier campo (estado, cargador, observación) del equipo seleccionado
   const updateEquipoDetalle = (equipoId, campo, valor) => {
     const nuevos = formData.equiposADevolver.map((eq) => {
       if (eq.equipo_id === equipoId) return { ...eq, [campo]: valor };
@@ -193,6 +205,7 @@ const DevolucionForm = ({
               <Laptop size={16} /> Seleccione equipos a devolver
             </label>
 
+            {/* Pinto como lista interactiva (checkboxes) todos los equipos que tiene este usuario */}
             {equiposDetectados.map((eq) => {
               const devData = formData.equiposADevolver.find(
                 (d) => d.equipo_id === eq.id,
@@ -232,6 +245,7 @@ const DevolucionForm = ({
                     </div>
                   </div>
 
+                  {/* Si el usuario marcó este equipo para devolver, despliego sus opciones internas */}
                   {isSelected && (
                     <div className='equipo-options'>
                       <div className='input-group-grid'>
@@ -285,12 +299,13 @@ const DevolucionForm = ({
                         )}
                       </div>
 
+                      {/* Si el estado es diferente a 1 ("Operativo"), obligo a escribir una observación del daño */}
                       {devData.estado_fisico_id &&
                         parseInt(devData.estado_fisico_id) !== 1 && (
                           <div className='input-group mt-small'>
                             <textarea
                               className='danger-textarea-mini'
-                              placeholder='Describa el daño o problema...'
+                              placeholder='Describa el daño o problema detalladamente...'
                               value={devData.observaciones}
                               onChange={(e) =>
                                 updateEquipoDetalle(
@@ -316,6 +331,7 @@ const DevolucionForm = ({
           </div>
         )}
 
+        {/* CreatableSelect nos permite elegir un motivo de la lista o escribir uno completamente nuevo */}
         <div className='input-group mt-medium'>
           <label className='label-highlight blue'>
             <HelpCircle size={16} /> Motivo General de la Devolución *

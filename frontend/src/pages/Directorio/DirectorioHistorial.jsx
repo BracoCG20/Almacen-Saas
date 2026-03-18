@@ -1,18 +1,31 @@
-import React, { useState } from 'react';
-import { Clock, UserCheck, ArrowRightLeft } from 'lucide-react';
+import { useState } from 'react';
+import {
+  Clock,
+  UserCheck,
+  ArrowRightLeft,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
 import './DirectorioHistorial.scss';
 
 const DirectorioHistorial = ({ historyData }) => {
+  // --- 1. ESTADOS DE PAGINACIÓN ---
+  // Controlo en qué página estoy y limito a 4 registros por vista para no saturar el modal.
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
 
+  // --- 2. LÓGICA DE CORTE (SLICE) ---
+  // Calculo los índices matemáticos para extraer solo la porción del historial que toca pintar ahora mismo.
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = historyData.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(historyData.length / itemsPerPage);
 
+  // Manejador para saltar de página
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  // --- 3. ESTILOS DINÁMICOS ---
+  // Asigno un color representativo a la viñeta de la línea de tiempo dependiendo de la acción realizada.
   const getActionColor = (accion) => {
     if (accion === 'CREACION') return 'success';
     if (accion === 'BAJA') return 'danger';
@@ -23,11 +36,13 @@ const DirectorioHistorial = ({ historyData }) => {
   return (
     <div className='audit-modal-content'>
       {historyData.length === 0 ? (
+        // Estado vacío: Si no hay historial para esta cuenta en particular
         <div className='empty-audit'>
           <p>No hay registros de auditoría en el directorio.</p>
         </div>
       ) : (
         <>
+          {/* LÍNEA DE TIEMPO DE AUDITORÍA */}
           <ul className='audit-timeline'>
             {currentItems.map((log) => (
               <li
@@ -35,6 +50,7 @@ const DirectorioHistorial = ({ historyData }) => {
                 className={`${getActionColor(log.accion)}-log`}
               >
                 <div className='audit-card'>
+                  {/* Cabecera del Log: Qué se hizo y cuándo */}
                   <div className='log-header'>
                     <strong>
                       {log.accion} - {log.tipo_licencia?.replace('_', ' ')}
@@ -45,12 +61,15 @@ const DirectorioHistorial = ({ historyData }) => {
                     </span>
                   </div>
 
+                  {/* Cuerpo del Log: A quién afectó y los detalles */}
                   <p className='log-description'>
                     <strong>
                       {log.col_nombres} {log.col_apellidos}
                     </strong>
                     <br />
                     {log.detalles}
+
+                    {/* Renderizado condicional: Si hubo una transferencia de Drive/Correos al dar de baja, lo indico aquí */}
                     {log.datos_transferidos && log.dest_nombres && (
                       <span className='transfer-note'>
                         <br />
@@ -60,6 +79,7 @@ const DirectorioHistorial = ({ historyData }) => {
                     )}
                   </p>
 
+                  {/* Pie del Log: Quién apretó el botón */}
                   <div className='log-footer-grid'>
                     <div className='footer-item'>
                       <UserCheck
@@ -81,6 +101,8 @@ const DirectorioHistorial = ({ historyData }) => {
             ))}
           </ul>
 
+          {/* CONTROLES DE PAGINACIÓN */}
+          {/* Solo aparecen si hay más de una página de registros */}
           {historyData.length > itemsPerPage && (
             <div className='pagination-footer'>
               <div className='info'>
@@ -90,19 +112,23 @@ const DirectorioHistorial = ({ historyData }) => {
               </div>
               <div className='controls'>
                 <button
+                  className='btn-paginate'
                   onClick={() => paginate(currentPage - 1)}
                   disabled={currentPage === 1}
+                  title='Anterior'
                 >
-                  Ant
+                  <ChevronLeft size={16} />
                 </button>
                 <span>
                   {currentPage} / {totalPages}
                 </span>
                 <button
+                  className='btn-paginate'
                   onClick={() => paginate(currentPage + 1)}
                   disabled={currentPage === totalPages}
+                  title='Siguiente'
                 >
-                  Sig
+                  <ChevronRight size={16} />
                 </button>
               </div>
             </div>

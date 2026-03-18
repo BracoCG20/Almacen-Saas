@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
   History,
   Check,
@@ -27,13 +27,12 @@ const DevolucionTable = ({
   onInvalidar,
   onReenviarCorreo,
 }) => {
-  // --- ESTADOS PARA PAGINACIÓN ---
+  // --- 1. ESTADOS PARA PAGINACIÓN ---
+  // Controlo cuántas filas muestro por página para no saturar la vista.
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10; // Muestra 10 filas por página
+  const itemsPerPage = 10;
 
-  /**
-   * FORMATO DE FECHAS
-   */
+  // --- 2. FORMATO DE FECHAS Y HORAS ---
   const formatDateOnly = (isoString) => {
     if (!isoString) return '-';
     const date = new Date(
@@ -60,10 +59,8 @@ const DevolucionTable = ({
     });
   };
 
-  /**
-   * ESTILO DE ESTADOS FÍSICOS (BADGES)
-   * Devuelve la clase CSS y el Ícono basado en el estado reportado del equipo devuelto
-   */
+  // --- 3. ESTILO DE ESTADOS FÍSICOS ---
+  // Devuelvo la clase CSS y el ícono correspondiente según cómo nos entregaron el equipo.
   const getStatusBadge = (estado) => {
     const estLower = (estado || '').toLowerCase().trim();
     if (estLower === 'operativo')
@@ -76,9 +73,9 @@ const DevolucionTable = ({
   };
 
   /**
-   * AGRUPACIÓN DE HISTORIAL
-   * Agrupa los registros que tienen la misma fecha y hora exacta (hasta el minuto) y el mismo usuario.
-   * Esto junta todas las devoluciones múltiples en una sola fila visual.
+   * 4. AGRUPACIÓN DE HISTORIAL
+   * Agrupo las devoluciones que ocurrieron en el mismo minuto por el mismo usuario
+   * para tratarlas visualmente como un solo "paquete" o transacción.
    */
   const historialAgrupado = Object.values(
     historial.reduce((acc, h) => {
@@ -92,9 +89,7 @@ const DevolucionTable = ({
     }, {}),
   ).sort((a, b) => new Date(b.fecha_movimiento) - new Date(a.fecha_movimiento));
 
-  /**
-   * LÓGICA DE PAGINACIÓN MATEMÁTICA
-   */
+  // --- 5. LÓGICA MATEMÁTICA DE PAGINACIÓN ---
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = historialAgrupado.slice(
@@ -113,7 +108,6 @@ const DevolucionTable = ({
         </h3>
       </div>
 
-      {/* ENVOLTURA PARA MANEJAR EL OVERFLOW Y EL TOOLTIP */}
       <div className='table-responsive-wrapper'>
         <table>
           <thead>
@@ -144,8 +138,17 @@ const DevolucionTable = ({
                 const status = getStatusBadge(h.estado_equipo_momento);
                 const StatusIcon = status.Icon;
 
+                // VERIFICACIÓN GLOBAL DE FIRMA (Evita errores si se agrupan equipos)
+                const estaFirmado = h.equipos_agrupados.some(
+                  (eq) => eq.firma_valida === true,
+                );
+                const urlFirma = h.equipos_agrupados.find(
+                  (eq) => eq.pdf_firmado_url,
+                )?.pdf_firmado_url;
+                const mainId = h.id;
+
                 return (
-                  <tr key={h.id}>
+                  <tr key={mainId}>
                     <td>
                       <div className='date-time-cell'>
                         <span className='date-part'>
@@ -160,7 +163,7 @@ const DevolucionTable = ({
                     </td>
                     <td>
                       <div className='info-cell'>
-                        {/* LÓGICA DE VISUALIZACIÓN MÚLTIPLE VS INDIVIDUAL */}
+                        {/* Lógica de Renderizado Condicional: Si es paquete muestro el Tooltip, si es uno, el nombre directo */}
                         {h.equipos_agrupados.length > 1 ? (
                           <div className='shadcn-tooltip-container'>
                             <span className='multiple-badge'>
@@ -270,38 +273,27 @@ const DevolucionTable = ({
                     </td>
                     <td className='center'>
                       <div className='actions-cell'>
-                        {h.firma_valida === true ? (
+                        {/* LÓGICA DE FIRMA: Siempre muestro "Subir" si no está firmado */}
+                        {estaFirmado ? (
                           <>
                             <button
-                              onClick={() => onVerFirmado(h.pdf_firmado_url)}
+                              onClick={() => onVerFirmado(urlFirma)}
                               className='action-btn success'
                               title='Ver Firmado'
                             >
                               <Eye size={16} />
                             </button>
                             <button
-                              onClick={() => onInvalidar(h.id)}
+                              onClick={() => onInvalidar(mainId)}
                               className='action-btn delete'
                               title='Invalidar'
                             >
                               <Ban size={16} />
                             </button>
                           </>
-                        ) : h.token_firma ? (
-                          <div
-                            className='status-pending-signature'
-                            title='Esperando firma...'
-                          >
-                            <Clock
-                              size={14}
-                              color='#d97706'
-                              className='animate-pulse'
-                            />
-                            <span>PENDIENTE</span>
-                          </div>
                         ) : (
                           <button
-                            onClick={() => onSubirClick(h.id)}
+                            onClick={() => onSubirClick(mainId)}
                             className='btn-upload'
                           >
                             <Upload size={14} /> Subir

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   History,
   Building2,
@@ -12,13 +12,17 @@ import {
 import './EquipoHistorial.scss';
 
 const EquipoHistorial = ({ equipo, historyData }) => {
+  // --- 1. ESTADOS DE PAGINACIÓN ---
+  // Muestro un máximo de 3 movimientos por vista para evitar que el modal se haga infinito verticalmente.
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 3;
 
+  // Si cambia el equipo consultado, reseteo la paginación a la primera página por defecto.
   useEffect(() => {
     setCurrentPage(1);
   }, [equipo]);
 
+  // --- 2. LÓGICA DE CORTE (SLICE) ---
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = historyData.slice(indexOfFirstItem, indexOfLastItem);
@@ -28,6 +32,7 @@ const EquipoHistorial = ({ equipo, historyData }) => {
 
   return (
     <div className='history-container'>
+      {/* CABECERA DEL MODAL: Información del Equipo */}
       <div className='history-header'>
         <div className='big-icon'>
           <History size={22} />
@@ -44,16 +49,18 @@ const EquipoHistorial = ({ equipo, historyData }) => {
       </div>
 
       {historyData.length === 0 ? (
+        // Estado vacío
         <p className='no-history'>
           No hay movimientos registrados para este equipo.
         </p>
       ) : (
         <>
+          {/* LÍNEA DE TIEMPO DE AUDITORÍA */}
           <ul className='audit-timeline'>
             {currentItems.map((hist) => (
               <li key={hist.id}>
                 <div className='audit-card'>
-                  {/* CABECERA: Título de Acción y Fecha */}
+                  {/* CABECERA DEL LOG: Título de Acción y Fecha exacta */}
                   <div className='log-header'>
                     <strong>{hist.accion_realizada}</strong>
                     <span className='date-badge'>
@@ -69,12 +76,12 @@ const EquipoHistorial = ({ equipo, historyData }) => {
                     </span>
                   </div>
 
-                  {/* CUERPO: Descripción principal */}
+                  {/* CUERPO DEL LOG: Descripción detallada */}
                   {hist.descripcion_cambio && (
                     <p className='change-desc'>{hist.descripcion_cambio}</p>
                   )}
 
-                  {/* ETIQUETAS: Propiedad, Estado, Disponibilidad */}
+                  {/* ETIQUETAS: Destaco visualmente el estado del equipo en ese momento del tiempo */}
                   <div className='hist-details-grid'>
                     <span
                       className={`hist-tag ${hist.es_propio ? 'owned' : 'rented'}`}
@@ -89,7 +96,12 @@ const EquipoHistorial = ({ equipo, historyData }) => {
 
                     {hist.estado_fisico_nombre && (
                       <span
-                        className={`status-badge ${hist.estado_fisico_nombre?.toLowerCase() === 'operativo' ? 'operativo' : 'mantenimiento'}`}
+                        className={`status-badge ${
+                          hist.estado_fisico_nombre?.toLowerCase() ===
+                          'operativo'
+                            ? 'operativo'
+                            : 'mantenimiento'
+                        }`}
                       >
                         {hist.estado_fisico_nombre}
                       </span>
@@ -102,7 +114,7 @@ const EquipoHistorial = ({ equipo, historyData }) => {
                     </span>
                   </div>
 
-                  {/* OBSERVACIONES EXTRAS */}
+                  {/* OBSERVACIONES EXTRAS: Solo se muestran si alguien anotó un daño o detalle */}
                   {hist.observaciones_equipo && (
                     <div className='hist-observations'>
                       <AlertTriangle
@@ -115,7 +127,7 @@ const EquipoHistorial = ({ equipo, historyData }) => {
                     </div>
                   )}
 
-                  {/* FOOTER EN 2 COLUMNAS */}
+                  {/* FOOTER DEL LOG: Muestro de quién era la empresa y qué usuario registró este cambio */}
                   <div className='log-footer-grid'>
                     <div className='footer-item'>
                       <Building2
@@ -151,7 +163,8 @@ const EquipoHistorial = ({ equipo, historyData }) => {
             ))}
           </ul>
 
-          {/* PAGINACIÓN MODERNA SHADCN */}
+          {/* CONTROLES DE PAGINACIÓN SHADCN */}
+          {/* Oculto la barra de paginación si el historial es de 3 movimientos o menos */}
           {historyData.length > itemsPerPage && (
             <div className='pagination-footer'>
               <div className='info'>
@@ -161,19 +174,23 @@ const EquipoHistorial = ({ equipo, historyData }) => {
               </div>
               <div className='controls'>
                 <button
+                  className='btn-paginate'
                   onClick={() => paginate(currentPage - 1)}
                   disabled={currentPage === 1}
+                  title='Anterior'
                 >
-                  <ChevronLeft size={14} /> Ant
+                  <ChevronLeft size={16} />
                 </button>
                 <span>
                   {currentPage} / {totalPages}
                 </span>
                 <button
+                  className='btn-paginate'
                   onClick={() => paginate(currentPage + 1)}
                   disabled={currentPage === totalPages}
+                  title='Siguiente'
                 >
-                  Sig <ChevronRight size={14} />
+                  <ChevronRight size={16} />
                 </button>
               </div>
             </div>
