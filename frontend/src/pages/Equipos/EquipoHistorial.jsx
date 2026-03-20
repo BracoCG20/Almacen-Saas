@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   History,
   Building2,
@@ -8,21 +8,18 @@ import {
   ChevronRight,
   Clock,
   User,
+  UserCheck,
 } from 'lucide-react';
 import './EquipoHistorial.scss';
 
 const EquipoHistorial = ({ equipo, historyData }) => {
-  // --- 1. ESTADOS DE PAGINACIÓN ---
-  // Muestro un máximo de 3 movimientos por vista para evitar que el modal se haga infinito verticalmente.
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 3;
 
-  // Si cambia el equipo consultado, reseteo la paginación a la primera página por defecto.
   useEffect(() => {
     setCurrentPage(1);
   }, [equipo]);
 
-  // --- 2. LÓGICA DE CORTE (SLICE) ---
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = historyData.slice(indexOfFirstItem, indexOfLastItem);
@@ -32,7 +29,7 @@ const EquipoHistorial = ({ equipo, historyData }) => {
 
   return (
     <div className='history-container'>
-      {/* CABECERA DEL MODAL: Información del Equipo */}
+      {/* CABECERA DEL MODAL */}
       <div className='history-header'>
         <div className='big-icon'>
           <History size={22} />
@@ -49,122 +46,171 @@ const EquipoHistorial = ({ equipo, historyData }) => {
       </div>
 
       {historyData.length === 0 ? (
-        // Estado vacío
         <p className='no-history'>
           No hay movimientos registrados para este equipo.
         </p>
       ) : (
         <>
-          {/* LÍNEA DE TIEMPO DE AUDITORÍA */}
           <ul className='audit-timeline'>
-            {currentItems.map((hist) => (
-              <li key={hist.id}>
-                <div className='audit-card'>
-                  {/* CABECERA DEL LOG: Título de Acción y Fecha exacta */}
-                  <div className='log-header'>
-                    <strong>{hist.accion_realizada}</strong>
-                    <span className='date-badge'>
-                      <Clock size={12} />{' '}
-                      {new Date(hist.fecha_accion).toLocaleString('es-PE', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: true,
-                      })}
-                    </span>
-                  </div>
+            {currentItems.map((hist) => {
+              // Limpiamos el texto genérico del Token N/A si viene del backend
+              const cleanDesc = hist.descripcion_cambio
+                ? hist.descripcion_cambio.replace(/Token:\s*N\/A/gi, '').trim()
+                : '';
 
-                  {/* CUERPO DEL LOG: Descripción detallada */}
-                  {hist.descripcion_cambio && (
-                    <p className='change-desc'>{hist.descripcion_cambio}</p>
-                  )}
-
-                  {/* ETIQUETAS: Destaco visualmente el estado del equipo en ese momento del tiempo */}
-                  <div className='hist-details-grid'>
-                    <span
-                      className={`hist-tag ${hist.es_propio ? 'owned' : 'rented'}`}
-                    >
-                      {hist.es_propio ? (
-                        <Building2 size={12} />
-                      ) : (
-                        <Handshake size={12} />
-                      )}
-                      {hist.es_propio ? 'PROPIO' : 'ALQUILADO'}
-                    </span>
-
-                    {hist.estado_fisico_nombre && (
-                      <span
-                        className={`status-badge ${
-                          hist.estado_fisico_nombre?.toLowerCase() ===
-                          'operativo'
-                            ? 'operativo'
-                            : 'mantenimiento'
-                        }`}
-                      >
-                        {hist.estado_fisico_nombre}
+              return (
+                <li key={hist.id}>
+                  <div className='audit-card'>
+                    {/* CABECERA DEL LOG */}
+                    <div className='log-header'>
+                      <strong>{hist.accion_realizada}</strong>
+                      <span className='date-badge'>
+                        <Clock size={12} />{' '}
+                        {new Date(hist.fecha_accion).toLocaleString('es-PE', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          hour12: true,
+                        })}
                       </span>
+                    </div>
+
+                    {/* CUERPO DEL LOG: Descripción y Colaborador */}
+                    <div style={{ marginBottom: '12px' }}>
+                      {cleanDesc && (
+                        <p
+                          className='change-desc'
+                          style={{ margin: 0 }}
+                        >
+                          {cleanDesc}
+                        </p>
+                      )}
+
+                      {/* Si el backend nos envía el nombre del empleado, lo mostramos explícitamente aquí */}
+                      {(hist.empleado_nombre ||
+                        hist.colaborador_nombre ||
+                        hist.empleado_nombres) && (
+                        <p
+                          style={{
+                            margin: '6px 0 0 0',
+                            color: '#1e293b',
+                            fontSize: '0.85rem',
+                          }}
+                        >
+                          <UserCheck
+                            size={14}
+                            style={{
+                              display: 'inline',
+                              marginBottom: '-2px',
+                              marginRight: '4px',
+                              color: '#059669',
+                            }}
+                          />
+                          <strong>
+                            {hist.accion_realizada === 'ENTREGA' ||
+                            hist.accion_realizada === 'ASIGNACIÓN'
+                              ? 'Asignado a: '
+                              : hist.accion_realizada === 'DEVOLUCIÓN'
+                                ? 'Devuelto por: '
+                                : 'Colaborador: '}
+                          </strong>
+                          {hist.empleado_nombre ||
+                            hist.colaborador_nombre ||
+                            hist.empleado_nombres}{' '}
+                          {hist.empleado_apellido ||
+                            hist.colaborador_apellido ||
+                            hist.empleado_apellidos ||
+                            ''}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* ETIQUETAS */}
+                    <div className='hist-details-grid'>
+                      <span
+                        className={`hist-tag ${hist.es_propio ? 'owned' : 'rented'}`}
+                      >
+                        {hist.es_propio ? (
+                          <Building2 size={12} />
+                        ) : (
+                          <Handshake size={12} />
+                        )}
+                        {hist.es_propio ? 'PROPIO' : 'ALQUILADO'}
+                      </span>
+
+                      {hist.estado_fisico_nombre && (
+                        <span
+                          className={`status-badge ${
+                            hist.estado_fisico_nombre?.toLowerCase() ===
+                            'operativo'
+                              ? 'operativo'
+                              : 'mantenimiento'
+                          }`}
+                        >
+                          {hist.estado_fisico_nombre}
+                        </span>
+                      )}
+
+                      <span
+                        className={`status-badge ${hist.disponible ? 'operativo' : 'malogrado'}`}
+                      >
+                        {hist.disponible ? 'DISPONIBLE' : 'INACTIVO'}
+                      </span>
+                    </div>
+
+                    {/* OBSERVACIONES EXTRAS */}
+                    {hist.observaciones_equipo && (
+                      <div className='hist-observations'>
+                        <AlertTriangle
+                          size={14}
+                          style={{ flexShrink: 0, marginTop: '2px' }}
+                        />
+                        <span>
+                          <strong>Obs:</strong> {hist.observaciones_equipo}
+                        </span>
+                      </div>
                     )}
 
-                    <span
-                      className={`status-badge ${hist.disponible ? 'operativo' : 'malogrado'}`}
-                    >
-                      {hist.disponible ? 'DISPONIBLE' : 'INACTIVO'}
-                    </span>
-                  </div>
-
-                  {/* OBSERVACIONES EXTRAS: Solo se muestran si alguien anotó un daño o detalle */}
-                  {hist.observaciones_equipo && (
-                    <div className='hist-observations'>
-                      <AlertTriangle
-                        size={14}
-                        style={{ flexShrink: 0, marginTop: '2px' }}
-                      />
-                      <span>
-                        <strong>Obs:</strong> {hist.observaciones_equipo}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* FOOTER DEL LOG: Muestro de quién era la empresa y qué usuario registró este cambio */}
-                  <div className='log-footer-grid'>
-                    <div className='footer-item'>
-                      <Building2
-                        size={14}
-                        style={{ color: '#059669' }}
-                      />
-                      <span>
-                        Empresa:{' '}
-                        <strong>
-                          {hist.es_propio
-                            ? hist.empresa_nombre
-                            : hist.proveedor_nombre}
-                        </strong>
-                      </span>
-                    </div>
-                    <div className='footer-item'>
-                      <User
-                        size={14}
-                        style={{ color: '#7c3aed' }}
-                      />
-                      <span>
-                        Por:{' '}
-                        <strong>
-                          {hist.usuario_nombres
-                            ? `${hist.usuario_nombres} ${hist.usuario_apellidos}`
-                            : 'Sistema'}
-                        </strong>
-                      </span>
+                    {/* FOOTER DEL LOG */}
+                    <div className='log-footer-grid'>
+                      <div className='footer-item'>
+                        <Building2
+                          size={14}
+                          style={{ color: '#059669' }}
+                        />
+                        <span>
+                          Empresa:{' '}
+                          <strong>
+                            {hist.es_propio
+                              ? hist.empresa_nombre
+                              : hist.proveedor_nombre}
+                          </strong>
+                        </span>
+                      </div>
+                      <div className='footer-item'>
+                        <User
+                          size={14}
+                          style={{ color: '#7c3aed' }}
+                        />
+                        <span>
+                          Por:{' '}
+                          <strong>
+                            {hist.usuario_nombres
+                              ? `${hist.usuario_nombres} ${hist.usuario_apellidos}`
+                              : 'Sistema'}
+                          </strong>
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </li>
-            ))}
+                </li>
+              );
+            })}
           </ul>
 
-          {/* CONTROLES DE PAGINACIÓN SHADCN */}
-          {/* Oculto la barra de paginación si el historial es de 3 movimientos o menos */}
+          {/* CONTROLES DE PAGINACIÓN */}
           {historyData.length > itemsPerPage && (
             <div className='pagination-footer'>
               <div className='info'>

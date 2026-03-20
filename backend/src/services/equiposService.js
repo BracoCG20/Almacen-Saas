@@ -39,7 +39,7 @@ const createEquipo = async (data, creadorId) => {
   try {
     await client.query('BEGIN');
 
-    // 1. Validar el número de serie
+    // 1. Validación de unicidad
     const check = await client.query(
       'SELECT id FROM equipos WHERE numero_serie = $1',
       [numero_serie],
@@ -48,7 +48,7 @@ const createEquipo = async (data, creadorId) => {
       throw new Error('El número de serie ingresado ya existe en el sistema.');
     }
 
-    // 2. Generar Código correlativo
+    // 2. Autogeneración de código patrimonial
     const prefijo = es_propio ? 'EQP-' : 'EQAL-';
     const lastCodeRes = await client.query(
       `SELECT codigo_patrimonial FROM equipos WHERE codigo_patrimonial LIKE $1 ORDER BY id DESC LIMIT 1`,
@@ -62,10 +62,9 @@ const createEquipo = async (data, creadorId) => {
       nuevoCorrelativo = lastNum + 1;
     }
     const codigoAutogenerado = `${prefijo}${String(nuevoCorrelativo).padStart(4, '0')}`;
-
     const esDisponible = Number(estado_fisico_id) === 1;
 
-    // 3. Insertar el Equipo
+    // 3. Inserción del equipo
     const eqQuery = `
       INSERT INTO equipos (
         categoria, empresa_id, marca, modelo, numero_serie, codigo_patrimonial, estado_fisico_id, 
@@ -94,7 +93,7 @@ const createEquipo = async (data, creadorId) => {
 
     const newEquipo = await client.query(eqQuery, eqValues);
 
-    // 4. Registrar en la auditoría (Historial)
+    // 4. Registro en el historial
     await client.query(
       `INSERT INTO historial_equipos (
         equipo_id, empresa_id, estado_fisico_id, disponible, es_propio, proveedor_id, 
@@ -277,6 +276,11 @@ const getEstadosFisicos = async () => {
   return response.rows;
 };
 
+/**
+ * HISTORIAL DE EQUIPO
+ * Trae todos los logs. En este query NO necesitamos unir con colaboradores aquí
+ * si la inserción en historial_equipos ya viene con el nombre inyectado desde movimientos.
+ */
 const getEquipoHistorial = async (id) => {
   const query = `
     SELECT h.*, 

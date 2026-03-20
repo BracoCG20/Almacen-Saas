@@ -49,16 +49,26 @@ const registrarEntrega = async (data, adminId, cloudinaryUrl, pdfBuffer) => {
 
   try {
     await client.query('BEGIN');
+
+    const descripcionHumana = data.nombreEmpleado
+      ? `Asignado al colaborador: ${data.nombreEmpleado}`
+      : 'Asignación de equipo';
+
     for (const item of data.equipos) {
+      // 1. Buscamos el equipo y nos traemos TODOS sus datos actuales para no perderlos en el historial
       const checkEquipo = await client.query(
-        'SELECT disponible FROM equipos WHERE id = $1',
+        'SELECT disponible, es_propio, empresa_id, proveedor_id, estado_fisico_id FROM equipos WHERE id = $1',
         [item.equipo_id],
       );
-      if (checkEquipo.rows.length === 0 || !checkEquipo.rows[0].disponible)
+      if (checkEquipo.rows.length === 0 || !checkEquipo.rows[0].disponible) {
         throw new Error(
           'Uno de los equipos seleccionados ya no está disponible.',
         );
+      }
 
+      const eqData = checkEquipo.rows[0];
+
+      // 2. Registro en historial de movimientos (Para la tabla de auditoría general)
       const insertMov = `INSERT INTO historial_movimientos (equipo_id, colaborador_id, tipo_movimiento, fecha_movimiento, cargador_incluido, observaciones, correo_enviado, usuario_creacion_id, pdf_generado_url, token_firma, firma_valida) VALUES ($1, $2, 'entrega', $3, $4, $5, $6, $7, $8, $9, false) RETURNING id`;
       const movResult = await client.query(insertMov, [
         item.equipo_id,
@@ -73,17 +83,28 @@ const registrarEntrega = async (data, adminId, cloudinaryUrl, pdfBuffer) => {
       ]);
       movimientoIds.push(movResult.rows[0].id);
 
+      // 3. Actualizo el estado del equipo
       await client.query(
         'UPDATE equipos SET disponible = false WHERE id = $1',
         [item.equipo_id],
       );
+
+      // 4. Guardo en la bitácora individual ARRASTRANDO los datos de propiedad
       await client.query(
-        `INSERT INTO historial_equipos (equipo_id, disponible, observaciones_equipo, accion_realizada, descripcion_cambio, usuario_accion_id) VALUES ($1, false, $2, 'ENTREGA', $3, $4)`,
+        `INSERT INTO historial_equipos (
+          equipo_id, disponible, observaciones_equipo, accion_realizada, 
+          descripcion_cambio, usuario_accion_id, es_propio, empresa_id, 
+          proveedor_id, estado_fisico_id
+        ) VALUES ($1, false, $2, 'ASIGNACIÓN', $3, $4, $5, $6, $7, $8)`,
         [
           item.equipo_id,
           data.observaciones,
-          `Asignación múltiple. Token: ${tokenFirma || 'N/A'}`,
+          descripcionHumana,
           adminId,
+          eqData.es_propio,
+          eqData.empresa_id,
+          eqData.proveedor_id,
+          eqData.estado_fisico_id,
         ],
       );
     }
@@ -124,26 +145,39 @@ const registrarDevolucion = async (data, adminId, cloudinaryUrl, pdfBuffer) => {
   const client = await pool.connect();
   let movimientoIds = [];
   let tokenFirma = cloudinaryUrl ? uuidv4() : null;
-
-  // Guardaremos los estados físicos para el correo
   let estadosReportados = new Set();
 
   try {
     await client.query('BEGIN');
 
-    // BUCLE DE DEVOLUCIÓN: Por cada equipo devuelto
     for (const item of data.equipos) {
       const estaDisponible = parseInt(item.estado_fisico_id) === 1;
 
-      // Consultamos el nombre del estado físico para guardarlo en la variable del correo
+      // Consulto los datos base del equipo para arrastrarlos al historial
+      const checkEquipo = await client.query(
+        'SELECT es_propio, empresa_id, proveedor_id FROM equipos WHERE id = $1',
+        [item.equipo_id],
+      );
+      const eqData =
+        checkEquipo.rows.length > 0
+          ? checkEquipo.rows[0]
+          : { es_propio: true, empresa_id: null, proveedor_id: null };
+
+      // Consulto el estado físico para el PDF/Correo
       const estadoQuery = await client.query(
         'SELECT nombre FROM estados_equipos WHERE id = $1',
         [item.estado_fisico_id],
       );
-      if (estadoQuery.rows.length > 0) {
-        estadosReportados.add(estadoQuery.rows[0].nombre);
-      }
+      const nombreEstadoFisico =
+        estadoQuery.rows.length > 0
+          ? estadoQuery.rows[0].nombre
+          : 'Desconocido';
+      estadosReportados.add(nombreEstadoFisico);
 
+      const motivoDesc = data.motivo || 'No especificado';
+      const descripcionHumana = `Recepción de equipo en estado: ${nombreEstadoFisico}. Motivo: ${motivoDesc}`;
+
+      // 1. Registro el movimiento
       const insertMov = `
         INSERT INTO historial_movimientos (
           equipo_id, colaborador_id, tipo_movimiento, fecha_movimiento, 
@@ -166,6 +200,7 @@ const registrarDevolucion = async (data, adminId, cloudinaryUrl, pdfBuffer) => {
       ]);
       movimientoIds.push(movResult.rows[0].id);
 
+      // 2. Actualizo la tabla del equipo
       await client.query(
         'UPDATE equipos SET disponible = $1, estado_fisico_id = $2, observaciones = $3 WHERE id = $4',
         [
@@ -176,15 +211,23 @@ const registrarDevolucion = async (data, adminId, cloudinaryUrl, pdfBuffer) => {
         ],
       );
 
+      // 3. Guardo en la bitácora individual ARRASTRANDO los datos de propiedad
       await client.query(
-        `INSERT INTO historial_equipos (equipo_id, disponible, estado_fisico_id, observaciones_equipo, accion_realizada, descripcion_cambio, usuario_accion_id) 
-         VALUES ($1, $2, $3, $4, 'DEVOLUCIÓN', 'Recepción de equipo. Token: ${tokenFirma || 'N/A'}', $5)`,
+        `INSERT INTO historial_equipos (
+          equipo_id, disponible, estado_fisico_id, observaciones_equipo, 
+          accion_realizada, descripcion_cambio, usuario_accion_id, 
+          es_propio, empresa_id, proveedor_id
+        ) VALUES ($1, $2, $3, $4, 'DEVOLUCIÓN', $5, $6, $7, $8, $9)`,
         [
           item.equipo_id,
           estaDisponible,
           item.estado_fisico_id,
           item.observaciones,
+          descripcionHumana,
           adminId,
+          eqData.es_propio,
+          eqData.empresa_id,
+          eqData.proveedor_id,
         ],
       );
     }
@@ -197,7 +240,7 @@ const registrarDevolucion = async (data, adminId, cloudinaryUrl, pdfBuffer) => {
     client.release();
   }
 
-  // --- ENVÍO DE CORREO CORREGIDO ---
+  // Envío del correo...
   if (pdfBuffer && data.destinatario) {
     try {
       const textoCargador = 'Ver detalles en el PDF adjunto';
@@ -205,18 +248,12 @@ const registrarDevolucion = async (data, adminId, cloudinaryUrl, pdfBuffer) => {
         data.equipos.length > 1
           ? 'Múltiples Equipos de Trabajo'
           : 'Equipo de Trabajo';
-
-      // Determinamos el Estado Final para el correo
       let estadoParaCorreo = 'No especificado';
       const estadosArray = Array.from(estadosReportados);
 
-      if (estadosArray.length === 1) {
-        // Si todos los equipos tienen el mismo estado (ej. "Operativo"), mostramos ese.
-        estadoParaCorreo = estadosArray[0];
-      } else if (estadosArray.length > 1) {
-        // Si devolvió un teclado Operativo y un mouse Malogrado
+      if (estadosArray.length === 1) estadoParaCorreo = estadosArray[0];
+      else if (estadosArray.length > 1)
         estadoParaCorreo = 'Múltiples (Ver PDF)';
-      }
 
       await emailService.enviarActaCorreo(
         'devolucion',
@@ -225,7 +262,7 @@ const registrarDevolucion = async (data, adminId, cloudinaryUrl, pdfBuffer) => {
         tipoEquipo,
         textoCargador,
         pdfBuffer,
-        estadoParaCorreo, // <--- AHORA SÍ ENVIAMOS EL ESTADO REAL
+        estadoParaCorreo,
         data.motivo,
         tokenFirma,
       );
@@ -246,8 +283,6 @@ const actualizarFirmaDocumento = async (
   try {
     await client.query('BEGIN');
 
-    // 1. Primero, obtenemos la información del movimiento base que se quiere actualizar
-    // Necesitamos el token_firma original para buscar a todos los "hermanos" de la misma asignación.
     const infoRes = await client.query(
       `SELECT token_firma, tipo_movimiento, cargador_incluido, pdf_generado_url, motivo_movimiento, 
               c.email_contacto, c.nombres, c.apellidos, e.marca, e.modelo, st.nombre as estado_final_nombre
@@ -265,12 +300,7 @@ const actualizarFirmaDocumento = async (
     const tokenActual = mov.token_firma;
 
     if (firmaValida === false) {
-      // --- LÓGICA PARA INVALIDAR ---
-      // Generamos un NUEVO token para todo el paquete
       const nuevoToken = uuidv4();
-
-      // Si el movimiento tenía un token (era de un paquete), actualizamos todos los que compartan el token.
-      // Si por alguna razón no tenía token (registros muy antiguos), solo actualizamos su ID.
       if (tokenActual) {
         await client.query(
           `UPDATE historial_movimientos 
@@ -289,7 +319,6 @@ const actualizarFirmaDocumento = async (
         );
       }
 
-      // Reenvío de correo...
       if (mov.email_contacto && mov.pdf_generado_url) {
         const response = await axios.get(mov.pdf_generado_url, {
           responseType: 'arraybuffer',
@@ -308,9 +337,7 @@ const actualizarFirmaDocumento = async (
         );
       }
     } else {
-      // --- LÓGICA PARA CONFIRMAR FIRMA (Subida manual o webhook) ---
       if (tokenActual) {
-        // Actualizamos TODOS los registros que tengan el mismo token de transacción
         await client.query(
           `UPDATE historial_movimientos 
            SET pdf_firmado_url = $1, firma_valida = true, token_firma = NULL 
@@ -318,7 +345,6 @@ const actualizarFirmaDocumento = async (
           [cloudinaryUrl, tokenActual],
         );
       } else {
-        // Fallback por si es un registro antiguo sin token
         await client.query(
           `UPDATE historial_movimientos 
            SET pdf_firmado_url = $1, firma_valida = true, token_firma = NULL 
@@ -327,6 +353,7 @@ const actualizarFirmaDocumento = async (
         );
       }
     }
+
     await client.query('COMMIT');
     return true;
   } catch (error) {
