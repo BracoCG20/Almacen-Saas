@@ -1,5 +1,5 @@
 const multer = require('multer');
-const cloudinary = require('../config/cloudinary');
+const { cloudinary } = require('../config/cloudinary');
 const { v4: uuidv4 } = require('uuid');
 
 // Almacenamiento temporal en RAM

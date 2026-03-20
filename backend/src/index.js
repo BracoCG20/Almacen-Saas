@@ -10,6 +10,9 @@ const { Server } = require('socket.io');
 const { pool } = require('./config/db');
 const mailer = require('./config/mailer');
 
+// --- 1. IMPORTAMOS EL INICIALIZADOR DE CLOUDINARY ---
+const { initCloudinary } = require('./config/cloudinary');
+
 // Inicializar Express
 const app = express();
 
@@ -99,9 +102,17 @@ app.use('/api/tickets', ticketsRoutes);
 // ==========================================
 const PORT = process.env.PORT || 4000;
 
-server.listen(PORT, () => {
-  console.log(`-------------------------------------------`);
-  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
-  console.log(`🔌 WebSockets habilitados y escuchando`);
-  console.log(`-------------------------------------------`);
-});
+// --- 2. INICIAMOS CLOUDINARY ANTES DE LEVANTAR EL SERVIDOR ---
+initCloudinary()
+  .then(() => {
+    server.listen(PORT, () => {
+      console.log(`-------------------------------------------`);
+      console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+      console.log(`🔌 WebSockets habilitados y escuchando`);
+      console.log(`☁️  Cloudinary inicializado correctamente`);
+      console.log(`-------------------------------------------`);
+    });
+  })
+  .catch((err) => {
+    console.error('❌ Error crítico al iniciar la aplicación:', err);
+  });
