@@ -26,18 +26,15 @@ import 'driver.js/dist/driver.css';
 import './Historial.scss';
 
 const Historial = () => {
-  // --- 1. ESTADOS DE DATOS ---
   const [historial, setHistorial] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // --- 2. ESTADOS DE FILTROS ---
   const [filtroTexto, setFiltroTexto] = useState('');
   const [filtroTipo, setFiltroTipo] = useState({
     value: 'todos',
     label: 'Todos los movimientos',
   });
 
-  // --- 3. ESTADOS DE PAGINACIÓN ---
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
@@ -47,10 +44,6 @@ const Historial = () => {
     { value: 'devolucion', label: 'Devoluciones' },
   ];
 
-  /**
-   * TOUR GUIADO
-   * Explica brevemente al usuario cómo utilizar el módulo de auditoría.
-   */
   const startHistorialTour = () => {
     const driverObj = driver({
       showProgress: true,
@@ -92,9 +85,6 @@ const Historial = () => {
     driverObj.drive();
   };
 
-  /**
-   * ESTILOS SHADCN PARA REACT-SELECT
-   */
   const customSelectStyles = {
     control: (provided, state) => ({
       ...provided,
@@ -150,7 +140,6 @@ const Historial = () => {
     menuPortal: (base) => ({ ...base, zIndex: 9999 }),
   };
 
-  // --- CARGA INICIAL DE DATOS ---
   useEffect(() => {
     const fetchHistorial = async () => {
       try {
@@ -165,14 +154,10 @@ const Historial = () => {
     fetchHistorial();
   }, []);
 
-  // Reseteo a la primera página si cambio los filtros
   useEffect(() => {
     setCurrentPage(1);
   }, [filtroTexto, filtroTipo]);
 
-  // --- HELPERS DE FORMATEO ---
-
-  // Transformo el intervalo de tiempo entregado por PostgreSQL en un texto amigable
   const formatDuration = (intervalObj) => {
     if (!intervalObj) return '-';
     let texto = [];
@@ -183,7 +168,6 @@ const Historial = () => {
     return texto.join(', ');
   };
 
-  // Aseguro que la URL del documento apunte correctamente a Cloudinary o Localhost
   const getBackendUrl = (path) => {
     if (!path) return 'No disponible';
     if (path.includes('cloudinary.com') || path.includes('http'))
@@ -202,6 +186,7 @@ const Historial = () => {
       year: 'numeric',
     });
   };
+
   const formatTimeOnly = (isoString) => {
     if (!isoString) return '';
     return new Date(isoString).toLocaleTimeString('es-PE', {
@@ -211,10 +196,16 @@ const Historial = () => {
     });
   };
 
-  // --- AGRUPACIÓN Y FILTRADO ---
+  const getEstadoClass = (estado) => {
+    const estLower = (estado || '').toLowerCase().trim();
+    if (estLower === 'operativo') return 'operativo';
+    if (estLower === 'inoperativo') return 'inoperativo';
+    if (estLower === 'mantenimiento' || estLower === 'malogrado')
+      return 'malogrado';
+    if (estLower === 'robado' || estLower === 'perdido') return 'robado';
+    return 'neutro';
+  };
 
-  // Agrupo los registros por Acción (Entrega/Devolución), Empleado y Fecha-Minuto.
-  // Esto "junta" los múltiples equipos movidos en una sola transacción visual.
   const historialAgrupadoCrudo = Object.values(
     historial.reduce((acc, h) => {
       const key = `${h.tipo}-${h.empleado_id}-${h.fecha_movimiento.substring(0, 16)}`;
@@ -224,7 +215,6 @@ const Historial = () => {
     }, {}),
   ).sort((a, b) => new Date(b.fecha_movimiento) - new Date(a.fecha_movimiento));
 
-  // Filtro los grupos. Si CUALQUIER equipo dentro del grupo coincide con la búsqueda, muestro toda la transacción.
   const historialFiltrado = historialAgrupadoCrudo.filter((h) => {
     const coincideTexto = h.equipos_agrupados.some(
       (eq) =>
@@ -240,7 +230,6 @@ const Historial = () => {
     return coincideTexto && coincideTipo;
   });
 
-  // --- LÓGICA MATEMÁTICA DE PAGINACIÓN ---
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = historialFiltrado.slice(
@@ -250,11 +239,6 @@ const Historial = () => {
   const totalPages = Math.ceil(historialFiltrado.length / itemsPerPage);
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  /**
-   * EXPORTACIÓN A EXCEL
-   * Excel necesita tablas planas. Por tanto, "desarmo" los grupos
-   * que hice arriba y genero una fila por cada equipo individual.
-   */
   const exportarExcel = () => {
     if (historialFiltrado.length === 0)
       return toast.info('No hay datos para exportar');
@@ -315,7 +299,6 @@ const Historial = () => {
         </div>
       </div>
 
-      {/* --- BARRA DE FILTROS --- */}
       <div
         className='filters-container'
         id='tour-historial-filtros'
@@ -343,15 +326,11 @@ const Historial = () => {
         </div>
       </div>
 
-      {/* --- TABLA DE AUDITORÍA --- */}
       <div
         className='table-container'
         id='tour-historial-tabla'
       >
-        <div
-          className='table-responsive-wrapper'
-          style={{ overflow: 'visible' }}
-        >
+        <div className='table-responsive-wrapper'>
           {currentItems.length === 0 ? (
             <div className='no-data'>
               No se encontraron registros que coincidan.
@@ -372,22 +351,7 @@ const Historial = () => {
               <tbody>
                 {currentItems.map((h, index) => {
                   const isEntrega = h.tipo === 'entrega';
-
-                  // Calculo el color del badge del estado según la palabra clave que trae la BD
-                  let estadoClass = 'neutro';
-                  const estLower = (h.estado_equipo_momento || '')
-                    .toLowerCase()
-                    .trim();
-                  if (estLower === 'operativo') estadoClass = 'operativo';
-                  else if (estLower === 'inoperativo')
-                    estadoClass = 'inoperativo';
-                  else if (
-                    estLower === 'mantenimiento' ||
-                    estLower === 'malogrado'
-                  )
-                    estadoClass = 'malogrado';
-                  else if (estLower === 'robado' || estLower === 'perdido')
-                    estadoClass = 'robado';
+                  const isMultiple = h.equipos_agrupados.length > 1;
 
                   return (
                     <tr key={h.id}>
@@ -407,13 +371,13 @@ const Historial = () => {
                         <span className={`status-badge ${h.tipo}`}>
                           {isEntrega ? (
                             <ArrowUpRight
+                              className='icon-status'
                               size={12}
-                              style={{ marginRight: '4px' }}
                             />
                           ) : (
                             <ArrowDownLeft
+                              className='icon-status'
                               size={12}
-                              style={{ marginRight: '4px' }}
                             />
                           )}
                           {isEntrega ? 'ASIGNADO' : 'DEVOLUCIÓN'}
@@ -421,21 +385,24 @@ const Historial = () => {
                       </td>
                       <td>
                         <div className='info-cell'>
-                          {/* Lógica condicional: Mostrar un equipo o el Tooltip si son varios en la misma transacción */}
-                          {h.equipos_agrupados.length > 1 ? (
+                          {isMultiple ? (
                             <div className='shadcn-tooltip-container'>
                               <span className='multiple-badge'>
                                 <Layers size={14} /> Varios (
                                 {h.equipos_agrupados.length})
                               </span>
-                              <div className='shadcn-tooltip-content'>
+                              <div className='shadcn-tooltip-content left-align'>
                                 {h.equipos_agrupados.map((eq, i) => (
                                   <div
                                     key={i}
                                     className='tooltip-item'
                                   >
-                                    <strong>{eq.modelo}</strong>
-                                    <span>SN: {eq.serie}</span>
+                                    <strong className='model-text'>
+                                      {eq.modelo}
+                                    </strong>
+                                    <span className='serial-text'>
+                                      SN: {eq.serie}
+                                    </span>
                                   </div>
                                 ))}
                               </div>
@@ -444,8 +411,8 @@ const Historial = () => {
                             <>
                               <span className='name'>
                                 <Laptop
+                                  className='icon-slate'
                                   size={14}
-                                  style={{ color: '#64748b' }}
                                 />{' '}
                                 {h.marca} {h.modelo}
                               </span>
@@ -460,8 +427,8 @@ const Historial = () => {
                         <div className='info-cell'>
                           <span className='name'>
                             <User
+                              className='icon-slate'
                               size={14}
-                              style={{ color: '#64748b' }}
                             />{' '}
                             {h.empleado_nombre} {h.empleado_apellido}
                           </span>
@@ -476,8 +443,8 @@ const Historial = () => {
                             <div className='user-info'>
                               <span className='name'>
                                 <ShieldCheck
+                                  className='icon-violet'
                                   size={14}
-                                  style={{ color: '#7c3aed' }}
                                 />{' '}
                                 {h.admin_nombre}
                               </span>
@@ -491,7 +458,6 @@ const Historial = () => {
                         </div>
                       </td>
                       <td>
-                        {/* El tiempo de uso solo se muestra si el movimiento es una entrega (tiempo usado en la asignación previa) */}
                         {isEntrega ? (
                           <div className='info-cell'>
                             <span className='name time-use'>
@@ -502,15 +468,47 @@ const Historial = () => {
                           <span className='dash'>-</span>
                         )}
                       </td>
+
                       <td
                         className='center'
                         id={index === 0 ? 'tour-historial-estado' : undefined}
                       >
-                        {/* El estado reportado del equipo se pinta solo si es una devolución */}
-                        {!isEntrega && h.estado_equipo_momento ? (
-                          <span className={`status-badge-mini ${estadoClass}`}>
-                            {h.estado_equipo_momento}
-                          </span>
+                        {!isEntrega ? (
+                          isMultiple ? (
+                            <div className='shadcn-tooltip-container'>
+                              <span className='multiple-badge light'>
+                                <Layers size={14} /> Varios
+                              </span>
+                              <div className='shadcn-tooltip-content right-align'>
+                                {h.equipos_agrupados.map((eq, i) => (
+                                  <div
+                                    key={i}
+                                    className='tooltip-item state-item'
+                                  >
+                                    <strong
+                                      className='state-model'
+                                      title={eq.modelo}
+                                    >
+                                      {eq.modelo}
+                                    </strong>
+                                    <span
+                                      className={`status-badge-mini ${getEstadoClass(eq.estado_equipo_momento)}`}
+                                    >
+                                      {eq.estado_equipo_momento || 'N/A'}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          ) : h.estado_equipo_momento ? (
+                            <span
+                              className={`status-badge-mini ${getEstadoClass(h.estado_equipo_momento)}`}
+                            >
+                              {h.estado_equipo_momento}
+                            </span>
+                          ) : (
+                            <span className='dash'>-</span>
+                          )
                         ) : (
                           <span className='dash'>-</span>
                         )}
@@ -523,7 +521,6 @@ const Historial = () => {
           )}
         </div>
 
-        {/* --- CONTROLES DE PAGINACIÓN --- */}
         {historialFiltrado.length > itemsPerPage && (
           <div className='pagination-footer'>
             <div className='info'>

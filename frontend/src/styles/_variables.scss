@@ -1,8 +1,8 @@
-@use "sass:color";
+@use 'sass:color';
 
 // Colores Base
 $bg-body: #f3f4f6;
-$primary: #7c3aed; /* tailwind violet-600 */
+$primary: #7c3aed;
 $secondary: #0d9488;
 $text-main: #1e293b;
 $text-muted: #64748b;
@@ -13,6 +13,6 @@ $success: #10b981;
 // Paleta Violeta (Para fondos de tablas, hovers y cabeceras)
 $violet-50: #f5f3ff;
 $violet-100: #ede9fe;
-$violet-200: #ddd6fe;
-$violet-700: #6d28d9;
-$violet-800: #5b21b6;
+$violet-200: #ddd6ff;
+$violet-700: #7008e7;
+$violet-800: #5d0ec0;

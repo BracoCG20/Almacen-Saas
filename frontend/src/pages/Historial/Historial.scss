@@ -122,13 +122,10 @@
     border-radius: 8px;
     border: 1px solid #e2e8f0;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-    overflow-x: auto;
-    &::-webkit-scrollbar {
-      height: 4px;
-    }
-    &::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 10px;
+
+    .table-responsive-wrapper {
+      width: 100%;
+      overflow-x: visible; // Crítico para que los tooltips floten por encima
     }
 
     table {
@@ -259,7 +256,127 @@
     color: #cbd5e1;
   }
 
-  // --- BADGES ---
+  .icon-status {
+    margin-right: 4px;
+  }
+  .icon-slate {
+    color: #64748b;
+  }
+  .icon-violet {
+    color: #7c3aed;
+  }
+
+  // --- TOOLTIPS PARA MULTIPLES EQUIPOS (CORREGIDO) ---
+  .shadcn-tooltip-container {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+
+    .multiple-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #475569;
+      cursor: help;
+      transition: all 0.2s;
+
+      &.light {
+        background-color: #f1f5f9;
+      }
+
+      &:hover {
+        background-color: #f1f5f9;
+        border-color: #cbd5e1;
+      }
+    }
+
+    .shadcn-tooltip-content {
+      position: absolute;
+      top: calc(100% + 8px);
+      z-index: 100;
+      min-width: 220px;
+
+      // ESTILO BLANCO, LIMPIO Y MODERNO
+      background-color: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      box-shadow:
+        0 10px 25px -5px rgba(0, 0, 0, 0.1),
+        0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      padding: 8px;
+
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(5px);
+      transition: all 0.2s ease;
+
+      // Alineación a la izquierda (Por defecto para "Equipos")
+      &.left-align {
+        left: 0;
+      }
+
+      // Alineación a la derecha (Para la última columna "Estado")
+      &.right-align {
+        right: 0;
+        left: auto;
+      }
+
+      .tooltip-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding: 8px 6px;
+        border-bottom: 1px solid #f1f5f9;
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        &.state-item {
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+          gap: 15px;
+        }
+
+        .model-text {
+          font-size: 0.8rem;
+          color: #0f172a;
+          font-weight: 600;
+        }
+
+        .state-model {
+          font-size: 0.75rem;
+          color: #0f172a;
+          font-weight: 600;
+          max-width: 120px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .serial-text {
+          font-size: 0.75rem;
+          color: #64748b;
+          font-family: monospace;
+        }
+      }
+    }
+
+    &:hover .shadcn-tooltip-content {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+  }
+
+  // --- BADGES DE ESTADO ---
   .status-badge {
     display: inline-flex;
     align-items: center;
