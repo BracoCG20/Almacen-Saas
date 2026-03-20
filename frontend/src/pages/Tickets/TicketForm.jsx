@@ -20,7 +20,7 @@ const catalogoSolicitudes = [
     value: 'Creación de Correo / Credenciales',
     label: '🔑 Creación de Correo / Credenciales',
     prioridad: 'Media',
-    sla: '2 horas',
+    sla: '1 horas',
   },
   {
     value: 'Instalación de Software / Licencia',

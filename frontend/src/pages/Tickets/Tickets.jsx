@@ -8,7 +8,7 @@ import { Plus, Search, HelpCircle } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
 import TicketForm from './TicketForm';
 import TicketDetails from './TicketDetails';
-import TicketsTable from './TicketsTable'; // Tu nuevo componente importado
+import TicketsTable from './TicketsTable';
 
 import { driver } from 'driver.js';
 import 'driver.js/dist/driver.css';
