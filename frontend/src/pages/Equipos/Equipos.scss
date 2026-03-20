@@ -58,7 +58,8 @@
         &.btn-excel {
           background-color: v.$success;
           &:hover {
-            background-color: darken(v.$success, 5%);
+            // Reemplazo de darken por color.adjust
+            background-color: color.adjust(v.$success, $lightness: -5%);
           }
         }
         &.btn-add {
@@ -497,7 +498,11 @@
         background-color: v.$primary !important;
         color: white !important;
         &:hover {
-          background-color: darken(v.$primary, 5%) !important;
+          // Reemplazo de darken por color.adjust
+          background-color: color.adjust(
+            v.$primary,
+            $lightness: -5%
+          ) !important;
         }
       }
     }

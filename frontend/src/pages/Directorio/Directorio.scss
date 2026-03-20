@@ -1,3 +1,4 @@
+@use 'sass:color';
 @use '../../styles/variables' as v;
 
 .directorio-container {
@@ -24,7 +25,7 @@
       }
     }
 
-    // --- NUEVO CONTENEDOR DE BOTONES ---
+    // --- CONTENEDOR DE BOTONES ---
     .header-actions {
       display: flex;
       align-items: center;
@@ -56,7 +57,8 @@
         transition: all 0.2s ease;
 
         &:hover {
-          background-color: darken(v.$success, 5%);
+          // Reemplazo de darken por color.adjust
+          background-color: color.adjust(v.$success, $lightness: -5%);
           transform: translateY(-1px);
           box-shadow: 0 2px 4px rgba(22, 163, 74, 0.1);
         }
@@ -82,7 +84,8 @@
         transition: all 0.2s ease;
 
         &:hover {
-          background-color: darken(v.$primary, 5%);
+          // Reemplazo de darken por color.adjust
+          background-color: color.adjust(v.$primary, $lightness: -5%);
           transform: translateY(-1px);
         }
       }
@@ -205,10 +208,10 @@
   justify-content: center;
   gap: 6px;
   padding: 0 14px;
-  height: 38px; // Reducido a 38px
+  height: 38px;
   border-radius: 8px;
   font-weight: 500;
-  font-size: 0.85rem; // Reducido
+  font-size: 0.85rem;
   border: none;
   cursor: pointer;
   color: white;
@@ -223,10 +226,12 @@
   &:hover {
     transform: translateY(-1px);
   }
+
   background-color: v.$violet-50;
   color: v.$text-muted;
   border: 1px solid #e2e8f0;
   box-shadow: none;
+
   &:hover {
     background-color: v.$violet-100;
     color: v.$violet-700;
