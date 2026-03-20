@@ -26,7 +26,7 @@ const EntregaTable = ({
 }) => {
   // Controlo la paginación local de la tabla
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 8;
 
   // Formateo la fecha para mostrar el día, mes y año usando mi zona horaria local
   const formatDateOnly = (isoString) => {
