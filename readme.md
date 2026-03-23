@@ -94,7 +94,7 @@ npm run install:all
 
 Para levantar ambos servidores (Frontend y Backend) simultáneamente, ejecuta el siguiente comando en la **raíz del proyecto**:
 
-````bash
+```bash
 npm run dev
 ```
 
@@ -129,4 +129,7 @@ almacen/
 - Las contraseñas de los usuarios están encriptadas con **Bcrypt**.
 - La autenticación se maneja mediante **JSON Web Tokens (JWT)**.
 - Las credenciales sensibles de la nube se administran directamente desde la base de datos, evitando su exposición en archivos de entorno.
-````
+
+```
+
+```
