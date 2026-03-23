@@ -99,7 +99,7 @@ npm run dev
 
 ## 📁 Estructura del Proyecto
 
-\`\`\`text
+```
 almacen/
 ├── backend/ # Lógica del servidor, API REST y WebSockets
 │ ├── src/
@@ -118,7 +118,7 @@ almacen/
 │ │ └── styles/ # Variables SCSS y estilos globales
 ├── package.json # Scripts globales (concurrently)
 └── README.md
-\`\`\`
+```
 
 ## 🔒 Seguridad
 
