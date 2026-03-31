@@ -1,0 +1,61 @@
+name: CI Pipeline - Almacen Grupo SP
+
+# Se ejecutará cada vez que se haga un push o pull request a la rama main
+on:
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
+
+jobs:
+  # -------------------------------------------
+  # 1. TRABAJO DEL BACKEND
+  # -------------------------------------------
+  backend-check:
+    name: Backend Install & Check
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend # Le dice que corra los comandos dentro de la carpeta backend
+
+    steps:
+      - name: Clonar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+          cache-dependency-path: './backend/package-lock.json'
+
+      - name: Instalar dependencias del Backend
+        run: npm ci # 'npm ci' es más estricto y limpio que 'npm install' para entornos de CI/CD
+
+  # -------------------------------------------
+  # 2. TRABAJO DEL FRONTEND
+  # -------------------------------------------
+  frontend-build:
+    name: Frontend Build Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend # Le dice que corra los comandos dentro de la carpeta frontend
+
+    steps:
+      - name: Clonar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+          cache-dependency-path: './frontend/package-lock.json'
+
+      - name: Instalar dependencias del Frontend
+        run: npm ci
+
+      - name: Compilar Frontend (Vite Build)
+        # Esto es vital: asegura que tu código de React no tenga errores críticos antes de ir a producción
+        run: npm run build
