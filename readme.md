@@ -1,5 +1,7 @@
 # 📦 Sistema de Gestión de Almacén e Inventario IT
 
+[![CI Pipeline - Almacen Grupo SP](https://github.com/BracoCG20/Almacen-Saas/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/BracoCG20/Almacen-Saas/actions/workflows/ci.yml)
+
 Una plataforma web integral diseñada para administrar, controlar y auditar el ciclo de vida de los equipos tecnológicos y activos de la empresa. Automatiza la asignación de equipos, generación de actas en PDF, recolección de firmas digitales, y mantiene una bitácora inmutable de todos los movimientos.
 
 ## ✨ Características Principales
