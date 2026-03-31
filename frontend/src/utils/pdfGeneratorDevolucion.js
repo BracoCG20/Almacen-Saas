@@ -1,5 +1,5 @@
 import { jsPDF } from 'jspdf';
-import logoImg from '../assets/logo_gruposp.png';
+import logoImg from '../assets/logo_grupoSP.png';
 import firmaImg from '../assets/firma_pierina.png';
 
 export const generarPDFDevolucion = (
