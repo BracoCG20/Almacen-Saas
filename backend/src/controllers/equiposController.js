@@ -1,4 +1,5 @@
 const equiposService = require('../services/equiposService');
+const { uploadToCloudinary } = require('../middlewares/uploadMiddleware'); // <-- IMPORTAMOS LA FUNCIÓN A LA NUBE
 
 const getEquipos = async (req, res) => {
   try {
@@ -86,6 +87,37 @@ const getEquipoHistorial = async (req, res) => {
   }
 };
 
+// --- NUEVO CONTROLADOR: SUBIDA DE IMAGEN ---
+const uploadImagenEquipo = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!req.file) {
+      return res
+        .status(400)
+        .json({ error: 'No se ha proporcionado ninguna imagen.' });
+    }
+
+    // 1. Subir la imagen a Cloudinary en una carpeta específica
+    const imageUrl = await uploadToCloudinary(req.file.buffer, 'Equipos');
+
+    // 2. Guardar la URL en la base de datos
+    const equipoActualizado = await equiposService.updateImagenEquipo(
+      id,
+      imageUrl,
+      req.user.id,
+    );
+
+    res.json({
+      message: 'Fotografía actualizada correctamente',
+      imagen_url: equipoActualizado.imagen_url,
+    });
+  } catch (error) {
+    console.error('Error subiendo imagen del equipo:', error);
+    res.status(500).json({ error: 'Error al procesar y guardar la imagen.' });
+  }
+};
+
 module.exports = {
   getEquipos,
   createEquipo,
@@ -94,4 +126,5 @@ module.exports = {
   getMarcas,
   getEstadosFisicos,
   getEquipoHistorial,
+  uploadImagenEquipo,
 };

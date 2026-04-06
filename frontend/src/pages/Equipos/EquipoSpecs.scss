@@ -5,6 +5,132 @@
   flex-direction: column;
   padding: 0.5rem;
 
+  .equipo-image-container {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    margin-bottom: 1.5rem;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #f8fafc;
+    border: 1px dashed #cbd5e1;
+
+    .empty-image-box {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: #64748b;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      .icon-empty {
+        color: #94a3b8;
+        transition: transform 0.2s ease;
+      }
+
+      span {
+        font-weight: 500;
+        font-size: 0.95rem;
+      }
+
+      small {
+        font-size: 0.75rem;
+        color: #94a3b8;
+      }
+
+      &:hover {
+        background-color: v.$violet-50;
+        border-color: v.$primary;
+        color: v.$primary;
+
+        .icon-empty {
+          color: v.$primary;
+          transform: scale(1.1);
+        }
+      }
+    }
+
+    .image-present {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+
+      .equipo-photo {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        transition: transform 0.3s ease;
+      }
+
+      .image-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(15, 23, 42, 0.6);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+
+        span {
+          font-weight: 500;
+          font-size: 0.95rem;
+        }
+      }
+
+      &:hover {
+        .equipo-photo {
+          transform: scale(1.05);
+        }
+        .image-overlay {
+          opacity: 1;
+        }
+      }
+    }
+
+    .uploading-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: v.$primary;
+      font-weight: 600;
+      z-index: 10;
+
+      .spinner {
+        animation: spin 1s linear infinite;
+      }
+    }
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
   .header-specs {
     display: flex;
     align-items: center;

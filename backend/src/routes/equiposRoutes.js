@@ -1,5 +1,6 @@
 const { Router } = require('express');
 const verifyToken = require('../middlewares/authMiddleware');
+const { upload } = require('../middlewares/uploadMiddleware'); // <-- IMPORTAMOS EL MIDDLEWARE DE SUBIDA
 const {
   getEquipos,
   createEquipo,
@@ -8,6 +9,7 @@ const {
   getMarcas,
   getEstadosFisicos,
   getEquipoHistorial,
+  uploadImagenEquipo, // <-- NUEVO CONTROLADOR
 } = require('../controllers/equiposController');
 
 const router = Router();
@@ -23,5 +25,8 @@ router.post('/', createEquipo);
 router.get('/:id/historial', getEquipoHistorial);
 router.put('/:id', updateEquipo);
 router.put('/:id/disponibilidad', toggleDisponibilidad);
+
+// --- NUEVA RUTA PARA SUBIR IMAGEN ---
+router.put('/:id/imagen', upload.single('imagen'), uploadImagenEquipo);
 
 module.exports = router;

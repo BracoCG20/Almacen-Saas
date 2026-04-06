@@ -303,6 +303,54 @@ const getEquipoHistorial = async (id) => {
   return response.rows;
 };
 
+/**
+ * ACTUALIZAR IMAGEN DEL EQUIPO
+ * Guarda la URL de la imagen y deja registro en la auditoría.
+ */
+const updateImagenEquipo = async (id, imagenUrl, modificadorId) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    // 1. Actualizo el campo imagen_url en la tabla equipos
+    const eqQuery = `
+      UPDATE equipos 
+      SET imagen_url = $1, fecha_modificacion = NOW(), usuario_modificacion_id = $2 
+      WHERE id = $3 RETURNING *
+    `;
+    const result = await client.query(eqQuery, [imagenUrl, modificadorId, id]);
+    if (result.rowCount === 0) throw new Error('Equipo no encontrado.');
+    const eqData = result.rows[0];
+
+    // 2. Dejo constancia en la auditoría del equipo
+    await client.query(
+      `INSERT INTO historial_equipos (
+        equipo_id, disponible, estado_fisico_id, observaciones_equipo, 
+        accion_realizada, descripcion_cambio, usuario_accion_id, 
+        es_propio, empresa_id, proveedor_id
+      ) VALUES ($1, $2, $3, $4, 'EDICIÓN', 'Actualización de fotografía del equipo', $5, $6, $7, $8)`,
+      [
+        id,
+        eqData.disponible,
+        eqData.estado_fisico_id,
+        eqData.observaciones,
+        modificadorId,
+        eqData.es_propio,
+        eqData.empresa_id,
+        eqData.proveedor_id,
+      ],
+    );
+
+    await client.query('COMMIT');
+    return eqData;
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
 module.exports = {
   getAllEquipos,
   createEquipo,
@@ -311,4 +359,5 @@ module.exports = {
   getMarcas,
   getEstadosFisicos,
   getEquipoHistorial,
+  updateImagenEquipo,
 };
