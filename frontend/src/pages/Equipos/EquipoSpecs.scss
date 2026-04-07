@@ -5,10 +5,11 @@
   flex-direction: column;
   padding: 0.5rem;
 
+  // --- VISOR DE FOTOGRAFÍA ---
   .equipo-image-container {
     position: relative;
     width: 100%;
-    height: 200px;
+    height: 220px; // Lo hacemos un poquito más alto para que las fotos cuadradas respiren mejor
     margin-bottom: 1.5rem;
     border-radius: 12px;
     overflow: hidden;
@@ -59,11 +60,16 @@
       width: 100%;
       height: 100%;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #ffffff; // Fondo blanco para que los equipos se vean como en tienda
+      padding: 10px; // Un margen interior para que la foto no toque los bordes
 
       .equipo-photo {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain; // <--- ESTA ES LA MAGIA: Adapta la foto entera sin cortarla
         object-position: center;
         transition: transform 0.3s ease;
       }
