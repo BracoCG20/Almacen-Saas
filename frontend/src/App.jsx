@@ -21,84 +21,28 @@ import FirmarDocumento from './pages/FirmarDocumento/FirmarDocumento';
 import Directorio from './pages/Directorio/Directorio';
 import Perfil from './pages/Perfil/Perfil';
 import Tickets from './pages/Tickets/Tickets';
+
+// --- IMPORTAMOS LOS ESTILOS DE APP ---
+import './App.scss';
+
 const GlobalForceLogoutModal = () => {
   const { isForceLogout, executeForceLogout } = useAuth();
   if (!isForceLogout) return null;
+
   return (
-    <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        backgroundColor: 'rgba(0,0,0,0.8)',
-        backdropFilter: 'blur(5px)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 99999,
-      }}
-    >
-      <div
-        style={{
-          background: 'white',
-          padding: '30px',
-          borderRadius: '16px',
-          width: '90%',
-          maxWidth: '400px',
-          textAlign: 'center',
-          boxShadow: '0 20px 25px rgba(0,0,0,0.2)',
-        }}
-      >
-        <div
-          style={{
-            width: '70px',
-            height: '70px',
-            borderRadius: '50%',
-            background: '#fee2e2',
-            color: '#ef4444',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            margin: '0 auto 20px auto',
-          }}
-        >
+    <div className='force-logout-overlay'>
+      <div className='force-logout-modal'>
+        <div className='warning-icon-container'>
           <AlertTriangle size={36} />
         </div>
-        <h2
-          style={{ margin: '0 0 10px 0', color: '#1e293b', fontSize: '1.4rem' }}
-        >
-          Acceso Revocado
-        </h2>
-        <p
-          style={{
-            color: '#64748b',
-            fontSize: '1rem',
-            lineHeight: '1.5',
-            marginBottom: '25px',
-          }}
-        >
+        <h2 className='force-logout-title'>Acceso Revocado</h2>
+        <p className='force-logout-text'>
           Un administrador ha desactivado tu cuenta. Tu sesión será terminada
           inmediatamente.
         </p>
         <button
           onClick={executeForceLogout}
-          style={{
-            width: '100%',
-            padding: '14px',
-            borderRadius: '10px',
-            border: 'none',
-            backgroundColor: '#ef4444',
-            color: 'white',
-            fontWeight: 'bold',
-            fontSize: '1rem',
-            cursor: 'pointer',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            gap: '8px',
-          }}
+          className='force-logout-btn'
         >
           <LogOut size={18} /> Entendido
         </button>
@@ -183,9 +127,18 @@ function AppContent() {
           element={<Navigate to='/' />}
         />
       </Routes>
+
       <ToastContainer
         position='top-right'
         autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme='light' // Dejamos solo esto
       />
     </>
   );
