@@ -298,7 +298,7 @@ const UserListModal = ({ onClose }) => {
               <h3>Nueva Contraseña</h3>
               <form onSubmit={handleChangePass}>
                 <input
-                  type='text'
+                  type='password'
                   placeholder='Escribe nueva contraseña'
                   value={passModal.newPass}
                   onChange={(e) =>
