@@ -56,7 +56,7 @@ const TicketsTable = ({
             <th>Asunto</th>
             <th className='center'>Prioridad</th>
             <th className='center'>Estado</th>
-            <th className='center'>Técnico</th>
+            <th className='center'>Encargado</th>
             <th className='center'>Tiempo</th>
             <th className='center'>Acciones</th>
           </tr>
