@@ -97,14 +97,13 @@ export const generarPDFDevolucion = (
   y += 10;
 
   // 7. Legales
-  const textoLegal1 =
-    'Por lo mismo, dejo constancia que EL EMPLEADOR revisará el estado de conservación del equipo debiendo encontrarse en el estado descrito.';
+  const textoLegal1 = `Por medio del presente documento, se deja constancia de que ${etiquetaTrabajador} efectúa la devolución del equipo asignado, en buenas condiciones.`;
   const lineasLegal1 = doc.splitTextToSize(textoLegal1, anchoUtil);
   doc.text(lineasLegal1, margen, y);
   y += lineasLegal1.length * 5 + 5;
 
   const textoLegal2 =
-    'Se firma el presente documento, en señal de conformidad y de acuerdo a lo establecido en la cláusula sexta del Convenio de Extinción Laboral y Pago de Beneficios sociales.';
+    'Se firma el presente documento, en señal de conformidad y de acuerdo a lo establecido en la cláusula Décimo Primera del Contrato de Trabajo';
   const lineasLegal2 = doc.splitTextToSize(textoLegal2, anchoUtil);
   doc.text(lineasLegal2, margen, y);
 
