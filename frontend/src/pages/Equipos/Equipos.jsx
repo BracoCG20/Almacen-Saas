@@ -58,7 +58,7 @@ const Equipos = () => {
 
   // --- 3. ESTADOS DE PAGINACIÓN ---
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
+  const itemsPerPage = 10;
 
   // --- 4. ESTADOS DE MODALES Y ACCIONES ---
   const [isModalOpen, setIsModalOpen] = useState(false);

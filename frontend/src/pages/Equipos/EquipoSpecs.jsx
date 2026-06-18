@@ -211,7 +211,7 @@ const EquipoSpecs = ({ equipo, calcularAntiguedad, formatDate }) => {
             <Clock size={20} />
           </div>
           <div className='text-wrapper'>
-            <span className='label'>Tiempo de Uso</span>
+            <span className='label'>Antiguedad</span>
             <span className='value highlight-text'>
               {calcularAntiguedad(equipo.fecha_adquisicion)}
             </span>
