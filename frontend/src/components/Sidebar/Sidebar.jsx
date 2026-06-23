@@ -141,7 +141,7 @@ const Sidebar = () => {
   const routes = [
     {
       id: 'tour-nav-dashboard',
-      path: '/',
+      path: '/dashboard',
       name: 'Dashboard',
       icon: <LayoutDashboard size={20} />,
     },

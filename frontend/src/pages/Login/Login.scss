@@ -1,4 +1,4 @@
-@use '../../styles/variables' as v;
+@use '../../styles/variables' as *;
 @use 'sass:color';
 
 .modern-login-container {
@@ -8,11 +8,6 @@
   justify-content: center;
   align-items: center;
   background-color: #f1f5f9;
-  font-family:
-    'Inter',
-    system-ui,
-    -apple-system,
-    sans-serif;
   padding: 20px;
   box-sizing: border-box;
 
@@ -37,8 +32,8 @@
     width: 50%;
     background: linear-gradient(
       135deg,
-      v.$primary,
-      color.adjust(v.$primary, $lightness: -15%)
+      $primary,
+      color.adjust($primary, $lightness: -15%)
     );
     border-radius: 16px;
     padding: 50px;
@@ -146,13 +141,13 @@
       .logo-container {
         width: 140px;
         height: 60px;
-        background-color: v.$primary;
+        background-color: $primary;
         border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
         margin-bottom: 20px;
-        box-shadow: 0 10px 20px rgba(v.$primary, 0.2);
+        box-shadow: 0 10px 20px rgba($primary, 0.2);
 
         img {
           width: 100px;
@@ -164,7 +159,7 @@
       h2 {
         font-size: 2rem;
         font-weight: 800;
-        color: v.$primary;
+        color: $primary;
         margin: 0 0 5px 0;
         letter-spacing: -0.5px;
       }
@@ -193,8 +188,7 @@
         transition: all 0.2s ease;
 
         &:focus-within {
-          border-color: v.$primary;
-          box-shadow: 0 0 0 4px rgba(v.$primary, 0.1);
+          border-color: $primary;
         }
 
         &.has-value {
@@ -246,7 +240,7 @@
         }
 
         &:focus-within .icon-container {
-          color: v.$primary;
+          color: $primary;
         }
       }
 
@@ -259,21 +253,20 @@
           display: flex;
           align-items: center;
           gap: 10px;
-          background-color: v.$primary;
+          background-color: $primary;
           color: white;
           border: none;
-          padding: 14px 28px;
+          padding: 12px 28px;
           border-radius: 12px;
           font-size: 1rem;
           font-weight: 600;
           cursor: pointer;
           transition: all 0.3s ease;
-          box-shadow: 0 4px 14px rgba(v.$primary, 0.3);
+          box-shadow: 0 4px 14px rgba($primary, 0.3);
 
           &:hover:not(:disabled) {
-            background-color: color.adjust(v.$primary, $lightness: -5%);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(v.$primary, 0.4);
+            background-color: color.adjust($primary, $lightness: -5%);
+            box-shadow: 0 6px 20px rgba($primary, 0.4);
           }
 
           &:disabled {
