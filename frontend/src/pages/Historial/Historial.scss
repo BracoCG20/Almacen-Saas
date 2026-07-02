@@ -39,7 +39,7 @@
         height: 40px;
         border-radius: 8px;
         font-weight: 500;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         border: none;
         cursor: pointer;
         color: white;
@@ -101,7 +101,7 @@
         border: none;
         outline: none;
         width: 100%;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         color: v.$text-main;
         background: transparent;
         &::placeholder {
@@ -134,7 +134,7 @@
       width: 100%;
       border-collapse: collapse;
       min-width: 1000px;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       thead tr {
         background-color: v.$violet-50;
         border-bottom: 1px solid v.$violet-100;
@@ -210,7 +210,7 @@
       color: #0f172a;
       &.time-use {
         color: #059669;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
       }
     }
     .audit-text {
@@ -250,7 +250,7 @@
     .system-text {
       font-style: italic;
       color: #94a3b8;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
     }
   }
 
@@ -450,7 +450,7 @@
     }
     .info {
       color: #64748b;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       strong {
         color: #0f172a;
         font-weight: 600;
@@ -461,7 +461,7 @@
       align-items: center;
       gap: 15px;
       span {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         color: #64748b;
         font-weight: 500;
       }
@@ -475,7 +475,7 @@
         background-color: white;
         cursor: pointer;
         color: #0f172a;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         font-weight: 500;
         transition: all 0.2s ease;
         &:disabled {
@@ -495,6 +495,6 @@
     padding: 32px;
     text-align: center;
     color: #64748b;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
   }
 }

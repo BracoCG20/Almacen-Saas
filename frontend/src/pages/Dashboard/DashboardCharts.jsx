@@ -36,7 +36,7 @@ const tooltipStyle = {
   border: '1px solid #e2e8f0',
   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
   padding: '10px 14px',
-  fontSize: '0.85rem',
+  fontSize: '0.8rem',
 };
 
 /**

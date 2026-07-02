@@ -180,13 +180,13 @@ const AddColaboradorForm = ({ onSuccess, colaboradorToEdit }) => {
     singleValue: (provided) => ({
       ...provided,
       color: '#1e293b',
-      fontSize: '0.85rem',
+      fontSize: '0.8rem',
       margin: '0px',
     }),
     placeholder: (provided) => ({
       ...provided,
       color: '#94a3b8',
-      fontSize: '0.85rem',
+      fontSize: '0.8rem',
       margin: '0px',
     }),
     option: (provided, state) => ({
@@ -198,7 +198,7 @@ const AddColaboradorForm = ({ onSuccess, colaboradorToEdit }) => {
           : 'white',
       color: state.isSelected ? 'white' : '#334155',
       cursor: 'pointer',
-      fontSize: '0.85rem',
+      fontSize: '0.8rem',
       padding: '8px 12px',
     }),
     menuPortal: (base) => ({ ...base, zIndex: 9999 }),

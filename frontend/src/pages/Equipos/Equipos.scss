@@ -1,4 +1,4 @@
-@use '../../styles/variables' as v;
+@use '../../styles/variables' as *;
 @use 'sass:color';
 
 .equipos-container {
@@ -13,7 +13,7 @@
     h1 {
       font-size: 1.8rem;
       font-weight: 700;
-      color: v.$text-main;
+      color: $text-main;
       margin: 0;
       @media (max-width: 768px) {
         font-size: 1.5rem;
@@ -39,10 +39,10 @@
         height: 38px;
         border-radius: 8px;
         font-weight: 500;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         border: none;
         cursor: pointer;
-        color: white;
+        color: $white;
         transition: all 0.2s;
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 
@@ -56,27 +56,27 @@
           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
         &.btn-excel {
-          background-color: v.$success;
+          background-color: $success;
           &:hover {
             // Reemplazo de darken por color.adjust
-            background-color: color.adjust(v.$success, $lightness: -5%);
+            background-color: color.adjust($success, $lightness: -5%);
           }
         }
         &.btn-add {
-          background-color: v.$primary;
+          background-color: $primary;
           &:hover {
             filter: brightness(0.9);
           }
         }
         &.btn-tour {
-          background-color: v.$violet-50;
-          color: v.$text-muted;
-          border: 1px solid #e2e8f0;
+          background-color: $violet-50;
+          color: $text-muted;
+          border: 1px solid $violet-200;
           box-shadow: none;
 
           &:hover {
-            background-color: v.$violet-100;
-            color: v.$violet-700;
+            background-color: $violet-100;
+            color: $violet-700;
           }
         }
       }
@@ -92,11 +92,11 @@
     .search-input {
       flex: 1;
       min-width: 250px;
-      background: white;
+      background: $white;
       padding: 0 14px;
       height: 40px;
       border-radius: 8px;
-      border: 1px solid #e2e8f0;
+      border: 1px solid $border-color;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -107,17 +107,17 @@
       }
 
       &:focus-within {
-        border-color: v.$primary;
-        box-shadow: 0 0 0 2px rgba(v.$primary, 0.1);
+        border-color: $primary;
+        box-shadow: 0 0 0 2px rgba($primary, 0.1);
       }
       input {
         border: none;
         outline: none;
         width: 100%;
-        font-size: 0.85rem;
-        color: v.$text-main;
+        font-size: 0.8rem;
+        color: $text-main;
         &::placeholder {
-          color: #94a3b8;
+          color: rgba($text-muted, 0.7);
         }
       }
     }
@@ -137,9 +137,9 @@
 
   /* --- TABLA MINIMALISTA VIOLET SHADCN --- */
   .table-container {
-    background: #ffffff;
+    background: $white;
     border-radius: 8px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid $border-color;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     overflow-x: auto;
 
@@ -150,29 +150,29 @@
       background: transparent;
     }
     &::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
+      background: rgba($text-muted, 0.4);
       border-radius: 10px;
     }
     &::-webkit-scrollbar-thumb:hover {
-      background: #94a3b8;
+      background: rgba($text-muted, 0.6);
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
       min-width: 900px;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
 
       /* Cabecera Violeta Suave usando Variables */
       thead tr {
-        background-color: v.$violet-50;
-        border-bottom: 1px solid v.$violet-100;
+        background-color: $violet-50;
+        border-bottom: 1px solid $border-color;
 
         th {
           padding: 12px 16px;
           text-align: left;
           font-weight: 600;
-          color: v.$violet-800;
+          color: $violet-800;
           white-space: nowrap;
           &.center {
             text-align: center;
@@ -181,25 +181,25 @@
       }
 
       tbody tr {
-        border-bottom: 1px solid #e2e8f0;
+        border-bottom: 1px solid rgba($text-muted, 0.1);
         transition: background-color 0.2s ease;
 
         &:hover {
-          background-color: #f8fafc;
+          background-color: rgba($violet-600, 0.03);
         }
         &:last-child {
           border-bottom: none;
         }
 
         &.inactive-row {
-          background-color: #fafafa;
+          background-color: rgba($text-muted, 0.03);
           opacity: 0.65;
         }
 
         td {
           padding: 10px 16px;
           vertical-align: middle;
-          color: v.$text-main;
+          color: $text-main;
           &.center {
             text-align: center;
           }
@@ -213,13 +213,13 @@
     width: 32px;
     height: 32px;
     border-radius: 6px;
-    background-color: #f8fafc;
+    background-color: rgba($bg-body, 0.3);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: v.$text-muted;
+    color: $text-muted;
     margin: 0 auto;
-    border: 1px solid #e2e8f0;
+    border: 1px solid $border-color;
   }
 
   .info-cell {
@@ -228,26 +228,19 @@
     gap: 4px;
 
     .name {
-      font-weight: 500;
-      color: v.$text-main;
-    }
-
-    .mono-font {
-      font-family:
-        ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 0.75rem;
-      background: #f1f5f9;
-      padding: 2px 6px;
-      border-radius: 4px;
-      display: inline-flex;
+      display: flex;
       align-items: center;
-      gap: 4px;
-      width: fit-content;
-      color: v.$text-muted;
+      gap: 5px;
+      .name-font {
+        font-size: 0.7rem;
+        font-weight: 600;
+        gap: 4px;
+        color: $text-main;
+      }
     }
 
     .date-text {
-      color: v.$primary;
+      color: $primary;
       display: inline-flex;
       align-items: center;
       gap: 6px;
@@ -259,16 +252,16 @@
       font-weight: 600;
       font-size: 0.8rem;
       &.propio {
-        color: v.$primary;
+        color: $primary;
       }
       &.alquilado {
-        color: #ea580c;
+        color: $warning;
       }
     }
 
     .audit-text {
       font-size: 0.75rem;
-      color: v.$text-muted;
+      color: $text-muted;
     }
   }
 
@@ -284,19 +277,19 @@
     border: 1px solid transparent;
 
     &.operativo {
-      background-color: #f0fdf4;
-      color: #16a34a;
-      border-color: #dcfce7;
+      background-color: rgba($success, 0.1);
+      color: $success;
+      border-color: rgba($success, 0.2);
     }
     &.mantenimiento {
-      background-color: #fff7ed;
-      color: #d97706;
-      border-color: #ffedd5;
+      background-color: rgba($warning, 0.1);
+      color: $warning;
+      border-color: rgba($warning, 0.2);
     }
     &.malogrado {
-      background-color: #fef2f2;
-      color: v.$danger;
-      border-color: #fee2e2;
+      background-color: rgba($danger, 0.1);
+      color: $danger;
+      border-color: rgba($danger, 0.2);
     }
   }
 
@@ -312,7 +305,7 @@
       border-radius: 6px;
       border: none;
       background-color: transparent;
-      color: v.$text-muted;
+      color: $text-muted;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -320,27 +313,27 @@
       transition: all 0.2s ease;
 
       &.history:hover {
-        background-color: #e0f2fe;
-        color: #0284c7;
+        background-color: rgba($info, 0.1);
+        color: $info;
       }
       &.view:hover {
-        background-color: #f1f5f9;
-        color: v.$text-main;
+        background-color: rgba($violet-700, 0.1);
+        color: $violet-700;
       }
       &.edit:hover {
-        background-color: #fffbeb;
-        color: #d97706;
+        background-color: rgba($warning, 0.1);
+        color: $warning;
       }
       &.delete:hover {
-        background-color: #fef2f2;
-        color: v.$danger;
+        background-color: rgba($danger, 0.1);
+        color: $danger;
       }
 
       &.activate {
-        color: v.$success;
+        color: $success;
         &:hover {
-          background-color: #ecfdf5;
-          color: #059669;
+          background-color: rgba($success, 0.1);
+          color: $success;
         }
       }
     }
@@ -352,8 +345,8 @@
     justify-content: space-between;
     align-items: center;
     padding: 10px 16px;
-    border-top: 1px solid #e2e8f0;
-    background-color: white;
+    border-top: 1px solid $border-color;
+    background-color: $white;
     flex-wrap: wrap;
     gap: 15px;
 
@@ -362,10 +355,10 @@
     }
 
     .info {
-      color: v.$text-muted;
+      color: $text-muted;
       font-size: 0.8rem;
       strong {
-        color: v.$text-main;
+        color: $text-main;
         font-weight: 600;
       }
     }
@@ -377,7 +370,7 @@
 
       span {
         font-size: 0.8rem;
-        color: v.$text-muted;
+        color: $text-muted;
         font-weight: 500;
       }
 
@@ -387,10 +380,10 @@
         gap: 4px;
         padding: 4px 10px;
         border-radius: 6px;
-        border: 1px solid #e2e8f0;
-        background-color: white;
+        border: 1px solid $border-color;
+        background-color: $white;
         cursor: pointer;
-        color: v.$text-main;
+        color: $text-main;
         font-size: 0.8rem;
         font-weight: 500;
         transition: all 0.2s ease;
@@ -398,10 +391,10 @@
         &:disabled {
           opacity: 0.4;
           cursor: not-allowed;
-          background-color: #f8fafc;
+          background-color: $border-color;
         }
         &:hover:not(:disabled) {
-          background-color: #f1f5f9;
+          background-color: rgba($border-color, 0.1);
         }
       }
     }
@@ -411,8 +404,8 @@
   .no-data {
     padding: 32px;
     text-align: center;
-    color: v.$text-muted;
-    font-size: 0.85rem;
+    color: $text-muted;
+    font-size: rem;
   }
 }
 
@@ -421,9 +414,9 @@
   padding: 1rem;
   text-align: center;
   .warning-icon {
-    color: #f59e0b;
+    color: $warning;
     margin-bottom: 1rem;
-    background-color: #fffbeb;
+    background-color: rgba($warning, 0.1);
     width: 70px;
     height: 70px;
     border-radius: 50%;
@@ -433,13 +426,13 @@
     margin: 0 auto 1rem auto;
   }
   h3 {
-    color: v.$text-main;
+    color: $text-main;
     margin-bottom: 0.5rem;
     font-size: 1.1rem;
     font-weight: 700;
   }
   p {
-    color: v.$text-muted;
+    color: $text-muted;
     margin-bottom: 2rem;
     font-size: 0.9rem;
     line-height: 1.5;
@@ -466,19 +459,19 @@
         transform: translateY(-1px);
       }
       &.btn-cancel {
-        background-color: white;
-        border: 1px solid #e2e8f0;
-        color: v.$text-muted;
+        background-color: $white;
+        border: 1px solid $border-color;
+        color: $text-muted;
         &:hover {
-          background-color: #f8fafc;
+          background-color: rgba($border-color, 0.1);
         }
       }
       &.btn-confirm {
-        background-color: v.$danger;
-        color: white;
+        background-color: $danger;
+        color: $white;
         box-shadow: 0 1px 2px rgba(239, 68, 68, 0.2);
         &:hover {
-          background-color: #dc2626;
+          background-color: $danger;
         }
       }
     }
@@ -495,14 +488,11 @@
       border: none !important;
 
       &.driver-popover-next-btn {
-        background-color: v.$primary !important;
-        color: white !important;
+        background-color: $primary !important;
+        color: $white !important;
         &:hover {
           // Reemplazo de darken por color.adjust
-          background-color: color.adjust(
-            v.$primary,
-            $lightness: -5%
-          ) !important;
+          background-color: color.adjust($primary, $lightness: -5%) !important;
         }
       }
     }

@@ -43,7 +43,7 @@
         height: 38px;
         border-radius: 8px;
         font-weight: 500;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         border: none;
         cursor: pointer;
         color: white;
@@ -107,7 +107,7 @@
       border: none;
       outline: none;
       width: 100%;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: v.$text-main;
       &::placeholder {
         color: #94a3b8;
@@ -140,7 +140,7 @@
       width: 100%;
       border-collapse: collapse;
       min-width: 1000px;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
 
       thead tr {
         background-color: v.$violet-50;
@@ -433,7 +433,7 @@
     padding: 32px;
     text-align: center;
     color: v.$text-muted;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
   }
 
   .confirm-modal-content {
@@ -464,7 +464,7 @@
     p {
       color: v.$text-muted;
       margin-bottom: 1.5rem;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       line-height: 1.5;
       max-width: 320px;
       strong {
@@ -487,7 +487,7 @@
         justify-content: center;
         gap: 6px;
         border: none;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         transition: all 0.2s ease;
         flex: 1;
         max-width: 170px;

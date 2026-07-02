@@ -392,12 +392,12 @@ const Equipos = () => {
       ...provided,
       color: '#1e293b',
       fontWeight: '500',
-      fontSize: '0.85rem',
+      fontSize: '0.8rem',
     }),
     placeholder: (provided) => ({
       ...provided,
       color: '#94a3b8',
-      fontSize: '0.85rem',
+      fontSize: '0.8rem',
     }),
     option: (provided, state) => ({
       ...provided,
@@ -408,7 +408,7 @@ const Equipos = () => {
           : 'white',
       color: state.isSelected ? 'white' : '#334155',
       cursor: 'pointer',
-      fontSize: '0.85rem',
+      fontSize: '0.8rem',
       padding: '8px 12px',
     }),
     menuPortal: (base) => ({ ...base, zIndex: 9999 }),
@@ -526,8 +526,9 @@ const Equipos = () => {
                   </td>
                   <td>
                     <div className='info-cell'>
-                      <span className='name mono-font'>
-                        <Barcode size={12} /> {item.numero_serie}
+                      <span className='name'>
+                        <Barcode size={12} />
+                        <span className='name-font'>{item.numero_serie}</span>
                       </span>
                       <span className='audit-text'>
                         {item.codigo_patrimonial || 'Sin código'}

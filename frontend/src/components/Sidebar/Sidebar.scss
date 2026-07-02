@@ -1,13 +1,4 @@
-@use '../../styles/variables' as v;
-
-$sidebar-width-open: 240px;
-$sidebar-width-collapsed: 76px;
-$smooth-transition: all 0.2s ease-in-out;
-
-$violet-50: #f5f3ff;
-$violet-100: #ede9fe;
-$violet-600: #7c3aed;
-$violet-700: #6d28d9;
+@use '../../styles/variables' as *;
 
 .mobile-hamburger {
   display: none;
@@ -18,9 +9,9 @@ $violet-700: #6d28d9;
     top: 15px;
     left: 15px;
     z-index: 995;
-    background-color: white;
-    color: #475569;
-    border: 1px solid #e2e8f0;
+    background-color: $white;
+    color: $text-muted;
+    border: 1px solid $violet-50;
     border-radius: 8px;
     width: 40px;
     height: 40px;
@@ -67,8 +58,8 @@ $violet-700: #6d28d9;
 .sidebar {
   width: $sidebar-width-open;
   height: 100vh;
-  background: #ffffff;
-  border-right: 1px solid #e2e8f0;
+  background: $white;
+  border-right: 1px solid $violet-50;
   display: flex;
   flex-direction: column;
   padding: 1.2rem 0.8rem;
@@ -108,13 +99,13 @@ $violet-700: #6d28d9;
     right: -12px;
     width: 24px;
     height: 24px;
-    background-color: #ffffff;
-    border: 1px solid #e2e8f0;
+    background-color: $white;
+    border: 1px solid $violet-50;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #64748b;
+    color: $text-muted;
     cursor: pointer;
     z-index: 10;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -205,7 +196,7 @@ $violet-700: #6d28d9;
       display: flex;
       align-items: center;
       padding: 10px 12px;
-      color: #475569;
+      color: $text-muted;
       text-decoration: none;
       border-radius: 8px;
       font-weight: 500;
@@ -226,8 +217,8 @@ $violet-700: #6d28d9;
           position: absolute;
           top: -6px;
           right: -8px;
-          background-color: #ef4444;
-          color: white;
+          background-color: $danger;
+          color: $white;
           font-size: 9px;
           font-weight: 800;
           min-width: 16px;
@@ -236,7 +227,7 @@ $violet-700: #6d28d9;
           display: flex;
           align-items: center;
           justify-content: center;
-          border: 2px solid white;
+          border: 2px solid $white;
           box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
           padding: 2px;
           line-height: 1;
@@ -260,12 +251,12 @@ $violet-700: #6d28d9;
       }
 
       &.entrega.active {
-        background: #f0fdf4;
-        color: #16a34a;
+        background: $violet-50;
+        color: $success;
       }
       &.devolucion.active {
-        background: #fef2f2;
-        color: #dc2626;
+        background: $violet-50;
+        color: $danger;
       }
     }
   }
@@ -284,9 +275,9 @@ $violet-700: #6d28d9;
       .tour-icon-btn {
         width: 100%;
         height: 38px;
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        color: #64748b;
+        background: $violet-50;
+        border: 1px solid $violet-100;
+        color: $text-muted;
         border-radius: 8px;
         cursor: pointer;
         display: flex;
@@ -297,7 +288,7 @@ $violet-700: #6d28d9;
 
         .label {
           margin-left: 8px;
-          font-size: 0.85rem;
+          font-size: 0.8rem;
           font-weight: 600;
         }
 
@@ -328,21 +319,21 @@ $violet-700: #6d28d9;
 
       &:hover,
       &.active {
-        background-color: #f1f5f9;
-        border-color: #e2e8f0;
+        background-color: $violet-50;
+        border-color: $violet-100;
       }
 
       .avatar {
         width: 32px;
         height: 32px;
         border-radius: 50%;
-        background: #f1f5f9;
+        background: $violet-50;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #64748b;
+        color: $text-muted;
         flex-shrink: 0;
-        border: 1px solid #e2e8f0;
+        border: 1px solid $violet-100;
         img {
           width: 100%;
           height: 100%;
@@ -357,14 +348,14 @@ $violet-700: #6d28d9;
         justify-content: center;
 
         .name {
-          font-size: 0.85rem;
+          font-size: 0.8rem;
           font-weight: 600;
-          color: #0f172a;
+          color: $text-main;
           line-height: 1.2;
         }
         .email {
           font-size: 0.75rem;
-          color: #64748b;
+          color: $text-muted;
           text-overflow: ellipsis;
           overflow: hidden;
           max-width: 130px;
@@ -377,10 +368,10 @@ $violet-700: #6d28d9;
       bottom: calc(100% + 5px);
       left: 0;
       width: 100%;
-      background: white;
+      background: $white;
       border-radius: 8px;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-      border: 1px solid #e2e8f0;
+      border: 1px solid $violet-100;
       padding: 6px;
       z-index: 1050;
       animation: slideUp 0.2s ease-out;
@@ -405,30 +396,30 @@ $violet-700: #6d28d9;
         background: transparent;
         border: none;
         border-radius: 6px;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         font-weight: 500;
-        color: #475569;
+        color: $text-muted;
         cursor: pointer;
         text-align: left;
         transition: all 0.2s ease;
 
         &:hover {
-          background-color: #f1f5f9;
-          color: #0f172a;
+          background-color: $violet-50;
+          color: $text-muted;
         }
 
         &.logout {
-          color: #ef4444;
+          color: $danger;
           &:hover {
-            background-color: #fef2f2;
-            color: #dc2626;
+            background-color: rgba($danger, 0.05);
+            color: rgba($danger, 0.8);
           }
         }
       }
 
       .dropdown-divider {
         height: 1px;
-        background-color: #e2e8f0;
+        background-color: $violet-100;
         margin: 4px 0;
       }
     }
@@ -436,7 +427,7 @@ $violet-700: #6d28d9;
     .copyright {
       text-align: center;
       font-size: 0.7rem;
-      color: #94a3b8;
+      color: $text-muted;
       margin: 0;
       white-space: nowrap;
     }
@@ -458,20 +449,20 @@ $violet-700: #6d28d9;
   padding: 16px !important;
   font-family: inherit !important;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
-  border: 1px solid #e2e8f0 !important;
+  border: 1px solid $violet-100 !important;
 
   .driver-popover-title {
     font-size: 1rem !important;
     font-weight: 600 !important;
-    color: #0f172a !important;
+    color: $text-main !important;
   }
   .driver-popover-description {
-    font-size: 0.85rem !important;
-    color: #475569 !important;
+    font-size: 0.8rem !important;
+    color: $text-muted !important;
   }
   .driver-popover-next-btn {
     background-color: $violet-600 !important;
-    color: white !important;
+    color: $white !important;
     border-radius: 6px !important;
   }
 }

@@ -118,7 +118,7 @@ const Historial = () => {
     singleValue: (provided) => ({
       ...provided,
       color: '#1e293b',
-      fontSize: '0.85rem',
+      fontSize: '0.8rem',
       fontWeight: '500',
       position: 'absolute',
       top: '50%',
@@ -135,7 +135,7 @@ const Historial = () => {
       color: state.isSelected ? 'white' : '#334155',
       cursor: 'pointer',
       padding: '8px 12px',
-      fontSize: '0.85rem',
+      fontSize: '0.8rem',
     }),
     menuPortal: (base) => ({ ...base, zIndex: 9999 }),
   };

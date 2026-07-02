@@ -84,7 +84,7 @@ const DevolucionForm = ({
     singleValue: (provided) => ({
       ...provided,
       color: '#1e293b',
-      fontSize: '0.85rem',
+      fontSize: '0.8rem',
       fontWeight: '400',
       position: 'absolute',
       top: '50%',
@@ -94,7 +94,7 @@ const DevolucionForm = ({
     placeholder: (provided) => ({
       ...provided,
       color: '#94a3b8',
-      fontSize: '0.85rem',
+      fontSize: '0.8rem',
       position: 'absolute',
       top: '50%',
       transform: 'translateY(-50%)',
@@ -109,7 +109,7 @@ const DevolucionForm = ({
           : 'white',
       color: state.isSelected ? 'white' : '#334155',
       cursor: 'pointer',
-      fontSize: '0.85rem',
+      fontSize: '0.8rem',
       padding: '8px 12px',
     }),
     menuPortal: (base) => ({ ...base, zIndex: 9999 }),

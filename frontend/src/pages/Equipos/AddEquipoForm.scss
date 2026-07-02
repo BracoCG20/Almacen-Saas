@@ -1,4 +1,4 @@
-@use '../../styles/variables' as v;
+@use '../../styles/variables' as *;
 
 .equipo-form-modern {
   display: flex;
@@ -16,19 +16,19 @@
       align-items: center;
       gap: 10px;
       padding-bottom: 8px;
-      border-bottom: 1px solid #f1f5f9;
+      border-bottom: 1px solid $border-color;
 
       .indicator {
         width: 4px;
         height: 18px;
-        background-color: v.$primary;
+        background-color: $primary;
         border-radius: 2px;
       }
 
       h4 {
         font-size: 0.9rem;
         font-weight: 700;
-        color: v.$violet-800;
+        color: $violet-800;
         text-transform: uppercase;
         letter-spacing: 0.025em;
         margin: 0;
@@ -36,12 +36,12 @@
     }
 
     &.rent-section {
-      background-color: #fff7ed;
+      background-color: rgba($warning, 0.1);
       padding: 1rem;
       border-radius: 8px;
-      border: 1px solid #ffedd5;
+      border: 1px solid rgba($warning, 0.08);
       .rent-label {
-        color: #ea580c !important;
+        color: $warning !important;
       }
     }
   }
@@ -71,41 +71,41 @@
     label {
       font-size: 0.8rem;
       font-weight: 600;
-      color: #475569;
+      color: $text-muted;
       display: flex;
       align-items: center;
       gap: 6px;
       svg {
-        color: #94a3b8;
+        color: $text-muted;
       }
       &.warning-label {
-        color: #d97706;
+        color: $warning;
         svg {
-          color: #d97706;
+          color: $warning;
         }
       }
     }
 
     input {
       height: 40px;
-      border: 1px solid #e2e8f0;
+      border: 1px solid $border-color;
       border-radius: 8px;
       padding: 0 12px;
-      font-size: 0.85rem;
-      color: #0f172a;
-      background-color: #fff;
+      font-size: 0.8rem;
+      color: $text-main;
+      background-color: $white;
       transition: all 0.2s;
       outline: none;
       width: 100%;
       box-sizing: border-box;
 
       &:focus {
-        border-color: v.$primary;
+        border-color: $primary;
         box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.1);
       }
 
       &::placeholder {
-        color: #cbd5e1;
+        color: $border-color;
       }
     }
   }
@@ -124,8 +124,8 @@
   }
 
   .procesador-builder {
-    background: #f8fafc;
-    border: 1px dashed #cbd5e1;
+    background: $violet-50;
+    border: 1px dashed $border-color;
     border-radius: 8px;
     padding: 15px;
 
@@ -135,7 +135,7 @@
       gap: 8px;
       font-size: 0.8rem;
       font-weight: 700;
-      color: v.$primary;
+      color: $primary;
       text-transform: uppercase;
       margin-bottom: 12px;
     }
@@ -164,23 +164,23 @@
 
       @media (max-width: 600px) {
         grid-template-columns: 1fr;
-        background-color: #f8fafc;
+        background-color: $violet-100;
         padding: 10px;
         border-radius: 8px;
-        border: 1px solid #e2e8f0;
+        border: 1px solid $border-color;
       }
 
       input {
         height: 40px;
         border-radius: 8px;
-        border: 1px solid #e2e8f0;
+        border: 1px solid $border-color;
         padding: 0 12px;
         width: 100%;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         box-sizing: border-box;
         outline: none;
         &:focus {
-          border-color: v.$primary;
+          border-color: $primary;
         }
       }
 
@@ -188,8 +188,8 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: #fee2e2;
-        color: v.$danger;
+        background: rgba($danger, 0.1);
+        color: $danger;
         border: none;
         border-radius: 8px;
         width: 40px;
@@ -200,8 +200,8 @@
           width: 100%;
         }
         &:hover {
-          background: v.$danger;
-          color: white;
+          background: $danger;
+          color: $white;
         }
       }
     }
@@ -211,20 +211,20 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      background: #f8fafc;
-      border: 1px dashed #cbd5e1;
-      color: #64748b;
+      background: $violet-50;
+      border: 1px dashed $violet-200;
+      color: $text-muted;
       width: 100%;
       height: 40px;
       border-radius: 8px;
       cursor: pointer;
       font-weight: 500;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       transition: all 0.2s;
       &:hover {
-        background: #f1f5f9;
-        color: #334155;
-        border-color: #94a3b8;
+        background: $violet-100;
+        color: $text-main;
+        border-color: $text-muted;
       }
     }
   }
@@ -232,12 +232,12 @@
   .form-footer {
     margin-top: 1rem;
     padding-top: 1rem;
-    border-top: 1px solid #f1f5f9;
+    border-top: 1px solid $border-color;
   }
 
   .btn-submit-modern {
-    background-color: v.$primary;
-    color: white;
+    background-color: $primary;
+    color: $white;
     border: none;
     height: 40px;
     border-radius: 8px;
@@ -253,7 +253,7 @@
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 
     &:hover:not(:disabled) {
-      background-color: v.$violet-700;
+      background-color: $violet-700;
       transform: translateY(-1px);
       box-shadow: 0 4px 6px rgba(124, 58, 237, 0.2);
     }
@@ -261,7 +261,7 @@
       transform: translateY(0);
     }
     &:disabled {
-      background-color: #cbd5e1;
+      background-color: $border-color;
       cursor: not-allowed;
       transform: none;
       box-shadow: none;

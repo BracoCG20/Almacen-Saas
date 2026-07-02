@@ -67,7 +67,7 @@ const Tickets = () => {
       ...provided,
       color: '#1e293b',
       fontWeight: '500',
-      fontSize: '0.85rem',
+      fontSize: '0.8rem',
     }),
     menuPortal: (base) => ({ ...base, zIndex: 9999 }),
   };

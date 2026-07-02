@@ -230,7 +230,7 @@ const PagoServicioModal = ({ servicio, onClose }) => {
     singleValue: (provided) => ({
       ...provided,
       color: '#1e293b',
-      fontSize: '0.85rem',
+      fontSize: '0.8rem',
       fontWeight: '500',
       margin: '0px',
       position: 'absolute',
@@ -240,7 +240,7 @@ const PagoServicioModal = ({ servicio, onClose }) => {
     placeholder: (provided) => ({
       ...provided,
       color: '#94a3b8',
-      fontSize: '0.85rem',
+      fontSize: '0.8rem',
       margin: '0px',
       position: 'absolute',
       top: '50%',
@@ -256,7 +256,7 @@ const PagoServicioModal = ({ servicio, onClose }) => {
           : 'white',
       color: state.isSelected ? 'white' : '#334155',
       cursor: 'pointer',
-      fontSize: '0.85rem',
+      fontSize: '0.8rem',
       padding: '8px 12px',
     }),
   };

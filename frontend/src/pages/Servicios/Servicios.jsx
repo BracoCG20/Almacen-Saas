@@ -331,7 +331,7 @@ const Servicios = () => {
       ...provided,
       color: '#1e293b',
       fontWeight: '500',
-      fontSize: '0.85rem',
+      fontSize: '0.8rem',
       margin: '0px',
       position: 'absolute',
       top: '50%',
@@ -340,7 +340,7 @@ const Servicios = () => {
     placeholder: (provided) => ({
       ...provided,
       color: '#94a3b8',
-      fontSize: '0.85rem',
+      fontSize: '0.8rem',
       margin: '0px',
       position: 'absolute',
       top: '50%',
@@ -355,7 +355,7 @@ const Servicios = () => {
           ? '#f5f3ff'
           : 'white',
       color: state.isSelected ? 'white' : '#334155',
-      fontSize: '0.85rem',
+      fontSize: '0.8rem',
       cursor: 'pointer',
       padding: '8px 12px',
     }),

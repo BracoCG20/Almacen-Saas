@@ -312,12 +312,12 @@ const Colaboradores = () => {
       ...provided,
       color: '#1e293b',
       fontWeight: '500',
-      fontSize: '0.85rem',
+      fontSize: '0.8rem',
     }),
     placeholder: (provided) => ({
       ...provided,
       color: '#94a3b8',
-      fontSize: '0.85rem',
+      fontSize: '0.8rem',
     }),
     menu: (provided) => ({
       ...provided,
@@ -336,7 +336,7 @@ const Colaboradores = () => {
           : 'white',
       color: state.isSelected ? 'white' : '#334155',
       cursor: 'pointer',
-      fontSize: '0.85rem',
+      fontSize: '0.8rem',
       padding: '8px 12px',
     }),
   };

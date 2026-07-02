@@ -21,11 +21,12 @@ body {
   background: $bg-body;
 }
 ::-webkit-scrollbar-thumb {
-  background: $text-muted;
+  background: rgba($text-muted, 0.3);
   border-radius: 4px;
+  transition: background 0.5s ease;
 
   &:hover {
-    background: $text-muted;
+    background: rgba($text-muted, 0.5);
   }
 }
 

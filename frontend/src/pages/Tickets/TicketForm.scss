@@ -18,7 +18,7 @@
     width: 100%;
 
     label {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: 700;
       color: v.$primary;
       text-transform: uppercase;
@@ -51,7 +51,7 @@
     gap: 6px;
     padding: 12px 16px;
     border-radius: 8px;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     background-color: #f8fafc;
     animation: fadeIn 0.3s ease-in-out;
 
@@ -156,7 +156,7 @@
       cursor: pointer;
       border: none;
       transition: all 0.2s ease;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
 
       &.btn-cancel {
         background: #ffffff;

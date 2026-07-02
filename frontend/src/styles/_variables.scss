@@ -6,13 +6,23 @@ $primary: #7c3aed;
 // $secondary: #0d9488;
 $text-main: #1e293b;
 $text-muted: #64748b;
+$border-color: #e5e7eb;
 $white: #ffffff;
 $danger: #ef4444;
 $success: #10b981;
-
+$info: #3b82f6;
+$warning: #f59e0b;
+$male: #3b82f6;
+$female: #ec4899;
 // Paleta Violeta (Para fondos de tablas, hovers y cabeceras)
 $violet-50: #f5f3ff;
 $violet-100: #ede9fe;
 $violet-200: #ddd6ff;
+$violet-600: #7c3aed;
 $violet-700: #7008e7;
 $violet-800: #5d0ec0;
+
+//Estilos Sidebar
+$sidebar-width-open: 240px;
+$sidebar-width-collapsed: 76px;
+$smooth-transition: all 0.2s ease-in-out;

@@ -38,7 +38,7 @@
         padding: 10px;
         border-radius: 8px;
         font-weight: 600;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         cursor: pointer;
         transition: 0.2s;
 
@@ -109,7 +109,7 @@
 
       h4 {
         margin: 0;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         color: #64748b;
         text-transform: uppercase;
         letter-spacing: 0.05em;
@@ -132,7 +132,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         .label {
           color: #64748b;
           font-weight: 500;
@@ -179,7 +179,7 @@
           background: white;
           color: #475569;
           font-weight: 600;
-          font-size: 0.85rem;
+          font-size: 0.8rem;
           cursor: pointer;
           transition: all 0.2s;
           &:hover {
@@ -289,7 +289,7 @@
                 gap: 15px;
                 margin-bottom: 6px;
                 strong {
-                  font-size: 0.85rem;
+                  font-size: 0.8rem;
                   color: v.$primary;
                 }
                 span {

@@ -1,225 +1,225 @@
-@use "../../styles/variables" as v;
+@use '../../styles/variables' as v;
 
 .audit-modal-content {
-	max-height: 70vh;
-	overflow-y: auto;
-	padding: 0.5rem 1rem 1rem 0.5rem;
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 0.5rem 1rem 1rem 0.5rem;
 
-	&::-webkit-scrollbar {
-		width: 6px;
-	}
-	&::-webkit-scrollbar-track {
-		background: transparent;
-	}
-	&::-webkit-scrollbar-thumb {
-		background: #cbd5e1;
-		border-radius: 10px;
-	}
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+  }
 
-	.empty-audit {
-		text-align: center;
-		color: #94a3b8;
-		font-size: 0.9rem;
-		padding: 3rem 0;
-	}
+  .empty-audit {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    padding: 3rem 0;
+  }
 
-	.audit-timeline {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-		position: relative;
+  .audit-timeline {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    position: relative;
 
-		// LÍNEA VERTICAL CENTRADA
-		&::before {
-			content: "";
-			position: absolute;
-			left: 16px;
-			top: 10px;
-			bottom: 10px;
-			width: 2px;
-			background-color: #e2e8f0;
-			transform: translateX(-50%);
-		}
+    // LÍNEA VERTICAL CENTRADA
+    &::before {
+      content: '';
+      position: absolute;
+      left: 16px;
+      top: 10px;
+      bottom: 10px;
+      width: 2px;
+      background-color: #e2e8f0;
+      transform: translateX(-50%);
+    }
 
-		li {
-			position: relative;
-			padding-left: 40px;
-			margin-bottom: 1.2rem;
-			&:last-child {
-				margin-bottom: 0;
-			}
+    li {
+      position: relative;
+      padding-left: 40px;
+      margin-bottom: 1.2rem;
+      &:last-child {
+        margin-bottom: 0;
+      }
 
-			// PUNTO DEL TIMELINE
-			&::before {
-				content: "";
-				position: absolute;
-				left: 16px;
-				top: 14px;
-				width: 12px;
-				height: 12px;
-				border-radius: 50%;
-				background-color: v.$white;
-				border: 2px solid v.$primary;
-				transform: translateX(-50%);
-				z-index: 2;
-				box-shadow: 0 0 0 4px v.$white;
-			}
+      // PUNTO DEL TIMELINE
+      &::before {
+        content: '';
+        position: absolute;
+        left: 16px;
+        top: 14px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: v.$white;
+        border: 2px solid v.$primary;
+        transform: translateX(-50%);
+        z-index: 2;
+        box-shadow: 0 0 0 4px v.$white;
+      }
 
-			&.error-log::before {
-				border-color: v.$danger;
-			}
+      &.error-log::before {
+        border-color: v.$danger;
+      }
 
-			.audit-card {
-				background: v.$white;
-				border: 1px solid #e2e8f0;
-				border-radius: 10px;
-				padding: 14px 16px;
-				box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
-				transition: all 0.2s ease;
+      .audit-card {
+        background: v.$white;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 14px 16px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        transition: all 0.2s ease;
 
-				&:hover {
-					border-color: v.$violet-200;
-					box-shadow: 0 4px 12px rgba(124, 58, 237, 0.06);
-				}
+        &:hover {
+          border-color: v.$violet-200;
+          box-shadow: 0 4px 12px rgba(124, 58, 237, 0.06);
+        }
 
-				.log-header {
-					display: flex;
-					justify-content: space-between;
-					align-items: flex-start;
-					margin-bottom: 8px;
-					flex-wrap: wrap;
-					gap: 8px;
+        .log-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: 8px;
+          flex-wrap: wrap;
+          gap: 8px;
 
-					strong {
-						color: v.$violet-800;
-						font-size: 0.85rem;
-						text-transform: uppercase;
-						letter-spacing: 0.03em;
-					}
+          strong {
+            color: v.$violet-800;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+          }
 
-					.date-badge {
-						display: flex;
-						align-items: center;
-						gap: 4px;
-						background: v.$violet-50;
-						color: v.$violet-700;
-						padding: 4px 10px;
-						border-radius: 6px;
-						font-size: 0.75rem;
-						font-weight: 600;
-					}
-				}
+          .date-badge {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: v.$violet-50;
+            color: v.$violet-700;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+          }
+        }
 
-				.log-description {
-					color: #475569;
-					font-size: 0.85rem;
-					line-height: 1.5;
-				}
+        .log-description {
+          color: #475569;
+          font-size: 0.8rem;
+          line-height: 1.5;
+        }
 
-				.contract-status-container {
-					margin-bottom: 12px;
-					.contract-badge {
-						display: inline-flex;
-						align-items: center;
-						gap: 6px;
-						padding: 4px 10px;
-						border-radius: 6px;
-						font-size: 0.75rem;
-						font-weight: 600;
-						&.added {
-							background-color: v.$violet-50;
-							color: v.$primary;
-							text-decoration: none;
-							border: 1px solid v.$violet-100;
-							&:hover {
-								background-color: v.$violet-100;
-							}
-						}
-						&.removed {
-							background-color: #fef2f2;
-							color: v.$danger;
-							border: 1px solid #fee2e2;
-						}
-					}
-				}
+        .contract-status-container {
+          margin-bottom: 12px;
+          .contract-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            &.added {
+              background-color: v.$violet-50;
+              color: v.$primary;
+              text-decoration: none;
+              border: 1px solid v.$violet-100;
+              &:hover {
+                background-color: v.$violet-100;
+              }
+            }
+            &.removed {
+              background-color: #fef2f2;
+              color: v.$danger;
+              border: 1px solid #fee2e2;
+            }
+          }
+        }
 
-				.log-footer-grid {
-					border-top: 1px dashed #e2e8f0;
-					padding-top: 10px;
+        .log-footer-grid {
+          border-top: 1px dashed #e2e8f0;
+          padding-top: 10px;
 
-					.footer-item {
-						display: flex;
-						align-items: center;
-						gap: 6px;
-						font-size: 0.8rem;
-						color: #64748b;
+          .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: #64748b;
 
-						.icon-primary {
-							color: v.$primary;
-						}
-						strong {
-							color: #1e293b;
-							font-weight: 600;
-						}
-					}
-				}
-			}
-		}
-	}
+            .icon-primary {
+              color: v.$primary;
+            }
+            strong {
+              color: #1e293b;
+              font-weight: 600;
+            }
+          }
+        }
+      }
+    }
+  }
 
-	// PAGINACIÓN MODERNA
-	.pagination-footer {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-top: 1.5rem;
-		padding-top: 1rem;
-		border-top: 1px solid #e2e8f0;
+  // PAGINACIÓN MODERNA
+  .pagination-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e2e8f0;
 
-		.info {
-			font-size: 0.8rem;
-			color: #64748b;
-			strong {
-				color: #0f172a;
-				font-weight: 600;
-			}
-		}
+    .info {
+      font-size: 0.8rem;
+      color: #64748b;
+      strong {
+        color: #0f172a;
+        font-weight: 600;
+      }
+    }
 
-		.controls {
-			display: flex;
-			align-items: center;
-			gap: 12px;
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
 
-			span {
-				font-size: 0.8rem;
-				font-weight: 600;
-				color: #64748b;
-			}
+      span {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #64748b;
+      }
 
-			button {
-				height: 32px;
-				padding: 0 12px;
-				border-radius: 6px;
-				border: 1px solid #e2e8f0;
-				background-color: v.$white;
-				color: #0f172a;
-				font-size: 0.8rem;
-				font-weight: 500;
-				cursor: pointer;
-				transition: all 0.2s ease;
+      button {
+        height: 32px;
+        padding: 0 12px;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+        background-color: v.$white;
+        color: #0f172a;
+        font-size: 0.8rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
 
-				&:hover:not(:disabled) {
-					background-color: v.$violet-50;
-					color: v.$violet-700;
-					border-color: v.$violet-100;
-				}
+        &:hover:not(:disabled) {
+          background-color: v.$violet-50;
+          color: v.$violet-700;
+          border-color: v.$violet-100;
+        }
 
-				&:disabled {
-					opacity: 0.4;
-					cursor: not-allowed;
-					background-color: #f8fafc;
-				}
-			}
-		}
-	}
+        &:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+          background-color: #f8fafc;
+        }
+      }
+    }
+  }
 }

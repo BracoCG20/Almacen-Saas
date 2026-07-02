@@ -96,7 +96,7 @@ const EquipoHistorial = ({ equipo, historyData }) => {
                           style={{
                             margin: '6px 0 0 0',
                             color: '#1e293b',
-                            fontSize: '0.85rem',
+                            fontSize: '0.8rem',
                           }}
                         >
                           <UserCheck

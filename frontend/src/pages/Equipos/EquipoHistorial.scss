@@ -1,4 +1,4 @@
-@use '../../styles/variables' as v;
+@use '../../styles/variables' as *;
 
 .history-container {
   display: flex;
@@ -10,20 +10,20 @@
     align-items: center;
     gap: 1.2rem;
     padding-bottom: 1rem;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid $border-color;
     margin-bottom: 1.5rem;
 
     .big-icon {
       width: 45px;
       height: 45px;
       border-radius: 10px;
-      background-color: v.$violet-50;
-      color: v.$primary;
+      background-color: rgba($violet-50, 0.5);
+      color: $primary;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      border: 1px solid v.$violet-100;
+      border: 1px solid $violet-100;
     }
 
     .title-info-wrapper {
@@ -39,12 +39,12 @@
       }
       .serial-info {
         font-family: monospace;
-        color: #64748b;
-        font-size: 0.85rem;
-        background-color: #f8fafc;
+        color: $text-muted;
+        font-size: 0.8rem;
+        background-color: $bg-body;
         padding: 2px 8px;
         border-radius: 6px;
-        border: 1px solid #e2e8f0;
+        border: 1px solid $border-color;
         width: fit-content;
       }
     }
@@ -75,7 +75,7 @@
       background: transparent;
     }
     &::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
+      background: rgba($text-muted, 0.3);
       border-radius: 10px;
     }
 
@@ -87,7 +87,7 @@
       top: 10px;
       bottom: 10px;
       width: 2px;
-      background-color: #e2e8f0;
+      background-color: rgba($text-muted, 0.2);
       transform: translateX(-50%);
     }
 
@@ -109,24 +109,24 @@
         width: 12px;
         height: 12px;
         border-radius: 50%;
-        background-color: v.$white;
-        border: 2px solid v.$primary;
+        background-color: $white;
+        border: 2px solid $primary;
         transform: translateX(-50%);
         z-index: 2;
-        box-shadow: 0 0 0 4px v.$white;
+        box-shadow: 0 0 0 4px $white;
       }
 
       // --- TARJETA DE CONTENIDO ---
       .audit-card {
-        background-color: white;
-        border: 1px solid #e2e8f0;
+        background-color: $white;
+        border: 1px solid $border-color;
         border-radius: 10px;
         padding: 14px 16px;
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
         transition: all 0.2s ease;
 
         &:hover {
-          border-color: v.$violet-200;
+          border-color: $violet-200;
           box-shadow: 0 4px 12px rgba(124, 58, 237, 0.06);
         }
 
@@ -139,8 +139,8 @@
           gap: 8px;
 
           strong {
-            font-size: 0.85rem;
-            color: v.$violet-800;
+            font-size: 0.8rem;
+            color: $violet-800;
             text-transform: uppercase;
             letter-spacing: 0.03em;
             font-weight: 700;
@@ -148,11 +148,11 @@
 
           .date-badge {
             font-size: 0.75rem;
-            color: v.$violet-700;
+            color: $violet-700;
             display: flex;
             align-items: center;
             gap: 4px;
-            background-color: v.$violet-50;
+            background-color: $violet-50;
             padding: 4px 10px;
             border-radius: 6px;
             font-weight: 600;
@@ -160,8 +160,8 @@
         }
 
         .change-desc {
-          font-size: 0.85rem;
-          color: #475569;
+          font-size: 0.8rem;
+          color: $text-muted;
           margin: 0 0 12px 0;
           line-height: 1.5;
         }
@@ -180,19 +180,19 @@
             border-radius: 6px;
             font-size: 0.7rem;
             font-weight: 700;
-            background: #fff;
-            border: 1px solid #cbd5e1;
-            color: #475569;
+            background: $white;
+            border: 1px solid $border-color;
+            color: $text-muted;
 
             &.owned {
-              border-color: v.$violet-200;
-              color: v.$primary;
-              background: v.$violet-50;
+              border-color: $violet-200;
+              color: $primary;
+              background: $violet-50;
             }
             &.rented {
-              border-color: #ffedd5;
-              color: #ea580c;
-              background: #fff7ed;
+              border-color: rgba($warning, 0.2);
+              color: $warning;
+              background: rgba($warning, 0.1);
             }
           }
 
@@ -207,43 +207,43 @@
             border: 1px solid transparent;
 
             &.operativo {
-              background-color: #f0fdf4;
-              color: #16a34a;
-              border-color: #dcfce7;
+              background-color: rgba($success, 0.1);
+              color: $success;
+              border-color: rgba($success, 0.2);
             }
             &.mantenimiento {
-              background-color: #fff7ed;
-              color: #d97706;
-              border-color: #ffedd5;
+              background-color: rgba($warning, 0.1);
+              color: $warning;
+              border-color: rgba($warning, 0.2);
             }
             &.malogrado {
-              background-color: #fef2f2;
-              color: v.$danger;
-              border-color: #fee2e2;
+              background-color: rgba($danger, 0.1);
+              color: $danger;
+              border-color: rgba($danger, 0.2);
             }
           }
         }
 
         .hist-observations {
-          background-color: #fffbeb;
-          border: 1px solid #fef3c7;
+          background-color: rgba($warning, 0.1);
+          border: 1px solid rgba($warning, 0.3);
           padding: 8px 12px;
           border-radius: 8px;
           margin-bottom: 12px;
           display: flex;
           align-items: flex-start;
           gap: 8px;
-          color: #d97706;
+          color: $warning;
           font-size: 0.8rem;
           line-height: 1.4;
           strong {
-            color: #b45309;
+            color: $warning;
           }
         }
 
         // --- FOOTER EN 2 COLUMNAS ---
         .log-footer-grid {
-          border-top: 1px dashed #e2e8f0;
+          border-top: 1px dashed $border-color;
           padding-top: 10px;
           display: grid;
           grid-template-columns: 1fr 1fr;
@@ -258,10 +258,10 @@
             align-items: center;
             gap: 6px;
             font-size: 0.8rem;
-            color: #64748b;
+            color: $text-muted;
 
             strong {
-              color: #1e293b;
+              color: $text-main;
               font-weight: 600;
             }
           }
@@ -277,13 +277,13 @@
     align-items: center;
     margin-top: 1.5rem;
     padding-top: 1rem;
-    border-top: 1px solid #e2e8f0;
+    border-top: 1px solid $border-color;
 
     .info {
       font-size: 0.8rem;
-      color: #64748b;
+      color: $text-muted;
       strong {
-        color: #0f172a;
+        color: $text-main;
         font-weight: 600;
       }
     }
@@ -296,7 +296,7 @@
       span {
         font-size: 0.8rem;
         font-weight: 600;
-        color: #64748b;
+        color: $text-muted;
       }
 
       button {
@@ -307,24 +307,24 @@
         height: 32px;
         padding: 0 12px;
         border-radius: 6px;
-        border: 1px solid #e2e8f0;
-        background-color: v.$white;
-        color: #0f172a;
+        border: 1px solid $border-color;
+        background-color: $white;
+        color: $text-main;
         font-size: 0.8rem;
         font-weight: 500;
         cursor: pointer;
         transition: all 0.2s ease;
 
         &:hover:not(:disabled) {
-          background-color: v.$violet-50;
-          color: v.$violet-700;
-          border-color: v.$violet-100;
+          background-color: $violet-50;
+          color: $violet-700;
+          border-color: $violet-100;
         }
 
         &:disabled {
           opacity: 0.4;
           cursor: not-allowed;
-          background-color: #f8fafc;
+          background-color: rgba($border-color, 0.1);
         }
       }
     }
