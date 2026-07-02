@@ -1,4 +1,4 @@
-@use './styles/variables' as v;
+@use './styles/variables' as *;
 
 * {
   margin: 0;
@@ -8,21 +8,9 @@
 }
 
 body {
-  background-color: v.$bg-body;
-  color: v.$text-main;
+  background-color: $bg-body;
+  color: $text-main;
   min-height: 100vh;
-
-  background-image:
-    radial-gradient(
-      circle at 15% 50%,
-      rgba(v.$primary, 0.08) 0%,
-      transparent 25%
-    ),
-    radial-gradient(
-      circle at 85% 30%,
-      rgba(v.$secondary, 0.08) 0%,
-      transparent 25%
-    );
 }
 
 // Scrollbar
@@ -30,14 +18,14 @@ body {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: v.$bg-body;
+  background: $bg-body;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: $text-muted;
   border-radius: 4px;
 
   &:hover {
-    background: #94a3b8;
+    background: $text-muted;
   }
 }
 
@@ -56,14 +44,14 @@ body {
     content: '';
     width: 48px;
     height: 48px;
-    border: 4px solid #e2e8f0;
-    border-top-color: #7c3aed;
+    border: 4px solid $bg-body;
+    border-top-color: $primary;
     border-radius: 50%;
     animation: spinLoader 1s linear infinite;
     box-shadow: 0 4px 10px rgba(124, 58, 237, 0.15);
   }
 
-  color: #64748b;
+  color: $text-muted;
   font-size: 1.1rem;
   font-weight: 600;
   letter-spacing: 0.02em;

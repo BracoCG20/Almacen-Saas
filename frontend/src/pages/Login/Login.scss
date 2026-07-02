@@ -7,13 +7,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f1f5f9;
+  background-color: $bg-body;
   padding: 20px;
   box-sizing: border-box;
 
   .login-box {
     display: flex;
-    background-color: #ffffff;
+    background-color: $white;
     width: 100%;
     max-width: 1100px;
     height: 90vh;
@@ -50,7 +50,7 @@
     .brand-content {
       position: relative;
       z-index: 10;
-      color: #ffffff;
+      color: $white;
 
       .brand-badge {
         display: inline-block;
@@ -76,13 +76,13 @@
 
       p {
         font-size: 1rem;
-        color: #ffffffd9;
+        color: $white;
         line-height: 1.4;
         margin: 0;
         max-width: 90%;
 
         strong {
-          color: #ffffff;
+          color: $white;
         }
       }
     }
@@ -166,7 +166,7 @@
 
       .subtitle {
         font-size: 1.3rem;
-        color: #64748b;
+        color: $text-muted;
         margin: 0;
         font-weight: 400;
       }
@@ -181,10 +181,10 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        border: 1px solid #e2e8f0;
+        border: 1px solid $bg-body;
         border-radius: 12px;
         padding: 10px 18px;
-        background-color: #ffffff;
+        background-color: $white;
         transition: all 0.2s ease;
 
         &:focus-within {
@@ -192,7 +192,7 @@
         }
 
         &.has-value {
-          border-color: #cbd5e1;
+          border-color: $text-muted;
         }
 
         .input-content {
@@ -204,7 +204,7 @@
             font-size: 0.6rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            color: #94a3b8;
+            color: $text-muted;
             font-weight: 500;
             margin-bottom: 4px;
           }
@@ -214,25 +214,25 @@
             outline: none;
             background: transparent;
             font-size: 1rem;
-            color: #1e293b;
+            color: $text-main;
             font-weight: 400;
             padding: 0;
             width: 100%;
 
             &::placeholder {
-              color: #cbd5e1;
+              color: rgba($text-muted, 0.5);
               font-weight: 400;
             }
 
             &:disabled {
               background: transparent;
-              color: #94a3b8;
+              color: $text-muted;
             }
           }
         }
 
         .icon-container {
-          color: #94a3b8;
+          color: $text-muted;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -254,7 +254,7 @@
           align-items: center;
           gap: 10px;
           background-color: $primary;
-          color: white;
+          color: $white;
           border: none;
           padding: 12px 28px;
           border-radius: 12px;
@@ -288,7 +288,7 @@
       left: 30px;
       right: 30px;
       font-size: 0.75rem;
-      color: #94a3b8;
+      color: rgba($text-muted, 0.6);
       text-align: center;
       padding-bottom: 20px;
     }

@@ -30,7 +30,7 @@ const DevolucionTable = ({
   // --- 1. ESTADOS PARA PAGINACIÓN ---
   // Controlo cuántas filas muestro por página para no saturar la vista.
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
+  const itemsPerPage = 10;
 
   // --- 2. FORMATO DE FECHAS Y HORAS ---
   const formatDateOnly = (isoString) => {

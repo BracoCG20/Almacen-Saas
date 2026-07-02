@@ -1,11 +1,11 @@
-@use '../styles/variables' as v;
+@use '../styles/variables' as *;
 
 .main-layout-container {
   display: flex;
   height: 100vh;
   width: 100vw;
   overflow: hidden;
-  background-color: #f8fafc;
+  background-color: rgba($bg-body, 0.1);
   font-family: 'Inter', system-ui, sans-serif;
   position: relative;
 }
