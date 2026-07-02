@@ -1,4 +1,4 @@
-@use '../../styles/variables' as v;
+@use '../../styles/variables' as *;
 
 .colab-form-modern {
   display: flex;
@@ -8,15 +8,15 @@
 
   .edit-warning {
     font-size: 0.8rem;
-    color: #b45309;
-    background: #fffbeb;
+    color: $warning;
+    background: rgba($warning, 0.1);
     padding: 10px 14px;
     border-radius: 8px;
-    border: 1px solid #fcd34d;
+    border: 1px solid rgba($warning, 0.2);
     display: flex;
     align-items: center;
     gap: 8px;
-    font-weight: 500;
+    font-weight: 400;
 
     svg {
       flex-shrink: 0;
@@ -41,7 +41,7 @@
     label {
       font-size: 0.8rem;
       font-weight: 600;
-      color: #475569;
+      color: $text-muted;
       display: flex;
       align-items: center;
     }
@@ -51,26 +51,26 @@
       height: 40px;
       padding: 0 12px;
       border-radius: 8px;
-      border: 1px solid #e2e8f0;
+      border: 1px solid $border-color;
       font-size: 0.8rem;
-      color: #0f172a;
-      background-color: #fff;
+      color: $text-main;
+      background-color: $white;
       transition: all 0.2s ease;
       outline: none;
       box-sizing: border-box;
 
       &:focus {
-        border-color: v.$primary;
+        border-color: $primary;
         box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.1);
       }
 
       &::placeholder {
-        color: #94a3b8;
+        color: rgba($text-muted, 0.6);
       }
 
       &:disabled {
-        background-color: #f8fafc;
-        color: #94a3b8;
+        background-color: rgba($text-muted, 0.05);
+        color: rgba($text-muted, 0.6);
         cursor: not-allowed;
       }
     }
@@ -79,7 +79,7 @@
   .form-footer {
     margin-top: 0.5rem;
     padding-top: 1rem;
-    border-top: 1px solid #f1f5f9;
+    border-top: 1px solid $border-color;
 
     .btn-save-modern {
       display: flex;
@@ -93,13 +93,13 @@
       border: none;
       cursor: pointer;
       font-size: 0.9rem;
-      background-color: v.$primary;
-      color: white;
+      background-color: $primary;
+      color: $white;
       transition: all 0.2s ease;
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 
       &:hover {
-        background-color: v.$violet-700;
+        background-color: $violet-700;
         transform: translateY(-1px);
         box-shadow: 0 4px 6px rgba(124, 58, 237, 0.2);
       }
