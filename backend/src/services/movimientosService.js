@@ -1,3 +1,4 @@
+//backend/src/services/movimientosService.js
 const { pool } = require('../config/db');
 const emailService = require('./emailService');
 const { v4: uuidv4 } = require('uuid');

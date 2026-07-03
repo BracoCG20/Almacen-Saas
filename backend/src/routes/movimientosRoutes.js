@@ -1,3 +1,4 @@
+//backend/src/routes/movimientosRoutes.js
 const { Router } = require('express');
 const router = Router();
 

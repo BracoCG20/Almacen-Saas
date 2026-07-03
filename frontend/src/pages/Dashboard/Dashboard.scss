@@ -1,3 +1,4 @@
+//frontend/src/pages/Dashboard/Dashboard.scss
 @use '../../styles/variables' as *;
 
 .dashboard-container-modern {
@@ -85,14 +86,13 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border: 1px solid $bg-body;
+      border: 1px solid $border-color;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
       transition: all 0.2s ease;
 
       &:hover {
         border-color: $violet-100;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        transform: translateY(-2px);
       }
 
       .info {
@@ -228,7 +228,7 @@
       gap: 1.5rem;
 
       .currency-card {
-        background: $bg-body;
+        background: rgba($bg-body, 0.5);
         border: 1px solid $violet-50;
         border-radius: 12px;
         padding: 1.5rem;
@@ -259,11 +259,10 @@
           position: absolute;
           right: 35px;
           bottom: 35px;
-          // font-size: 100px;
           color: $primary;
-          opacity: 0.3;
+          opacity: 0.5;
           z-index: 1;
-          transform: scale(2);
+          transform: scale(1.5);
         }
       }
       .no-costs {

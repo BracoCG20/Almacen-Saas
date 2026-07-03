@@ -1,3 +1,4 @@
+//frontend/src/components/RegisterAdminModal/RegisterAdminModal.scss
 @use '../../styles/variables' as v;
 
 .modal-overlay {
@@ -187,7 +188,6 @@
 
           &:hover {
             background-color: v.$violet-700;
-            transform: translateY(-1px);
             box-shadow: 0 4px 6px rgba(124, 58, 237, 0.2);
           }
 

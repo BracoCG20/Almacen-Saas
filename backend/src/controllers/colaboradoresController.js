@@ -1,3 +1,4 @@
+//backend/src/controllers/colaboradoresController.js
 const colaboradoresService = require('../services/colaboradoresService');
 
 const getColaboradores = async (req, res) => {

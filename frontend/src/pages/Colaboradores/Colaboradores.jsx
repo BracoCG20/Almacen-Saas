@@ -1,3 +1,4 @@
+//frontend/src/pages/Colaboradores/Colaboradores.jsx
 import { useEffect, useState } from 'react';
 import api from '../../service/api';
 import * as XLSX from 'xlsx';

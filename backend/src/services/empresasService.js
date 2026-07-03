@@ -1,3 +1,4 @@
+//backend/src/services/empresasService.js
 const { pool } = require('../config/db');
 
 const getAllEmpresas = async () => {

@@ -1,3 +1,4 @@
+//backend/src/services/configuracionService.js
 const { pool } = require('../config/db');
 
 const getAllLicencias = async () => {

@@ -1,3 +1,4 @@
+//frontend/src/components/FileUploader/FileUploader.jsx
 import { useRef } from 'react';
 import { FileText, Eye, Download, Trash2, UploadCloud } from 'lucide-react';
 import './FileUploader.scss';

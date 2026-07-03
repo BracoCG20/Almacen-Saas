@@ -1,3 +1,4 @@
+//backend/src/controllers/directorioController.js
 const directorioService = require('../services/directorioService');
 
 const obtenerDirectorio = async (req, res) => {

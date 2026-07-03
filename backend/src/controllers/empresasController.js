@@ -1,3 +1,4 @@
+//backend/src/controllers/empresasController.js
 const empresasService = require('../services/empresasService');
 
 const getEmpresas = async (req, res) => {

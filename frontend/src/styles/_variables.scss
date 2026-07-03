@@ -1,3 +1,4 @@
+//frontend/src/styles/_variables.scss
 @use 'sass:color';
 
 // Colores Base
@@ -14,13 +15,45 @@ $info: #3b82f6;
 $warning: #f59e0b;
 $male: #3b82f6;
 $female: #ec4899;
-// Paleta Violeta (Para fondos de tablas, hovers y cabeceras)
+
+// Paleta Danger
+$danger-50: #fef2f2;
+$danger-100: #ffe2e2;
+$danger-200: #ffc9c9;
+$danger-300: #ffa2a2;
+$danger-400: #ff6467;
+$danger-500: #fb2c36; //danger
+$danger-600: #e7000b;
+$danger-700: #c10007;
+$danger-800: #9f0712;
+$danger-900: #82181a;
+$danger-950: #460809;
+
+// Paleta Violeta
 $violet-50: #f5f3ff;
 $violet-100: #ede9fe;
 $violet-200: #ddd6ff;
-$violet-600: #7c3aed;
+$violet-300: #c4b4ff;
+$violet-400: #a684ff;
+$violet-500: #8e51ff;
+$violet-600: #7f22fe; //primary
 $violet-700: #7008e7;
 $violet-800: #5d0ec0;
+$violet-900: #4d179a;
+$violet-950: #2f0d68;
+
+// Paleta Slate
+$slate-50: #f8fafc;
+$slate-100: #f1f5f9;
+$slate-200: #e2e8f0;
+$slate-300: #cad5e2;
+$slate-400: #90a1b9;
+$slate-500: #62748e;
+$slate-600: #45556c;
+$slate-700: #314158;
+$slate-800: #1d293d; //text-main
+$slate-900: #0f172b;
+$slate-950: #020618;
 
 //Estilos Sidebar
 $sidebar-width-open: 240px;

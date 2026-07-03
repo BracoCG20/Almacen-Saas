@@ -1,3 +1,4 @@
+//backend/src/routes/configuracionRoutes.js
 const { Router } = require('express');
 const verifyToken = require('../middlewares/authMiddleware');
 const {

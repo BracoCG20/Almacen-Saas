@@ -1,3 +1,4 @@
+//frontend/src/pages/Directorio/DirectorioHistorial.jsx
 import { useState } from 'react';
 import {
   Clock,

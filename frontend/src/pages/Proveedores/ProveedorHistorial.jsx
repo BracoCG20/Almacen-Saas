@@ -1,3 +1,4 @@
+//frontend/src/pages/Proveedores/ProveedorHistorial.jsx
 import React, { useState } from 'react';
 import {
   Clock,

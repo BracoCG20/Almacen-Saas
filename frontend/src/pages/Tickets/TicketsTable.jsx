@@ -1,3 +1,4 @@
+//frontend/src/pages/Tickets/TicketsTable.jsx
 import {
   Ticket as TicketIcon,
   UserCheck,

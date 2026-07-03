@@ -1,3 +1,4 @@
+//backend/src/services/ticketsService.js
 const { pool } = require('../config/db');
 
 const getTickets = async () => {

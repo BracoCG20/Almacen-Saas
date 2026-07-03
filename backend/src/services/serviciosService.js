@@ -1,3 +1,4 @@
+//backend/src/services/serviciosService.js
 const { pool } = require('../config/db');
 
 const getAllServicios = async () => {

@@ -1,3 +1,4 @@
+//frontend/src/pages/Directorio/DirectorioStats.jsx
 import { Cloud, ShieldCheck } from 'lucide-react';
 import './DirectorioStats.scss';
 

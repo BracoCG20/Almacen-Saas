@@ -1,4 +1,5 @@
-@use './styles/variables' as v;
+//frontend/src/App.scss
+@use './styles/variables' as *;
 @use 'sass:color';
 
 .force-logout-overlay {
@@ -16,7 +17,7 @@
 }
 
 .force-logout-modal {
-  background: white;
+  background: $white;
   padding: 30px;
   border-radius: 16px;
   width: 90%;
@@ -28,8 +29,8 @@
     width: 70px;
     height: 70px;
     border-radius: 50%;
-    background: #fee2e2;
-    color: v.$danger;
+    background: $danger-100;
+    color: $danger;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -38,12 +39,12 @@
 
   .force-logout-title {
     margin: 0 0 10px 0;
-    color: #1e293b;
+    color: $text-main;
     font-size: 1.4rem;
   }
 
   .force-logout-text {
-    color: #64748b;
+    color: $text-muted;
     font-size: 1rem;
     line-height: 1.5;
     margin-bottom: 25px;
@@ -54,8 +55,8 @@
     padding: 14px;
     border-radius: 10px;
     border: none;
-    background-color: v.$danger;
-    color: white;
+    background-color: $danger;
+    color: $white;
     font-weight: bold;
     font-size: 1rem;
     cursor: pointer;
@@ -66,7 +67,7 @@
     transition: all 0.2s ease;
 
     &:hover {
-      background-color: color.adjust(v.$danger, $lightness: -10%);
+      background-color: color.adjust($danger, $lightness: -10%);
       transform: translateY(-1px);
     }
 
@@ -85,13 +86,13 @@
   --toastify-toast-width: 360px;
   --toastify-toast-bd-radius: 16px;
   --toastify-font-family: 'Inter', system-ui, sans-serif;
-  --toastify-text-color-light: #0f172a;
+  --toastify-text-color-light: $slate-900;
 
   // Colores Base de Iconos
-  --toastify-color-error: #ef4444;
-  --toastify-color-success: #16a34a;
-  --toastify-color-warning: #f59e0b;
-  --toastify-color-info: #7c3aed;
+  --toastify-color-error: $danger;
+  --toastify-color-success: $success;
+  --toastify-color-warning: $warning;
+  --toastify-color-info: $primary;
 
   // Barras de progreso con degradado
   --toastify-color-progress-error: linear-gradient(90deg, #fca5a5, #ef4444);

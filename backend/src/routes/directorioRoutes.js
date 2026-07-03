@@ -1,3 +1,4 @@
+//backend/src/routes/directorioRoutes.js
 const { Router } = require('express');
 const verifyToken = require('../middlewares/authMiddleware');
 const {

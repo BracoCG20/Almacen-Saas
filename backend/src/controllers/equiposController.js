@@ -1,3 +1,4 @@
+//backend/src/controllers/equiposController.js
 const equiposService = require('../services/equiposService');
 const { uploadToCloudinary } = require('../middlewares/uploadMiddleware'); // <-- IMPORTAMOS LA FUNCIÓN A LA NUBE
 

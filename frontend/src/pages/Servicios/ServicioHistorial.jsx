@@ -1,3 +1,4 @@
+//frontend/src/pages/Servicios/ServicioHistorial.jsx
 import { useState } from 'react';
 import { Clock, UserCheck, User } from 'lucide-react';
 import './ServicioHistorial.scss';

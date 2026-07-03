@@ -1,3 +1,4 @@
+//backend/src/services/equiposService.js
 const { pool } = require('../config/db');
 
 const getAllEquipos = async () => {

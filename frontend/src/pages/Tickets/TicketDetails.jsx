@@ -1,3 +1,4 @@
+//frontend/src/pages/Tickets/TicketDetails.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../service/api';
 import { toast } from 'react-toastify';

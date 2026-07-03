@@ -1,3 +1,4 @@
+//frontend/src/components/RegisterAdminModal/RegisterAdminModal.jsx
 import { useState, useEffect } from 'react';
 import api from '../../service/api';
 import { toast } from 'react-toastify';

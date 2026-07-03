@@ -1,3 +1,4 @@
+//backend/src/routes/equiposRoutes.js
 const { Router } = require('express');
 const verifyToken = require('../middlewares/authMiddleware');
 const { upload } = require('../middlewares/uploadMiddleware'); // <-- IMPORTAMOS EL MIDDLEWARE DE SUBIDA

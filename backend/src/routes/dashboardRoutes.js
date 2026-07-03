@@ -1,3 +1,4 @@
+//backend/src/routes/dashboardRoutes.js
 const { Router } = require('express');
 const verifyToken = require('../middlewares/authMiddleware');
 const { getDashboardStats } = require('../controllers/dashboardController');

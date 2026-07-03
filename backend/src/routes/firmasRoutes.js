@@ -1,3 +1,4 @@
+//backend/src/routes/firmasRoutes.js
 const { Router } = require('express');
 const {
   getInfoFirma,

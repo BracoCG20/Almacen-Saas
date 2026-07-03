@@ -1,3 +1,4 @@
+//backend/src/services/emailService.js
 const transporter = require('../config/mailer');
 const path = require('path');
 

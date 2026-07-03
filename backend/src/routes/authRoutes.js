@@ -1,3 +1,4 @@
+//backend/src/routes/authRoutes.js
 const { Router } = require('express');
 const {
   login,

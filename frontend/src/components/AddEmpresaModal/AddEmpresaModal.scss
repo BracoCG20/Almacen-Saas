@@ -1,4 +1,5 @@
-@use '../../styles/variables' as v;
+//frontend/src/components/AddEmpresaModal/AddEmpresaModal.scss
+@use '../../styles/variables' as *;
 
 .modal-overlay {
   position: fixed;
@@ -17,7 +18,7 @@
   box-sizing: border-box;
 
   .modal-content-modern {
-    background: v.$white;
+    background: $white;
     padding: 1.5rem 1.8rem;
     border-radius: 12px;
     width: 100%;
@@ -33,7 +34,7 @@
       width: 6px;
     }
     &::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
+      background: rgba($text-muted, 0.3);
       border-radius: 10px;
     }
 
@@ -42,13 +43,13 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 1.2rem;
-      border-bottom: 1px solid #f1f5f9;
+      border-bottom: 1px solid $border-color;
       padding-bottom: 0.8rem;
 
       h2 {
         margin: 0;
         font-size: 1.15rem;
-        color: v.$violet-800;
+        color: $violet-800;
         display: flex;
         align-items: center;
         gap: 8px;
@@ -58,7 +59,7 @@
       .btn-close {
         background: transparent;
         border: none;
-        color: #94a3b8;
+        color: $text-muted;
         cursor: pointer;
         transition: color 0.2s;
         display: flex;
@@ -67,8 +68,8 @@
         border-radius: 4px;
 
         &:hover {
-          color: v.$danger;
-          background-color: #fef2f2;
+          color: $danger;
+          background-color: rgba($danger, 0.1);
         }
       }
     }
@@ -114,7 +115,7 @@
       label {
         font-size: 0.8rem;
         font-weight: 600;
-        color: #475569;
+        color: $text-muted;
       }
 
       input {
@@ -122,21 +123,21 @@
         height: 40px;
         padding: 0 12px;
         border-radius: 8px;
-        border: 1px solid #e2e8f0;
+        border: 1px solid $border-color;
         font-size: 0.8rem;
-        color: #0f172a;
-        background-color: #fff;
+        color: $text-main;
+        background-color: $white;
         transition: all 0.2s ease;
         outline: none;
         box-sizing: border-box;
 
         &:focus {
-          border-color: v.$primary;
+          border-color: $primary;
           box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.1);
         }
 
         &::placeholder {
-          color: #cbd5e1;
+          color: rgba($text-muted, 0.3);
         }
       }
     }
@@ -147,7 +148,7 @@
       gap: 12px;
       margin-top: 1rem;
       padding-top: 1rem;
-      border-top: 1px solid #f1f5f9;
+      border-top: 1px solid $border-color;
 
       @media (max-width: 500px) {
         flex-direction: column-reverse;
@@ -172,26 +173,25 @@
         }
 
         &.btn-cancel {
-          background: #ffffff;
-          color: #64748b;
-          border: 1px solid #e2e8f0;
+          background: $white;
+          color: $text-muted;
+          border: 1px solid $border-color;
           width: 100%;
 
           &:hover {
-            background: #f8fafc;
-            color: #334155;
+            background: $bg-body;
+            color: $text-main;
           }
         }
 
         &.btn-confirm {
-          background: v.$primary;
-          color: white;
+          background: $primary;
+          color: $white;
           box-shadow: 0 1px 2px rgba(124, 58, 237, 0.15);
           width: 100%;
 
           &:hover {
-            background-color: v.$violet-700;
-            transform: translateY(-1px);
+            background-color: $violet-700;
             box-shadow: 0 4px 6px rgba(124, 58, 237, 0.2);
           }
 

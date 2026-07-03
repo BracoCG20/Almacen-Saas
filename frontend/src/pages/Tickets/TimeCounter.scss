@@ -1,3 +1,6 @@
+//frontend/src/pages/Tickets/TimeCounter.scss
+@use '../../styles/variables' as *;
+
 .timer-badge {
   display: inline-flex;
   align-items: center;
@@ -10,24 +13,24 @@
   white-space: nowrap;
 
   &.live {
-    color: #ef4444;
-    background: #fef2f2;
+    color: $danger;
+    background: $danger-100;
     .live-dot {
       width: 6px;
       height: 6px;
-      background: #ef4444;
+      background: $danger;
       border-radius: 50%;
       animation: blink 1s infinite;
     }
   }
   &.stopped {
-    background: #f8fafc;
-    color: #94a3b8;
+    background: $slate-100;
+    color: $slate-400;
   }
 }
 
 .dash {
-  color: #cbd5e1;
+  color: $slate-400;
   font-style: italic;
 }
 

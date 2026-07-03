@@ -1,3 +1,4 @@
+//frontend/src/pages/Colaboradores/ColaboradorHistorial.jsx
 import React, { useState } from 'react';
 import { Clock, UserCheck, ChevronLeft, ChevronRight } from 'lucide-react';
 import './ColaboradorHistorial.scss';

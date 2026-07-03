@@ -1,3 +1,4 @@
+//backend/src/routes/ticketsRoutes.js
 const { Router } = require('express');
 const multer = require('multer'); // Si no tienes un upload global exportado
 const verifyToken = require('../middlewares/authMiddleware');

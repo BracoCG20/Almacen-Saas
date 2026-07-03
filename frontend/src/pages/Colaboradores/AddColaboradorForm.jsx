@@ -1,3 +1,4 @@
+//frontend/src/pages/Colaboradores/AddColaboradorForm.jsx
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { UserPlus, Save, Lock } from 'lucide-react';

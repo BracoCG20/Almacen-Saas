@@ -1,3 +1,4 @@
+//backend/src/controllers/movimientosController.js
 const movimientosService = require('../services/movimientosService');
 const emailService = require('../services/emailService');
 const { uploadToCloudinary } = require('../middlewares/uploadMiddleware');

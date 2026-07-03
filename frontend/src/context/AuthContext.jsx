@@ -1,3 +1,4 @@
+//frontend/src/context/AuthContext.jsx
 import { createContext, useState, useEffect, useContext } from 'react';
 import api from '../service/api';
 import { io } from 'socket.io-client';

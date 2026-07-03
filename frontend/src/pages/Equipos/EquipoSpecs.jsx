@@ -1,3 +1,4 @@
+//frontend/src/pages/Equipos/EquipoSpecs.jsx
 import { useState, useRef, useEffect } from 'react';
 import {
   Laptop,

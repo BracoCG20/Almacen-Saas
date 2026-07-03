@@ -1,3 +1,4 @@
+//backend/src/services/directorioService.js
 const { pool } = require('../config/db');
 
 const getEstadisticas = async () => {

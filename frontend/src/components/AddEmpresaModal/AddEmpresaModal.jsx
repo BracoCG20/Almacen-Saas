@@ -1,3 +1,4 @@
+//frontend/src/components/AddEmpresaModal/AddEmpresaModal.jsx
 import React, { useState, useEffect } from 'react';
 import api from '../../service/api';
 import { toast } from 'react-toastify';
@@ -245,7 +246,7 @@ const AddEmpresaModal = ({ onClose, onSuccess, empresaToEdit }) => {
               type='submit'
               className='btn-confirm'
             >
-              <Save size={16} />{' '}
+              <Save size={16} />
               {empresaToEdit ? 'Actualizar Empresa' : 'Guardar Empresa'}
             </button>
           </div>

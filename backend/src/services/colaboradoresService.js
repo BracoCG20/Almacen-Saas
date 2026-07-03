@@ -1,3 +1,4 @@
+//backend/src/services/colaboradoresService.js
 const { pool } = require('../config/db');
 
 const getAllColaboradores = async () => {

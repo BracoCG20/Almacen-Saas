@@ -1,3 +1,4 @@
+//frontend/src/pages/Proveedores/Proveedores.jsx
 import { useEffect, useState } from 'react';
 import api from '../../service/api';
 import * as XLSX from 'xlsx';

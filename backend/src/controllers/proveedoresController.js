@@ -1,3 +1,4 @@
+//backend/src/controllers/proveedoresController.js
 const proveedoresService = require('../services/proveedoresService');
 const { uploadToCloudinary } = require('../middlewares/uploadMiddleware');
 

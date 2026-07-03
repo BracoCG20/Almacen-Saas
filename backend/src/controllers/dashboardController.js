@@ -1,3 +1,4 @@
+//backend/src/controllers/dashboardController.js
 const dashboardService = require('../services/dashboardService');
 
 const getDashboardStats = async (req, res) => {

@@ -1,3 +1,4 @@
+//backend/src/services/dashboardService.js
 const { pool } = require('../config/db');
 
 const getDashboardData = async () => {

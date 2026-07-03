@@ -1,3 +1,4 @@
+//frontend/src/pages/Directorio/DirectorioTable.jsx
 import {
   Mail,
   CornerDownRight,

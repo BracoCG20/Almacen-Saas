@@ -1,3 +1,4 @@
+//backend/src/controllers/firmasController.js
 const firmasService = require('../services/firmasService');
 
 const getInfoFirma = async (req, res) => {

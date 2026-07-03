@@ -1,3 +1,4 @@
+//frontend/src/layout/MainLayout.jsx
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useIdleTimer } from 'react-idle-timer';
 import { toast } from 'react-toastify';

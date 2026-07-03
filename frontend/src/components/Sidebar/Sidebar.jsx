@@ -1,3 +1,4 @@
+//frontend/src/components/Sidebar/Sidebar.jsx
 import { useState, useEffect, useRef } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';

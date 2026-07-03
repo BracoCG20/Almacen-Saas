@@ -1,3 +1,4 @@
+//frontend/src/pages/Tickets/TimeCounter.jsx
 import { useState, useEffect } from 'react';
 import './TimeCounter.scss';
 

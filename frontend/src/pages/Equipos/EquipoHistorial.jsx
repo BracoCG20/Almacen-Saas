@@ -1,3 +1,4 @@
+//frontend/src/pages/Equipos/EquipoHistorial.jsx
 import React, { useState, useEffect } from 'react';
 import {
   History,

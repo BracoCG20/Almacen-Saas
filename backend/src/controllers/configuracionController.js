@@ -1,3 +1,4 @@
+//backend/src/controllers/configuracionController.js
 const configuracionService = require('../services/configuracionService');
 
 const getLicencias = async (req, res) => {

@@ -1,3 +1,4 @@
+//backend/src/services/proveedoresService.js
 const { pool } = require('../config/db');
 
 const getAllProveedores = async () => {

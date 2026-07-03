@@ -1,3 +1,4 @@
+//frontend/src/pages/Equipos/AddEquipoForm.jsx
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import {

@@ -1,3 +1,4 @@
+//frontend/src/pages/Dashboard/DashboardCharts.jsx
 import React from 'react';
 import {
   BarChart,

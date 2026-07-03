@@ -1,3 +1,4 @@
+//backend/src/routes/serviciosRoutes.js
 const { Router } = require('express');
 const verifyToken = require('../middlewares/authMiddleware');
 // Importamos el nuevo middleware de memoria RAM
