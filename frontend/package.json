@@ -21,9 +21,10 @@
     "react-idle-timer": "^5.7.2",
     "react-router-dom": "^7.13.0",
     "react-select": "^5.10.2",
-    "react-toastify": "^11.0.5",
+    "react-toastify": "^11.1.0",
     "recharts": "^3.7.0",
     "sass": "^1.101.0",
+    "sileo": "^0.1.5",
     "socket.io-client": "^4.8.3",
     "uuid": "^13.0.0",
     "xlsx": "^0.18.5"

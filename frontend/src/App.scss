@@ -1,180 +1,77 @@
-//frontend/src/App.scss
-@use './styles/variables' as *;
-@use 'sass:color';
+@use "./styles/variables" as *;
+@use "sass:color";
 
 .force-logout-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(5px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 99999;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.8);
+	backdrop-filter: blur(5px);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 99999;
 }
 
 .force-logout-modal {
-  background: $white;
-  padding: 30px;
-  border-radius: 16px;
-  width: 90%;
-  max-width: 400px;
-  text-align: center;
-  box-shadow: 0 20px 25px rgba(0, 0, 0, 0.2);
+	background: $white;
+	padding: 30px;
+	border-radius: 16px;
+	width: 90%;
+	max-width: 400px;
+	text-align: center;
+	box-shadow: 0 20px 25px rgba(0, 0, 0, 0.2);
 
-  .warning-icon-container {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    background: $danger-100;
-    color: $danger;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0 auto 20px auto;
-  }
+	.warning-icon-container {
+		width: 70px;
+		height: 70px;
+		border-radius: 50%;
+		background: $danger-100;
+		color: $danger;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		margin: 0 auto 20px auto;
+	}
 
-  .force-logout-title {
-    margin: 0 0 10px 0;
-    color: $text-main;
-    font-size: 1.4rem;
-  }
+	.force-logout-title {
+		margin: 0 0 10px 0;
+		color: $text-main;
+		font-size: 1.4rem;
+	}
 
-  .force-logout-text {
-    color: $text-muted;
-    font-size: 1rem;
-    line-height: 1.5;
-    margin-bottom: 25px;
-  }
+	.force-logout-text {
+		color: $text-muted;
+		font-size: 1rem;
+		line-height: 1.5;
+		margin-bottom: 25px;
+	}
 
-  .force-logout-btn {
-    width: 100%;
-    padding: 14px;
-    border-radius: 10px;
-    border: none;
-    background-color: $danger;
-    color: $white;
-    font-weight: bold;
-    font-size: 1rem;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.2s ease;
+	.force-logout-btn {
+		width: 100%;
+		padding: 14px;
+		border-radius: 10px;
+		border: none;
+		background-color: $danger;
+		color: $white;
+		font-weight: bold;
+		font-size: 1rem;
+		cursor: pointer;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 8px;
+		transition: all 0.2s ease;
 
-    &:hover {
-      background-color: color.adjust($danger, $lightness: -10%);
-      transform: translateY(-1px);
-    }
+		&:hover {
+			background-color: color.adjust($danger, $lightness: -10%);
+			transform: translateY(-1px);
+		}
 
-    &:active {
-      transform: translateY(0);
-    }
-  }
-}
-
-// ==========================================================================
-// OVERRIDE DE REACT-TOASTIFY (CON ANIMACIÓN RESTAURADA)
-// ==========================================================================
-
-:root {
-  // Variables globales de la librería
-  --toastify-toast-width: 360px;
-  --toastify-toast-bd-radius: 16px;
-  --toastify-font-family: 'Inter', system-ui, sans-serif;
-  --toastify-text-color-light: $slate-900;
-
-  // Colores Base de Iconos
-  --toastify-color-error: $danger;
-  --toastify-color-success: $success;
-  --toastify-color-warning: $warning;
-  --toastify-color-info: $primary;
-
-  // Barras de progreso con degradado
-  --toastify-color-progress-error: linear-gradient(90deg, #fca5a5, #ef4444);
-  --toastify-color-progress-success: linear-gradient(90deg, #86efac, #16a34a);
-  --toastify-color-progress-warning: linear-gradient(90deg, #fcd34d, #f59e0b);
-  --toastify-color-progress-info: linear-gradient(90deg, #a78bfa, #7c3aed);
-}
-
-/* Rediseño de la tarjeta principal (Glassmorphism) */
-.Toastify__toast-theme--light {
-  background-color: rgba(255, 255, 255, 0.95) !important;
-  backdrop-filter: blur(10px) !important;
-  border: 1px solid rgba(226, 232, 240, 0.8) !important;
-  box-shadow:
-    0 20px 40px -10px rgba(0, 0, 0, 0.15),
-    0 10px 20px -5px rgba(0, 0, 0, 0.05) !important;
-  padding: 16px 20px !important;
-  min-height: 65px !important;
-}
-
-/* Modificamos SOLO las dimensiones de la barra de progreso, no la animación */
-.Toastify__progress-bar {
-  height: 5px !important;
-  border-radius: 10px !important;
-  bottom: 6px !important;
-  left: 8px !important;
-  width: calc(100% - 16px) !important;
-}
-
-/* Tipografía del cuerpo */
-.Toastify__toast-body {
-  font-weight: 600 !important;
-  font-size: 0.9rem !important;
-  padding: 0 !important;
-  margin: 0 !important;
-
-  > div:last-child {
-    margin-left: 4px;
-  }
-}
-
-/* Fondos circulares para los íconos */
-.Toastify__toast-icon {
-  width: 34px !important;
-  height: 34px !important;
-  border-radius: 50% !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  margin-right: 14px !important;
-
-  svg {
-    width: 18px !important;
-    height: 18px !important;
-  }
-}
-
-/* Colores de fondo dinámicos según el tipo de alerta */
-.Toastify__toast--error .Toastify__toast-icon {
-  background-color: #fef2f2 !important;
-}
-.Toastify__toast--success .Toastify__toast-icon {
-  background-color: #f0fdf4 !important;
-}
-.Toastify__toast--warning .Toastify__toast-icon {
-  background-color: #fffbeb !important;
-}
-.Toastify__toast--info .Toastify__toast-icon {
-  background-color: #f5f3ff !important;
-}
-
-/* Botón cerrar */
-.Toastify__close-button {
-  color: #94a3b8 !important;
-  opacity: 0.7 !important;
-  align-self: center !important;
-  margin-top: 2px !important;
-  transition: all 0.2s ease !important;
-
-  &:hover {
-    color: #0f172a !important;
-    opacity: 1 !important;
-    transform: scale(1.1);
-  }
+		&:active {
+			transform: translateY(0);
+		}
+	}
 }
