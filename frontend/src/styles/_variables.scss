@@ -2,15 +2,15 @@
 @use 'sass:color';
 
 // Colores Base
-$bg-body: #f3f4f6;
-$primary: #7c3aed;
+$bg-body: #f3f4f6; //-------
+$primary: #7c3aed; //-------
 // $secondary: #0d9488;
-$text-main: #1e293b;
-$text-muted: #64748b;
-$border-color: #e5e7eb;
+$text-main: #1e293b; //-------
+$text-muted: #64748b; //-------
+$border-color: #e5e7eb; //-------
 $white: #ffffff;
-$danger: #ef4444;
-$success: #10b981;
+$danger: #ef4444; //-------
+$success: #10b981; //-------
 $info: #3b82f6;
 $warning: #f59e0b;
 $male: #3b82f6;
@@ -18,16 +18,29 @@ $female: #ec4899;
 
 // Paleta Danger
 $danger-50: #fef2f2;
-$danger-100: #ffe2e2;
+$danger-100: #ffe2e2; //close-hover
 $danger-200: #ffc9c9;
 $danger-300: #ffa2a2;
 $danger-400: #ff6467;
 $danger-500: #fb2c36; //danger
-$danger-600: #e7000b;
+$danger-600: #e7000b; //danger-hover
 $danger-700: #c10007;
 $danger-800: #9f0712;
 $danger-900: #82181a;
 $danger-950: #460809;
+
+// Paleta Success
+$success-50: #ecfdf5;
+$success-100: #d0fae5;
+$success-200: #a4f4cf;
+$success-300: #5ee9b5;
+$success-400: #00d492;
+$success-500: #00bc7d; //success
+$success-600: #009966; //success-hover
+$success-700: #007a55;
+$success-800: #006045;
+$success-900: #004f3b;
+$success-950: #002c22;
 
 // Paleta Violeta
 $violet-50: #f5f3ff;
@@ -44,15 +57,15 @@ $violet-950: #2f0d68;
 
 // Paleta Slate
 $slate-50: #f8fafc;
-$slate-100: #f1f5f9;
-$slate-200: #e2e8f0;
-$slate-300: #cad5e2;
-$slate-400: #90a1b9;
-$slate-500: #62748e;
+$slate-100: #f1f5f9; //bg-body
+$slate-200: #e2e8f0; //scrollbar
+$slate-300: #cad5e2; //border-color, scrollbar-hover
+$slate-400: #90a1b9; //close
+$slate-500: #62748e; //text-muted
 $slate-600: #45556c;
 $slate-700: #314158;
 $slate-800: #1d293d; //text-main
-$slate-900: #0f172b;
+$slate-900: #0f172b; //pagination
 $slate-950: #020618;
 
 //Estilos Sidebar

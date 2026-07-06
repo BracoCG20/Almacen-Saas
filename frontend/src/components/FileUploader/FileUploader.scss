@@ -1,5 +1,5 @@
 //frontend/src/components/FileUploader/FileUploader.scss
-@use '../../styles/variables' as v;
+@use '../../styles/variables' as *;
 
 .file-upload-wrapper {
   width: 100%;
@@ -16,11 +16,11 @@
       min-height: 40px;
       padding: 8px 14px;
 
-      background-color: #f8fafc;
-      border: 1px dashed #cbd5e1;
+      background-color: $slate-50;
+      border: 1px dashed $slate-400;
       border-radius: 8px;
-      color: #64748b;
-      font-weight: 500;
+      color: $text-muted;
+      font-weight: 400;
       font-size: 0.8rem;
       cursor: pointer;
       transition: all 0.2s ease;
@@ -28,15 +28,15 @@
       line-height: 1.3;
 
       svg {
-        color: v.$primary;
+        color: $primary;
         transition: transform 0.2s ease;
         flex-shrink: 0;
       }
 
       &:hover {
-        background-color: v.$violet-50;
-        border-color: v.$primary;
-        color: v.$violet-700;
+        background-color: $violet-50;
+        border-color: $primary;
+        color: $violet-700;
 
         svg {
           transform: translateY(-2px);
@@ -54,15 +54,15 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: #f8fafc;
-    border: 1px solid #e2e8f0;
+    background-color: $slate-50;
+    border: 1px solid $slate-300;
     padding: 6px 10px;
     border-radius: 8px;
     transition: all 0.2s ease;
     gap: 15px;
 
     &:hover {
-      border-color: v.$primary;
+      border-color: $primary;
       box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.05);
     }
 
@@ -77,18 +77,18 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      color: #334155;
+      color: $text-main;
       font-weight: 600;
       font-size: 0.8rem;
       flex: 1;
       min-width: 0;
 
       .icon-new {
-        color: v.$primary;
+        color: $primary;
         flex-shrink: 0;
       }
       .icon-existing {
-        color: #10b981;
+        color: $success;
         flex-shrink: 0;
       }
 
