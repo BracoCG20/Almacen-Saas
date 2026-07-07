@@ -1,5 +1,5 @@
 //frontend/src/pages/Configuracion/Configuracion.scss
-@use '../../styles/variables' as v;
+@use '../../styles/variables' as *;
 
 .config-container {
   padding: 1.5rem 2rem;
@@ -10,11 +10,11 @@
   .page-header {
     margin-bottom: 2rem;
     padding-bottom: 1rem;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid $slate-200;
 
     h1 {
       font-size: 1.8rem;
-      color: v.$text-main;
+      color: $text-main;
       font-weight: 700;
       margin: 0 0 0.4rem 0;
       @media (max-width: 768px) {
@@ -23,7 +23,7 @@
     }
     span {
       font-size: 0.95rem;
-      color: v.$text-muted;
+      color: $text-muted;
     }
   }
 
@@ -36,11 +36,11 @@
       margin-bottom: 20px;
     }
     h2 {
-      color: #0f172a;
+      color: $slate-800;
       margin-bottom: 10px;
     }
     p {
-      color: #64748b;
+      color: $slate-500;
     }
   }
 
@@ -57,10 +57,10 @@
 
   // Tarjeta de Admin
   .admin-card {
-    background: white;
+    background: $white;
     padding: 1.5rem;
     border-radius: 12px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid $slate-200;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     display: flex;
     flex-direction: column;
@@ -68,20 +68,19 @@
     transition: all 0.2s ease;
 
     &:hover {
-      border-color: #cbd5e1;
+      border-color: $slate-300;
       box-shadow: 0 10px 20px rgba(0, 0, 0, 0.06);
-      transform: translateY(-2px);
     }
 
     .card-content {
       h2 {
-        color: v.$violet-800;
+        color: $violet-800;
         font-size: 1.15rem;
         font-weight: 700;
         margin: 0 0 8px 0;
       }
       p {
-        color: #64748b;
+        color: $slate-500;
         font-size: 0.8rem;
         margin: 0 0 1.5rem 0;
         line-height: 1.5;
@@ -94,8 +93,8 @@
       flex-direction: column;
       gap: 8px;
       margin-bottom: 1.5rem;
-      background-color: #f8fafc;
-      border: 1px solid #e2e8f0;
+      background-color: $slate-50;
+      border: 1px solid $slate-100;
       padding: 10px 12px;
       border-radius: 8px;
 
@@ -103,25 +102,25 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        background-color: white;
+        background-color: $white;
         padding: 6px 10px;
         border-radius: 6px;
-        border: 1px solid #f1f5f9;
+        border: 1px solid $slate-100;
 
         .icon-cloud {
-          color: #0ea5e9;
+          color: $info;
         }
 
         .type-label {
           font-size: 0.8rem;
-          color: #64748b;
-          font-weight: 600;
+          color: $slate-500;
+          font-weight: 500;
           flex: 1;
         }
 
         .limit-value {
-          color: v.$primary;
-          font-size: 0.9rem;
+          color: $primary;
+          font-size: 0.8rem;
           font-weight: 500;
         }
       }
@@ -141,39 +140,35 @@
         align-items: center;
         justify-content: center;
         gap: 6px;
-        font-weight: 600;
+        font-weight: 500;
         font-size: 0.8rem;
         padding: 0 16px;
         height: 40px;
         transition: all 0.2s ease;
-        color: v.$white;
+        color: $white;
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 
-        &:active {
-          transform: translateY(0);
-        }
-
         &.indigo {
-          background-color: v.$primary;
+          background-color: $primary;
           &:hover {
-            background-color: v.$violet-700;
+            background-color: $violet-700;
           }
         }
         &.indigo-light {
-          background-color: #f8fafc;
-          color: #475569;
-          border: 1px solid #e2e8f0;
+          background-color: $slate-50;
+          color: $slate-600;
+          border: 1px solid $slate-200;
           box-shadow: none;
           &:hover {
-            background-color: #f1f5f9;
-            color: #1e293b;
-            border-color: #cbd5e1;
+            background-color: $slate-50;
+            color: $slate-800;
+            border-color: $slate-100;
           }
         }
         &.green {
-          background-color: #10b981;
+          background-color: $success-500;
           &:hover {
-            background-color: #059669;
+            background-color: $success-600;
           }
         }
       }
@@ -199,7 +194,7 @@
   box-sizing: border-box;
 
   .config-modal-content {
-    background: white;
+    background: $white;
     padding: 1.5rem;
     border-radius: 12px;
     width: 100%;
@@ -212,12 +207,12 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 1.2rem;
-      border-bottom: 1px solid #f1f5f9;
+      border-bottom: 1px solid $slate-50;
       padding-bottom: 0.8rem;
       h2 {
         margin: 0;
         font-size: 1.15rem;
-        color: v.$violet-800;
+        color: $violet-800;
         display: flex;
         align-items: center;
         gap: 8px;
@@ -226,13 +221,13 @@
       .btn-close {
         background: transparent;
         border: none;
-        color: #94a3b8;
+        color: $slate-400;
         cursor: pointer;
         padding: 4px;
         transition: 0.2s;
         &:hover {
-          color: v.$danger;
-          background: #fef2f2;
+          color: $danger;
+          background: $danger-100;
           border-radius: 4px;
         }
       }
@@ -245,22 +240,22 @@
       margin-bottom: 1.2rem;
       label {
         font-size: 0.8rem;
-        font-weight: 600;
-        color: #475569;
+        font-weight: 500;
+        color: $slate-600;
       }
       input {
         width: 100%;
         height: 40px;
         padding: 0 12px;
         border-radius: 8px;
-        border: 1px solid #e2e8f0;
+        border: 1px solid $border-color;
         font-size: 0.9rem;
-        color: #0f172a;
+        color: $text-main;
         outline: none;
         box-sizing: border-box;
         transition: 0.2s;
         &:focus {
-          border-color: v.$primary;
+          border-color: $primary;
           box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.1);
         }
       }
@@ -270,12 +265,12 @@
       display: flex;
       gap: 10px;
       margin-top: 1.5rem;
-      border-top: 1px solid #f1f5f9;
+      border-top: 1px solid $slate-100;
       padding-top: 1.5rem;
       button {
         height: 40px;
         border-radius: 8px;
-        font-weight: 600;
+        font-weight: 500;
         cursor: pointer;
         border: none;
         font-size: 0.8rem;
@@ -286,21 +281,20 @@
         align-items: center;
         gap: 6px;
         &.btn-cancel {
-          background: #ffffff;
-          color: #64748b;
-          border: 1px solid #e2e8f0;
+          background: $white;
+          color: $slate-500;
+          border: 1px solid $slate-200;
           &:hover {
-            background: #f8fafc;
-            color: #1e293b;
+            background: $slate-50;
+            color: $slate-800;
           }
         }
         &.btn-confirm {
-          background: v.$primary;
-          color: white;
+          background: $primary;
+          color: $white;
           box-shadow: 0 1px 2px rgba(124, 58, 237, 0.15);
           &:hover {
-            background: v.$violet-700;
-            transform: translateY(-1px);
+            background: $violet-700;
           }
         }
       }

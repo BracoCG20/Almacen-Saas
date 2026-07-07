@@ -120,7 +120,7 @@
       justify-content: center;
       gap: 12px;
       color: $primary;
-      font-weight: 600;
+      font-weight: 500;
       z-index: 10;
 
       .spinner {
@@ -169,7 +169,7 @@
         margin: 0;
         color: #0f172a;
         font-size: 1rem;
-        font-weight: 600;
+        font-weight: 500;
         line-height: 1.2;
       }
 
@@ -232,7 +232,7 @@
     color: $text-muted;
     margin: 0 0 1rem 0;
     text-transform: uppercase;
-    font-weight: 600;
+    font-weight: 500;
     letter-spacing: 0.03em;
 
     &.mt-4 {
@@ -307,11 +307,11 @@
       font-size: 0.6rem;
       color: $text-muted;
       text-transform: uppercase;
-      font-weight: 600;
+      font-weight: 500;
     }
 
     .value {
-      font-weight: 600;
+      font-weight: 500;
       color: $text-main;
       font-size: 0.8rem;
 
@@ -353,11 +353,11 @@
 
       strong {
         color: $text-muted;
-        font-weight: 600;
+        font-weight: 500;
       }
 
       span {
-        font-weight: 600;
+        font-weight: 500;
         color: $text-main;
         text-align: right;
       }

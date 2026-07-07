@@ -1,12 +1,12 @@
 //frontend/src/pages/Devolucion/DevolucionForm.scss
-@use '../../styles/variables' as v;
+@use '../../styles/variables' as *;
 
 .form-card {
-  background: white;
+  background: $white;
   padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  border: 1px solid #e2e8f0;
+  border: 1px solid $slate-200;
   width: 100%;
   box-sizing: border-box;
 
@@ -39,35 +39,26 @@
     border-radius: 6px;
     width: fit-content;
     &.primary {
-      background: v.$violet-50;
-      color: v.$violet-800;
-      svg {
-        color: v.$primary;
-      }
+      background: $violet-50;
+      color: $violet-500;
     }
     &.blue {
-      background: #eff6ff;
-      color: #0369a1;
-      svg {
-        color: #3b82f6;
-      }
+      background: $info-50;
+      color: $info-500;
     }
     &.danger {
-      background: #fef2f2;
-      color: #b91c1c;
-      svg {
-        color: #ef4444;
-      }
+      background: $danger-50;
+      color: $danger-500;
     }
   }
 
   .empty-equipment-card {
-    background: #f8fafc;
-    border: 1px dashed #cbd5e1;
+    background: $slate-50;
+    border: 1px dashed $slate-200;
     border-radius: 8px;
     padding: 20px;
     text-align: center;
-    color: #64748b;
+    color: $slate-500;
     font-size: 0.8rem;
     margin-top: 1.5rem;
   }
@@ -81,14 +72,14 @@
   }
 
   .detected-equipment-card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
+    background: $white;
+    border: 1px solid $slate-200;
     border-radius: 8px;
     overflow: hidden;
     transition: all 0.2s;
 
     &.selected {
-      border-color: v.$primary;
+      border-color: $primary;
       box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.2);
     }
 
@@ -98,10 +89,10 @@
       gap: 12px;
       padding: 12px 15px;
       cursor: pointer;
-      background: #f8fafc;
+      background: $slate-50;
       transition: background 0.2s;
       &:hover {
-        background: #f1f5f9;
+        background: $slate-100;
       }
 
       .info-wrapper {
@@ -110,11 +101,11 @@
         gap: 2px;
         .title {
           font-size: 0.8rem;
-          color: #0f172a;
+          color: $slate-800;
         }
         .serial {
           font-size: 0.75rem;
-          color: #64748b;
+          color: $slate-500;
           display: flex;
           align-items: center;
           gap: 4px;
@@ -125,8 +116,8 @@
 
     .equipo-options {
       padding: 15px;
-      border-top: 1px solid #e2e8f0;
-      background: #ffffff;
+      border-top: 1px solid $slate-200;
+      background: $white;
 
       /* CSS GRID para alinear perfectamente los Selects */
       .input-group-grid {
@@ -145,8 +136,8 @@
 
       .mini-label {
         font-size: 0.75rem;
-        color: #475569;
-        font-weight: 600;
+        color: $slate-500;
+        font-weight: 500;
         margin: 0;
         padding: 0;
         line-height: 1;
@@ -159,7 +150,7 @@
         height: 36px; /* Misma altura que el Select para cuadrar visualmente */
         span {
           font-size: 0.75rem;
-          color: #94a3b8;
+          color: $slate-400;
           font-style: italic;
           margin-bottom: 8px;
         }
@@ -167,20 +158,20 @@
 
       .danger-textarea-mini {
         width: 100%;
-        border: 1px solid #fca5a5;
+        border: 1px solid $slate-100;
         border-radius: 6px;
         padding: 10px;
         font-size: 0.8rem;
-        background-color: #fef2f2;
-        color: #7f1d1d;
+        background-color: $slate-50;
+        color: $slate-500;
         outline: none;
         resize: vertical;
         box-sizing: border-box;
         &::placeholder {
-          color: #fca5a5;
+          color: $slate-300;
         }
         &:focus {
-          border-color: #ef4444;
+          border-color: $slate-400;
           box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1);
         }
       }
@@ -192,7 +183,7 @@
     flex-direction: column;
     gap: 10px;
     margin-top: 2rem;
-    border-top: 1px dashed #e2e8f0;
+    border-top: 1px dashed $slate-200;
     padding-top: 1.5rem;
     width: 100%;
 
@@ -208,35 +199,34 @@
       justify-content: center;
       gap: 8px;
       font-size: 0.8rem;
-      font-weight: 600;
-      color: white;
+      font-weight: 500;
+      color: $white;
       transition: all 0.2s ease;
       &:disabled {
-        background-color: #f8fafc !important;
-        color: #94a3b8 !important;
+        background-color: $slate-50 !important;
+        color: $slate-400 !important;
         cursor: not-allowed;
-        border: 1px solid #e2e8f0;
+        border: 1px solid $slate-200;
       }
       &:hover:not(:disabled) {
-        transform: translateY(-1px);
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
       }
       &.gray {
-        background: #64748b;
+        background: $slate-500;
         &:hover:not(:disabled) {
-          background: #475569;
+          background: $slate-600;
         }
       }
       &.blue {
-        background: #3b82f6;
+        background: $info-500;
         &:hover:not(:disabled) {
-          background: #2563eb;
+          background: $info-600;
         }
       }
       &.green {
-        background: #10b981;
+        background: $success-500;
         &:hover:not(:disabled) {
-          background: #059669;
+          background: $success-600;
         }
       }
     }

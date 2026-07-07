@@ -1,5 +1,5 @@
 //frontend/src/pages/Directorio/DirectorioHistorial.scss
-@use '../../styles/variables' as v;
+@use '../../styles/variables' as *;
 
 .audit-modal-content {
   max-height: 70vh;
@@ -10,16 +10,16 @@
     width: 6px;
   }
   &::-webkit-scrollbar-track {
-    background: transparent;
+    background: $slate-200;
   }
   &::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
+    background: $slate-300;
     border-radius: 10px;
   }
 
   .empty-audit {
     text-align: center;
-    color: #94a3b8;
+    color: $slate-400;
     font-size: 0.9rem;
     padding: 3rem 0;
   }
@@ -37,7 +37,7 @@
       top: 10px;
       bottom: 10px;
       width: 2px;
-      background-color: #e2e8f0;
+      background-color: $slate-200;
       transform: translateX(-50%);
     }
 
@@ -57,36 +57,36 @@
         width: 12px;
         height: 12px;
         border-radius: 50%;
-        background-color: v.$white;
-        border: 2px solid v.$primary;
+        background-color: $white;
+        border: 2px solid $primary;
         transform: translateX(-50%);
         z-index: 2;
-        box-shadow: 0 0 0 4px v.$white;
+        box-shadow: 0 0 0 4px $white;
       }
 
       // Colores por acción
       &.danger-log::before {
-        border-color: v.$danger;
+        border-color: $danger-500;
       }
       &.success-log::before {
-        border-color: #10b981;
+        border-color: $success-500;
       }
       &.warning-log::before {
-        border-color: #f59e0b;
+        border-color: $warning-500;
       }
       &.primary-log::before {
-        border-color: v.$primary;
+        border-color: $violet-500;
       }
 
       .audit-card {
-        background: v.$white;
-        border: 1px solid #e2e8f0;
+        background: $white;
+        border: 1px solid $slate-200;
         border-radius: 10px;
         padding: 14px 16px;
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
-        transition: all 0.2s ease;
+        transition: all 0.2s ease-in-out;
         &:hover {
-          border-color: v.$violet-200;
+          border-color: $violet-200;
           box-shadow: 0 4px 12px rgba(124, 58, 237, 0.06);
         }
 
@@ -98,7 +98,7 @@
           flex-wrap: wrap;
           gap: 8px;
           strong {
-            color: v.$violet-800;
+            color: $violet-800;
             font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 0.03em;
@@ -107,25 +107,25 @@
             display: flex;
             align-items: center;
             gap: 4px;
-            background: v.$violet-50;
-            color: v.$violet-700;
+            background: $violet-50;
+            color: $violet-700;
             padding: 4px 10px;
             border-radius: 6px;
             font-size: 0.75rem;
-            font-weight: 600;
+            font-weight: 500;
           }
         }
 
         .log-description {
-          color: #475569;
+          color: $slate-600;
           font-size: 0.8rem;
           line-height: 1.5;
           margin: 0 0 12px 0;
           strong {
-            color: #0f172a;
+            color: $slate-800;
           }
           .transfer-note {
-            color: #d97706;
+            color: $slate-800;
             display: inline-flex;
             align-items: center;
             gap: 4px;
@@ -135,20 +135,20 @@
         }
 
         .log-footer-grid {
-          border-top: 1px dashed #e2e8f0;
+          border-top: 1px dashed $slate-200;
           padding-top: 10px;
           .footer-item {
             display: flex;
             align-items: center;
             gap: 6px;
             font-size: 0.8rem;
-            color: #64748b;
+            color: $slate-500;
             .icon-primary {
-              color: v.$primary;
+              color: $primary;
             }
             strong {
-              color: #1e293b;
-              font-weight: 600;
+              color: $slate-500;
+              font-weight: 500;
             }
           }
         }
@@ -162,13 +162,13 @@
     align-items: center;
     margin-top: 1.5rem;
     padding-top: 1rem;
-    border-top: 1px solid #e2e8f0;
+    border-top: 1px solid $slate-200;
     .info {
       font-size: 0.8rem;
-      color: #64748b;
+      color: $slate-500;
       strong {
-        color: #0f172a;
-        font-weight: 600;
+        color: $slate-800;
+        font-weight: 500;
       }
     }
     .controls {
@@ -177,29 +177,29 @@
       gap: 12px;
       span {
         font-size: 0.8rem;
-        font-weight: 600;
-        color: #64748b;
+        font-weight: 500;
+        color: $slate-500;
       }
       button {
         height: 32px;
         padding: 0 12px;
         border-radius: 6px;
-        border: 1px solid #e2e8f0;
-        background-color: v.$white;
-        color: #0f172a;
+        border: 1px solid $slate-200;
+        background-color: $white;
+        color: $slate-800;
         font-size: 0.8rem;
         font-weight: 500;
         cursor: pointer;
         transition: all 0.2s ease;
         &:hover:not(:disabled) {
-          background-color: v.$violet-50;
-          color: v.$violet-700;
-          border-color: v.$violet-100;
+          background-color: $violet-50;
+          color: $violet-700;
+          border-color: $violet-100;
         }
         &:disabled {
           opacity: 0.4;
           cursor: not-allowed;
-          background-color: #f8fafc;
+          background-color: $slate-50;
         }
       }
     }

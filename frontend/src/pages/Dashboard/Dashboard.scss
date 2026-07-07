@@ -1,390 +1,390 @@
 //frontend/src/pages/Dashboard/Dashboard.scss
-@use "../../styles/variables" as *;
+@use '../../styles/variables' as *;
 
 .dashboard-container-modern {
-	padding: 0.5rem;
-	max-width: 1400px;
-	margin: 0 auto;
-	width: 100%;
-	box-sizing: border-box;
+  padding: 0.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
 
-	// --- SECCIÓN DE BIENVENIDA ---
-	.welcome-section {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		flex-wrap: wrap;
-		gap: 15px;
-		margin-bottom: 2rem;
+  // --- SECCIÓN DE BIENVENIDA ---
+  .welcome-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 2rem;
 
-		.text-content {
-			h1 {
-				font-size: 1.8rem;
-				font-weight: 700;
-				color: $text-main;
-				margin: 0 0 0.4rem 0;
-				.user-name {
-					color: $primary;
-				}
-			}
-			p {
-				margin: 0;
-				color: $text-muted;
-				font-size: 0.95rem;
-			}
-		}
-	}
+    .text-content {
+      h1 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: $text-main;
+        margin: 0 0 0.4rem 0;
+        .user-name {
+          color: $primary;
+        }
+      }
+      p {
+        margin: 0;
+        color: $text-muted;
+        font-size: 0.95rem;
+      }
+    }
+  }
 
-	// --- SEPARADORES ---
-	.section-divider {
-		height: 1px;
-		background-color: $border-color;
-		margin: 3rem 0;
-		@media (max-width: 600px) {
-			margin: 2rem 0;
-		}
-	}
+  // --- SEPARADORES ---
+  .section-divider {
+    height: 1px;
+    background-color: $border-color;
+    margin: 3rem 0;
+    @media (max-width: 600px) {
+      margin: 2rem 0;
+    }
+  }
 
-	// --- TARJETAS SUPERIORES (KPIs) ---
-	.stats-grid-modern {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-		gap: 1.5rem;
-		margin-bottom: 2.5rem;
+  // --- TARJETAS SUPERIORES (KPIs) ---
+  .stats-grid-modern {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
 
-		.stat-card {
-			background: $white;
-			border-radius: 12px;
-			padding: 1.5rem;
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			border: 1px solid $border-color;
-			box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-			transition: all 0.2s ease;
+    .stat-card {
+      background: $white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid $border-color;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      transition: all 0.2s ease;
 
-			&:hover {
-				border-color: $violet-100;
-				box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-			}
+      &:hover {
+        border-color: $violet-100;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
 
-			.info {
-				display: flex;
-				flex-direction: column;
-				gap: 4px;
-				.label {
-					font-size: 0.8rem;
-					color: $text-muted;
-					font-weight: 600;
-					text-transform: uppercase;
-				}
-				.number {
-					font-size: 2.2rem;
-					font-weight: 600;
-					color: $text-main;
-					line-height: 1;
-					&.text-success {
-						color: $success;
-					}
-					&.text-primary {
-						color: $primary;
-					}
-					&.text-danger {
-						color: $danger;
-					}
-				}
-			}
+      .info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        .label {
+          font-size: 0.8rem;
+          color: $text-muted;
+          font-weight: 500;
+          text-transform: uppercase;
+        }
+        .number {
+          font-size: 2.2rem;
+          font-weight: 500;
+          color: $text-main;
+          line-height: 1;
+          &.text-success {
+            color: $success;
+          }
+          &.text-primary {
+            color: $primary;
+          }
+          &.text-danger {
+            color: $danger;
+          }
+        }
+      }
 
-			.icon-wrapper {
-				width: 54px;
-				height: 54px;
-				border-radius: 12px;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				flex-shrink: 0;
-				&.bg-indigo {
-					background: $bg-body;
-					color: $text-muted;
-				}
-				&.bg-success {
-					background: rgba($success, 0.1);
-					color: $success;
-				}
-				&.bg-primary {
-					background: $violet-50;
-					color: $primary;
-				}
-				&.bg-danger {
-					background: rgba($danger, 0.1);
-					color: $danger;
-				}
-			}
-		}
-	}
+      .icon-wrapper {
+        width: 54px;
+        height: 54px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        &.bg-indigo {
+          background: $bg-body;
+          color: $text-muted;
+        }
+        &.bg-success {
+          background: $success-50;
+          color: $success-500;
+        }
+        &.bg-primary {
+          background: $violet-50;
+          color: $violet-500;
+        }
+        &.bg-danger {
+          background: $danger-50;
+          color: $danger-500;
+        }
+      }
+    }
+  }
 
-	// --- TARJETA DE COSTOS (Inversión) ---
-	.cost-summary-modern {
-		background: $white;
-		border-radius: 12px;
-		padding: 2rem;
-		border: 1px solid $bg-body;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-		@media (max-width: 600px) {
-			padding: 1.2rem;
-		}
+  // --- TARJETA DE COSTOS (Inversión) ---
+  .cost-summary-modern {
+    background: $white;
+    border-radius: 12px;
+    padding: 2rem;
+    border: 1px solid $bg-body;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    @media (max-width: 600px) {
+      padding: 1.2rem;
+    }
 
-		.cost-header {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			margin-bottom: 2rem;
-			flex-wrap: wrap;
-			gap: 1rem;
+    .cost-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
 
-			.title-group {
-				display: flex;
-				align-items: center;
-				gap: 12px;
-				.icon-circle {
-					width: 40px;
-					height: 40px;
-					background: $violet-50;
-					color: $primary;
-					border-radius: 50%;
-					display: flex;
-					align-items: center;
-					justify-content: center;
-				}
-				h2 {
-					margin: 0;
-					font-size: 1.2rem;
-					font-weight: 700;
-					color: $text-main;
-				}
-			}
+      .title-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        .icon-circle {
+          width: 40px;
+          height: 40px;
+          background: $violet-50;
+          color: $primary;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        h2 {
+          margin: 0;
+          font-size: 1.2rem;
+          font-weight: 700;
+          color: $text-main;
+        }
+      }
 
-			.filter-tabs-modern {
-				display: flex;
-				background: $bg-body;
-				padding: 4px;
-				border-radius: 8px;
-				border: 1px solid $violet-50;
-				flex-wrap: wrap;
-				width: 100%;
-				@media (min-width: 768px) {
-					width: auto;
-				}
-				.filter-btn {
-					flex: 1;
-					background: transparent;
-					color: $text-muted;
-					border: none;
-					padding: 8px 16px;
-					border-radius: 6px;
-					font-size: 0.8rem;
-					font-weight: 600;
-					cursor: pointer;
-					transition: 0.2s;
-					&.active {
-						background: $white;
-						color: $primary;
-						box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-					}
-				}
-			}
-		}
+      .filter-tabs-modern {
+        display: flex;
+        background: $bg-body;
+        padding: 4px;
+        border-radius: 8px;
+        border: 1px solid $violet-50;
+        flex-wrap: wrap;
+        width: 100%;
+        @media (min-width: 768px) {
+          width: auto;
+        }
+        .filter-btn {
+          flex: 1;
+          background: transparent;
+          color: $text-muted;
+          border: none;
+          padding: 8px 16px;
+          border-radius: 6px;
+          font-size: 0.8rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: 0.2s;
+          &.active {
+            background: $white;
+            color: $primary;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+          }
+        }
+      }
+    }
 
-		.cost-body {
-			display: grid;
-			grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-			gap: 1.5rem;
+    .cost-body {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
 
-			.currency-card {
-				background: rgba($bg-body, 0.5);
-				border: 1px solid $violet-50;
-				border-radius: 12px;
-				padding: 1.5rem;
-				display: flex;
-				justify-content: space-between;
-				align-items: flex-end;
-				position: relative;
-				overflow: hidden;
-				.currency-info {
-					display: flex;
-					flex-direction: column;
-					gap: 8px;
-					z-index: 2;
-				}
-				.currency-label {
-					font-size: 0.8rem;
-					text-transform: uppercase;
-					color: $text-muted;
-					font-weight: 700;
-				}
-				.currency-value {
-					font-size: 2rem;
-					font-weight: 700;
-					color: $primary;
-					letter-spacing: -1px;
-				}
-				.bg-icon {
-					position: absolute;
-					right: 35px;
-					bottom: 35px;
-					color: $primary;
-					opacity: 0.5;
-					z-index: 1;
-					transform: scale(1.5);
-				}
-			}
-			.no-costs {
-				color: $text-muted;
-				font-style: italic;
-				font-size: 0.9rem;
-			}
-		}
-	}
+      .currency-card {
+        background: $slate-50;
+        border: 1px solid $violet-50;
+        border-radius: 12px;
+        padding: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        position: relative;
+        overflow: hidden;
+        .currency-info {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          z-index: 2;
+        }
+        .currency-label {
+          font-size: 0.8rem;
+          text-transform: uppercase;
+          color: $text-muted;
+          font-weight: 700;
+        }
+        .currency-value {
+          font-size: 2rem;
+          font-weight: 700;
+          color: $primary;
+          letter-spacing: -1px;
+        }
+        .bg-icon {
+          position: absolute;
+          right: 35px;
+          bottom: 35px;
+          color: $primary;
+          opacity: 0.5;
+          z-index: 1;
+          transform: scale(1.5);
+        }
+      }
+      .no-costs {
+        color: $text-muted;
+        font-style: italic;
+        font-size: 0.9rem;
+      }
+    }
+  }
 
-	// --- TÍTULOS DE SECCIÓN DE GRÁFICOS ---
-	.section-title-modern {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-end;
-		margin-bottom: 1.5rem;
-		flex-wrap: wrap;
-		gap: 1rem;
-		.title-block {
-			h2 {
-				font-size: 1.3rem;
-				color: $text-main;
-				font-weight: 700;
-				margin: 0 0 4px 0;
-			}
-			p {
-				margin: 0;
-				font-size: 0.9rem;
-				color: $text-muted;
-			}
-		}
+  // --- TÍTULOS DE SECCIÓN DE GRÁFICOS ---
+  .section-title-modern {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+    .title-block {
+      h2 {
+        font-size: 1.3rem;
+        color: $text-main;
+        font-weight: 700;
+        margin: 0 0 4px 0;
+      }
+      p {
+        margin: 0;
+        font-size: 0.9rem;
+        color: $text-muted;
+      }
+    }
 
-		.currency-toggle-modern {
-			display: flex;
-			background: $white;
-			border: 1px solid $violet-50;
-			border-radius: 8px;
-			padding: 4px;
-			button {
-				border: none;
-				background: transparent;
-				padding: 6px 14px;
-				border-radius: 4px;
-				font-weight: 600;
-				font-size: 0.8rem;
-				color: $text-muted;
-				cursor: pointer;
-				transition: 0.2s;
-				&.active {
-					background: $violet-50;
-					color: $primary;
-				}
-			}
-		}
-	}
+    .currency-toggle-modern {
+      display: flex;
+      background: $white;
+      border: 1px solid $violet-50;
+      border-radius: 8px;
+      padding: 4px;
+      button {
+        border: none;
+        background: transparent;
+        padding: 6px 14px;
+        border-radius: 4px;
+        font-weight: 500;
+        font-size: 0.8rem;
+        color: $text-muted;
+        cursor: pointer;
+        transition: 0.2s;
+        &.active {
+          background: $violet-50;
+          color: $primary;
+        }
+      }
+    }
+  }
 
-	// --- CONTENEDORES DE GRÁFICOS (GRID & MASONRY) ---
-	.charts-grid-modern {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 1.5rem;
-		margin-bottom: 2rem;
-		@media (max-width: 900px) {
-			grid-template-columns: 1fr;
-		}
-	}
+  // --- CONTENEDORES DE GRÁFICOS (GRID & MASONRY) ---
+  .charts-grid-modern {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    @media (max-width: 900px) {
+      grid-template-columns: 1fr;
+    }
+  }
 
-	.charts-masonry-modern {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 1.5rem;
-		@media (max-width: 1100px) {
-			grid-template-columns: repeat(2, 1fr);
-		}
-		@media (max-width: 768px) {
-			grid-template-columns: 1fr;
-		}
+  .charts-masonry-modern {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    @media (max-width: 1100px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
 
-		.span-2-col {
-			grid-column: span 2;
-			@media (max-width: 1100px) {
-				grid-column: span 2;
-			}
-			@media (max-width: 768px) {
-				grid-column: span 1;
-			}
-		}
-	}
+    .span-2-col {
+      grid-column: span 2;
+      @media (max-width: 1100px) {
+        grid-column: span 2;
+      }
+      @media (max-width: 768px) {
+        grid-column: span 1;
+      }
+    }
+  }
 
-	// --- TARJETA DE GRÁFICO INDIVIDUAL ---
-	.chart-card {
-		background: $white;
-		border-radius: 12px;
-		border: 1px solid $violet-50;
-		padding: 1.5rem;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
-		display: flex;
-		flex-direction: column;
+  // --- TARJETA DE GRÁFICO INDIVIDUAL ---
+  .chart-card {
+    background: $white;
+    border-radius: 12px;
+    border: 1px solid $violet-50;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    display: flex;
+    flex-direction: column;
 
-		.chart-header {
-			display: flex;
-			align-items: center;
-			gap: 8px;
-			margin-bottom: 1.5rem;
-			.indicator {
-				width: 4px;
-				height: 16px;
-				background-color: $primary;
-				border-radius: 2px;
-				&.secondary {
-					background-color: $info;
-				}
-				&.warning {
-					background-color: $warning;
-				}
-				&.success {
-					background-color: $success;
-				}
-			}
-			h3 {
-				margin: 0;
-				font-size: 1rem;
-				color: $text-main;
-				font-weight: 600;
-			}
-		}
+    .chart-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 1.5rem;
+      .indicator {
+        width: 4px;
+        height: 16px;
+        background-color: $primary;
+        border-radius: 2px;
+        &.secondary {
+          background-color: $info;
+        }
+        &.warning {
+          background-color: $warning;
+        }
+        &.success {
+          background-color: $success;
+        }
+      }
+      h3 {
+        margin: 0;
+        font-size: 1rem;
+        color: $text-main;
+        font-weight: 500;
+      }
+    }
 
-		.chart-wrapper {
-			flex: 1;
-			min-height: 250px;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			width: 100%;
-			.empty-chart {
-				color: $text-muted;
-				font-size: 0.8rem;
-				font-style: italic;
-			}
-		}
-	}
+    .chart-wrapper {
+      flex: 1;
+      min-height: 250px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      .empty-chart {
+        color: $text-muted;
+        font-size: 0.8rem;
+        font-style: italic;
+      }
+    }
+  }
 
-	.loading-state {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		min-height: 60vh;
-		font-size: 1.2rem;
-		color: $primary;
-		font-weight: 600;
-	}
+  .loading-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    font-size: 1.2rem;
+    color: $primary;
+    font-weight: 500;
+  }
 }

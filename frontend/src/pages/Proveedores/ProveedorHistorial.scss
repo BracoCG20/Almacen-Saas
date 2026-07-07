@@ -107,7 +107,7 @@
             padding: 4px 10px;
             border-radius: 6px;
             font-size: 0.75rem;
-            font-weight: 600;
+            font-weight: 500;
           }
         }
 
@@ -126,7 +126,7 @@
             padding: 4px 10px;
             border-radius: 6px;
             font-size: 0.75rem;
-            font-weight: 600;
+            font-weight: 500;
             &.added {
               background-color: v.$violet-50;
               color: v.$primary;
@@ -160,7 +160,7 @@
             }
             strong {
               color: #1e293b;
-              font-weight: 600;
+              font-weight: 500;
             }
           }
         }
@@ -182,7 +182,7 @@
       color: #64748b;
       strong {
         color: #0f172a;
-        font-weight: 600;
+        font-weight: 500;
       }
     }
 
@@ -193,7 +193,7 @@
 
       span {
         font-size: 0.8rem;
-        font-weight: 600;
+        font-weight: 500;
         color: #64748b;
       }
 

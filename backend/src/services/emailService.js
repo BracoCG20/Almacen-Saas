@@ -31,13 +31,13 @@ const enviarActaCorreo = async (
         <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
           <tr>
             <td style="padding-bottom: 16px;">
-              <p style="margin: 0; font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Equipo Asignado</p>
+              <p style="margin: 0; font-size: 12px; font-weight: 500; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Equipo Asignado</p>
               <p style="margin: 4px 0 0 0; font-size: 15px; font-weight: 500; color: #0f172a;">${tipoEquipo}</p>
             </td>
           </tr>
           <tr>
             <td style="padding-top: 16px; border-top: 1px solid #e2e8f0;">
-              <p style="margin: 0; font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Incluye Cargador / Accesorios</p>
+              <p style="margin: 0; font-size: 12px; font-weight: 500; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Incluye Cargador / Accesorios</p>
               <p style="margin: 4px 0 0 0; font-size: 15px; font-weight: 500; color: #0f172a;">${textoCargador}</p>
             </td>
           </tr>
@@ -57,25 +57,25 @@ const enviarActaCorreo = async (
         <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
           <tr>
             <td colspan="2" style="padding-bottom: 16px;">
-              <p style="margin: 0; font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Equipo Devuelto</p>
+              <p style="margin: 0; font-size: 12px; font-weight: 500; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Equipo Devuelto</p>
               <p style="margin: 4px 0 0 0; font-size: 15px; font-weight: 500; color: #0f172a;">${tipoEquipo}</p>
             </td>
           </tr>
           <tr>
             <td style="padding-top: 16px; padding-bottom: 16px; border-top: 1px solid #e2e8f0; width: 50%;">
-              <p style="margin: 0; font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Estado Final</p>
+              <p style="margin: 0; font-size: 12px; font-weight: 500; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Estado Final</p>
               <div style="margin-top: 6px;">
-                <span style="background-color: ${estadoBg}; color: ${estadoColor}; font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 16px; display: inline-block;">${estadoSeguro}</span>
+                <span style="background-color: ${estadoBg}; color: ${estadoColor}; font-size: 13px; font-weight: 500; padding: 4px 10px; border-radius: 16px; display: inline-block;">${estadoSeguro}</span>
               </div>
             </td>
             <td style="padding-top: 16px; padding-bottom: 16px; border-top: 1px solid #e2e8f0; width: 50%;">
-              <p style="margin: 0; font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Cargador</p>
+              <p style="margin: 0; font-size: 12px; font-weight: 500; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Cargador</p>
               <p style="margin: 4px 0 0 0; font-size: 15px; font-weight: 500; color: #0f172a;">${textoCargador}</p>
             </td>
           </tr>
           <tr>
             <td colspan="2" style="padding-top: 16px; border-top: 1px solid #e2e8f0;">
-              <p style="margin: 0; font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Motivo</p>
+              <p style="margin: 0; font-size: 12px; font-weight: 500; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Motivo</p>
               <p style="margin: 4px 0 0 0; font-size: 15px; font-weight: 500; color: #0f172a;">${motivo || 'Devolución regular'}</p>
             </td>
           </tr>
@@ -102,7 +102,7 @@ const enviarActaCorreo = async (
         </div>
 
         <div style="padding: 32px;">
-          <h1 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600; color: #0f172a;">
+          <h1 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 500; color: #0f172a;">
             Hola, ${nombreEmpleado}
           </h1>
           

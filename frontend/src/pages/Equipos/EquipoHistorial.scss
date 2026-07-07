@@ -36,7 +36,7 @@
         margin: 0;
         color: #0f172a;
         font-size: 1rem;
-        font-weight: 600;
+        font-weight: 500;
       }
       .serial-info {
         font-family: monospace;
@@ -156,7 +156,7 @@
             background-color: $violet-50;
             padding: 4px 10px;
             border-radius: 6px;
-            font-weight: 600;
+            font-weight: 500;
           }
         }
 
@@ -263,7 +263,7 @@
 
             strong {
               color: $text-main;
-              font-weight: 600;
+              font-weight: 500;
             }
           }
         }
@@ -285,7 +285,7 @@
       color: $text-muted;
       strong {
         color: $text-main;
-        font-weight: 600;
+        font-weight: 500;
       }
     }
 
@@ -296,7 +296,7 @@
 
       span {
         font-size: 0.8rem;
-        font-weight: 600;
+        font-weight: 500;
         color: $text-muted;
       }
 

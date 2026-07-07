@@ -1,5 +1,5 @@
 //frontend/src/pages/Devolucion/Devolucion.scss
-@use '../../styles/variables' as v;
+@use '../../styles/variables' as *;
 
 .devolucion-container {
   width: 100%;
@@ -13,12 +13,12 @@
     align-items: center;
     margin-bottom: 1.5rem;
     padding-bottom: 1rem;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid $slate-200;
 
     h1 {
       font-size: 1.8rem;
-      font-weight: 700;
-      color: v.$text-main;
+      font-weight: 500;
+      color: $text-main;
       margin: 0;
       @media (max-width: 768px) {
         font-size: 1.5rem;
@@ -30,17 +30,17 @@
       align-items: center;
       gap: 8px;
       padding: 8px 12px;
-      background-color: v.$violet-50;
-      color: v.$text-muted;
-      border: 1px solid #e2e8f0;
+      background-color: $violet-50;
+      color: $text-muted;
+      border: 1px solid $slate-200;
       border-radius: 8px;
       font-weight: 500;
       font-size: 0.8rem;
       cursor: pointer;
       transition: all 0.2s ease;
       &:hover {
-        background-color: v.$violet-100;
-        color: v.$violet-700;
+        background-color: $violet-100;
+        color: $violet-700;
       }
     }
   }
@@ -93,20 +93,20 @@
     justify-content: center;
 
     &.reject {
-      color: v.$danger;
-      background-color: #fef2f2;
+      color: $danger;
+      background-color: $slate-100;
       box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
     }
   }
 
   h3 {
-    color: v.$text-main;
+    color: $text-main;
     margin-bottom: 0.5rem;
     font-size: 1.05rem;
-    font-weight: 700;
+    font-weight: 500;
   }
   p {
-    color: v.$text-muted;
+    color: $text-muted;
     margin-bottom: 1.5rem;
     font-size: 0.8rem;
     line-height: 1.5;
@@ -144,19 +144,19 @@
       }
 
       &.btn-cancel {
-        background-color: white;
-        border: 1px solid #e2e8f0;
-        color: v.$text-main;
+        background-color: $white;
+        border: 1px solid $slate-200;
+        color: $text-main;
         &:hover {
-          background-color: #f1f5f9;
+          background-color: $slate-100;
         }
       }
       &.btn-confirm-reject {
-        background-color: v.$danger;
-        color: white;
+        background-color: $danger-500;
+        color: $white;
         box-shadow: 0 1px 2px rgba(239, 68, 68, 0.2);
         &:hover {
-          background-color: #dc2626;
+          background-color: $danger-600;
           box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3);
         }
       }

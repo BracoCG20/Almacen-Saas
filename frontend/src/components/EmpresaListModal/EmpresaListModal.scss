@@ -120,7 +120,7 @@
         color: $white;
         border: none;
         border-radius: 8px;
-        font-weight: 600;
+        font-weight: 650;
         font-size: 0.8rem;
         cursor: pointer;
         transition: all 0.2s;
@@ -162,7 +162,7 @@
           th {
             padding: 10px 14px;
             text-align: left;
-            font-weight: 600;
+            font-weight: 500;
             color: $violet-800;
             white-space: nowrap;
             &.center {
@@ -235,7 +235,7 @@
             }
 
             .muted {
-              color: #cbd5e1;
+              color: $info-100;
               font-style: italic;
               font-size: 0.8rem;
             }
@@ -249,12 +249,12 @@
               &.active {
                 background: $success-50;
                 color: $success;
-                border: 1px solid $success-200;
+                border: 1px solid $success-100;
               }
               &.inactive {
                 background: $danger-50;
                 color: $danger;
-                border: 1px solid $danger-200;
+                border: 1px solid $danger-100;
               }
             }
 
@@ -321,7 +321,7 @@
         font-size: 0.8rem;
         strong {
           color: $slate-900;
-          font-weight: 600;
+          font-weight: 500;
         }
       }
 
@@ -332,7 +332,7 @@
         span {
           font-size: 0.8rem;
           color: $text-muted;
-          font-weight: 600;
+          font-weight: 500;
         }
         button {
           display: flex;

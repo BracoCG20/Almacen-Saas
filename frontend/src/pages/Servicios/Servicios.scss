@@ -154,7 +154,7 @@
         th {
           padding: 12px 16px;
           text-align: left;
-          font-weight: 600;
+          font-weight: 500;
           color: v.$violet-800;
           white-space: nowrap;
           &.center {
@@ -212,7 +212,7 @@
       color: v.$text-muted;
     }
     .cost-text {
-      font-weight: 600;
+      font-weight: 500;
       color: #059669;
       font-size: 0.9rem;
     }
@@ -250,7 +250,7 @@
     padding: 2px 10px;
     border-radius: 9999px;
     font-size: 0.7rem;
-    font-weight: 600;
+    font-weight: 500;
     border: 1px solid transparent;
     &.operativo {
       background-color: #f0fdf4;
@@ -318,7 +318,7 @@
       font-size: 0.8rem;
       strong {
         color: v.$text-main;
-        font-weight: 600;
+        font-weight: 500;
       }
     }
     .controls button {
@@ -494,7 +494,7 @@
     color: #64748b;
     strong {
       color: #0f172a;
-      font-weight: 600;
+      font-weight: 500;
     }
   }
 

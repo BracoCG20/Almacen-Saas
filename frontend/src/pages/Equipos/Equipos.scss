@@ -172,7 +172,7 @@
         th {
           padding: 12px 16px;
           text-align: left;
-          font-weight: 600;
+          font-weight: 500;
           color: $violet-800;
           white-space: nowrap;
           &.center {
@@ -234,7 +234,7 @@
       gap: 5px;
       .name-font {
         font-size: 0.7rem;
-        font-weight: 600;
+        font-weight: 500;
         gap: 4px;
         color: $text-main;
       }
@@ -250,7 +250,7 @@
     }
 
     .condicion-text {
-      font-weight: 600;
+      font-weight: 500;
       font-size: 0.8rem;
       &.propio {
         color: $primary;
@@ -274,7 +274,7 @@
     padding: 2px 10px;
     border-radius: 9999px;
     font-size: 0.7rem;
-    font-weight: 600;
+    font-weight: 500;
     border: 1px solid transparent;
 
     &.operativo {
@@ -360,7 +360,7 @@
       font-size: 0.8rem;
       strong {
         color: $text-main;
-        font-weight: 600;
+        font-weight: 500;
       }
     }
 

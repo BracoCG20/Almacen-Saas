@@ -58,15 +58,15 @@
           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
         &.btn-excel {
-          background-color: $success;
+          background-color: $success-500;
           &:hover {
-            filter: brightness(0.92);
+            background-color: $success-600;
           }
         }
         &.btn-add {
-          background-color: $primary;
+          background-color: $violet-500;
           &:hover {
-            filter: brightness(0.92);
+            background-color: $violet-500;
           }
         }
         &.btn-tour {
@@ -140,7 +140,7 @@
   .table-container {
     background: $white;
     border-radius: 8px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid $border-color;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     overflow-x: auto;
 
@@ -151,11 +151,11 @@
       background: transparent;
     }
     &::-webkit-scrollbar-thumb {
-      background: rgba($text-muted, 0.4);
+      background: $slate-200;
       border-radius: 10px;
     }
     &::-webkit-scrollbar-thumb:hover {
-      background: rgba($text-muted, 0.6);
+      background: $slate-300;
     }
     table {
       width: 100%;
@@ -171,7 +171,7 @@
         th {
           padding: 12px 16px;
           text-align: left;
-          font-weight: 600;
+          font-weight: 500;
           color: $violet-800;
           white-space: nowrap;
           &.center {
@@ -185,14 +185,14 @@
         transition: background-color 0.2s ease;
 
         &:hover {
-          background-color: rgba($violet-600, 0.03);
+          background-color: $slate-50;
         }
         &:last-child {
           border-bottom: none;
         }
 
         &.inactive-row {
-          background-color: rgba($text-muted, 0.03);
+          background-color: $slate-100;
           opacity: 0.65;
         }
 
@@ -225,9 +225,9 @@
         border: 1px solid transparent;
 
         &.male {
-          background-color: rgba($male, 0.1);
-          color: $male;
-          border-color: rgba($male, 0.2);
+          background-color: $info-50;
+          color: $info-500;
+          border-color: $info-100;
         }
         &.female {
           background-color: rgba($female, 0.1);
@@ -235,9 +235,9 @@
           border-color: rgba($female, 0.2);
         }
         &.inactive {
-          background-color: rgba($text-muted, 0.1);
-          color: rgba($text-muted, 0.5);
-          border-color: rgba($text-muted, 0.2);
+          background-color: $slate-50;
+          color: $slate-400;
+          border-color: $slate-100;
         }
       }
 
@@ -278,10 +278,10 @@
       text-decoration: none;
       font-weight: 500;
       font-size: 0.8rem;
-      transition: all 0.2s;
+      transition: all 0.2s ease-in-out;
       &:hover {
         // Reemplazo de darken por color.adjust
-        color: color.adjust($success, $lightness: -10%);
+        color: $success-600;
       }
     }
 
@@ -306,22 +306,19 @@
       padding: 2px 10px;
       border-radius: 9999px;
       font-size: 0.75rem;
-      font-weight: 600;
+      font-weight: 500;
       white-space: nowrap;
     }
 
     .dni-text {
       font-size: 0.75rem;
-      background: rgba($text-muted, 0.05);
+      background: $slate-100;
       padding: 2px 6px;
       border-radius: 4px;
       display: inline-flex;
       align-items: center;
       gap: 5px;
       color: $text-muted;
-      svg {
-        color: rgba($text-muted, 0.5);
-      }
     }
 
     /* --- ESTILOS PILL GLOBALES --- */
@@ -332,18 +329,18 @@
       padding: 2px 10px;
       border-radius: 9999px;
       font-size: 0.7rem;
-      font-weight: 600;
+      font-weight: 500;
       border: 1px solid transparent;
 
       &.operativo {
-        background-color: rgba($success, 0.1);
-        color: $success;
-        border-color: rgba($success, 0.2);
+        background-color: $success-50;
+        color: $success-500;
+        border-color: $success-100;
       }
       &.malogrado {
-        background-color: rgba($danger, 0.1);
-        color: $danger;
-        border-color: rgba($danger, 0.2);
+        background-color: $danger-50;
+        color: $danger-500;
+        border-color: $danger-100;
       }
     }
 
@@ -367,22 +364,22 @@
         transition: all 0.2s ease;
 
         &.history:hover {
-          background-color: rgba($info, 0.1);
-          color: $info;
+          background-color: $info-50;
+          color: $info-500;
         }
         &.edit:hover {
-          background-color: rgba($warning, 0.1);
-          color: $warning;
+          background-color: $warning-50;
+          color: $warning-500;
         }
         &.delete:hover {
-          background-color: rgba($danger, 0.1);
-          color: $danger;
+          background-color: $danger-50;
+          color: $danger-500;
         }
         &.activate {
           color: $success;
           &:hover {
-            background-color: rgba($success, 0.1);
-            color: $success;
+            background-color: $success-50;
+            color: $success-500;
           }
         }
       }
@@ -408,7 +405,7 @@
         font-size: 0.8rem;
         strong {
           color: $text-main;
-          font-weight: 600;
+          font-weight: 500;
         }
       }
 
@@ -444,7 +441,7 @@
           }
 
           &:hover:not(:disabled) {
-            background-color: rgba($border-color, 0.1);
+            background-color: $slate-50;
           }
         }
       }
@@ -469,7 +466,7 @@
     .warning-icon {
       color: $warning;
       margin-bottom: 1rem;
-      background-color: rgba($warning, 0.1);
+      background-color: $warning-50;
       width: 56px;
       height: 56px;
       border-radius: 50%;
@@ -515,11 +512,11 @@
           color: $text-muted;
           cursor: pointer;
           &:hover {
-            background-color: rgba($border-color, 0.1);
+            background-color: $slate-50;
           }
         }
         &.btn-confirm {
-          background-color: rgba($danger, 0.9);
+          background-color: $danger-400;
           color: $white;
           cursor: pointer;
           &:hover {

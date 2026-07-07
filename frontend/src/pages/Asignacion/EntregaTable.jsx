@@ -1,21 +1,21 @@
 //frontend/src/pages/Asignacion/EntregaTable.jsx
-import React, { useState } from 'react';
 import {
-  History,
-  Check,
-  FileText,
-  Upload,
-  Ban,
-  Eye,
-  Mail,
   AlertTriangle,
-  CalendarDays,
-  Clock,
+  Ban,
   Barcode,
-  Layers,
+  CalendarDays,
+  Check,
   ChevronLeft,
   ChevronRight,
+  Clock,
+  Eye,
+  FileText,
+  History,
+  Layers,
+  Mail,
+  Upload,
 } from 'lucide-react';
+import { useState } from 'react';
 import './EntregaTable.scss';
 
 const EntregaTable = ({
@@ -90,7 +90,8 @@ const EntregaTable = ({
     <div className='table-container'>
       <div className='table-header-title'>
         <h3>
-          <History size={18} /> Últimas Entregas
+          <History size={18} />
+          <span>Últimas Entregas</span>
         </h3>
       </div>
       <div className='table-responsive-wrapper'>

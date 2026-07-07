@@ -62,7 +62,7 @@
     gap: 15px;
 
     &:hover {
-      border-color: $primary;
+      border-color: $violet-200;
       box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.05);
     }
 
@@ -77,8 +77,8 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      color: $text-main;
-      font-weight: 600;
+      color: $text-muted;
+      font-weight: 500;
       font-size: 0.8rem;
       flex: 1;
       min-width: 0;
@@ -126,34 +126,31 @@
 
         @media (max-width: 500px) {
           flex: 1;
-          background-color: #ffffff;
-          border-color: #e2e8f0;
+          background-color: $white;
+          border-color: $border-color;
         }
 
         &.preview {
-          color: #0ea5e9;
+          color: $info-500;
           &:hover {
-            background-color: #e0f2fe;
-            border-color: #bae6fd;
-            transform: translateY(-1px);
+            background-color: $info-50;
+            border-color: $info-100;
           }
         }
 
         &.download {
-          color: #10b981;
+          color: $success-500;
           &:hover {
-            background-color: #dcfce7;
-            border-color: #bbf7d0;
-            transform: translateY(-1px);
+            background-color: $success-50;
+            border-color: $success-100;
           }
         }
 
         &.delete {
-          color: #ef4444;
+          color: $danger-500;
           &:hover {
-            background-color: #fee2e2;
-            border-color: #fecaca;
-            transform: translateY(-1px);
+            background-color: $danger-50;
+            border-color: $danger-100;
           }
         }
       }

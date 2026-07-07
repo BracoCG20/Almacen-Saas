@@ -1,6 +1,5 @@
 //frontend/src/pages/Directorio/DirectorioStats.scss
-@use '../../styles/variables' as v;
-@use 'sass:color';
+@use '../../styles/variables' as *;
 
 .stats-grid {
   display: grid;
@@ -9,17 +8,16 @@
   margin-bottom: 25px;
 
   .stat-card-mini {
-    background: #ffffff;
+    background: $white;
     border-radius: 14px;
     padding: 20px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid $slate-200;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
     transition:
       transform 0.2s,
       box-shadow 0.2s;
 
     &:hover {
-      transform: translateY(-2px);
       box-shadow: 0 8px 16px rgba(0, 0, 0, 0.04);
     }
 
@@ -48,18 +46,18 @@
           margin: 0;
           font-size: 0.95rem;
           font-weight: 700;
-          color: v.$text-muted;
+          color: $text-muted;
         }
       }
 
       .percentage-badge {
         font-size: 0.75rem;
-        font-weight: 600;
-        color: v.$text-muted;
-        background: #f8fafc;
+        font-weight: 500;
+        color: $text-muted;
+        background: $slate-50;
         padding: 4px 8px;
         border-radius: 6px;
-        border: 1px solid #f1f5f9;
+        border: 1px solid $slate-200;
       }
     }
 
@@ -67,7 +65,7 @@
     .progress-track {
       width: 100%;
       height: 6px;
-      background-color: #f1f5f9;
+      background-color: $slate-50;
       border-radius: 10px;
       overflow: hidden;
       margin-bottom: 20px;
@@ -95,23 +93,23 @@
 
         .label {
           font-size: 0.7rem;
-          color: #64748b;
-          font-weight: 600;
+          color: $slate-500;
+          font-weight: 500;
           text-transform: uppercase;
           letter-spacing: 0.5px;
         }
 
         .value {
           font-size: 1rem;
-          font-weight: 600;
-          color: v.$text-main;
+          font-weight: 500;
+          color: $text-main;
 
           &.free {
-            background-color: #ecfdf8;
+            background-color: $slate-50;
             padding: 2px 8px;
             border-radius: 4px;
-            border: 1px solid #d1fae5;
-            color: #059669;
+            border: 1px solid $success-100;
+            color: $success-500;
           }
         }
       }
@@ -119,7 +117,7 @@
       .divider {
         width: 1px;
         height: 30px;
-        background-color: #e2e8f0;
+        background-color: $slate-200;
         margin: 0 15px;
       }
     }
@@ -127,21 +125,21 @@
     /* --- TEMAS DE COLORES --- */
     &.starter {
       .icon-sm {
-        background-color: #f0f9ff;
-        color: #0284c7;
+        background-color: $info-50;
+        color: $info-500;
       }
       .progress-fill {
-        background: linear-gradient(90deg, #38bdf8, #0284c7);
+        background: linear-gradient(90deg, $info-300, $info-500);
       }
     }
 
     &.standard {
       .icon-sm {
-        background-color: #f3e8ff;
-        color: v.$primary;
+        background-color: $violet-50;
+        color: $violet-500;
       }
       .progress-fill {
-        background: linear-gradient(90deg, #a78bfa, v.$primary);
+        background: linear-gradient(90deg, $violet-300, $violet-500);
       }
     }
   }

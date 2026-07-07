@@ -11,10 +11,36 @@ $border-color: #e5e7eb; //-------
 $white: #ffffff;
 $danger: #ef4444; //-------
 $success: #10b981; //-------
-$info: #3b82f6;
-$warning: #f59e0b;
-$male: #3b82f6;
+$info: #3b82f6; //-------
+$warning: #f59e0b; //------
+$male: #3b82f6; //-------
 $female: #ec4899;
+
+// Paleta Warning
+$warning-50: #fffbeb;
+$warning-100: #fef3c6;
+$warning-200: #fee685;
+$warning-300: #ffd230;
+$warning-400: #ffb900;
+$warning-500: #fe9a00; //warning
+$warning-600: #e17100;
+$warning-700: #bb4d00;
+$warning-800: #973c00;
+$warning-900: #7b3306;
+$warning-950: #461901;
+
+// Paleta Info
+$info-50: #eff6ff;
+$info-100: #dbeafe; //muted-row
+$info-200: #bedbff;
+$info-300: #8ec5ff;
+$info-400: #50a2ff;
+$info-500: #2b7fff; //info, male
+$info-600: #155dfc;
+$info-700: #1447e6;
+$info-800: #193cb8;
+$info-900: #1c398e;
+$info-950: #162556;
 
 // Paleta Danger
 $danger-50: #fef2f2;
@@ -58,8 +84,8 @@ $violet-950: #2f0d68;
 // Paleta Slate
 $slate-50: #f8fafc;
 $slate-100: #f1f5f9; //bg-body
-$slate-200: #e2e8f0; //scrollbar
-$slate-300: #cad5e2; //border-color, scrollbar-hover
+$slate-200: #e2e8f0; //scrollbar, border-color
+$slate-300: #cad5e2; //scrollbar-hover
 $slate-400: #90a1b9; //close
 $slate-500: #62748e; //text-muted
 $slate-600: #45556c;

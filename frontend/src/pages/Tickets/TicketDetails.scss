@@ -38,7 +38,7 @@
         border: 1px solid #e2e8f0;
         padding: 10px;
         border-radius: 8px;
-        font-weight: 600;
+        font-weight: 500;
         font-size: 0.8rem;
         cursor: pointer;
         transition: 0.2s;
@@ -140,7 +140,7 @@
         }
         .value {
           color: #0f172a;
-          font-weight: 600;
+          font-weight: 500;
           display: flex;
           align-items: center;
           gap: 6px;
@@ -179,7 +179,7 @@
           border: 1px solid #cbd5e1;
           background: white;
           color: #475569;
-          font-weight: 600;
+          font-weight: 500;
           font-size: 0.8rem;
           cursor: pointer;
           transition: all 0.2s;
@@ -335,7 +335,7 @@
       background: #f1f5f9;
       border-radius: 6px;
       font-size: 0.8rem;
-      font-weight: 600;
+      font-weight: 500;
       color: #475569;
       text-decoration: none;
       transition: 0.2s;
@@ -369,7 +369,7 @@
           align-items: center;
           gap: 6px;
           font-size: 0.8rem;
-          font-weight: 600;
+          font-weight: 500;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
