@@ -1,5 +1,5 @@
 //frontend/src/pages/Proveedores/ProveedorHistorial.scss
-@use '../../styles/variables' as v;
+@use '../../styles/variables' as *;
 
 .audit-modal-content {
   max-height: 70vh;
@@ -59,19 +59,19 @@
         width: 12px;
         height: 12px;
         border-radius: 50%;
-        background-color: v.$white;
-        border: 2px solid v.$primary;
+        background-color: $white;
+        border: 2px solid $primary;
         transform: translateX(-50%);
         z-index: 2;
-        box-shadow: 0 0 0 4px v.$white;
+        box-shadow: 0 0 0 4px $white;
       }
 
       &.error-log::before {
-        border-color: v.$danger;
+        border-color: $danger;
       }
 
       .audit-card {
-        background: v.$white;
+        background: $white;
         border: 1px solid #e2e8f0;
         border-radius: 10px;
         padding: 14px 16px;
@@ -79,7 +79,7 @@
         transition: all 0.2s ease;
 
         &:hover {
-          border-color: v.$violet-200;
+          border-color: $violet-200;
           box-shadow: 0 4px 12px rgba(124, 58, 237, 0.06);
         }
 
@@ -92,7 +92,7 @@
           gap: 8px;
 
           strong {
-            color: v.$violet-800;
+            color: $violet-800;
             font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 0.03em;
@@ -102,8 +102,8 @@
             display: flex;
             align-items: center;
             gap: 4px;
-            background: v.$violet-50;
-            color: v.$violet-700;
+            background: $violet-50;
+            color: $violet-700;
             padding: 4px 10px;
             border-radius: 6px;
             font-size: 0.75rem;
@@ -128,17 +128,17 @@
             font-size: 0.75rem;
             font-weight: 500;
             &.added {
-              background-color: v.$violet-50;
-              color: v.$primary;
+              background-color: $violet-50;
+              color: $primary;
               text-decoration: none;
-              border: 1px solid v.$violet-100;
+              border: 1px solid $violet-100;
               &:hover {
-                background-color: v.$violet-100;
+                background-color: $violet-100;
               }
             }
             &.removed {
               background-color: #fef2f2;
-              color: v.$danger;
+              color: $danger;
               border: 1px solid #fee2e2;
             }
           }
@@ -156,7 +156,7 @@
             color: #64748b;
 
             .icon-primary {
-              color: v.$primary;
+              color: $primary;
             }
             strong {
               color: #1e293b;
@@ -202,7 +202,7 @@
         padding: 0 12px;
         border-radius: 6px;
         border: 1px solid #e2e8f0;
-        background-color: v.$white;
+        background-color: $white;
         color: #0f172a;
         font-size: 0.8rem;
         font-weight: 500;
@@ -210,9 +210,9 @@
         transition: all 0.2s ease;
 
         &:hover:not(:disabled) {
-          background-color: v.$violet-50;
-          color: v.$violet-700;
-          border-color: v.$violet-100;
+          background-color: $violet-50;
+          color: $violet-700;
+          border-color: $violet-100;
         }
 
         &:disabled {

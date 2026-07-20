@@ -1,5 +1,5 @@
 //frontend/src/pages/Servicios/PagoServicioModal.scss
-@use '../../styles/variables' as v;
+@use '../../styles/variables' as *;
 
 .pago-modal-modern {
   display: flex;
@@ -24,14 +24,14 @@
     .indicator {
       width: 4px;
       height: 16px;
-      background-color: v.$primary;
+      background-color: $primary;
       border-radius: 2px;
     }
 
     h4 {
       font-size: 0.8rem;
       font-weight: 700;
-      color: v.$violet-800;
+      color: $violet-800;
       text-transform: uppercase;
       letter-spacing: 0.025em;
       margin: 0;
@@ -79,7 +79,7 @@
       box-sizing: border-box;
 
       &:focus {
-        border-color: v.$primary;
+        border-color: $primary;
         box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.1);
       }
     }
@@ -118,13 +118,13 @@
     border: none;
     cursor: pointer;
     font-size: 0.9rem;
-    background-color: v.$primary;
+    background-color: $primary;
     color: white;
     transition: all 0.2s ease;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 
     &:hover:not(:disabled) {
-      background-color: v.$violet-700;
+      background-color: $violet-700;
       transform: translateY(-1px);
       box-shadow: 0 4px 6px rgba(124, 58, 237, 0.2);
     }
@@ -166,13 +166,13 @@
       min-width: 450px;
 
       thead tr {
-        background-color: v.$violet-50;
+        background-color: $violet-50;
         th {
           padding: 10px 14px;
           text-align: left;
-          color: v.$violet-800;
+          color: $violet-800;
           font-weight: 500;
-          border-bottom: 1px solid v.$violet-100;
+          border-bottom: 1px solid $violet-100;
           &.center {
             text-align: center;
           }
@@ -199,7 +199,7 @@
         td {
           padding: 8px 14px;
           vertical-align: middle;
-          color: v.$text-main;
+          color: $text-main;
 
           &.date {
             font-weight: 500;
@@ -217,7 +217,7 @@
 
           .badge-anulado {
             background-color: #fee2e2;
-            color: v.$danger;
+            color: $danger;
             padding: 2px 6px;
             border-radius: 4px;
             font-size: 0.7rem;
@@ -239,7 +239,7 @@
       border-radius: 6px;
       border: none;
       background-color: transparent;
-      color: v.$text-muted;
+      color: $text-muted;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -256,7 +256,7 @@
       }
       &.delete:hover {
         background-color: #fee2e2;
-        color: v.$danger;
+        color: $danger;
       }
     }
   }
@@ -329,13 +329,13 @@
     }
 
     h3 {
-      color: v.$text-main;
+      color: $text-main;
       margin-bottom: 0.5rem;
       font-size: 1.05rem;
       font-weight: 700;
     }
     p {
-      color: v.$text-muted;
+      color: $text-muted;
       margin-bottom: 1.5rem;
       font-size: 0.8rem;
       line-height: 1.5;
@@ -368,13 +368,13 @@
         &.btn-cancel {
           background-color: white;
           border: 1px solid #e2e8f0;
-          color: v.$text-main;
+          color: $text-main;
           &:hover {
             background-color: #f1f5f9;
           }
         }
         &.btn-confirm {
-          background-color: v.$danger;
+          background-color: $danger;
           color: white;
           box-shadow: 0 1px 2px rgba(239, 68, 68, 0.2);
           &:hover {

@@ -1,33 +1,31 @@
 //frontend/src/pages/Servicios/Servicios.jsx
-import { useEffect, useState } from 'react';
-import api from '../../service/api';
-import * as XLSX from 'xlsx';
-import { toast } from 'react-toastify';
-import Select from 'react-select';
-import {
-  Plus,
-  Edit,
-  Cloud,
-  CalendarDays,
-  FileSpreadsheet,
-  Search,
-  ChevronLeft,
-  ChevronRight,
-  AlertTriangle,
-  Ban,
-  Undo2,
-  X,
-  Check,
-  Server,
-  Banknote,
-  UserCheck,
-  History,
-  ExternalLink,
-  HelpCircle,
-} from 'lucide-react';
 import { driver } from 'driver.js';
 import 'driver.js/dist/driver.css';
+import {
+  AlertTriangle,
+  Ban,
+  Banknote,
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  Cloud,
+  Edit,
+  ExternalLink,
+  FileSpreadsheet,
+  HelpCircle,
+  History,
+  Plus,
+  Search,
+  Server,
+  Undo2,
+  UserCheck,
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
+import Select from 'react-select';
+import { toast } from 'react-toastify';
+import * as XLSX from 'xlsx';
 import Modal from '../../components/Modal/Modal';
+import api from '../../service/api';
 import AddServicioForm from './AddServicioForm';
 import PagoServicioModal from './PagoServicioModal';
 import ServicioHistorial from './ServicioHistorial';
@@ -243,6 +241,7 @@ const Servicios = () => {
     if (servicios.length === 0) return toast.info('No hay datos para exportar');
     const dataParaExcel = filteredServicios.map((s) => ({
       Nombre: s.nombre,
+      Descripcion: s.descripcion,
       Categoría: s.categoria_servicio || '-',
       Precio: Number(s.precio),
       Estado: s.estado ? 'ACTIVO' : 'INACTIVO',

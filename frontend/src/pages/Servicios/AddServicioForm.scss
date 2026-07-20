@@ -1,5 +1,5 @@
 //frontend/src/pages/Servicios/AddServicioForm.scss
-@use '../../styles/variables' as v;
+@use '../../styles/variables' as *;
 
 .servicio-form-modern {
   display: flex;
@@ -22,14 +22,14 @@
       .indicator {
         width: 4px;
         height: 18px;
-        background-color: v.$primary;
+        background-color: $primary;
         border-radius: 2px;
       }
 
       h4 {
         font-size: 0.9rem;
         font-weight: 700;
-        color: v.$violet-800;
+        color: $violet-800;
         text-transform: uppercase;
         letter-spacing: 0.025em;
         margin: 0;
@@ -85,7 +85,7 @@
       box-sizing: border-box;
 
       &:focus {
-        border-color: v.$primary;
+        border-color: $primary;
         box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.1);
       }
 
@@ -171,7 +171,7 @@
           box-sizing: border-box;
 
           &:focus {
-            border-color: v.$primary;
+            border-color: $primary;
             box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.1);
           }
 
@@ -192,7 +192,7 @@
   }
 
   .btn-submit-modern {
-    background-color: v.$primary;
+    background-color: $primary;
     color: white;
     border: none;
     height: 40px;
@@ -208,7 +208,7 @@
     width: 100%;
 
     &:hover:not(:disabled) {
-      background-color: v.$violet-700;
+      background-color: $violet-700;
       transform: translateY(-1px);
       box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
     }

@@ -1,6 +1,6 @@
 //frontend/src/pages/Historial/Historial.scss
 @use 'sass:color';
-@use '../../styles/variables' as v;
+@use '../../styles/variables' as *;
 
 .historial-container {
   .page-header {
@@ -16,7 +16,7 @@
     h1 {
       font-size: 1.8rem;
       font-weight: 700;
-      color: v.$text-main;
+      color: $text-main;
       margin: 0;
       @media (max-width: 768px) {
         font-size: 1.5rem;
@@ -54,19 +54,19 @@
         }
 
         &.btn-excel {
-          background-color: v.$success;
+          background-color: $success;
           &:hover {
             // Reemplazo de darken por color.adjust
-            background-color: color.adjust(v.$success, $lightness: -5%);
+            background-color: color.adjust($success, $lightness: -5%);
           }
         }
         &.btn-tour {
-          background-color: v.$violet-50;
-          color: v.$text-muted;
+          background-color: $violet-50;
+          color: $text-muted;
           border: 1px solid #e2e8f0;
           &:hover {
-            background-color: v.$violet-100;
-            color: v.$violet-700;
+            background-color: $violet-100;
+            color: $violet-700;
           }
         }
       }
@@ -95,7 +95,7 @@
         min-width: 100%;
       }
       &:focus-within {
-        border-color: v.$primary;
+        border-color: $primary;
         box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.1);
       }
       input {
@@ -103,7 +103,7 @@
         outline: none;
         width: 100%;
         font-size: 0.8rem;
-        color: v.$text-main;
+        color: $text-main;
         background: transparent;
         &::placeholder {
           color: #94a3b8;
@@ -137,13 +137,13 @@
       min-width: 1000px;
       font-size: 0.8rem;
       thead tr {
-        background-color: v.$violet-50;
-        border-bottom: 1px solid v.$violet-100;
+        background-color: $violet-50;
+        border-bottom: 1px solid $violet-100;
         th {
           padding: 12px 16px;
           text-align: left;
           font-weight: 500;
-          color: v.$violet-800;
+          color: $violet-800;
           white-space: nowrap;
           &.center {
             text-align: center;
@@ -396,7 +396,7 @@
     }
     &.devolucion {
       background-color: #fef2f2;
-      color: v.$danger;
+      color: $danger;
       border-color: #fee2e2;
     }
   }
@@ -416,7 +416,7 @@
     }
     &.inoperativo {
       background-color: #fef2f2;
-      color: v.$danger;
+      color: $danger;
       border-color: #fee2e2;
     }
     &.malogrado {
@@ -426,7 +426,7 @@
     }
     &.robado {
       background-color: #fef2f2;
-      color: v.$danger;
+      color: $danger;
       border-color: #fee2e2;
     }
     &.neutro {

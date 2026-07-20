@@ -1,5 +1,5 @@
 //frontend/src/pages/Tickets/TicketDetails.scss
-@use '../../styles/variables' as v;
+@use '../../styles/variables' as *;
 
 .ticket-details-container {
   position: relative;
@@ -291,7 +291,7 @@
                 margin-bottom: 6px;
                 strong {
                   font-size: 0.8rem;
-                  color: v.$primary;
+                  color: $primary;
                 }
                 span {
                   display: flex;
@@ -315,14 +315,14 @@
     }
 
     .chat-link {
-      color: v.$primary;
+      color: $primary;
       text-decoration: underline;
       font-weight: 500;
       transition: color 0.2s;
       word-break: break-all;
 
       &:hover {
-        color: v.$violet-800;
+        color: $violet-800;
       }
     }
 
@@ -342,7 +342,7 @@
 
       &:hover {
         background: #e2e8f0;
-        color: v.$primary;
+        color: $primary;
       }
     }
 
@@ -450,12 +450,12 @@
         transition: border-color 0.2s;
         min-height: 44px;
         &:focus {
-          border-color: v.$primary;
+          border-color: $primary;
         }
       }
 
       .btn-send {
-        background: v.$primary;
+        background: $primary;
         color: white;
         border: none;
         border-radius: 8px;
@@ -468,7 +468,7 @@
         transition: 0.2s;
         flex-shrink: 0;
         &:hover:not(:disabled) {
-          background: v.$violet-700;
+          background: $violet-700;
           transform: translateY(-2px);
         }
         &:disabled {
