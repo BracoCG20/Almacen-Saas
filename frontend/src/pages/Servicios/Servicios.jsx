@@ -244,7 +244,9 @@ const Servicios = () => {
       Descripcion: s.descripcion,
       Categoría: s.categoria_servicio || '-',
       Precio: Number(s.precio),
+      Moneda: s.moneda,
       Estado: s.estado ? 'ACTIVO' : 'INACTIVO',
+      'Frecuencia de Pago': s.frecuencia_pago,
       'Próximo Pago': s.fecha_proximo_pago
         ? new Date(s.fecha_proximo_pago).toLocaleDateString()
         : '-',
