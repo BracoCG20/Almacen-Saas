@@ -1,36 +1,34 @@
 //frontend/src/pages/Equipos/Equipos.jsx
-import { useEffect, useState } from 'react';
-import api from '../../service/api';
-import * as XLSX from 'xlsx';
-import { toast } from 'react-toastify';
-import Select from 'react-select';
 import {
-  Plus,
-  Eye,
-  Edit,
-  Laptop,
-  CalendarDays,
-  FileSpreadsheet,
-  Search,
-  ChevronLeft,
-  ChevronRight,
   AlertTriangle,
   Ban,
+  Barcode,
+  Cable,
+  CalendarDays,
+  Camera,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Edit,
+  Eye,
+  FileSpreadsheet,
+  History,
+  Keyboard,
+  Laptop,
+  Monitor,
+  Package,
+  Plus,
+  Search,
+  Smartphone,
   Undo2,
   X,
-  Check,
-  History,
-  Smartphone,
-  Camera,
-  Keyboard,
-  Monitor,
-  Cable,
-  Package,
-  HelpCircle,
-  Barcode,
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import Select from 'react-select';
+import { toast } from 'react-toastify';
+import * as XLSX from 'xlsx';
+import api from '../../service/api';
 
-import { driver } from 'driver.js';
 import 'driver.js/dist/driver.css';
 
 import Modal from '../../components/Modal/Modal';
@@ -87,70 +85,6 @@ const Equipos = () => {
     { value: 'Redes/Cables', label: 'Redes y Cables' },
     { value: 'Otros', label: 'Otros' },
   ];
-
-  /**
-   * TOUR GUIADO
-   * Guío al usuario para que sepa cómo buscar, filtrar y exportar su inventario.
-   */
-  const startInventarioTour = () => {
-    const driverObj = driver({
-      showProgress: true,
-      nextBtnText: 'Siguiente &rarr;',
-      prevBtnText: '&larr; Anterior',
-      doneBtnText: '¡Entendido!',
-      allowClose: true,
-      overlayColor: 'rgba(0, 0, 0, 0.6)',
-      steps: [
-        {
-          element: '#tour-inventario-filtros',
-          popover: {
-            title: 'Búsqueda Inteligente',
-            description:
-              'Busca por serie, modelo o filtra por categoría y propiedad.',
-            side: 'bottom',
-            align: 'start',
-          },
-        },
-        {
-          element: '#tour-inventario-tabla',
-          popover: {
-            title: 'Tabla Principal',
-            description: 'Aquí verás el listado de tus equipos y su estado.',
-            side: 'top',
-            align: 'start',
-          },
-        },
-        {
-          element: '#tour-inventario-acciones',
-          popover: {
-            title: 'Acciones de Equipo',
-            description: 'Ve el historial, ficha técnica, edita o da de baja.',
-            side: 'left',
-            align: 'center',
-          },
-        },
-        {
-          element: '#tour-inventario-excel',
-          popover: {
-            title: 'Exportar Reporte',
-            description: 'Descarga un Excel detallado del inventario filtrado.',
-            side: 'bottom',
-            align: 'center',
-          },
-        },
-        {
-          element: '#tour-inventario-nuevo',
-          popover: {
-            title: 'Registrar Ítem',
-            description: 'Agrega nuevos equipos o accesorios al almacén.',
-            side: 'left',
-            align: 'start',
-          },
-        },
-      ],
-    });
-    driverObj.drive();
-  };
 
   /**
    * CARGA INICIAL
@@ -379,40 +313,44 @@ const Equipos = () => {
     control: (provided, state) => ({
       ...provided,
       backgroundColor: 'white',
-      border: state.isFocused ? '1px solid #7c3aed' : '1px solid #e2e8f0',
-      borderRadius: '8px',
+      border: state.isFocused ? '1px solid #155dfc' : '1px solid #e2e8f0',
+      borderRadius: '12px',
       padding: '0px 4px',
       height: '40px',
       minHeight: '40px',
       boxShadow: state.isFocused ? '0 0 0 2px rgba(124, 58, 237, 0.1)' : 'none',
       cursor: 'pointer',
-      '&:hover': { borderColor: '#7c3aed' },
+      '&:hover': { borderColor: '#155dfc' },
     }),
     indicatorSeparator: () => ({ display: 'none' }),
     singleValue: (provided) => ({
       ...provided,
       color: '#1e293b',
-      fontWeight: '500',
+      fontWeight: '400',
       fontSize: '0.8rem',
     }),
     placeholder: (provided) => ({
       ...provided,
       color: '#94a3b8',
-      fontSize: '0.8rem',
+      fontSize: '0.7rem',
     }),
     option: (provided, state) => ({
       ...provided,
       backgroundColor: state.isSelected
-        ? '#7c3aed'
+        ? '#155dfc'
         : state.isFocused
           ? '#f8fafc'
           : 'white',
       color: state.isSelected ? 'white' : '#334155',
       cursor: 'pointer',
       fontSize: '0.8rem',
-      padding: '8px 12px',
+      padding: '7px 12px',
+      borderRadius: '5px',
     }),
-    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+    menuPortal: (base) => ({
+      ...base,
+      zIndex: 9999,
+    }),
   };
 
   if (loading)
@@ -424,20 +362,12 @@ const Equipos = () => {
         <h1>Inventario General</h1>
         <div className='header-actions'>
           <button
-            onClick={startInventarioTour}
-            className='btn-action-header btn-tour'
-          >
-            <HelpCircle size={18} />
-          </button>
-          <button
-            id='tour-inventario-excel'
             onClick={exportarExcel}
             className='btn-action-header btn-excel'
           >
             <FileSpreadsheet size={16} /> Exportar
           </button>
           <button
-            id='tour-inventario-nuevo'
             className='btn-action-header btn-add'
             onClick={handleAddEquipo}
           >
@@ -447,10 +377,7 @@ const Equipos = () => {
       </div>
 
       {/* BARRA DE BÚSQUEDA Y FILTROS */}
-      <div
-        className='filters-bar'
-        id='tour-inventario-filtros'
-      >
+      <div className='filters-bar'>
         <div className='search-input'>
           <Search
             size={18}
@@ -484,10 +411,7 @@ const Equipos = () => {
       </div>
 
       {/* TABLA PRINCIPAL */}
-      <div
-        className='table-container'
-        id='tour-inventario-tabla'
-      >
+      <div className='table-container'>
         {currentItems.length === 0 ? (
           <div className='no-data'>
             No se encontraron registros en el inventario.

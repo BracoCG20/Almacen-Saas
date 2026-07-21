@@ -44,7 +44,7 @@
         border: none;
         cursor: pointer;
         color: $white;
-        transition: all 0.2s;
+        transition: $smooth-transition;
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 
         @media (max-width: 600px) {
@@ -53,31 +53,18 @@
         }
 
         &:hover {
-          transform: translateY(-1px);
           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
         &.btn-excel {
-          background-color: $success;
+          background-color: $success-500;
           &:hover {
-            // Reemplazo de darken por color.adjust
-            background-color: color.adjust($success, $lightness: -5%);
+            background-color: $success-600;
           }
         }
         &.btn-add {
-          background-color: $primary;
+          background-color: $slate-800;
           &:hover {
-            filter: brightness(0.9);
-          }
-        }
-        &.btn-tour {
-          background-color: $violet-50;
-          color: $text-muted;
-          border: 1px solid $violet-200;
-          box-shadow: none;
-
-          &:hover {
-            background-color: $violet-100;
-            color: $violet-700;
+            background-color: $slate-900;
           }
         }
       }
@@ -96,7 +83,7 @@
       background: $white;
       padding: 0 14px;
       height: 40px;
-      border-radius: 8px;
+      border-radius: 12px;
       border: 1px solid $border-color;
       display: flex;
       align-items: center;
@@ -140,7 +127,7 @@
   .table-container {
     background: $white;
     border-radius: 8px;
-    border: 1px solid $border-color;
+    border: 1px solid $info-100;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     overflow-x: auto;
 
@@ -163,17 +150,15 @@
       border-collapse: collapse;
       min-width: 900px;
       font-size: 0.8rem;
-
-      /* Cabecera Violeta Suave usando Variables */
       thead tr {
-        background-color: $violet-50;
-        border-bottom: 1px solid $border-color;
+        background-color: $info-50;
+        border-bottom: 1px solid $info-100;
 
         th {
           padding: 12px 16px;
           text-align: left;
           font-weight: 500;
-          color: $violet-800;
+          color: $info-800;
           white-space: nowrap;
           &.center {
             text-align: center;
@@ -182,25 +167,25 @@
       }
 
       tbody tr {
-        border-bottom: 1px solid rgba($text-muted, 0.1);
-        transition: background-color 0.2s ease;
+        border-bottom: 1px solid $slate-100;
+        transition: background-color 0.2s ease-in-out;
 
         &:hover {
-          background-color: rgba($violet-600, 0.03);
+          background-color: $slate-50;
         }
         &:last-child {
           border-bottom: none;
         }
 
         &.inactive-row {
-          background-color: rgba($text-muted, 0.03);
-          opacity: 0.65;
+          background-color: $slate-50;
+          opacity: 0.6;
         }
 
         td {
           padding: 10px 16px;
           vertical-align: middle;
-          color: $text-main;
+          color: $slate-900;
           &.center {
             text-align: center;
           }
@@ -214,13 +199,13 @@
     width: 32px;
     height: 32px;
     border-radius: 6px;
-    background-color: rgba($bg-body, 0.3);
+    background-color: $slate-100;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: $text-muted;
+    color: $slate-500;
     margin: 0 auto;
-    border: 1px solid $border-color;
+    border: 1px solid $slate-200;
   }
 
   .info-cell {
@@ -236,12 +221,12 @@
         font-size: 0.7rem;
         font-weight: 500;
         gap: 4px;
-        color: $text-main;
+        color: $slate-900;
       }
     }
 
     .date-text {
-      color: $primary;
+      color: $slate-500;
       display: inline-flex;
       align-items: center;
       gap: 6px;
@@ -253,10 +238,10 @@
       font-weight: 500;
       font-size: 0.8rem;
       &.propio {
-        color: $primary;
+        color: $info-500;
       }
       &.alquilado {
-        color: $warning;
+        color: $warning-500;
       }
     }
 
@@ -278,19 +263,19 @@
     border: 1px solid transparent;
 
     &.operativo {
-      background-color: rgba($success, 0.1);
-      color: $success;
-      border-color: rgba($success, 0.2);
+      background-color: $success-100;
+      color: $success-500;
+      border-color: $success-200;
     }
     &.mantenimiento {
-      background-color: rgba($warning, 0.1);
-      color: $warning;
-      border-color: rgba($warning, 0.2);
+      background-color: $warning-100;
+      color: $warning-500;
+      border-color: $warning-200;
     }
     &.malogrado {
-      background-color: rgba($danger, 0.1);
-      color: $danger;
-      border-color: rgba($danger, 0.2);
+      background-color: $danger-100;
+      color: $danger-500;
+      border-color: $danger-200;
     }
   }
 
@@ -306,7 +291,7 @@
       border-radius: 6px;
       border: none;
       background-color: transparent;
-      color: $text-muted;
+      color: $slate-500;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -314,27 +299,27 @@
       transition: all 0.2s ease;
 
       &.history:hover {
-        background-color: rgba($info, 0.1);
-        color: $info;
+        background-color: $info-100;
+        color: $info-500;
       }
       &.view:hover {
-        background-color: rgba($violet-700, 0.1);
-        color: $violet-700;
+        background-color: $violet-100;
+        color: $violet-500;
       }
       &.edit:hover {
-        background-color: rgba($warning, 0.1);
-        color: $warning;
+        background-color: $warning-100;
+        color: $warning-500;
       }
       &.delete:hover {
-        background-color: rgba($danger, 0.1);
-        color: $danger;
+        background-color: $danger-100;
+        color: $danger-100;
       }
 
       &.activate {
-        color: $success;
+        color: $success-500;
         &:hover {
-          background-color: rgba($success, 0.1);
-          color: $success;
+          background-color: $success-100;
+          color: $success-500;
         }
       }
     }
@@ -346,8 +331,8 @@
     justify-content: space-between;
     align-items: center;
     padding: 10px 16px;
-    border-top: 1px solid $border-color;
-    background-color: $white;
+    border-top: 1px solid $slate-200;
+    background-color: $slate-50;
     flex-wrap: wrap;
     gap: 15px;
 
@@ -356,10 +341,10 @@
     }
 
     .info {
-      color: $text-muted;
-      font-size: 0.8rem;
+      color: $slate-500;
+      font-size: 0.7rem;
       strong {
-        color: $text-main;
+        color: $slate-900;
         font-weight: 500;
       }
     }
@@ -370,8 +355,8 @@
       gap: 10px;
 
       span {
-        font-size: 0.8rem;
-        color: $text-muted;
+        font-size: 0.7rem;
+        color: $slate-500;
         font-weight: 500;
       }
 
@@ -385,17 +370,17 @@
         background-color: $white;
         cursor: pointer;
         color: $text-main;
-        font-size: 0.8rem;
+        font-size: 0.7rem;
         font-weight: 500;
-        transition: all 0.2s ease;
+        transition: $smooth-transition;
 
         &:disabled {
           opacity: 0.4;
           cursor: not-allowed;
-          background-color: $border-color;
+          background-color: $slate-400;
         }
         &:hover:not(:disabled) {
-          background-color: rgba($border-color, 0.1);
+          background-color: $slate-300;
         }
       }
     }
@@ -405,7 +390,7 @@
   .no-data {
     padding: 32px;
     text-align: center;
-    color: $text-muted;
+    color: $slate-500;
     font-size: rem;
   }
 }
@@ -415,9 +400,9 @@
   padding: 1rem;
   text-align: center;
   .warning-icon {
-    color: $warning;
+    color: $warning-500;
     margin-bottom: 1rem;
-    background-color: rgba($warning, 0.1);
+    background-color: $warning-100;
     width: 70px;
     height: 70px;
     border-radius: 50%;
@@ -427,13 +412,13 @@
     margin: 0 auto 1rem auto;
   }
   h3 {
-    color: $text-main;
+    color: $slate-900;
     margin-bottom: 0.5rem;
     font-size: 1.1rem;
     font-weight: 700;
   }
   p {
-    color: $text-muted;
+    color: $slate-500;
     margin-bottom: 2rem;
     font-size: 0.9rem;
     line-height: 1.5;
@@ -460,40 +445,19 @@
         transform: translateY(-1px);
       }
       &.btn-cancel {
-        background-color: $white;
-        border: 1px solid $border-color;
-        color: $text-muted;
+        background-color: $slate-50;
+        border: 1px solid $slate-200;
+        color: $slate-500;
         &:hover {
-          background-color: rgba($border-color, 0.1);
+          background-color: $slate-100;
         }
       }
       &.btn-confirm {
-        background-color: $danger;
-        color: $white;
+        background-color: $danger-500;
+        color: $slate-50;
         box-shadow: 0 1px 2px rgba(239, 68, 68, 0.2);
         &:hover {
-          background-color: $danger;
-        }
-      }
-    }
-  }
-}
-
-.driver-popover {
-  .driver-popover-footer {
-    button {
-      text-shadow: none !important;
-      font-weight: 500 !important;
-      letter-spacing: normal !important;
-      -webkit-text-stroke: 0 !important;
-      border: none !important;
-
-      &.driver-popover-next-btn {
-        background-color: $primary !important;
-        color: $white !important;
-        &:hover {
-          // Reemplazo de darken por color.adjust
-          background-color: color.adjust($primary, $lightness: -5%) !important;
+          background-color: $danger-500;
         }
       }
     }
