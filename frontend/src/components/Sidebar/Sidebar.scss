@@ -58,7 +58,7 @@
 .sidebar {
   width: $sidebar-width-open;
   height: 100vh;
-  background: $white;
+  background: $slate-950;
   border-right: 1px solid $violet-50;
   display: flex;
   flex-direction: column;
@@ -99,26 +99,26 @@
     right: -12px;
     width: 24px;
     height: 24px;
-    background-color: $white;
-    border: 1px solid $violet-50;
+    background-color: $slate-900;
+    border: 1px solid $slate-800;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: $text-muted;
+    color: $slate-200;
     cursor: pointer;
     z-index: 10;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-    transition: all 0.2s ease;
+    transition: all 0.2s ease-in-out;
 
     @media (max-width: 768px) {
       display: none;
     }
 
     &:hover {
-      background-color: $violet-50;
-      color: $violet-700;
-      border-color: $violet-100;
+      background-color: $slate-900;
+      color: $slate-50;
+      border-color: $slate-100;
     }
   }
 
@@ -186,10 +186,10 @@
       display: flex;
       align-items: center;
       padding: 10px 12px;
-      color: $text-muted;
+      color: $slate-100;
       text-decoration: none;
       border-radius: 8px;
-      font-weight: 500;
+      font-weight: 400;
       font-size: 0.875rem;
       transition: $smooth-transition;
       height: 40px;
@@ -230,23 +230,33 @@
       }
 
       &:hover {
-        background: $violet-50;
-        color: $violet-700;
+        background: $info-900;
+        color: $slate-100;
       }
 
       &.active {
-        background: $violet-100;
-        color: $violet-600;
-        font-weight: 500;
+        background: $info-800;
+        color: $slate-100;
       }
-
+      &.entrega {
+        &:hover {
+          background: $success-900;
+          color: $success-200;
+        }
+      }
       &.entrega.active {
-        background: $violet-50;
-        color: $success;
+        background: $success-900;
+        color: $success-200;
+      }
+      &.devolucion {
+        &:hover {
+          background: $danger-900;
+          color: $danger-200;
+        }
       }
       &.devolucion.active {
-        background: $violet-50;
-        color: $danger;
+        background: $danger-900;
+        color: $danger-200;
       }
     }
   }
@@ -269,7 +279,7 @@
       padding: 8px 10px;
       background: transparent;
       border-radius: 8px;
-      border: 1px solid transparent;
+      border: 1px solid $slate-900;
       transition: $smooth-transition;
       cursor: pointer;
       white-space: nowrap;
@@ -277,21 +287,20 @@
 
       &:hover,
       &.active {
-        background-color: $slate-50;
-        border-color: $slate-100;
+        border-color: $slate-800;
       }
 
       .avatar {
         width: 35px;
         height: 35px;
         border-radius: 50%;
-        background: $slate-50;
+        background: $slate-100;
         display: flex;
         align-items: center;
         justify-content: center;
         color: $text-muted;
         flex-shrink: 0;
-        border: 1px solid $border-color;
+        border: 1px solid $slate-200;
         img {
           width: 100%;
           height: 100%;
@@ -307,13 +316,13 @@
 
         .name {
           font-size: 0.8rem;
-          font-weight: 500;
-          color: $text-main;
+          font-weight: 400;
+          color: $slate-100;
           line-height: 1.2;
         }
         .email {
           font-size: 0.75rem;
-          color: $text-muted;
+          color: $slate-500;
           text-overflow: ellipsis;
           overflow: hidden;
           max-width: 130px;
@@ -326,10 +335,10 @@
       bottom: calc(100% + 5px);
       left: 0;
       width: 100%;
-      background: $white;
+      background: $slate-950;
       border-radius: 8px;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-      border: 1px solid $violet-100;
+      border: 1px solid $slate-800;
       padding: 6px;
       z-index: 1050;
       animation: slideUp 0.2s ease-out;
@@ -355,28 +364,29 @@
         border: none;
         border-radius: 6px;
         font-size: 0.8rem;
-        font-weight: 500;
-        color: $text-muted;
+        font-weight: 400;
+        color: $slate-200;
         cursor: pointer;
         text-align: left;
-        transition: all 0.2s ease;
+        transition: $smooth-transition;
 
         &:hover {
-          background-color: $slate-50;
-          color: $text-muted;
+          background-color: $slate-900;
+          color: $slate-200;
         }
 
         &.logout {
-          color: $danger;
+          color: $danger-500;
           &:hover {
-            background-color: $danger-50;
+            background-color: $danger-900;
+            color: $danger-200;
           }
         }
       }
 
       .dropdown-divider {
         height: 1px;
-        background-color: $slate-100;
+        background-color: $slate-800;
         margin: 4px 0;
       }
     }
