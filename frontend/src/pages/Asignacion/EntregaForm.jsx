@@ -1,12 +1,12 @@
 //frontend/src/pages/Asignacion/EntregaForm.jsx
 import {
-  Save,
+  Laptop,
   Mail,
   MessageCircle,
-  Laptop,
-  User,
   Plus,
+  Save,
   Trash2,
+  User,
 } from 'lucide-react';
 import Select from 'react-select';
 import './EntregaForm.scss';
@@ -28,15 +28,16 @@ const EntregaForm = ({
   const customSelectStyles = {
     control: (provided, state) => ({
       ...provided,
-      borderRadius: '8px',
-      borderColor: state.isFocused ? '#7c3aed' : '#e2e8f0',
+      backgroundColor: state.isDisabled ? '#f8fafc' : '#fff',
+      borderRadius: '12px',
+      borderColor: state.isFocused ? '#155dfc' : '#e2e8f0',
       boxShadow: state.isFocused ? '0 0 0 2px rgba(124, 58, 237, 0.1)' : 'none',
       minHeight: '40px',
       height: '40px',
-      backgroundColor: state.isDisabled ? '#f8fafc' : '#fff',
       cursor: state.isDisabled ? 'not-allowed' : 'pointer',
       display: 'flex',
       alignItems: 'center',
+      '&:hover': { borderColor: '#155dfc' },
     }),
     valueContainer: (provided) => ({
       ...provided,
@@ -60,31 +61,33 @@ const EntregaForm = ({
       color: '#1e293b',
       fontSize: '0.8rem',
       fontWeight: '500',
-      position: 'absolute',
-      top: '50%',
-      transform: 'translateY(-50%)',
-      margin: '0px',
     }),
     placeholder: (provided) => ({
       ...provided,
       color: '#94a3b8',
-      fontSize: '0.8rem',
-      position: 'absolute',
-      top: '50%',
-      transform: 'translateY(-50%)',
-      margin: '0px',
+      fontSize: '0.7rem',
+    }),
+    menu: (provided) => ({
+      ...provided,
+      borderRadius: '12px',
+      padding: '0px 4px',
+      overflow: 'hidden',
+      zIndex: 9999,
+      border: '1px solid #e2e8f0',
+      boxShadow: '0px 14px 5px rgba(0,0,0,0.05)',
     }),
     option: (provided, state) => ({
       ...provided,
       backgroundColor: state.isSelected
-        ? '#7c3aed'
+        ? '#155dfc'
         : state.isFocused
           ? '#f5f3ff'
           : 'white',
       color: state.isSelected ? 'white' : '#334155',
       cursor: 'pointer',
       fontSize: '0.8rem',
-      padding: '8px 12px',
+      padding: '7px 12px',
+      borderRadius: '8px',
     }),
     menuPortal: (base) => ({ ...base, zIndex: 9999 }),
   };

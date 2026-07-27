@@ -6,7 +6,7 @@
   padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  border: 1px solid $border-color;
+  border: 1px solid $slate-200;
   width: 100%;
   box-sizing: border-box;
 
@@ -23,7 +23,7 @@
       gap: 6px;
       font-size: 0.8rem;
       font-weight: 500;
-      color: $text-muted;
+      color: $slate-900;
     }
   }
 
@@ -38,7 +38,7 @@
       gap: 5px;
       margin-bottom: 10px;
       font-weight: 500;
-      color: $text-main;
+      color: $slate-900;
     }
 
     /* NUEVA ESTRUCTURA FLEX PARA CENTRAR EL BASURERO */
@@ -47,8 +47,8 @@
       padding: 12px;
       border-radius: 8px;
       margin-bottom: 10px;
-      border: 1px solid $border-color;
-      transition: border-color 0.2s;
+      border: 1px solid $smooth-transition;
+      transition: border-color 0.2s ease-in-out;
       display: flex;
       align-items: center;
       gap: 12px;
@@ -71,19 +71,19 @@
       padding: 10px 14px;
       border-radius: 8px;
       background: $white;
-      border: 1px solid $border-color;
+      border: 1px solid $slate-200;
       cursor: pointer;
       transition: all 0.2s ease;
       width: 100%;
       box-sizing: border-box;
 
       &:hover {
-        background: $violet-50;
-        border-color: $border-color;
+        background: $info-50;
+        border-color: $info-100;
       }
 
       input {
-        accent-color: $primary;
+        accent-color: $info-500;
         width: 16px;
         height: 16px;
         cursor: pointer;
@@ -91,7 +91,7 @@
       }
       span {
         font-weight: 400;
-        color: $text-main;
+        color: $slate-900;
         font-size: 0.8rem;
       }
     }
@@ -103,8 +103,8 @@
 
     // BOTÓN BASURERO ESTILO SHADCN (Outline/Icon)
     .btn-remove-equipo {
-      background: $white;
-      border: 1px solid $border-color;
+      background: $danger-50;
+      border: 1px solid $danger-100;
       color: $danger-500;
       cursor: pointer;
       padding: 10px;
@@ -112,13 +112,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.2s ease-in-out;
+      transition: $smooth-transition;
       height: fit-content;
 
       &:hover {
         color: $danger-500;
-        background-color: $danger-50;
-        border-color: $danger-100;
+        background-color: $danger-100;
       }
     }
 
@@ -133,9 +132,9 @@
       margin-top: 12px;
       font-size: 0.8rem;
       font-weight: 500;
-      color: $text-main;
+      color: $slate-900;
       background-color: transparent;
-      border: 1px dashed $border-color;
+      border: 1px dashed $slate-200;
       border-radius: 8px;
       cursor: pointer;
       transition: all 0.2s ease-in-out;

@@ -32,8 +32,8 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    font-size: 0.8rem;
-    font-weight: 700;
+    font-size: 0.7rem;
+    font-weight: 500;
     text-transform: uppercase;
     padding: 6px 12px;
     border-radius: 6px;
@@ -59,7 +59,7 @@
     padding: 20px;
     text-align: center;
     color: $slate-500;
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     margin-top: 1.5rem;
   }
 
@@ -79,7 +79,7 @@
     transition: all 0.2s;
 
     &.selected {
-      border-color: $primary;
+      border-color: $violet-100;
       box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.2);
     }
 
@@ -90,7 +90,7 @@
       padding: 12px 15px;
       cursor: pointer;
       background: $slate-50;
-      transition: background 0.2s;
+      transition: background 0.2s ease-in-out;
       &:hover {
         background: $slate-100;
       }
@@ -104,7 +104,7 @@
           color: $slate-800;
         }
         .serial {
-          font-size: 0.75rem;
+          font-size: 0.7rem;
           color: $slate-500;
           display: flex;
           align-items: center;
@@ -119,23 +119,22 @@
       border-top: 1px solid $slate-200;
       background: $white;
 
-      /* CSS GRID para alinear perfectamente los Selects */
       .input-group-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 15px;
-        align-items: end; /* Alinea los elementos al fondo en caso de que un label ocupe 2 líneas */
+        align-items: end;
 
         .grid-col {
           display: flex;
           flex-direction: column;
-          justify-content: flex-end; /* Asegura que el contenido (el Select) baje */
+          justify-content: flex-end;
           gap: 6px;
         }
       }
 
       .mini-label {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         color: $slate-500;
         font-weight: 500;
         margin: 0;
@@ -147,7 +146,7 @@
         display: flex;
         align-items: flex-end;
         justify-content: flex-start;
-        height: 36px; /* Misma altura que el Select para cuadrar visualmente */
+        height: 36px;
         span {
           font-size: 0.75rem;
           color: $slate-400;

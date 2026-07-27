@@ -231,7 +231,6 @@ const Colaboradores = () => {
       backgroundColor: 'white',
       border: state.isFocused ? '1px solid #155dfc' : '1px solid #e2e8f0',
       borderRadius: '12px',
-      padding: '0px 4px',
       minHeight: '40px',
       height: '40px',
       boxShadow: state.isFocused ? '0 0 0 2px rgba(124, 58, 237, 0.1)' : 'none',

@@ -1,23 +1,23 @@
 //frontend/src/pages/Devolucion/DevolucionTable.jsx
-import React, { useState } from 'react';
 import {
-  History,
-  Check,
-  X as IconX,
-  FileText,
-  Upload,
-  Eye,
-  Ban,
-  Mail,
   AlertTriangle,
-  CalendarDays,
-  Circle,
-  Clock,
+  Ban,
   Barcode,
-  Layers,
+  CalendarDays,
+  Check,
   ChevronLeft,
   ChevronRight,
+  Circle,
+  Clock,
+  Eye,
+  FileText,
+  History,
+  X as IconX,
+  Layers,
+  Mail,
+  Upload,
 } from 'lucide-react';
+import { useState } from 'react';
 import './DevolucionTable.scss';
 
 const DevolucionTable = ({
@@ -105,7 +105,7 @@ const DevolucionTable = ({
     <div className='table-container'>
       <div className='table-header-title'>
         <h3>
-          <History size={18} /> Últimas Devoluciones
+          <History size={16} /> Últimas Devoluciones
         </h3>
       </div>
 
@@ -153,11 +153,11 @@ const DevolucionTable = ({
                     <td>
                       <div className='date-time-cell'>
                         <span className='date-part'>
-                          <CalendarDays size={13} />{' '}
+                          <CalendarDays size={13} />
                           {formatDateOnly(h.fecha_movimiento)}
                         </span>
                         <span className='time-part'>
-                          <Clock size={12} />{' '}
+                          <Clock size={12} />
                           {formatTimeOnly(h.fecha_movimiento)}
                         </span>
                       </div>

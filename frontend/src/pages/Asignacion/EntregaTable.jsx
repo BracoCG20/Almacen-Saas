@@ -90,7 +90,7 @@ const EntregaTable = ({
     <div className='table-container'>
       <div className='table-header-title'>
         <h3>
-          <History size={18} />
+          <History size={16} />
           <span>Últimas Entregas</span>
         </h3>
       </div>
@@ -138,11 +138,11 @@ const EntregaTable = ({
                     <td>
                       <div className='date-time-cell'>
                         <span className='date-part'>
-                          <CalendarDays size={13} />{' '}
+                          <CalendarDays size={13} />
                           {formatDateOnly(h.fecha_movimiento)}
                         </span>
                         <span className='time-part'>
-                          <Clock size={12} />{' '}
+                          <Clock size={12} />
                           {formatTimeOnly(h.fecha_movimiento)}
                         </span>
                       </div>

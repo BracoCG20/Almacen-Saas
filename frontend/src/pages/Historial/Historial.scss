@@ -8,15 +8,13 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #e2e8f0;
     flex-wrap: wrap;
     gap: 1rem;
 
     h1 {
       font-size: 1.8rem;
       font-weight: 700;
-      color: $text-main;
+      color: $slate-900;
       margin: 0;
       @media (max-width: 768px) {
         font-size: 1.5rem;
@@ -27,6 +25,8 @@
       display: flex;
       gap: 12px;
       width: auto;
+      flex-wrap: wrap;
+
       @media (max-width: 600px) {
         width: 100%;
       }
@@ -37,36 +37,26 @@
         justify-content: center;
         gap: 6px;
         padding: 0 14px;
-        height: 40px;
+        height: 38px;
         border-radius: 8px;
         font-weight: 500;
         font-size: 0.8rem;
         border: none;
         cursor: pointer;
-        color: white;
-        transition: all 0.2s;
+        color: $white;
+        transition: $smooth-transition;
         @media (max-width: 600px) {
           flex: 1;
+          padding: 0 10px;
         }
         &:hover {
-          transform: translateY(-1px);
           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
 
         &.btn-excel {
-          background-color: $success;
+          background-color: $success-500;
           &:hover {
-            // Reemplazo de darken por color.adjust
-            background-color: color.adjust($success, $lightness: -5%);
-          }
-        }
-        &.btn-tour {
-          background-color: $violet-50;
-          color: $text-muted;
-          border: 1px solid #e2e8f0;
-          &:hover {
-            background-color: $violet-100;
-            color: $violet-700;
+            background-color: $success-600;
           }
         }
       }
@@ -82,21 +72,21 @@
     .search-bar {
       flex: 1;
       min-width: 250px;
-      background: white;
-      padding: 0 12px;
+      background: $white;
+      padding: 0 14px;
       height: 40px;
       border-radius: 8px;
-      border: 1px solid #e2e8f0;
+      border: 1px solid $slate-200;
       display: flex;
       align-items: center;
       gap: 10px;
-      transition: all 0.2s ease;
+      transition: $smooth-transition;
       @media (max-width: 600px) {
         min-width: 100%;
       }
       &:focus-within {
-        border-color: $primary;
-        box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.1);
+        border-color: $info-500;
+        box-shadow: 0 0 0 2px rgba($info-500, 0.1);
       }
       input {
         border: none;
@@ -104,9 +94,8 @@
         width: 100%;
         font-size: 0.8rem;
         color: $text-main;
-        background: transparent;
         &::placeholder {
-          color: #94a3b8;
+          color: $text-muted;
         }
       }
     }
@@ -119,16 +108,14 @@
     }
   }
 
-  // --- TABLA MINIMALISTA VIOLETA ---
   .table-container {
-    background: #ffffff;
+    background: $white;
     border-radius: 8px;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    border: 1px solid $slate-200;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 
     .table-responsive-wrapper {
       width: 100%;
-      overflow-x: visible; // Crítico para que los tooltips floten por encima
     }
 
     table {
@@ -137,13 +124,13 @@
       min-width: 1000px;
       font-size: 0.8rem;
       thead tr {
-        background-color: $violet-50;
-        border-bottom: 1px solid $violet-100;
+        background-color: $slate-900;
+        border-bottom: 1px solid $slate-800;
         th {
           padding: 12px 16px;
           text-align: left;
           font-weight: 500;
-          color: $violet-800;
+          color: $slate-100;
           white-space: nowrap;
           &.center {
             text-align: center;
@@ -151,18 +138,18 @@
         }
       }
       tbody tr {
-        border-bottom: 1px solid #e2e8f0;
-        transition: background-color 0.2s ease;
+        border-bottom: 1px solid $slate-100;
+        transition: background-color 0.2s ease-in-out;
         &:hover {
-          background-color: #f8fafc;
+          background-color: $slate-50;
         }
         &:last-child {
           border-bottom: none;
         }
         td {
-          padding: 12px 16px;
+          padding: 10px 16px;
           vertical-align: middle;
-          color: #0f172a;
+          color: $slate-900;
           &.center {
             text-align: center;
           }
@@ -180,21 +167,21 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      color: #1e293b;
+      color: $slate-900;
       font-weight: 500;
-      font-size: 0.8rem;
+      font-size: 0.7rem;
       svg {
-        color: #64748b;
+        color: $slate-500;
       }
     }
     .time-part {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      color: #64748b;
-      font-size: 0.75rem;
+      color: $slate-500;
+      font-size: 0.6rem;
       svg {
-        color: #94a3b8;
+        color: $slate-500;
       }
     }
   }
@@ -208,25 +195,25 @@
       align-items: center;
       gap: 6px;
       font-weight: 500;
-      color: #0f172a;
+      color: $slate-900;
       &.time-use {
-        color: #059669;
-        font-size: 0.8rem;
+        color: $slate-500;
+        font-size: 0.7rem;
       }
     }
     .audit-text {
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      font-size: 0.75rem;
-      color: #64748b;
+      font-size: 0.7rem;
+      color: $slate-500;
       font-family: monospace;
-      background: #f1f5f9;
+      background: $slate-50;
       padding: 2px 6px;
       border-radius: 4px;
       width: fit-content;
       svg {
-        color: #94a3b8;
+        color: $slate-500;
       }
     }
   }
@@ -241,11 +228,11 @@
         align-items: center;
         gap: 4px;
         font-weight: 500;
-        color: #0f172a;
+        color: $slate-900;
       }
       .audit-text {
         font-size: 0.75rem;
-        color: #64748b;
+        color: $slate-500;
       }
     }
     .system-text {

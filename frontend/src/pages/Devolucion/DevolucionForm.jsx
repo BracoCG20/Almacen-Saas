@@ -1,17 +1,14 @@
 //frontend/src/pages/Devolucion/DevolucionForm.jsx
-import React from 'react';
 import {
-  Save,
-  Mail,
-  MessageCircle,
-  UserCheck,
-  Laptop,
-  CheckCircle,
-  AlertTriangle,
-  HelpCircle,
   Barcode,
   CheckSquare,
+  HelpCircle,
+  Laptop,
+  Mail,
+  MessageCircle,
+  Save,
   Square,
+  UserCheck,
 } from 'lucide-react';
 import Select from 'react-select';
 import CreatableSelect from 'react-select/creatable';
@@ -55,8 +52,8 @@ const DevolucionForm = ({
   const customSelectStyles = {
     control: (provided, state) => ({
       ...provided,
-      borderRadius: '8px',
-      borderColor: state.isFocused ? '#7c3aed' : '#e2e8f0',
+      borderRadius: '12px',
+      borderColor: state.isFocused ? '#155dfc' : '#e2e8f0',
       boxShadow: state.isFocused ? '0 0 0 2px rgba(124, 58, 237, 0.1)' : 'none',
       height: '40px',
       minHeight: '40px',
@@ -64,6 +61,7 @@ const DevolucionForm = ({
       cursor: state.isDisabled ? 'not-allowed' : 'pointer',
       display: 'flex',
       alignItems: 'center',
+      '&:hover': { borderColor: '#155dfc' },
     }),
     valueContainer: (provided) => ({
       ...provided,
@@ -77,7 +75,7 @@ const DevolucionForm = ({
       ...provided,
       margin: '0px',
       padding: '0px',
-      height: '100%',
+      height: '40px',
       color: 'transparent',
     }),
     indicatorSeparator: () => ({ display: 'none' }),
@@ -86,32 +84,34 @@ const DevolucionForm = ({
       ...provided,
       color: '#1e293b',
       fontSize: '0.8rem',
-      fontWeight: '400',
-      position: 'absolute',
-      top: '50%',
-      transform: 'translateY(-50%)',
-      margin: '0px',
+      fontWeight: '500',
     }),
     placeholder: (provided) => ({
       ...provided,
       color: '#94a3b8',
-      fontSize: '0.8rem',
-      position: 'absolute',
-      top: '50%',
-      transform: 'translateY(-50%)',
-      margin: '0px',
+      fontSize: '0.7rem',
+    }),
+    menu: (provided) => ({
+      ...provided,
+      borderRadius: '12px',
+      padding: '0px 4px',
+      overflow: 'hidden',
+      zIndex: 9999,
+      border: '1px solid #e2e8f0',
+      boxShadow: '0px 14px 5px rgba(0,0,0,0.05)',
     }),
     option: (provided, state) => ({
       ...provided,
       backgroundColor: state.isSelected
-        ? '#7c3aed'
+        ? '#155dfc'
         : state.isFocused
           ? '#f5f3ff'
           : 'white',
       color: state.isSelected ? 'white' : '#334155',
       cursor: 'pointer',
       fontSize: '0.8rem',
-      padding: '8px 12px',
+      padding: '7px 12px',
+      borderRadius: '8px',
     }),
     menuPortal: (base) => ({ ...base, zIndex: 9999 }),
   };
@@ -123,9 +123,9 @@ const DevolucionForm = ({
       ...customSelectStyles.control(provided, state),
       height: '36px',
       minHeight: '36px',
-      borderRadius: '6px',
+      borderRadius: '8px',
     }),
-    indicatorsContainer: (provided) => ({ ...provided, height: '36px' }),
+    indicatorsContainer: (provided) => ({ ...provided, height: '38px' }),
   };
 
   // --- 3. LÓGICA DE SELECCIÓN DE EQUIPOS ---
@@ -227,7 +227,7 @@ const DevolucionForm = ({
                       {isSelected ? (
                         <CheckSquare
                           size={20}
-                          color='#7c3aed'
+                          color='#155dfc'
                         />
                       ) : (
                         <Square

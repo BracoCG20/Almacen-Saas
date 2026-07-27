@@ -12,36 +12,17 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid $border-color;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
 
     h1 {
       font-size: 1.8rem;
       font-weight: 700;
-      color: $text-main;
+      color: $slate-900;
       margin: 0;
       @media (max-width: 768px) {
         font-size: 1.5rem;
-      }
-    }
-
-    .btn-tour-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      background-color: $violet-50;
-      color: $text-muted;
-      border: 1px solid $border-color;
-      border-radius: 8px;
-      font-weight: 500;
-      font-size: 0.8rem;
-      cursor: pointer;
-      transition: all 0.2s ease-in-out;
-      &:hover {
-        background-color: $violet-100;
-        color: $violet-700;
       }
     }
   }
@@ -76,53 +57,43 @@
 .confirm-modal-content {
   padding: 0.5rem;
   text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  box-sizing: border-box;
 
   .warning-icon {
     color: $warning-500;
     margin-bottom: 1rem;
-    background-color: $warning-50;
+    background-color: $warning-100;
     width: 56px;
     height: 56px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.1);
 
     &.reject {
       color: $danger-500;
       background-color: $danger-50;
-      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
     }
   }
 
   h3 {
-    color: $text-main;
+    color: $slate-900;
     margin-bottom: 0.5rem;
-    font-size: 1.05rem;
-    font-weight: 500;
+    font-size: 1.1rem;
+    font-weight: 700;
   }
   p {
-    color: $text-muted;
+    color: $slate-500;
     margin-bottom: 1.5rem;
     font-size: 0.8rem;
     line-height: 1.5;
-    max-width: 320px;
   }
 
   .modal-actions {
     display: flex;
     gap: 12px;
     justify-content: center;
-    width: 100%;
     button {
       height: 38px;
-      padding: 0 16px;
       border-radius: 8px;
       font-weight: 500;
       display: flex;
@@ -131,25 +102,23 @@
       gap: 6px;
       border: none;
       font-size: 0.8rem;
-      transition: all 0.2s ease;
+      transition: $smooth-transition;
       flex: 1;
-      max-width: 170px;
-      white-space: nowrap;
+      cursor: pointer;
+
       &.btn-cancel {
-        background-color: $white;
-        border: 1px solid $border-color;
-        color: $text-main;
+        background-color: $slate-50;
+        border: 1px solid $slate-200;
+        color: $slate-500;
         &:hover {
           background-color: $slate-100;
         }
       }
       &.btn-confirm-reject {
-        background-color: $danger;
-        color: $white;
-        box-shadow: 0 1px 2px rgba(239, 68, 68, 0.2);
+        background-color: $danger-500;
+        color: $slate-50;
         &:hover {
-          background-color: $danger-500;
-          box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3);
+          background-color: $danger-600;
         }
       }
     }

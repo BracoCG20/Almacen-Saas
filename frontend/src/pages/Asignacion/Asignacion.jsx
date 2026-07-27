@@ -1,19 +1,16 @@
 //frontend/src/pages/Asignacion/Asignacion.jsx
-import { useEffect, useState, useRef } from 'react';
-import api from '../../service/api';
+import { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import PdfModal from '../../components/Modal/PdfModal';
 import Modal from '../../components/Modal/Modal';
+import PdfModal from '../../components/Modal/PdfModal';
+import api from '../../service/api';
 
+import { generarPDFBlob } from '../../utils/pdfGeneratorAsignacion';
 import EntregaForm from './EntregaForm';
 import EntregaTable from './EntregaTable';
-import { generarPDFBlob } from '../../utils/pdfGeneratorAsignacion';
 
+import { AlertTriangle, Check, X } from 'lucide-react';
 import { io } from 'socket.io-client';
-import { AlertTriangle, X, Check, HelpCircle } from 'lucide-react';
-
-import { driver } from 'driver.js';
-import 'driver.js/dist/driver.css';
 
 import './Asignacion.scss';
 
@@ -42,54 +39,6 @@ const Asignacion = () => {
     equipos: [{ equipo_id: '', cargador: true }],
     observaciones: '',
   });
-
-  /**
-   * TOUR GUIADO DE LA PANTALLA
-   * Utilizo driver.js para mostrar a los usuarios nuevos cómo funciona el módulo.
-   */
-  const startAsignacionTour = () => {
-    const driverObj = driver({
-      showProgress: true,
-      nextBtnText: 'Siguiente &rarr;',
-      prevBtnText: '&larr; Anterior',
-      doneBtnText: '¡Entendido!',
-      allowClose: true,
-      overlayColor: 'rgba(0, 0, 0, 0.6)',
-      steps: [
-        {
-          element: '#tour-asignacion-form',
-          popover: {
-            title: 'Formulario de Entrega',
-            description:
-              'Selecciona el equipo disponible y el colaborador al que se lo asignarás.',
-            side: 'right',
-            align: 'start',
-          },
-        },
-        {
-          element: '#tour-asignacion-acciones',
-          popover: {
-            title: 'Generar Acta',
-            description:
-              'Guarda y descarga el PDF, envíalo por Email o WhatsApp.',
-            side: 'right',
-            align: 'start',
-          },
-        },
-        {
-          element: '#tour-asignacion-tabla',
-          popover: {
-            title: 'Historial Reciente',
-            description: 'Aquí aparecerán las últimas entregas realizadas.',
-            side: 'left',
-            align: 'start',
-          },
-        },
-      ],
-    });
-    driverObj.drive();
-  };
-
   /**
    * CARGA PRINCIPAL DE DATOS
    * Traigo los catálogos en paralelo. Además, deduzco qué usuarios están "ocupados"
@@ -364,12 +313,6 @@ const Asignacion = () => {
     <div className='entrega-container'>
       <div className='page-header'>
         <h1>Registrar Entrega</h1>
-        <button
-          onClick={startAsignacionTour}
-          className='btn-tour-header'
-        >
-          <HelpCircle size={18} />
-        </button>
       </div>
 
       {/* Input oculto para la subida de actas firmadas */}
@@ -382,7 +325,7 @@ const Asignacion = () => {
       />
 
       <div className='content-grid'>
-        <div id='tour-asignacion-form'>
+        <div>
           <EntregaForm
             equiposOptions={equiposOptions}
             usuariosOptions={usuariosOptions}
@@ -391,7 +334,7 @@ const Asignacion = () => {
             onAction={handleAction}
           />
         </div>
-        <div id='tour-asignacion-tabla'>
+        <div>
           <EntregaTable
             historial={historialVisual}
             onVerPdfOriginal={(item) => {

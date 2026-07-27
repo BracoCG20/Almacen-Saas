@@ -1,19 +1,17 @@
 //frontend/src/pages/Devolucion/Devolucion.jsx
-import { useEffect, useState, useRef } from 'react';
-import api from '../../service/api';
+import { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import PdfModal from '../../components/Modal/PdfModal';
 import Modal from '../../components/Modal/Modal';
+import PdfModal from '../../components/Modal/PdfModal';
+import api from '../../service/api';
 
+import { generarPDFDevolucion } from '../../utils/pdfGeneratorDevolucion';
 import DevolucionForm from './DevolucionForm';
 import DevolucionTable from './DevolucionTable';
-import { generarPDFDevolucion } from '../../utils/pdfGeneratorDevolucion';
 
-import { AlertTriangle, X, Check, HelpCircle } from 'lucide-react';
+import { AlertTriangle, Check, X } from 'lucide-react';
 import { io } from 'socket.io-client';
 
-import { driver } from 'driver.js';
-import 'driver.js/dist/driver.css';
 import './Devolucion.scss';
 
 const Devolucion = () => {
@@ -53,54 +51,6 @@ const Devolucion = () => {
   // 5. ESTADOS PARA INVALIDAR FIRMAS
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const [movimientoToInvalidar, setMovimientoToInvalidar] = useState(null);
-
-  /**
-   * TOUR GUIADO
-   * Configuro driver.js para enseñarle al usuario nuevo cómo usar esta pantalla.
-   */
-  const startDevolucionTour = () => {
-    const driverObj = driver({
-      showProgress: true,
-      nextBtnText: 'Siguiente &rarr;',
-      prevBtnText: '&larr; Anterior',
-      doneBtnText: '¡Entendido!',
-      allowClose: true,
-      overlayColor: 'rgba(0, 0, 0, 0.6)',
-      steps: [
-        {
-          element: '#tour-devolucion-form',
-          popover: {
-            title: 'Formulario de Devolución',
-            description:
-              'Selecciona al colaborador; el sistema detectará todos los equipos que tiene. Marca solo los que va a devolver.',
-            side: 'right',
-            align: 'start',
-          },
-        },
-        {
-          element: '#tour-devolucion-acciones',
-          popover: {
-            title: 'Generar Constancia',
-            description:
-              'Guarda la devolución para descargar el PDF, o envíalo por correo o WhatsApp.',
-            side: 'right',
-            align: 'start',
-          },
-        },
-        {
-          element: '#tour-devolucion-tabla',
-          popover: {
-            title: 'Historial Reciente',
-            description:
-              'Aquí verás las últimas devoluciones y podrás subir las actas firmadas.',
-            side: 'left',
-            align: 'start',
-          },
-        },
-      ],
-    });
-    driverObj.drive();
-  };
 
   /**
    * CARGA Y CÁLCULO DE DATOS CORE
@@ -535,12 +485,6 @@ const Devolucion = () => {
     <div className='devolucion-container'>
       <div className='page-header'>
         <h1>Registrar Devolución</h1>
-        <button
-          onClick={startDevolucionTour}
-          className='btn-tour-header'
-        >
-          <HelpCircle size={18} />
-        </button>
       </div>
 
       <input
@@ -552,7 +496,7 @@ const Devolucion = () => {
       />
 
       <div className='content-grid'>
-        <div id='tour-devolucion-form'>
+        <div>
           <DevolucionForm
             usuariosOptions={usuariosOptions}
             estadosOptions={estadosOptions}
@@ -563,7 +507,7 @@ const Devolucion = () => {
             onAction={handleAction}
           />
         </div>
-        <div id='tour-devolucion-tabla'>
+        <div>
           <DevolucionTable
             historial={historialVisual}
             onVerPdf={handleVerPdfHistorial}
@@ -596,13 +540,13 @@ const Devolucion = () => {
                 className='btn-cancel'
                 onClick={() => setIsRejectModalOpen(false)}
               >
-                <X size={18} /> Cancelar
+                <X size={16} /> Cancelar
               </button>
               <button
                 className='btn-confirm-reject'
                 onClick={handleInvalidar}
               >
-                <Check size={18} /> Confirmar Rechazo
+                <Check size={16} /> Confirmar Rechazo
               </button>
             </div>
           </div>

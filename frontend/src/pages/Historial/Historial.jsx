@@ -1,28 +1,24 @@
 //frontend/src/pages/Historial/Historial.jsx
-import { useEffect, useState } from 'react';
-import api from '../../service/api';
-import * as XLSX from 'xlsx';
-import Select from 'react-select';
 import {
-  FileSpreadsheet,
-  Search,
-  ShieldCheck,
-  Clock,
-  ArrowUpRight,
   ArrowDownLeft,
-  Laptop,
-  User,
+  ArrowUpRight,
+  Barcode,
+  CalendarDays,
   ChevronLeft,
   ChevronRight,
-  CalendarDays,
-  HelpCircle,
-  Barcode,
+  Clock,
+  FileSpreadsheet,
+  Laptop,
   Layers,
+  Search,
+  ShieldCheck,
+  User,
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import Select from 'react-select';
 import { toast } from 'react-toastify';
-
-import { driver } from 'driver.js';
-import 'driver.js/dist/driver.css';
+import * as XLSX from 'xlsx';
+import api from '../../service/api';
 
 import './Historial.scss';
 
@@ -37,7 +33,7 @@ const Historial = () => {
   });
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
+  const itemsPerPage = 10;
 
   const typeOptions = [
     { value: 'todos', label: 'Todos los movimientos' },
@@ -45,52 +41,11 @@ const Historial = () => {
     { value: 'devolucion', label: 'Devoluciones' },
   ];
 
-  const startHistorialTour = () => {
-    const driverObj = driver({
-      showProgress: true,
-      nextBtnText: 'Siguiente &rarr;',
-      prevBtnText: '&larr; Anterior',
-      doneBtnText: '¡Entendido!',
-      allowClose: true,
-      overlayColor: 'rgba(0, 0, 0, 0.6)',
-      steps: [
-        {
-          element: '#tour-historial-filtros',
-          popover: {
-            title: 'Busca y Filtra',
-            description: 'Encuentra rápidamente el historial o filtra.',
-            side: 'bottom',
-            align: 'start',
-          },
-        },
-        {
-          element: '#tour-historial-tabla',
-          popover: {
-            title: 'Auditoría Total',
-            description: 'Aquí queda el registro inmutable.',
-            side: 'top',
-            align: 'start',
-          },
-        },
-        {
-          element: '#tour-historial-estado',
-          popover: {
-            title: 'Estado del Equipo',
-            description: 'Si el equipo regresó Operativo, Dañado o Perdido.',
-            side: 'left',
-            align: 'center',
-          },
-        },
-      ],
-    });
-    driverObj.drive();
-  };
-
   const customSelectStyles = {
     control: (provided, state) => ({
       ...provided,
-      borderRadius: '8px',
-      borderColor: state.isFocused ? '#7c3aed' : '#e2e8f0',
+      borderRadius: '12px',
+      borderColor: state.isFocused ? '#155dfc' : '#e2e8f0',
       boxShadow: state.isFocused ? '0 0 0 2px rgba(124, 58, 237, 0.1)' : 'none',
       height: '40px',
       minHeight: '40px',
@@ -98,6 +53,7 @@ const Historial = () => {
       cursor: 'pointer',
       display: 'flex',
       alignItems: 'center',
+      '&:hover': { borderColor: '#155dfc' },
     }),
     valueContainer: (provided) => ({
       ...provided,
@@ -126,17 +82,27 @@ const Historial = () => {
       transform: 'translateY(-50%)',
       margin: '0px',
     }),
+    menu: (provided) => ({
+      ...provided,
+      borderRadius: '12px',
+      padding: '0px 4px',
+      overflow: 'hidden',
+      zIndex: 9999,
+      border: '1px solid #e2e8f0',
+      boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
+    }),
     option: (provided, state) => ({
       ...provided,
       backgroundColor: state.isSelected
-        ? '#7c3aed'
+        ? '#155dfc'
         : state.isFocused
           ? '#f8fafc'
           : 'white',
       color: state.isSelected ? 'white' : '#334155',
       cursor: 'pointer',
-      padding: '8px 12px',
+      padding: '7px 12px',
       fontSize: '0.8rem',
+      borderRadius: '8px',
     }),
     menuPortal: (base) => ({ ...base, zIndex: 9999 }),
   };
@@ -284,12 +250,6 @@ const Historial = () => {
       <div className='page-header'>
         <h1>Historial y Auditoría</h1>
         <div className='header-actions'>
-          <button
-            onClick={startHistorialTour}
-            className='btn-action-header btn-tour'
-          >
-            <HelpCircle size={16} />
-          </button>
           <button
             id='tour-historial-excel'
             onClick={exportarExcel}
