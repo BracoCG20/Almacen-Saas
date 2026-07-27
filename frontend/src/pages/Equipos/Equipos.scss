@@ -95,8 +95,8 @@
       }
 
       &:focus-within {
-        border-color: $primary;
-        box-shadow: 0 0 0 2px rgba($primary, 0.1);
+        border-color: $info-500;
+        box-shadow: 0 0 0 2px rgba($info-500, 0.1);
       }
       input {
         border: none;
@@ -391,25 +391,24 @@
     padding: 32px;
     text-align: center;
     color: $slate-500;
-    font-size: rem;
+    font-size: 0.8rem;
   }
 }
 
 // Modal Content Mantenido Igual
 .confirm-modal-content {
-  padding: 1rem;
+  padding: 0.5rem;
   text-align: center;
   .warning-icon {
     color: $warning-500;
     margin-bottom: 1rem;
     background-color: $warning-100;
-    width: 70px;
-    height: 70px;
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 1rem auto;
   }
   h3 {
     color: $slate-900;
@@ -419,8 +418,8 @@
   }
   p {
     color: $slate-500;
-    margin-bottom: 2rem;
-    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.8rem;
     line-height: 1.5;
   }
   .modal-actions {
@@ -429,7 +428,7 @@
     justify-content: center;
     flex-wrap: wrap;
     button {
-      padding: 10px 16px;
+      height: 38px;
       border-radius: 8px;
       font-weight: 500;
       display: flex;
@@ -437,17 +436,15 @@
       justify-content: center;
       gap: 6px;
       border: none;
-      font-size: 0.9rem;
-      transition: transform 0.2s;
+      font-size: 0.8rem;
+      transition: all 0.2s ease-in-out;
       flex: 1;
-      min-width: 120px;
-      &:hover {
-        transform: translateY(-1px);
-      }
+
       &.btn-cancel {
         background-color: $slate-50;
         border: 1px solid $slate-200;
         color: $slate-500;
+        cursor: pointer;
         &:hover {
           background-color: $slate-100;
         }
@@ -455,7 +452,7 @@
       &.btn-confirm {
         background-color: $danger-500;
         color: $slate-50;
-        box-shadow: 0 1px 2px rgba(239, 68, 68, 0.2);
+        cursor: pointer;
         &:hover {
           background-color: $danger-500;
         }

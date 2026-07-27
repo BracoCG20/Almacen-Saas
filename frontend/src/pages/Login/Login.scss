@@ -19,7 +19,8 @@
     height: 90vh;
     max-height: 700px;
     border-radius: 24px;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+    border: 1px solid $info-100;
+    box-shadow: 0 25px 50px -12px rgba($info-200, 0.08);
     padding: 12px;
     box-sizing: border-box;
     overflow: hidden;
@@ -29,7 +30,7 @@
     width: 50%;
     background: linear-gradient(
       135deg,
-      $primary,
+      $info-500,
       color.adjust($primary, $lightness: -15%)
     );
     border-radius: 16px;
@@ -134,13 +135,13 @@
       .logo-container {
         width: 140px;
         height: 50px;
-        background-color: $primary;
+        background-color: $info-500;
         border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
         margin-bottom: 20px;
-        box-shadow: 0 10px 20px rgba($primary, 0.2);
+        box-shadow: 0 10px 20px rgba($info-500, 0.2);
 
         img {
           width: 100px;
@@ -152,7 +153,7 @@
       h2 {
         font-size: 2rem;
         font-weight: 700;
-        color: $primary;
+        color: $info-500;
         margin: 0 0 5px 0;
         letter-spacing: -0.5px;
       }
@@ -181,7 +182,7 @@
         transition: all 0.2s ease;
 
         &:focus-within {
-          border-color: $primary;
+          border-color: $info-500;
         }
 
         &.has-value {
@@ -233,7 +234,7 @@
         }
 
         &:focus-within .icon-container {
-          color: $primary;
+          color: $info-500;
         }
       }
 
@@ -246,7 +247,7 @@
           display: flex;
           align-items: center;
           gap: 10px;
-          background-color: $primary;
+          background-color: $info-500;
           color: $white;
           border: none;
           padding: 12px 28px;
@@ -255,11 +256,11 @@
           font-weight: 500;
           cursor: pointer;
           transition: all 0.3s ease;
-          box-shadow: 0 4px 14px rgba($primary, 0.3);
+          box-shadow: 0 4px 14px rgba($info-500, 0.3);
 
           &:hover:not(:disabled) {
-            background-color: color.adjust($primary, $lightness: -5%);
-            box-shadow: 0 6px 20px rgba($primary, 0.4);
+            background-color: $info-600;
+            box-shadow: 0 6px 20px rgba($info-600, 0.4);
           }
 
           &:disabled {

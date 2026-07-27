@@ -1,32 +1,28 @@
 //frontend/src/pages/Colaboradores/Colaboradores.jsx
-import { useEffect, useState } from 'react';
-import api from '../../service/api';
-import * as XLSX from 'xlsx';
-import { toast } from 'react-toastify';
-import Select from 'react-select';
 import {
-  Plus,
-  User,
-  UserRound,
-  MessageCircle,
-  Edit,
-  Ban,
-  Mail,
   AlertTriangle,
-  X,
+  Ban,
+  Barcode,
   Check,
-  FileSpreadsheet,
-  Search,
-  Undo2,
   ChevronLeft,
   ChevronRight,
+  Edit,
+  FileSpreadsheet,
   History,
-  HelpCircle,
-  Barcode,
+  Mail,
+  MessageCircle,
+  Plus,
+  Search,
+  Undo2,
+  User,
+  UserRound,
+  X,
 } from 'lucide-react';
-
-import { driver } from 'driver.js';
-import 'driver.js/dist/driver.css';
+import { useEffect, useState } from 'react';
+import Select from 'react-select';
+import { toast } from 'react-toastify';
+import * as XLSX from 'xlsx';
+import api from '../../service/api';
 
 import Modal from '../../components/Modal/Modal';
 import AddColaboradorForm from './AddColaboradorForm';
@@ -62,72 +58,6 @@ const Colaboradores = () => {
   const [colaboradorToDelete, setColaboradorToDelete] = useState(null);
   const [colabToAction, setColabToAction] = useState(null);
   const [historyData, setHistoryData] = useState([]);
-
-  /**
-   * TOUR GUIADO
-   * Configuro los pasos para enseñar cómo funciona el directorio de personal.
-   */
-  const startColaboradoresTour = () => {
-    const driverObj = driver({
-      showProgress: true,
-      nextBtnText: 'Siguiente &rarr;',
-      prevBtnText: '&larr; Anterior',
-      doneBtnText: '¡Entendido!',
-      allowClose: true,
-      overlayColor: 'rgba(0, 0, 0, 0.6)',
-      steps: [
-        {
-          element: '#tour-colab-filtros',
-          popover: {
-            title: 'Búsqueda de Personal',
-            description: 'Escribe el nombre o DNI, o filtra por empresa.',
-            side: 'bottom',
-            align: 'start',
-          },
-        },
-        {
-          element: '#tour-colab-tabla',
-          popover: {
-            title: 'Directorio Activo',
-            description:
-              'Aquí verás a todo el personal. Usa el ícono verde para chatear por WhatsApp.',
-            side: 'top',
-            align: 'start',
-          },
-        },
-        {
-          element: '#tour-colab-acciones',
-          popover: {
-            title: 'Gestión del Empleado',
-            description:
-              'Ve su historial, edita sus datos o dalo de baja del sistema.',
-            side: 'left',
-            align: 'center',
-          },
-        },
-        {
-          element: '#tour-colab-excel',
-          popover: {
-            title: 'Exportar Reporte',
-            description:
-              'Genera un archivo Excel con la lista completa del personal.',
-            side: 'bottom',
-            align: 'center',
-          },
-        },
-        {
-          element: '#tour-colab-nuevo',
-          popover: {
-            title: 'Nuevo Ingreso',
-            description: 'Registra un colaborador antes de asignarle equipos.',
-            side: 'left',
-            align: 'start',
-          },
-        },
-      ],
-    });
-    driverObj.drive();
-  };
 
   /**
    * CARGA INICIAL DE DATOS
@@ -299,30 +229,31 @@ const Colaboradores = () => {
     control: (provided, state) => ({
       ...provided,
       backgroundColor: 'white',
-      border: state.isFocused ? '1px solid #7c3aed' : '1px solid #e2e8f0',
-      borderRadius: '8px',
+      border: state.isFocused ? '1px solid #155dfc' : '1px solid #e2e8f0',
+      borderRadius: '12px',
       padding: '0px 4px',
       minHeight: '40px',
       height: '40px',
       boxShadow: state.isFocused ? '0 0 0 2px rgba(124, 58, 237, 0.1)' : 'none',
       cursor: 'pointer',
-      '&:hover': { borderColor: '#7c3aed' },
+      '&:hover': { borderColor: '#155dfc' },
     }),
     indicatorSeparator: () => ({ display: 'none' }),
     singleValue: (provided) => ({
       ...provided,
       color: '#1e293b',
-      fontWeight: '500',
+      fontWeight: '400',
       fontSize: '0.8rem',
     }),
     placeholder: (provided) => ({
       ...provided,
       color: '#94a3b8',
-      fontSize: '0.8rem',
+      fontSize: '0.7rem',
     }),
     menu: (provided) => ({
       ...provided,
-      borderRadius: '8px',
+      borderRadius: '12px',
+      padding: '0px 4px',
       overflow: 'hidden',
       zIndex: 9999,
       border: '1px solid #e2e8f0',
@@ -331,14 +262,15 @@ const Colaboradores = () => {
     option: (provided, state) => ({
       ...provided,
       backgroundColor: state.isSelected
-        ? '#7c3aed'
+        ? '#155dfc'
         : state.isFocused
           ? '#f8fafc'
           : 'white',
       color: state.isSelected ? 'white' : '#334155',
       cursor: 'pointer',
       fontSize: '0.8rem',
-      padding: '8px 12px',
+      padding: '7px 12px',
+      borderRadius: '8px',
     }),
   };
 
@@ -348,23 +280,15 @@ const Colaboradores = () => {
   return (
     <div className='usuarios-container'>
       <div className='page-header'>
-        <h1>Directorio de Personal</h1>
+        <h1>Lista Colaboradores</h1>
         <div className='header-actions'>
           <button
-            onClick={startColaboradoresTour}
-            className='btn-action-header btn-tour'
-          >
-            <HelpCircle size={18} />
-          </button>
-          <button
-            id='tour-colab-excel'
             onClick={exportarExcel}
             className='btn-action-header btn-excel'
           >
             <FileSpreadsheet size={16} /> Exportar
           </button>
           <button
-            id='tour-colab-nuevo'
             className='btn-action-header btn-add'
             onClick={handleAdd}
           >
@@ -373,10 +297,7 @@ const Colaboradores = () => {
         </div>
       </div>
 
-      <div
-        className='filters-bar'
-        id='tour-colab-filtros'
-      >
+      <div className='filters-bar'>
         <div className='search-input'>
           <Search
             size={18}
@@ -401,10 +322,7 @@ const Colaboradores = () => {
         </div>
       </div>
 
-      <div
-        className='table-container'
-        id='tour-colab-tabla'
-      >
+      <div className='table-container'>
         {currentItems.length === 0 ? (
           <div className='no-data'>
             No se encontraron colaboradores con los filtros actuales.

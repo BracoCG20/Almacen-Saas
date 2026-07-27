@@ -10,10 +10,8 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid $slate-200;
     flex-wrap: wrap;
-    gap: 15px;
+    gap: 1rem;
 
     h1 {
       font-size: 1.8rem;
@@ -28,9 +26,9 @@
     // --- CONTENEDOR DE BOTONES ---
     .header-actions {
       display: flex;
-      align-items: center;
       gap: 12px;
       flex-wrap: wrap;
+      width: auto;
 
       @media (max-width: 600px) {
         width: 100%;
@@ -41,73 +39,66 @@
         }
       }
 
-      .btn-excel-header {
+      .btn-action-header {
         display: flex;
         align-items: center;
-        gap: 8px;
-        height: 40px;
+        justify-content: center;
+        gap: 6px;
         padding: 0 14px;
-        background-color: $success-500;
-        color: $white;
-        border: 1px solid $success-500;
+        height: 38px;
         border-radius: 8px;
         font-weight: 500;
         font-size: 0.8rem;
-        cursor: pointer;
-        transition: all 0.2s ease;
-
-        &:hover {
-          background-color: $success-600;
-          box-shadow: 0 2px 4px rgba(22, 163, 74, 0.1);
-        }
-      }
-
-      .btn-add {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 0 16px;
-        height: 40px;
-        background-color: $violet-500;
-        color: $white;
         border: none;
-        border-radius: 8px;
-        font-weight: 500;
-        font-size: 0.9rem;
         cursor: pointer;
-        transition: all 0.2s ease-in-out;
+        color: $white;
+        transition: $smooth-transition;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+
+        @media (max-width: 600px) {
+          flex: 1;
+          padding: 0 10px;
+        }
 
         &:hover {
-          background-color: $violet-600;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        &.btn-excel {
+          background-color: $success-500;
+          &:hover {
+            background-color: $success-600;
+          }
+        }
+        &.btn-add {
+          background-color: $slate-800;
+          &:hover {
+            background-color: $slate-900;
+          }
         }
       }
     }
   }
 
+  .no-data,
   .loading-state {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 400px;
-    font-size: 1.2rem;
-    color: $text-muted;
+    font-size: 0.8rem;
+    color: $slate-500;
   }
 }
 
 // --- MODAL DE CONFIRMACIÓN (Alerta) ---
 .confirm-modal-content {
-  padding: 1rem 0.5rem 0.5rem 0.5rem;
+  padding: 0.5rem;
   text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  box-sizing: border-box;
 
   .warning-icon {
     margin-bottom: 1rem;
-    width: 64px;
-    height: 64px;
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -116,22 +107,20 @@
     &.reject {
       color: $danger-500;
       background-color: $danger-50;
-      box-shadow: 0 0 0 6px rgba(239, 68, 68, 0.1);
     }
   }
 
   h3 {
-    color: $slate-800;
-    margin-bottom: 0.5rem;
-    font-size: 1.15rem;
-    font-weight: 700;
+    color: $slate-900;
+    margin-bottom: 1.5rem;
+    font-size: 0.8rem;
+    line-height: 1.5;
   }
   p {
     color: $slate-500;
-    margin-bottom: 1.8rem;
-    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.8rem;
     line-height: 1.5;
-    max-width: 320px;
 
     strong {
       color: $danger;
@@ -140,18 +129,13 @@
 
   .modal-actions {
     display: flex;
-    gap: 12px;
     justify-content: center;
-    width: 100%;
-    box-sizing: border-box;
-
-    @media (max-width: 450px) {
-      flex-direction: column-reverse;
-    }
+    gap: 1rem;
+    // width: 100%;
+    // box-sizing: border-box;
 
     button {
-      height: 42px;
-      padding: 0 16px;
+      height: 38px;
       border-radius: 8px;
       font-weight: 500;
       display: flex;
@@ -160,61 +144,25 @@
       gap: 6px;
       border: none;
       font-size: 0.8rem;
-      transition: all 0.2s ease;
+      transition: $smooth-transition;
       flex: 1;
-      white-space: nowrap;
       cursor: pointer;
 
       &.btn-cancel {
-        background-color: $white;
+        background-color: $slate-50;
         border: 1px solid $slate-200;
         color: $slate-500;
         &:hover {
-          background-color: $slate-50;
-          color: $slate-800;
+          background-color: $slate-100;
         }
       }
       &.btn-confirm-reject {
-        background-color: $danger;
-        color: $white;
-        box-shadow: 0 1px 2px rgba(239, 68, 68, 0.2);
+        background-color: $danger-500;
+        color: $slate-50;
         &:hover {
           background-color: $danger-600;
-          box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3);
         }
       }
     }
-  }
-}
-
-.btn-tour {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 0 14px;
-  height: 38px;
-  border-radius: 8px;
-  font-weight: 500;
-  font-size: 0.8rem;
-  border: none;
-  cursor: pointer;
-  color: $white;
-  transition: all 0.2s;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-
-  @media (max-width: 600px) {
-    flex: 1;
-    padding: 0 10px;
-  }
-
-  background-color: $violet-50;
-  color: $text-muted;
-  border: 1px solid $slate-200;
-  box-shadow: none;
-
-  &:hover {
-    background-color: $violet-100;
-    color: $violet-700;
   }
 }

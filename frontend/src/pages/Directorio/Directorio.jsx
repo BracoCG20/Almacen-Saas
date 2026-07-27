@@ -1,25 +1,16 @@
 //frontend/src/pages/Directorio/Directorio.jsx
-import { useState, useEffect } from 'react';
-import api from '../../service/api';
+import { AlertTriangle, Check, FileSpreadsheet, Plus, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import {
-  Plus,
-  FileSpreadsheet,
-  AlertTriangle,
-  X,
-  Check,
-  HelpCircle,
-} from 'lucide-react';
 import * as XLSX from 'xlsx';
-import { driver } from 'driver.js';
-import 'driver.js/dist/driver.css';
 import Modal from '../../components/Modal/Modal';
+import api from '../../service/api';
 
-import DirectorioStats from './DirectorioStats';
-import DirectorioTable from './DirectorioTable';
+import './Directorio.scss';
 import DirectorioForm from './DirectorioForm';
 import DirectorioHistorial from './DirectorioHistorial';
-import './Directorio.scss';
+import DirectorioStats from './DirectorioStats';
+import DirectorioTable from './DirectorioTable';
 
 const Directorio = () => {
   // --- 1. ESTADOS DE DATOS ---
@@ -49,54 +40,6 @@ const Directorio = () => {
     datos_transferidos: false,
     colaborador_destino_id: '',
   });
-
-  /**
-   * TOUR GUIADO
-   * Enseño al usuario rápidamente para qué sirve cada bloque de esta pantalla.
-   */
-  const startDirectorioTour = () => {
-    const driverObj = driver({
-      showProgress: true,
-      nextBtnText: 'Siguiente &rarr;',
-      prevBtnText: '&larr; Anterior',
-      doneBtnText: '¡Entendido!',
-      allowClose: true,
-      overlayColor: 'rgba(15, 23, 42, 0.6)',
-      steps: [
-        {
-          element: '#tour-dir-header',
-          popover: {
-            title: 'Directorio Workspace',
-            description:
-              'Aquí puedes asignar nuevas licencias o exportar el historial a Excel.',
-            side: 'bottom',
-            align: 'start',
-          },
-        },
-        {
-          element: '#tour-dir-stats',
-          popover: {
-            title: 'Límites en Tiempo Real',
-            description:
-              'Observa cuántas licencias te quedan disponibles. Si llegas a 0, se bloquean nuevas asignaciones.',
-            side: 'bottom',
-            align: 'start',
-          },
-        },
-        {
-          element: '#tour-dir-table',
-          popover: {
-            title: 'Control de Cuentas',
-            description:
-              'Revisa el estado de cada correo. Edita, da de baja o mira la auditoría de la cuenta.',
-            side: 'top',
-            align: 'start',
-          },
-        },
-      ],
-    });
-    driverObj.drive();
-  };
 
   /**
    * CARGA PRINCIPAL
@@ -312,33 +255,26 @@ const Directorio = () => {
         </div>
         <div className='header-actions'>
           <button
-            className='btn-tour'
-            onClick={startDirectorioTour}
-            title='Guía Rápida'
-          >
-            <HelpCircle size={18} />
-          </button>
-          <button
-            className='btn-excel-header'
+            className='btn-action-header btn-excel'
             onClick={exportarHistorialExcel}
             title='Exportar Auditoría'
           >
             <FileSpreadsheet size={16} /> <span>Exportar</span>
           </button>
           <button
-            className='btn-add'
+            className='btn-action-header btn-add'
             onClick={openAddModal}
           >
-            <Plus size={18} /> Asignar Licencia
+            <Plus size={16} /> Asignar Licencia
           </button>
         </div>
       </div>
 
-      <div id='tour-dir-stats'>
+      <div>
         <DirectorioStats estadisticas={estadisticas} />
       </div>
 
-      <div id='tour-dir-table'>
+      <div>
         <DirectorioTable
           directorio={directorio}
           onEdit={openEditModal}

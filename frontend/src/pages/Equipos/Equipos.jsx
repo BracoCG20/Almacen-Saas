@@ -334,6 +334,15 @@ const Equipos = () => {
       color: '#94a3b8',
       fontSize: '0.7rem',
     }),
+    menu: (provided) => ({
+      ...provided,
+      borderRadius: '12px',
+      padding: '0px 4px',
+      overflow: 'hidden',
+      zIndex: 9999,
+      border: '1px solid #e2e8f0',
+      boxShadow: '0 4px 15px rgba(0,0,0,0.5)',
+    }),
     option: (provided, state) => ({
       ...provided,
       backgroundColor: state.isSelected
@@ -345,7 +354,7 @@ const Equipos = () => {
       cursor: 'pointer',
       fontSize: '0.8rem',
       padding: '7px 12px',
-      borderRadius: '5px',
+      borderRadius: '8px',
     }),
     menuPortal: (base) => ({
       ...base,
