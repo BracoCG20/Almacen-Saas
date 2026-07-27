@@ -1,32 +1,28 @@
 //frontend/src/pages/Proveedores/Proveedores.jsx
-import { useEffect, useState } from 'react';
-import api from '../../service/api';
-import * as XLSX from 'xlsx';
-import { toast } from 'react-toastify';
 import {
-  Plus,
-  Search,
-  Edit,
-  Building2,
-  Phone,
-  Undo2,
-  Mail,
-  MapPin,
   AlertTriangle,
-  X,
-  Check,
-  FileSpreadsheet,
   Ban,
-  Laptop,
+  Building2,
+  Check,
   ChevronLeft,
   ChevronRight,
+  Edit,
   FileDown,
+  FileSpreadsheet,
   History,
-  HelpCircle,
+  Laptop,
+  Mail,
+  MapPin,
+  Phone,
+  Plus,
+  Search,
+  Undo2,
+  X,
 } from 'lucide-react';
-
-import { driver } from 'driver.js';
-import 'driver.js/dist/driver.css';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+import * as XLSX from 'xlsx';
+import api from '../../service/api';
 
 import Modal from '../../components/Modal/Modal';
 import AddProveedorForm from './AddProveedorForm';
@@ -51,73 +47,6 @@ const Proveedores = () => {
   const [providerToEdit, setProviderToEdit] = useState(null);
   const [providerToAction, setProviderToAction] = useState(null);
   const [historyData, setHistoryData] = useState([]);
-
-  /**
-   * TOUR GUIADO
-   * Muestra paso a paso cómo interactuar con el panel de proveedores.
-   */
-  const startProveedoresTour = () => {
-    const driverObj = driver({
-      showProgress: true,
-      nextBtnText: 'Siguiente &rarr;',
-      prevBtnText: '&larr; Anterior',
-      doneBtnText: '¡Entendido!',
-      allowClose: true,
-      overlayColor: 'rgba(0, 0, 0, 0.6)',
-      steps: [
-        {
-          element: '#tour-prov-buscador',
-          popover: {
-            title: 'Búsqueda Rápida',
-            description: 'Encuentra un proveedor por Razón Social o RUC.',
-            side: 'bottom',
-            align: 'start',
-          },
-        },
-        {
-          element: '#tour-prov-tabla',
-          popover: {
-            title: 'Panel de Proveedores',
-            description:
-              'Descarga el contrato en PDF y revisa la cantidad de equipos que te han alquilado.',
-            side: 'top',
-            align: 'start',
-          },
-        },
-        {
-          element: '#tour-prov-acciones',
-          popover: {
-            title: 'Auditoría y Edición',
-            description:
-              'Ve el historial de cambios, actualiza contratos o dalos de baja.',
-            side: 'left',
-            align: 'center',
-          },
-        },
-        {
-          element: '#tour-prov-excel',
-          popover: {
-            title: 'Reporte Gerencial',
-            description:
-              'Exporta todos los datos, fechas y contactos a un Excel.',
-            side: 'bottom',
-            align: 'center',
-          },
-        },
-        {
-          element: '#tour-prov-nuevo',
-          popover: {
-            title: 'Registrar Proveedor',
-            description:
-              'Agrega una nueva empresa para luego poder registrarle equipos alquilados.',
-            side: 'left',
-            align: 'start',
-          },
-        },
-      ],
-    });
-    driverObj.drive();
-  };
 
   /**
    * CARGA INICIAL DE DATOS
@@ -282,24 +211,16 @@ const Proveedores = () => {
         </h1>
         <div className='header-actions'>
           <button
-            onClick={startProveedoresTour}
-            className='btn-action-header btn-tour'
-          >
-            <HelpCircle size={18} />
-          </button>
-          <button
-            id='tour-prov-excel'
             className='btn-action-header btn-excel'
             onClick={exportarExcel}
           >
-            <FileSpreadsheet size={18} /> Exportar
+            <FileSpreadsheet size={16} /> Exportar
           </button>
           <button
-            id='tour-prov-nuevo'
             className='btn-action-header btn-add'
             onClick={handleAdd}
           >
-            <Plus size={18} /> Nuevo Proveedor
+            <Plus size={16} /> Nuevo Proveedor
           </button>
         </div>
       </div>

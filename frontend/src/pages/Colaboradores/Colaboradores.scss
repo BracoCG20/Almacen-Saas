@@ -87,11 +87,11 @@
       padding: 0 14px;
       height: 40px;
       border-radius: 8px;
-      border: 1px solid $border-color;
+      border: 1px solid $slate-200;
       display: flex;
       align-items: center;
       gap: 10px;
-      transition: all 0.2s ease;
+      transition: $smooth-transition;
 
       @media (max-width: 600px) {
         min-width: 100%;
@@ -150,8 +150,7 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      text-align: left;
-
+      min-width: 1000px;
       font-size: 0.8rem;
 
       /* Cabecera Violeta Suave */
@@ -238,9 +237,9 @@
         gap: 2px;
         .name {
           font-weight: 500;
-          color: $text-main;
+          color: $slate-900;
           &.inactive {
-            color: $text-muted;
+            color: $slate-200;
           }
         }
         .audit-text {
@@ -351,7 +350,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.2s ease-in-out;
+        transition: $smooth-transition;
 
         &.history:hover {
           background-color: $info-100;
@@ -416,10 +415,10 @@
           gap: 4px;
           padding: 4px 10px;
           border-radius: 6px;
-          border: 1px solid $border-color;
+          border: 1px solid $slate-200;
           background-color: $white;
           cursor: pointer;
-          color: $text-main;
+          color: $slate-900;
           font-size: 0.7rem;
           font-weight: 500;
           transition: $smooth-transition;

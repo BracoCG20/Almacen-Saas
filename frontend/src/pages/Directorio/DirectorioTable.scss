@@ -177,8 +177,8 @@
       color: $text-muted;
 
       &.view:hover {
-        background-color: $violet-50;
-        color: $violet-700;
+        background-color: $info-50;
+        color: $info-500;
       }
 
       &.baja:hover {
@@ -186,12 +186,5 @@
         color: $warning-500;
       }
     }
-  }
-
-  .no-data {
-    padding: 32px;
-    text-align: center;
-    color: $text-muted;
-    font-size: 0.8rem;
   }
 }

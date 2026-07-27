@@ -1,18 +1,15 @@
 //frontend/src/pages/Tickets/Tickets.jsx
-import { useState, useEffect } from 'react';
-import api from '../../service/api';
-import { toast } from 'react-toastify';
-import { useAuth } from '../../context/AuthContext';
-import { io } from 'socket.io-client';
+import { Plus, Search } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import Select from 'react-select';
-import { Plus, Search, HelpCircle } from 'lucide-react';
+import { toast } from 'react-toastify';
+import { io } from 'socket.io-client';
 import Modal from '../../components/Modal/Modal';
-import TicketForm from './TicketForm';
+import { useAuth } from '../../context/AuthContext';
+import api from '../../service/api';
 import TicketDetails from './TicketDetails';
+import TicketForm from './TicketForm';
 import TicketsTable from './TicketsTable';
-
-import { driver } from 'driver.js';
-import 'driver.js/dist/driver.css';
 
 import './Tickets.scss';
 
@@ -55,22 +52,49 @@ const Tickets = () => {
     control: (provided, state) => ({
       ...provided,
       backgroundColor: 'white',
-      border: state.isFocused ? '1px solid #7c3aed' : '1px solid #e2e8f0',
-      borderRadius: '8px',
+      border: state.isFocused ? '1px solid #155dfc' : '1px solid #e2e8f0',
+      borderRadius: '12px',
       padding: '0px 4px',
       minHeight: '40px',
       height: '40px',
       boxShadow: state.isFocused ? '0 0 0 2px rgba(124, 58, 237, 0.1)' : 'none',
       cursor: 'pointer',
-      '&:hover': { borderColor: '#7c3aed' },
+      '&:hover': { borderColor: '#155dfc' },
     }),
+    indicatorSeparator: () => ({ display: 'none' }),
     singleValue: (provided) => ({
       ...provided,
       color: '#1e293b',
-      fontWeight: '500',
+      fontWeight: '400',
       fontSize: '0.8rem',
     }),
-    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+    placeholder: (provided) => ({
+      ...provided,
+      color: '#94a3b8',
+      fontSize: '0.7rem',
+    }),
+    menu: (provided) => ({
+      ...provided,
+      borderRadius: '12px',
+      padding: '0px 4px',
+      overflow: 'hidden',
+      zIndex: 9999,
+      border: '1px solid #e2e8f0',
+      boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isSelected
+        ? '#155dfc'
+        : state.isFocused
+          ? '#f8fafc'
+          : 'white',
+      color: state.isSelected ? 'white' : '#334155',
+      cursor: 'pointer',
+      fontSize: '0.8rem',
+      padding: '7px 12px',
+      borderRadius: '8px',
+    }),
   };
 
   const fetchData = async () => {
@@ -156,50 +180,6 @@ const Tickets = () => {
   const currentItems = filteredTickets.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(filteredTickets.length / itemsPerPage);
 
-  const startTour = () => {
-    const driverObj = driver({
-      showProgress: true,
-      nextBtnText: 'Siguiente &rarr;',
-      prevBtnText: '&larr; Anterior',
-      doneBtnText: '¡Entendido!',
-      allowClose: true,
-      overlayColor: 'rgba(15, 23, 42, 0.6)',
-      steps: [
-        {
-          element: '.filters-container',
-          popover: {
-            title: 'Filtros de Búsqueda',
-            description:
-              'Encuentra tickets escribiendo el asunto o seleccionando la categoría del problema.',
-            side: 'bottom',
-            align: 'start',
-          },
-        },
-        {
-          element: '.table-container',
-          popover: {
-            title: 'Mesa de Ayuda',
-            description:
-              'Aquí verás todos los tickets. En celular, puedes deslizar hacia la derecha para ver más columnas.',
-            side: 'top',
-            align: 'start',
-          },
-        },
-        {
-          element: '.btn-add',
-          popover: {
-            title: 'Crear Solicitud',
-            description:
-              'Haz clic aquí para enviar un nuevo requerimiento al equipo de TI.',
-            side: 'left',
-            align: 'start',
-          },
-        },
-      ],
-    });
-    driverObj.drive();
-  };
-
   if (loading)
     return <div className='loading-state'>Cargando Mesa de Ayuda...</div>;
 
@@ -210,13 +190,6 @@ const Tickets = () => {
           <h1>Mesa de Ayuda (Tickets)</h1>
         </div>
         <div className='header-actions'>
-          <button
-            className='btn-tour-page'
-            onClick={startTour}
-            title='Guía de uso'
-          >
-            <HelpCircle size={18} />
-          </button>
           <button
             className='btn-add'
             onClick={() => {
@@ -230,7 +203,7 @@ const Tickets = () => {
               setModalOpen(true);
             }}
           >
-            <Plus size={18} /> Nuevo Ticket
+            <Plus size={16} /> Nuevo Ticket
           </button>
         </div>
       </div>
@@ -238,7 +211,7 @@ const Tickets = () => {
       <div className='filters-container'>
         <div className='search-bar'>
           <Search
-            size={18}
+            size={16}
             color='#94a3b8'
           />
           <input

@@ -1,6 +1,4 @@
 //frontend/src/pages/Servicios/Servicios.jsx
-import { driver } from 'driver.js';
-import 'driver.js/dist/driver.css';
 import {
   AlertTriangle,
   Ban,
@@ -12,7 +10,6 @@ import {
   Edit,
   ExternalLink,
   FileSpreadsheet,
-  HelpCircle,
   History,
   Plus,
   Search,
@@ -64,50 +61,6 @@ const Servicios = () => {
     { value: 'Productividad y Gestión', label: 'Productividad y Gestión' },
     { value: 'Otros', label: 'Otros' },
   ];
-
-  const startServiciosTour = () => {
-    const driverObj = driver({
-      showProgress: true,
-      nextBtnText: 'Siguiente &rarr;',
-      prevBtnText: '&larr; Anterior',
-      doneBtnText: '¡Entendido!',
-      allowClose: true,
-      overlayColor: 'rgba(15, 23, 42, 0.6)',
-      steps: [
-        {
-          element: '#tour-servicios-filtros',
-          popover: {
-            title: 'Busca un Servicio',
-            description:
-              'Escribe el nombre del software o filtra rápidamente por la categoría del producto.',
-            side: 'bottom',
-            align: 'start',
-          },
-        },
-        {
-          element: '#tour-servicios-tabla',
-          popover: {
-            title: 'Panel de Suscripciones',
-            description:
-              'Controla las renovaciones. El color naranja o rojo te avisa si el pago está por vencer o vencido.',
-            side: 'top',
-            align: 'start',
-          },
-        },
-        {
-          element: '.actions-cell',
-          popover: {
-            title: 'Acciones Múltiples',
-            description:
-              'Puedes Registrar un Pago 💵, Ver el Historial 🕒, Editar ✏️ o Dar de Baja 🚫 el servicio.',
-            side: 'left',
-            align: 'start',
-          },
-        },
-      ],
-    });
-    driverObj.drive();
-  };
 
   const fetchData = async () => {
     setLoading(true);
@@ -303,63 +256,49 @@ const Servicios = () => {
   const customSelectStyles = {
     control: (provided, state) => ({
       ...provided,
-      borderRadius: '8px',
-      borderColor: state.isFocused ? '#7c3aed' : '#e2e8f0',
-      boxShadow: state.isFocused ? '0 0 0 2px rgba(124, 58, 237, 0.1)' : 'none',
-      height: '40px',
+      backgroundColor: 'white',
+      border: state.isFocused ? '1px solid #155dfc' : '1px solid #e2e8f0',
+      borderRadius: '12px',
+      padding: '0px 4px',
       minHeight: '40px',
-      cursor: 'pointer',
-      display: 'flex',
-      alignItems: 'center',
-    }),
-    valueContainer: (provided) => ({
-      ...provided,
-      padding: '0 12px',
-      height: '100%',
-      display: 'flex',
-      alignItems: 'center',
-      position: 'relative',
-    }),
-    input: (provided) => ({
-      ...provided,
-      margin: '0px',
-      padding: '0px',
       height: '40px',
-      color: 'transparent',
+      boxShadow: state.isFocused ? '0 0 0 2px rgba(124, 58, 237, 0.1)' : 'none',
+      cursor: 'pointer',
+      '&:hover': { borderColor: '#155dfc' },
     }),
     indicatorSeparator: () => ({ display: 'none' }),
-    indicatorsContainer: (provided) => ({ ...provided, height: '40px' }),
     singleValue: (provided) => ({
       ...provided,
       color: '#1e293b',
-      fontWeight: '500',
+      fontWeight: '400',
       fontSize: '0.8rem',
-      margin: '0px',
-      position: 'absolute',
-      top: '50%',
-      transform: 'translateY(-50%)',
     }),
     placeholder: (provided) => ({
       ...provided,
       color: '#94a3b8',
-      fontSize: '0.8rem',
-      margin: '0px',
-      position: 'absolute',
-      top: '50%',
-      transform: 'translateY(-50%)',
+      fontSize: '0.7rem',
     }),
-    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+    menu: (provided) => ({
+      ...provided,
+      borderRadius: '12px',
+      padding: '0px 4px',
+      overflow: 'hidden',
+      zIndex: 9999,
+      border: '1px solid #e2e8f0',
+      boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
+    }),
     option: (provided, state) => ({
       ...provided,
       backgroundColor: state.isSelected
-        ? '#7c3aed'
+        ? '#155dfc'
         : state.isFocused
-          ? '#f5f3ff'
+          ? '#f8fafc'
           : 'white',
       color: state.isSelected ? 'white' : '#334155',
-      fontSize: '0.8rem',
       cursor: 'pointer',
-      padding: '8px 12px',
+      fontSize: '0.8rem',
+      padding: '7px 12px',
+      borderRadius: '8px',
     }),
   };
 
@@ -373,13 +312,6 @@ const Servicios = () => {
           <h1>Gestión de Servicios y Licencias</h1>
         </div>
         <div className='header-actions'>
-          <button
-            className='btn-tour'
-            onClick={startServiciosTour}
-            title='Guía Rápida'
-          >
-            <HelpCircle size={18} />
-          </button>
           <button
             onClick={exportarExcel}
             className='btn-action-header btn-excel'
@@ -401,7 +333,7 @@ const Servicios = () => {
       >
         <div className='search-bar'>
           <Search
-            size={18}
+            size={16}
             color='#94a3b8'
           />
           <input
@@ -422,10 +354,7 @@ const Servicios = () => {
         </div>
       </div>
 
-      <div
-        className='table-container'
-        id='tour-servicios-tabla'
-      >
+      <div className='table-container'>
         {currentItems.length === 0 ? (
           <div className='no-data'>No se encontraron servicios.</div>
         ) : (
@@ -451,9 +380,9 @@ const Servicios = () => {
                   <td className='center'>
                     <div className='device-icon-box'>
                       {item.categoria_servicio === 'Hosting y Dominios' ? (
-                        <Server size={18} />
+                        <Server size={16} />
                       ) : (
-                        <Cloud size={18} />
+                        <Cloud size={16} />
                       )}
                     </div>
                   </td>
@@ -492,7 +421,7 @@ const Servicios = () => {
                       className='payment-pill'
                       style={getPaymentStatusStyle(item.fecha_proximo_pago)}
                     >
-                      <CalendarDays size={14} />{' '}
+                      <CalendarDays size={14} />
                       {formatDate(item.fecha_proximo_pago)}
                     </div>
                   </td>
