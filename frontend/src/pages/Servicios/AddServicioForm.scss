@@ -79,7 +79,7 @@
       font-size: 0.8rem;
       color: #0f172a;
       background-color: #fff;
-      transition: all 0.2s ease;
+      transition: all 0.2s ease-in-out;
       outline: none;
       width: 100%;
       box-sizing: border-box;
@@ -166,7 +166,7 @@
           font-size: 0.8rem;
           color: #0f172a;
           background-color: #fff;
-          transition: all 0.2s ease;
+          transition: all 0.2s ease-in-out;
           outline: none;
           box-sizing: border-box;
 

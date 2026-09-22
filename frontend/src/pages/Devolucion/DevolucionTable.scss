@@ -202,7 +202,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.2s ease;
+      transition: all 0.2s ease-in-out;
       &.view:hover {
         background-color: $info-100;
         color: $info-500;

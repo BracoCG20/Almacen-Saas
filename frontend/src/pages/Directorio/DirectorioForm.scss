@@ -106,7 +106,7 @@
     border: 1px dashed $warning-300;
     padding: 15px;
     border-radius: 10px;
-    animation: fadeInDown 0.3s ease;
+    animation: fadeInDown 0.3s ease-in-out;
 
     .checkbox-wrapper {
       display: flex;

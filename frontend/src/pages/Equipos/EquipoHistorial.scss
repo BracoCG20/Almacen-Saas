@@ -124,7 +124,7 @@
         border-radius: 10px;
         padding: 14px 16px;
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
-        transition: all 0.2s ease;
+        transition: all 0.2s ease-in-out;
 
         &:hover {
           border-color: $violet-200;
@@ -314,7 +314,7 @@
         font-size: 0.8rem;
         font-weight: 500;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: all 0.2s ease-in-out;
 
         &:hover:not(:disabled) {
           background-color: $violet-50;

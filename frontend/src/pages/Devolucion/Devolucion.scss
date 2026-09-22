@@ -37,7 +37,7 @@
       font-weight: 500;
       font-size: 0.8rem;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.2s ease-in-out;
       &:hover {
         background-color: $violet-100;
         color: $violet-700;
@@ -131,7 +131,7 @@
       gap: 6px;
       border: none;
       font-size: 0.8rem;
-      transition: all 0.2s ease;
+      transition: all 0.2s ease-in-out;
       flex: 1;
       max-width: 170px;
       white-space: nowrap;

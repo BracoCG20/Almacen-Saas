@@ -190,7 +190,7 @@
         font-size: 0.8rem;
         font-weight: 500;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: all 0.2s ease-in-out;
         &:hover:not(:disabled) {
           background-color: $violet-50;
           color: $violet-700;

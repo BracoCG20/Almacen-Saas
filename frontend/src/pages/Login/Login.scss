@@ -52,8 +52,9 @@
 
       .brand-badge {
         display: inline-block;
-        background-color: rgba(255, 255, 255, 0.2);
+        -webkit-backdrop-filter: blur(10px);
         backdrop-filter: blur(10px);
+        background-color: rgba(255, 255, 255, 0.2);
         padding: 6px 14px;
         border-radius: 50px;
         font-size: 0.7rem;
@@ -179,7 +180,7 @@
         border-radius: 12px;
         padding: 10px 18px;
         background-color: $white;
-        transition: all 0.2s ease;
+        transition: all 0.2s ease-in-out;
 
         &:focus-within {
           border-color: $info-500;
@@ -255,7 +256,7 @@
           font-size: 1rem;
           font-weight: 500;
           cursor: pointer;
-          transition: all 0.3s ease;
+          transition: all 0.3s ease-in-out;
           box-shadow: 0 4px 14px rgba($info-500, 0.3);
 
           &:hover:not(:disabled) {

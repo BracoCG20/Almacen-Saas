@@ -200,7 +200,7 @@
       font-size: 0.8rem;
       font-weight: 500;
       color: $white;
-      transition: all 0.2s ease;
+      transition: all 0.2s ease-in-out;
       &:disabled {
         background-color: $slate-50 !important;
         color: $slate-400 !important;

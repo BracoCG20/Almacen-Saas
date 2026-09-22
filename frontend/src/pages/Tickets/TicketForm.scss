@@ -124,7 +124,7 @@
     color: #0f172a;
     box-sizing: border-box;
     outline: none;
-    transition: all 0.2s ease;
+    transition: all 0.2s ease-in-out;
 
     &:focus {
       border-color: $primary;
@@ -156,7 +156,7 @@
       font-weight: 500;
       cursor: pointer;
       border: none;
-      transition: all 0.2s ease;
+      transition: all 0.2s ease-in-out;
       font-size: 0.8rem;
 
       &.btn-cancel {

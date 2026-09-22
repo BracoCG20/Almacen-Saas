@@ -304,7 +304,7 @@
       opacity: 0;
       visibility: hidden;
       transform: translateY(5px);
-      transition: all 0.2s ease;
+      transition: all 0.2s ease-in-out;
 
       // Alineación a la izquierda (Por defecto para "Equipos")
       &.left-align {
@@ -465,7 +465,7 @@
         color: #0f172a;
         font-size: 0.8rem;
         font-weight: 500;
-        transition: all 0.2s ease;
+        transition: all 0.2s ease-in-out;
         &:disabled {
           opacity: 0.4;
           cursor: not-allowed;

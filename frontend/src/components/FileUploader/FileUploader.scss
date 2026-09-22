@@ -23,13 +23,13 @@
       font-weight: 400;
       font-size: 0.8rem;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.2s ease-in-out;
       outline: none;
       line-height: 1.3;
 
       svg {
         color: $primary;
-        transition: transform 0.2s ease;
+        transition: transform 0.2s ease-in-out;
         flex-shrink: 0;
       }
 
@@ -58,7 +58,7 @@
     border: 1px solid $slate-300;
     padding: 6px 10px;
     border-radius: 8px;
-    transition: all 0.2s ease;
+    transition: all 0.2s ease-in-out;
     gap: 15px;
 
     &:hover {

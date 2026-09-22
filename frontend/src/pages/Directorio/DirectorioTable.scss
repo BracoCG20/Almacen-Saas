@@ -172,7 +172,7 @@
       border-radius: 6px;
       border: none;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.2s ease-in-out;
       background: transparent;
       color: $text-muted;
 
