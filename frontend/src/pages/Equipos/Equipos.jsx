@@ -25,7 +25,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import Select from 'react-select';
-import { toast } from 'react-toastify';
+import { sileo } from 'sileo';
 import * as XLSX from 'xlsx';
 import api from '../../service/api';
 
@@ -94,17 +94,20 @@ const Equipos = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const resPerfil = await api.get('/auth/perfil');
+      const [resPerfil, resEquipos] = await Promise.all([
+        api.get('/auth/perfil'),
+        api.get('/equipos'),
+      ]);
+
       setUserRole(Number(resPerfil.data.rol_id));
 
-      const resEquipos = await api.get('/equipos');
       const sorted = resEquipos.data.sort((a, b) => {
         if (a.disponible === b.disponible) return b.id - a.id;
         return a.disponible === false ? 1 : -1;
       });
       setEquipos(sorted);
     } catch (error) {
-      toast.error('Error al cargar datos del inventario');
+      sileo.error({ title: 'Error', description: 'Error al cargar datos del inventario' });
     } finally {
       setLoading(false);
     }
@@ -246,7 +249,7 @@ const Equipos = () => {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Inventario');
     XLSX.writeFile(wb, 'Reporte_Inventario.xlsx');
-    toast.success('Reporte generado exitosamente');
+    sileo.success({ title: 'Éxito', description: 'Reporte generado exitosamente' });
   };
 
   // --- MANEJADORES DE MODALES ---
@@ -282,7 +285,7 @@ const Equipos = () => {
       const res = await api.get(`/equipos/${equipo.id}/historial`);
       setHistoryData(res.data);
     } catch (error) {
-      toast.error('Error al cargar historial');
+      sileo.error({ title: 'Error', description: 'Error al cargar historial' });
     }
   };
 
@@ -292,14 +295,14 @@ const Equipos = () => {
       await api.put(`/equipos/${equipo.id}/disponibilidad`, {
         disponible: nuevaDisponibilidad,
       });
-      toast.success(
+      sileo.success({ title: 'Éxito', description: 
         `Ítem ${nuevaDisponibilidad ? 'reactivado' : 'dado de baja'}`,
-      );
+      });
       fetchData();
       setIsDeleteModalOpen(false);
       setEquipoToDelete(null);
     } catch (error) {
-      toast.error('Error al actualizar disponibilidad');
+      sileo.error({ title: 'Error', description: 'Error al actualizar disponibilidad' });
     }
   };
 

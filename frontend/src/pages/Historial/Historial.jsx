@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import Select from 'react-select';
-import { toast } from 'react-toastify';
+import { sileo } from 'sileo';
 import * as XLSX from 'xlsx';
 import api from '../../service/api';
 
@@ -113,7 +113,7 @@ const Historial = () => {
         const res = await api.get('/movimientos');
         setHistorial(res.data);
       } catch (error) {
-        toast.error('Error cargando el historial');
+        sileo.error({ title: 'Error', description: 'Error cargando el historial' });
       } finally {
         setLoading(false);
       }
@@ -239,7 +239,7 @@ const Historial = () => {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Auditoria_Movimientos');
     XLSX.writeFile(wb, 'Reporte_Auditoria_Equipos.xlsx');
-    toast.success('Reporte generado exitosamente');
+    sileo.success({ title: 'Éxito', description: 'Reporte generado exitosamente' });
   };
 
   if (loading)

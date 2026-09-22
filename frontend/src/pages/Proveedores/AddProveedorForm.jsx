@@ -1,20 +1,20 @@
 //frontend/src/pages/Proveedores/AddProveedorForm.jsx
-import { useState, useEffect } from 'react';
 import {
-  Save,
   Building2,
-  IdCard,
-  User,
-  Phone,
-  Mail,
-  MapPin,
-  Globe,
   CalendarDays,
   FileText,
+  Globe,
+  IdCard,
+  Mail,
+  MapPin,
+  Phone,
+  Save,
+  User,
 } from 'lucide-react';
-import { toast } from 'react-toastify';
-import api from '../../service/api';
+import { useEffect, useState } from 'react';
+import { sileo } from 'sileo';
 import FileUploader from '../../components/FileUploader/FileUploader';
+import api from '../../service/api';
 import './AddProveedorForm.scss';
 
 const AddProveedorForm = ({ onSuccess, providerToEdit }) => {
@@ -103,7 +103,7 @@ const AddProveedorForm = ({ onSuccess, providerToEdit }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.razon_social || !formData.ruc)
-      return toast.warning('Razón Social y RUC son obligatorios');
+      return sileo.warning({ title: 'Advertencia', description: 'Razón Social y RUC son obligatorios' });
 
     // Valido que no viajen en el tiempo
     if (formData.fecha_inicio_contrato && formData.fecha_fin_contrato) {
@@ -111,9 +111,9 @@ const AddProveedorForm = ({ onSuccess, providerToEdit }) => {
         new Date(formData.fecha_inicio_contrato) >
         new Date(formData.fecha_fin_contrato)
       ) {
-        return toast.warning(
+        return sileo.warning({ title: 'Advertencia', description: 
           'La fecha de fin no puede ser anterior a la de inicio.',
-        );
+        });
       }
     }
 
@@ -136,16 +136,16 @@ const AddProveedorForm = ({ onSuccess, providerToEdit }) => {
         await api.put(`/proveedores/${providerToEdit.id}`, dataToSend, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
-        toast.success('Proveedor actualizado');
+        sileo.success({ title: 'Éxito', description: 'Proveedor actualizado' });
       } else {
         await api.post('/proveedores', dataToSend, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
-        toast.success('Proveedor registrado');
+        sileo.success({ title: 'Éxito', description: 'Proveedor registrado' });
       }
       onSuccess();
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Error al guardar');
+      sileo.error({ title: 'Error', description: error.response?.data?.error || 'Error al guardar' });
     } finally {
       setLoading(false);
     }
@@ -254,7 +254,7 @@ const AddProveedorForm = ({ onSuccess, providerToEdit }) => {
               newFile={archivoContrato}
               onFileSelect={(file) => {
                 if (file.type !== 'application/pdf')
-                  toast.error('El contrato debe ser un archivo PDF.');
+                  sileo.error({ title: 'Error', description: 'El contrato debe ser un archivo PDF.' });
                 else setArchivoContrato(file);
               }}
               onFileRemove={() => setArchivoContrato(null)}

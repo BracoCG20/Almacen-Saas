@@ -1,7 +1,7 @@
 //frontend/src/pages/Tickets/TicketDetails.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../service/api';
-import { toast } from 'react-toastify';
+import { sileo } from 'sileo';
 import { useAuth } from '../../context/AuthContext';
 import {
   Send,
@@ -38,7 +38,7 @@ const TicketDetails = ({ ticket, onClose, onUpdate }) => {
       const res = await api.get(`/tickets/${ticket.id}/historial`);
       setHistorial(res.data);
     } catch (error) {
-      toast.error('Error al cargar el historial del ticket');
+      sileo.error({ title: 'Error', description: 'Error al cargar el historial del ticket' });
     } finally {
       setLoading(false);
     }
@@ -112,7 +112,7 @@ const TicketDetails = ({ ticket, onClose, onUpdate }) => {
       setArchivoAdjunto(null);
       if (fileInputRef.current) fileInputRef.current.value = ''; // Limpiar el input file
     } catch (error) {
-      toast.error('Error al enviar el mensaje');
+      sileo.error({ title: 'Error', description: 'Error al enviar el mensaje' });
     }
   };
 
@@ -124,9 +124,9 @@ const TicketDetails = ({ ticket, onClose, onUpdate }) => {
         estado: nuevoEstado,
       });
       setEstadoActual(nuevoEstado);
-      toast.success(`Estado cambiado a ${nuevoEstado}`);
+      sileo.success({ title: 'Éxito', description: `Estado cambiado a ${nuevoEstado}` });
     } catch (error) {
-      toast.error('Error al cambiar el estado');
+      sileo.error({ title: 'Error', description: 'Error al cambiar el estado' });
     }
   };
 

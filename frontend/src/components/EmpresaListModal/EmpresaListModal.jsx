@@ -1,22 +1,22 @@
 //frontend/src/components/EmpresaListModal/EmpresaListModal.jsx
-import { useState, useEffect } from 'react';
-import api from '../../service/api';
-import * as XLSX from 'xlsx';
-import { toast } from 'react-toastify';
 import {
-  X,
   Building2,
-  MapPin,
-  Phone,
-  ToggleLeft,
-  ToggleRight,
-  Edit,
-  Mail,
-  Search,
   ChevronLeft,
   ChevronRight,
+  Edit,
   FileSpreadsheet,
+  Mail,
+  MapPin,
+  Phone,
+  Search,
+  ToggleLeft,
+  ToggleRight,
+  X,
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { sileo } from 'sileo';
+import * as XLSX from 'xlsx';
+import api from '../../service/api';
 import './EmpresaListModal.scss';
 
 const EmpresaListModal = ({ onClose, onEditEmpresa }) => {
@@ -32,7 +32,7 @@ const EmpresaListModal = ({ onClose, onEditEmpresa }) => {
       const res = await api.get('/empresas');
       setEmpresas(res.data);
     } catch (error) {
-      toast.error('Error al cargar empresas');
+      sileo.error({ title: 'Error al cargar empresas' });
     } finally {
       setLoading(false);
     }
@@ -60,11 +60,11 @@ const EmpresaListModal = ({ onClose, onEditEmpresa }) => {
           e.id === empresa.id ? { ...e, estado: nuevoEstado } : e,
         ),
       );
-      toast.success(
-        `Empresa ${nuevoEstado ? 'Activada' : 'Inactivada'} correctamente`,
-      );
+      sileo.success({
+        title: `Empresa ${nuevoEstado ? 'Activada' : 'Inactivada'} correctamente`,
+      });
     } catch (error) {
-      toast.error('Error al cambiar el estado de la empresa');
+      sileo.error({ title: 'Error al cambiar el estado de la empresa' });
     }
   };
 
@@ -88,7 +88,7 @@ const EmpresaListModal = ({ onClose, onEditEmpresa }) => {
   // --- FUNCIÓN EXCEL ---
   const exportarExcel = () => {
     if (filteredEmpresas.length === 0)
-      return toast.info('No hay datos para exportar');
+      return sileo.info({ title: 'No hay datos para exportar' });
 
     const dataParaExcel = filteredEmpresas.map((e) => ({
       Estado: e.estado ? 'ACTIVA' : 'INACTIVA',
@@ -109,7 +109,7 @@ const EmpresaListModal = ({ onClose, onEditEmpresa }) => {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Empresas');
     XLSX.writeFile(wb, 'Reporte_Empresas_Registradas.xlsx');
-    toast.success('Excel de empresas generado exitosamente');
+    sileo.success({ title: 'Excel de empresas generado exitosamente' });
   };
 
   return (

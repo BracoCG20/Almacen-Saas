@@ -1,6 +1,6 @@
 //frontend/src/pages/Asignacion/Asignacion.jsx
 import { useEffect, useRef, useState } from 'react';
-import { toast } from 'react-toastify';
+import { sileo } from 'sileo';
 import Modal from '../../components/Modal/Modal';
 import PdfModal from '../../components/Modal/PdfModal';
 import api from '../../service/api';
@@ -82,7 +82,7 @@ const Asignacion = () => {
 
       setHistorialVisual(entregas);
     } catch (error) {
-      toast.error('Error al cargar datos');
+      sileo.error({ title: 'Error al cargar datos' });
     } finally {
       setLoading(false);
     }
@@ -104,7 +104,7 @@ const Asignacion = () => {
 
     socket.on('documento_firmado', () => {
       if (isMounted) {
-        toast.info('Actualizando estados de firma...', { icon: '📝' });
+        sileo.info({ title: 'Actualizando estados de firma...' });
         fetchData();
       }
     });
@@ -133,7 +133,11 @@ const Asignacion = () => {
     const file = e.target.files[0];
     if (!file || !selectedMovimientoId) return;
 
-    const toastId = toast.loading('Subiendo archivo...');
+    const toastId = sileo.promise(fetchData(), {
+      loading: { title: 'Subiendo archivo...' },
+      success: { title: 'Subido correctamente' },
+      error: { title: 'Ocurrio un problema' },
+    });
     const form = new FormData();
     form.append('pdf', file);
 
@@ -145,32 +149,26 @@ const Asignacion = () => {
           headers: { 'Content-Type': 'multipart/form-data' },
         },
       );
-      toast.update(toastId, {
-        render: 'Guardado ✅',
-        type: 'success',
-        isLoading: false,
-        autoClose: 2000,
+      sileo.success({
+        title: 'Guardado ✅',
       });
       fetchData();
     } catch (err) {
-      toast.update(toastId, {
-        render: 'Error al subir ❌',
-        type: 'error',
-        isLoading: false,
-        autoClose: 2000,
+      sileo.error({
+        title: 'Error al subir ❌',
       });
     }
-    e.target.value = null; // Limpio el input por si subo el mismo archivo otra vez
+    e.target.value = null;
   };
 
   const handleInvalidar = async () => {
     try {
       await api.put(`/movimientos/${movimientoToInvalidar}/invalidar`);
-      toast.info('Documento invalidado');
+      sileo.info({ title: 'Documento invalidado' });
       setIsRejectModalOpen(false);
       fetchData();
     } catch (e) {
-      toast.error('Error al invalidar');
+      sileo.error({ title: 'Error al invalidar' });
     }
   };
 
@@ -203,7 +201,9 @@ const Asignacion = () => {
       (u) => u.id === parseInt(formData.empleado_id),
     );
     if (tipoAccion === 'EMAIL' && !us.email_contacto) {
-      return toast.error('El colaborador no tiene correo registrado');
+      return sileo.error({
+        title: 'El colaborador no tiene correo registrado',
+      });
     }
 
     // Enriquezco los datos de los equipos con la información del catálogo para generar el PDF
@@ -230,7 +230,7 @@ const Asignacion = () => {
 
       if (tipoAccion === 'GUARDAR' || tipoAccion === 'WHATSAPP') {
         await api.post('/movimientos/entrega', payload);
-        toast.success('Entregas guardadas exitosamente');
+        sileo.success({ title: 'Entregas guardadas exitosamente' });
 
         setPdfUrl(URL.createObjectURL(pdfBlob));
         setShowPdfModal(true);
@@ -247,7 +247,11 @@ const Asignacion = () => {
           window.open(link, '_blank');
         }
       } else if (tipoAccion === 'EMAIL') {
-        const loadingToast = toast.loading('Guardando y enviando correo...');
+        const loadingToast = sileo.promise(fetchData(), {
+          loading: { title: 'Guardando y enviando correo...' },
+          success: { title: 'Enviado correctamente' },
+          error: { title: 'Ocurrio un problema' },
+        });
         const formDataEmail = new FormData();
         formDataEmail.append('pdf', pdfBlob, 'Acta_Entrega.pdf');
         formDataEmail.append('payload', JSON.stringify(payload));
@@ -263,18 +267,12 @@ const Asignacion = () => {
         );
 
         if (response.data.warning) {
-          toast.update(loadingToast, {
-            render: 'Guardado, fallo envío correo ⚠️',
-            type: 'warning',
-            isLoading: false,
-            autoClose: 4000,
+          sileo.warning({
+            title: 'Guardado, fallo envío correo ⚠️',
           });
         } else {
-          toast.update(loadingToast, {
-            render: '¡Guardado y Enviado! ✅',
-            type: 'success',
-            isLoading: false,
-            autoClose: 3000,
+          sileo.success({
+            title: '¡Guardado y Enviado! ✅',
           });
         }
 
@@ -290,7 +288,9 @@ const Asignacion = () => {
       });
       fetchData();
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Error en el proceso');
+      sileo.error({
+        title: error.response?.data?.error || 'Error en el proceso',
+      });
     }
   };
 

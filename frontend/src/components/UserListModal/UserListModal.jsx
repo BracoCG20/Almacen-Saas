@@ -1,20 +1,20 @@
 //frontend/src/components/UserListModal/UserListModal.jsx
-import { useState, useEffect } from 'react';
-import api from '../../service/api';
-import * as XLSX from 'xlsx';
-import { toast } from 'react-toastify';
 import {
-  X,
-  Users,
-  KeyRound,
-  ToggleLeft,
-  ToggleRight,
-  ShieldCheck,
-  Search,
   ChevronLeft,
   ChevronRight,
   FileSpreadsheet,
+  KeyRound,
+  Search,
+  ShieldCheck,
+  ToggleLeft,
+  ToggleRight,
+  Users,
+  X,
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { sileo } from 'sileo';
+import * as XLSX from 'xlsx';
+import api from '../../service/api';
 import './UserListModal.scss';
 
 const UserListModal = ({ onClose }) => {
@@ -36,7 +36,7 @@ const UserListModal = ({ onClose }) => {
       const res = await api.get('/auth/users');
       setUsers(res.data);
     } catch (error) {
-      toast.error('Error al cargar lista de usuarios');
+      sileo.error({ title: 'Error al cargar lista de usuarios' });
     } finally {
       setLoading(false);
     }
@@ -62,11 +62,13 @@ const UserListModal = ({ onClose }) => {
           u.usuario_id === user.usuario_id ? { ...u, activo: nuevoEstado } : u,
         ),
       );
-      toast.success(
-        `Acceso ${nuevoEstado ? 'Activado' : 'Inactivado'} correctamente`,
-      );
+      sileo.success({
+        title: `Acceso ${nuevoEstado ? 'Activado' : 'Inactivado'} correctamente`,
+      });
     } catch (error) {
-      toast.error('Error al cambiar estado');
+      sileo.error({
+        title: 'Error al cambiar estado',
+      });
     }
   };
 
@@ -76,10 +78,10 @@ const UserListModal = ({ onClose }) => {
       await api.put(`/auth/users/${passModal.userId}/password`, {
         newPassword: passModal.newPass,
       });
-      toast.success('Contraseña actualizada');
+      sileo.success({ title: 'Contraseña actualizada' });
       setPassModal({ show: false, userId: null, newPass: '' });
     } catch (error) {
-      toast.error('Error al actualizar contraseña');
+      sileo.error({ title: 'Error al actualizar contraseña' });
     }
   };
 
@@ -100,7 +102,7 @@ const UserListModal = ({ onClose }) => {
 
   const exportarExcel = () => {
     if (filteredUsers.length === 0)
-      return toast.info('No hay datos para exportar');
+      return sileo.info({ title: 'No hay datos para exportar' });
 
     const dataParaExcel = filteredUsers.map((u) => ({
       'Estado del Acceso': u.activo ? 'ACTIVO' : 'INACTIVO',
@@ -118,7 +120,7 @@ const UserListModal = ({ onClose }) => {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Accesos');
     XLSX.writeFile(wb, 'Reporte_Accesos_Usuarios.xlsx');
-    toast.success('Excel de usuarios generado exitosamente');
+    sileo.success({ title: 'Excel de usuarios generado exitosamente' });
   };
 
   return (

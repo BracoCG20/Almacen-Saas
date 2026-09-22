@@ -1,9 +1,9 @@
 //frontend/src/pages/Colaboradores/AddColaboradorForm.jsx
-import { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
-import { UserPlus, Save, Lock } from 'lucide-react';
-import api from '../../service/api';
+import { Lock, Save, UserPlus } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import Select from 'react-select';
+import { sileo } from 'sileo';
+import api from '../../service/api';
 import './AddColaboradorForm.scss';
 
 const AddColaboradorForm = ({ onSuccess, colaboradorToEdit }) => {
@@ -55,7 +55,7 @@ const AddColaboradorForm = ({ onSuccess, colaboradorToEdit }) => {
         }));
         setEmpresaOptions(options);
       } catch (error) {
-        toast.error('No se pudo cargar la lista de empresas');
+        sileo.error({ title: 'No se pudo cargar la lista de empresas' });
       } finally {
         setLoadingEmpresas(false);
       }
@@ -123,26 +123,29 @@ const AddColaboradorForm = ({ onSuccess, colaboradorToEdit }) => {
 
     // Validaciones extra que HTML5 no capta bien
     if (formData.dni.length !== 8)
-      return toast.warning('El DNI debe tener 8 dígitos.');
-    if (!formData.empresa_id) return toast.warning('Debe asignar una empresa.');
+      return sileo.warning({ title: 'El DNI debe tener 8 dígitos.' });
+    if (!formData.empresa_id)
+      return sileo.warning({ title: 'Debe asignar una empresa.' });
     if (formData.tipo_vinculo !== 'Planilla' && !formData.fecha_fin_proyecto) {
-      return toast.warning('Debe indicar la fecha de fin de contrato externo.');
+      return sileo.warning({
+        title: 'Debe indicar la fecha de fin de contrato externo.',
+      });
     }
 
     try {
       if (isEdit) {
         await api.put(`/colaboradores/${colaboradorToEdit.id}`, formData);
-        toast.success('Datos actualizados correctamente');
+        sileo.success({ title: 'Datos actualizados correctamente' });
       } else {
         await api.post('/colaboradores', formData);
-        toast.success('Colaborador registrado correctamente');
+        sileo.success({ title: 'Colaborador registrado correctamente' });
       }
       // Llamo a la función onSuccess (ej: cerrar modal, refrescar tabla)
       onSuccess();
     } catch (error) {
-      toast.error(
-        error.response?.data?.error || 'Error al guardar en el servidor',
-      );
+      sileo.error({
+        title: error.response?.data?.error || 'Error al guardar en el servidor',
+      });
     }
   };
 

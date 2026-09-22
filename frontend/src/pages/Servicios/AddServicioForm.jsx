@@ -1,7 +1,7 @@
 //frontend/src/pages/Servicios/AddServicioForm.jsx
 import React, { useState, useEffect } from 'react';
 import api from '../../service/api';
-import { toast } from 'react-toastify';
+import { sileo } from 'sileo';
 import Select from 'react-select';
 import {
   CloudUpload,
@@ -81,7 +81,7 @@ const AddServicioForm = ({ onSuccess, servicioToEdit }) => {
           })),
         );
       } catch (error) {
-        toast.error('Error al cargar datos iniciales');
+        sileo.error({ title: 'Error', description: 'Error al cargar datos iniciales' });
       }
     };
     fetchIniciales();
@@ -134,20 +134,20 @@ const AddServicioForm = ({ onSuccess, servicioToEdit }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.nombre.trim())
-      return toast.warning('El nombre es obligatorio.');
+      return sileo.warning({ title: 'Advertencia', description: 'El nombre es obligatorio.' });
 
     setLoading(true);
     try {
       if (servicioToEdit) {
         await api.put(`/servicios/${servicioToEdit.id}`, formData);
-        toast.success('Servicio actualizado correctamente');
+        sileo.success({ title: 'Éxito', description: 'Servicio actualizado correctamente' });
       } else {
         await api.post('/servicios', formData);
-        toast.success('Servicio registrado correctamente');
+        sileo.success({ title: 'Éxito', description: 'Servicio registrado correctamente' });
       }
       onSuccess();
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Error al guardar');
+      sileo.error({ title: 'Error', description: error.response?.data?.error || 'Error al guardar' });
     } finally {
       setLoading(false);
     }

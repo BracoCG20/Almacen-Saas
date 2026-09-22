@@ -1,21 +1,21 @@
 //frontend/src/pages/Equipos/AddEquipoForm.jsx
-import { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
 import {
-  Trash,
-  Plus,
-  Save,
   AlertTriangle,
+  Barcode,
   Building2,
-  Handshake,
   CalendarDays,
   Cpu,
-  Barcode,
+  Handshake,
   Package,
+  Plus,
+  Save,
+  Trash,
 } from 'lucide-react';
-import api from '../../service/api';
+import { useEffect, useState } from 'react';
 import Select from 'react-select';
 import CreatableSelect from 'react-select/creatable';
+import { sileo } from 'sileo';
+import api from '../../service/api';
 import './AddEquipoForm.scss';
 
 const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
@@ -300,13 +300,13 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
     e.preventDefault();
 
     if (!formData.empresa_id)
-      return toast.warning('Debes seleccionar la Empresa a cargo del ítem.');
+      return sileo.warning({ title: 'Advertencia', description: 'Debes seleccionar la Empresa a cargo del ítem.' });
     if (!formData.estado_fisico_id)
-      return toast.warning('Debes indicar el Estado Físico.');
+      return sileo.warning({ title: 'Advertencia', description: 'Debes indicar el Estado Físico.' });
     if (!formData.es_propio && !formData.proveedor_id)
-      return toast.warning(
+      return sileo.warning({ title: 'Advertencia', description: 
         'Debes seleccionar un Proveedor para ítems alquilados.',
-      );
+      });
 
     // Empaqueto todas las especificaciones extras en un objeto
     const specsObject = specsList.reduce((acc, item) => {
@@ -338,14 +338,14 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
     try {
       if (equipoToEdit) {
         await api.put(`/equipos/${equipoToEdit.id}`, payload);
-        toast.success('Ítem actualizado correctamente');
+        sileo.success({ title: 'Éxito', description: 'Ítem actualizado correctamente' });
       } else {
         await api.post('/equipos', payload);
-        toast.success('Ítem registrado en inventario');
+        sileo.success({ title: 'Éxito', description: 'Ítem registrado en inventario' });
       }
       onSuccess();
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Error al guardar el ítem');
+      sileo.error({ title: 'Error', description: error.response?.data?.error || 'Error al guardar el ítem' });
     }
   };
 

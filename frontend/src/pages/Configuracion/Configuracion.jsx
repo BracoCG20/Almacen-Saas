@@ -1,21 +1,21 @@
 //frontend/src/pages/Configuracion/Configuracion.jsx
-import { useState, useEffect } from 'react';
-import api from '../../service/api';
-import { toast } from 'react-toastify';
 import {
-  Plus,
-  List,
-  Settings as SettingsIcon,
   Cloud,
+  List,
+  Plus,
   Save,
+  Settings as SettingsIcon,
   X,
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { sileo } from 'sileo';
+import api from '../../service/api';
 import './Configuracion.scss';
 
-import RegisterAdminModal from '../../components/RegisterAdminModal/RegisterAdminModal';
-import UserListModal from '../../components/UserListModal/UserListModal';
 import AddEmpresaModal from '../../components/AddEmpresaModal/AddEmpresaModal';
 import EmpresaListModal from '../../components/EmpresaListModal/EmpresaListModal';
+import RegisterAdminModal from '../../components/RegisterAdminModal/RegisterAdminModal';
+import UserListModal from '../../components/UserListModal/UserListModal';
 
 const Configuracion = () => {
   // --- 1. ESTADOS DE MODALES ---
@@ -48,10 +48,13 @@ const Configuracion = () => {
   useEffect(() => {
     const fetchConfiguracionGlobal = async () => {
       try {
-        const resPerfil = await api.get('/auth/perfil');
+        const [resPerfil, resConfig] = await Promise.all([
+          api.get('/auth/perfil'),
+          api.get('/configuracion'),
+        ]);
+
         setUserRole(Number(resPerfil.data.rol_id));
 
-        const resConfig = await api.get('/configuracion');
         if (resConfig.data) {
           setLicenciasStarter(resConfig.data.starter || 0);
           setLicenciasStandard(resConfig.data.standard || 0);
@@ -87,11 +90,12 @@ const Configuracion = () => {
       setLicenciasStarter(Number(editStarter));
       setLicenciasStandard(Number(editStandard));
       setShowLicensesModal(false);
-      toast.success(
-        'Límites de licencias actualizados. El Directorio se sincronizará automáticamente.',
-      );
+      sileo.success({
+        title: 'Límites de licencias actualizados.',
+        description: ' El Directorio se sincronizará automáticamente.',
+      });
     } catch (error) {
-      toast.error('Error al guardar en el servidor');
+      sileo.error({ title: 'Error al guardar en el servidor' });
     }
   };
 

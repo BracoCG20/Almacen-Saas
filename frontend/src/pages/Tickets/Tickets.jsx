@@ -2,7 +2,7 @@
 import { Plus, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import Select from 'react-select';
-import { toast } from 'react-toastify';
+import { sileo } from 'sileo';
 import { io } from 'socket.io-client';
 import Modal from '../../components/Modal/Modal';
 import { useAuth } from '../../context/AuthContext';
@@ -102,7 +102,7 @@ const Tickets = () => {
       const resTickets = await api.get('/tickets');
       setTickets(resTickets.data);
     } catch (error) {
-      toast.error('Error al cargar los tickets');
+      sileo.error({ title: 'Error', description: 'Error al cargar los tickets' });
     } finally {
       setLoading(false);
     }
@@ -122,25 +122,25 @@ const Tickets = () => {
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();
     if (!formData.tipo_solicitud || !formData.asunto || !formData.descripcion) {
-      return toast.warning('Completa todos los campos obligatorios');
+      return sileo.warning({ title: 'Advertencia', description: 'Completa todos los campos obligatorios' });
     }
     try {
       await api.post('/tickets', formData);
-      toast.success('Ticket generado exitosamente');
+      sileo.success({ title: 'Éxito', description: 'Ticket generado exitosamente' });
       setModalOpen(false);
       fetchData();
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Error al generar el ticket');
+      sileo.error({ title: 'Error', description: error.response?.data?.error || 'Error al generar el ticket' });
     }
   };
 
   const handleTomarTicket = async (ticketId) => {
     try {
       await api.put(`/tickets/${ticketId}/asignar`);
-      toast.success('¡Has tomado el ticket!');
+      sileo.success({ title: 'Éxito', description: '¡Has tomado el ticket!' });
       fetchData();
     } catch (error) {
-      toast.error('Error al asignar el ticket');
+      sileo.error({ title: 'Error', description: 'Error al asignar el ticket' });
     }
   };
 

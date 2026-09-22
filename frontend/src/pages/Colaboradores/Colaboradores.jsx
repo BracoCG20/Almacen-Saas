@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import Select from 'react-select';
-import { toast } from 'react-toastify';
+import { sileo } from 'sileo';
 import * as XLSX from 'xlsx';
 import api from '../../service/api';
 
@@ -66,32 +66,31 @@ const Colaboradores = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const resPerfil = await api.get('/auth/perfil');
+      const [resPerfil, resEmpresas, resColaboradores] = await Promise.all([
+        api.get('/auth/perfil'),
+        api.get('/empresas').catch(() => ({ data: [] })),
+        api.get('/colaboradores'),
+      ]);
+
       setUserRole(Number(resPerfil.data.rol_id));
 
       // Intento cargar el catálogo de empresas para el select de filtros
-      try {
-        const resEmpresas = await api.get('/empresas');
-        const options = resEmpresas.data
-          .filter((e) => e.estado === true || e.estado === 'Activo')
-          .map((e) => ({ value: e.id, label: e.razon_social }));
-        setEmpresasOptions([
-          { value: 'todas', label: 'Todas las Empresas' },
-          ...options,
-        ]);
-      } catch (err) {
-        setEmpresasOptions([{ value: 'todas', label: 'Todas las Empresas' }]);
-      }
+      const options = resEmpresas.data
+        .filter((e) => e.estado === true || e.estado === 'Activo')
+        .map((e) => ({ value: e.id, label: e.razon_social }));
+      setEmpresasOptions([
+        { value: 'todas', label: 'Todas las Empresas' },
+        ...options,
+      ]);
 
       // Traigo al personal y ordeno: Primero los Activos, luego alfabéticamente.
-      const res = await api.get('/colaboradores');
-      const sorted = res.data.sort((a, b) => {
+      const sorted = resColaboradores.data.sort((a, b) => {
         if (a.estado === b.estado) return a.nombres.localeCompare(b.nombres);
         return a.estado ? -1 : 1;
       });
       setColaboradores(sorted);
     } catch (error) {
-      toast.error('Error al cargar datos');
+      sileo.error({ title: 'Error al cargar datos' });
     } finally {
       setLoading(false);
     }
@@ -163,7 +162,7 @@ const Colaboradores = () => {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Directorio_Personal');
     XLSX.writeFile(wb, 'Reporte_Gerencial_Colaboradores.xlsx');
-    toast.success('Reporte gerencial generado exitosamente');
+    sileo.success({ title: 'Reporte gerencial generado exitosamente' });
   };
 
   // --- MANEJADORES DE MODALES Y ACCIONES CRUD ---
@@ -191,7 +190,7 @@ const Colaboradores = () => {
       const res = await api.get(`/colaboradores/${colab.id}/historial`);
       setHistoryData(res.data);
     } catch (error) {
-      toast.error('Error al cargar el historial.');
+      sileo.error({ title: 'Error al cargar el historial.' });
     }
   };
 
@@ -199,22 +198,22 @@ const Colaboradores = () => {
     if (!colaboradorToDelete) return;
     try {
       await api.delete(`/colaboradores/${colaboradorToDelete.id}`);
-      toast.success('Colaborador dado de baja');
+      sileo.success({ title: 'Colaborador dado de baja' });
       fetchData();
       setIsDeleteModalOpen(false);
       setColaboradorToDelete(null);
     } catch (error) {
-      toast.error('Error al anular colaborador');
+      sileo.error({ title: 'Error al anular colaborador' });
     }
   };
 
   const handleActivate = async (colab) => {
     try {
       await api.put(`/colaboradores/${colab.id}/activate`);
-      toast.success(`Colaborador ${colab.nombres} reactivado`);
+      sileo.success({ title: `Colaborador ${colab.nombres} reactivado` });
       fetchData();
     } catch (error) {
-      toast.error('Error al reactivar colaborador');
+      sileo.error({ title: 'Error al reactivar colaborador' });
     }
   };
 

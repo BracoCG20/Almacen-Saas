@@ -1,6 +1,6 @@
 //frontend/src/pages/Devolucion/Devolucion.jsx
 import { useEffect, useRef, useState } from 'react';
-import { toast } from 'react-toastify';
+import { sileo } from 'sileo';
 import Modal from '../../components/Modal/Modal';
 import PdfModal from '../../components/Modal/PdfModal';
 import api from '../../service/api';
@@ -121,7 +121,7 @@ const Devolucion = () => {
 
       setHistorialVisual(ultimasDevoluciones);
     } catch (e) {
-      toast.error('Error cargando datos');
+      sileo.error({ title: 'Error', description: 'Error cargando datos' });
     } finally {
       setLoading(false);
     }
@@ -143,7 +143,7 @@ const Devolucion = () => {
 
     socket.on('documento_firmado', () => {
       if (isMounted) {
-        toast.info('Actualizando estados de firma...', { icon: '📝' });
+        sileo.info({ title: 'Información', description: 'Actualizando estados de firma...',  icon: '📝'  });
         fetchData();
       }
     });
@@ -169,7 +169,10 @@ const Devolucion = () => {
     const file = e.target.files[0];
     if (!file || !selectedMovimientoId) return;
 
-    const toastId = toast.loading('Subiendo constancia...');
+    const toastId = sileo.show({
+      title: 'Subiendo constancia...',
+      type: 'loading',
+    });
     const form = new FormData();
     form.append('pdf', file);
 
@@ -181,18 +184,16 @@ const Devolucion = () => {
           headers: { 'Content-Type': 'multipart/form-data' },
         },
       );
-      toast.update(toastId, {
+      sileo.update(toastId, {
         render: 'Guardado ✅',
         type: 'success',
-        isLoading: false,
         autoClose: 2000,
       });
       fetchData(); // Refresco para que la tabla muestre el check verde
     } catch (err) {
-      toast.update(toastId, {
+      sileo.update(toastId, {
         render: 'Error al subir ❌',
         type: 'error',
-        isLoading: false,
         autoClose: 2000,
       });
     }
@@ -206,7 +207,7 @@ const Devolucion = () => {
       setIsRejectModalOpen(false);
       fetchData();
     } catch (e) {
-      toast.error('Error al invalidar documento');
+      sileo.error({ title: 'Error', description: 'Error al invalidar documento' });
     }
   };
 
@@ -289,9 +290,12 @@ const Devolucion = () => {
    */
   const handleReenviarCorreo = async (item) => {
     if (!item.empleado_correo)
-      return toast.error('Colaborador sin correo registrado.');
+      return sileo.error({ title: 'Error', description: 'Colaborador sin correo registrado.' });
 
-    const toastId = toast.loading('Reintentando envío...');
+    const toastId = sileo.show({
+      title: 'Reintentando envío...',
+      type: 'loading',
+    });
     try {
       const us = {
         nombres: item.empleado_nombre,
@@ -373,7 +377,7 @@ const Devolucion = () => {
 
     const us = allUsuarios.find((u) => u.id === formData.empleado_id);
     if (tipoAccion === 'EMAIL' && !us.email_contacto)
-      return toast.error('El colaborador no tiene correo registrado');
+      return sileo.error({ title: 'Error', description: 'El colaborador no tiene correo registrado' });
 
     // 1. Uno la información base del equipo detectado con los campos llenados por el usuario (estado, cargador, observaciones)
     const equiposParaPdf = formData.equiposADevolver.map((dev) => {
@@ -406,7 +410,7 @@ const Devolucion = () => {
       if (tipoAccion === 'GUARDAR' || tipoAccion === 'WHATSAPP') {
         // Mando la petición simple de registro
         await api.post('/movimientos/devolucion', payload);
-        toast.success('Devolución registrada correctamente');
+        sileo.success({ title: 'Éxito', description: 'Devolución registrada correctamente' });
 
         // Muestro el PDF en pantalla
         setPdfUrl(pdfUrlBlob);
@@ -428,7 +432,10 @@ const Devolucion = () => {
         }
       } else if (tipoAccion === 'EMAIL') {
         // Si es correo, mando el PDF como archivo adjunto (FormData) junto con el JSON como string
-        const toastId = toast.loading('Guardando y enviando correo...');
+        const toastId = sileo.show({
+          title: 'Guardando y enviando correo...',
+          type: 'loading',
+        });
         const form = new FormData();
         form.append('pdf', blob, 'Constancia_Devolucion.pdf');
         form.append('payload', JSON.stringify(payload));
@@ -440,17 +447,15 @@ const Devolucion = () => {
         });
 
         if (res.data.warning) {
-          toast.update(toastId, {
+          sileo.update(toastId, {
             render: 'Guardado, pero falló el correo ⚠️',
             type: 'warning',
-            isLoading: false,
             autoClose: 4000,
           });
         } else {
-          toast.update(toastId, {
+          sileo.update(toastId, {
             render: '¡Guardado y Enviado! ✅',
             type: 'success',
-            isLoading: false,
             autoClose: 3000,
           });
         }
@@ -462,9 +467,11 @@ const Devolucion = () => {
       // 4. Limpio el formulario para la siguiente devolución
       setFormData({ empleado_id: '', motivo: '', equiposADevolver: [] });
       setEquiposDetectados([]);
-      fetchData(); // Refresco inventario visual
+      fetchData();
     } catch (e) {
-      toast.error(e.response?.data?.error || 'Error procesando la solicitud');
+      sileo.error({
+        title: e.response?.data?.error || 'Error procesando la solicitud',
+      });
     }
   };
 

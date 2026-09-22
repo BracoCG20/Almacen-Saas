@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import Select from 'react-select';
-import { toast } from 'react-toastify';
+import { sileo } from 'sileo';
 import * as XLSX from 'xlsx';
 import Modal from '../../components/Modal/Modal';
 import api from '../../service/api';
@@ -65,11 +65,14 @@ const Servicios = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const resPerfil = await api.get('/auth/perfil');
+      const [resPerfil, resServicios] = await Promise.all([
+        api.get('/auth/perfil'),
+        api.get('/servicios'),
+      ]);
+
       setUserRole(Number(resPerfil.data.rol_id));
       const currentUserId = resPerfil.data.id;
 
-      const resServicios = await api.get('/servicios');
       const sorted = resServicios.data.sort((a, b) => {
         if (a.estado !== b.estado) return a.estado === true ? -1 : 1;
         const aEsMio = a.usuario_id_responsable === currentUserId;
@@ -87,7 +90,7 @@ const Servicios = () => {
       });
       setServicios(sorted);
     } catch (error) {
-      toast.error('Error al cargar los servicios');
+      sileo.error({ title: 'Error', description: 'Error al cargar los servicios' });
     } finally {
       setLoading(false);
     }
@@ -234,11 +237,11 @@ const Servicios = () => {
       await api.put(`/servicios/${servicioToChangeStatus.id}/estado`, {
         estado: newStatus,
       });
-      toast.success(`Servicio ${newStatus ? 'activado' : 'cancelado'}`);
+      sileo.success({ title: 'Éxito', description: `Servicio ${newStatus ? 'activado' : 'cancelado'}` });
       fetchData();
       setIsStatusModalOpen(false);
     } catch (error) {
-      toast.error('Error al cambiar estado');
+      sileo.error({ title: 'Error', description: 'Error al cambiar estado' });
     }
   };
 
@@ -249,7 +252,7 @@ const Servicios = () => {
       setServicioParaPago(servicio);
       setIsAuditModalOpen(true);
     } catch (error) {
-      toast.error('Error cargando auditoría');
+      sileo.error({ title: 'Error', description: 'Error cargando auditoría' });
     }
   };
 

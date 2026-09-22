@@ -1,9 +1,9 @@
 //frontend/src/components/RegisterAdminModal/RegisterAdminModal.jsx
-import { useState, useEffect } from 'react';
-import api from '../../service/api';
-import { toast } from 'react-toastify';
-import { X, UserPlus, Key } from 'lucide-react';
+import { Key, UserPlus, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import Select from 'react-select';
+import { sileo } from 'sileo';
+import api from '../../service/api';
 import './RegisterAdminModal.scss';
 
 const RegisterAdminModal = ({ onClose }) => {
@@ -44,7 +44,7 @@ const RegisterAdminModal = ({ onClose }) => {
 
         setColaboradoresOptions(options);
       } catch (error) {
-        toast.error('Error al cargar lista de colaboradores');
+        sileo.error({ title: 'Error al cargar lista de colaboradores' });
       } finally {
         setLoadingColab(false);
       }
@@ -76,14 +76,16 @@ const RegisterAdminModal = ({ onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!newUser.colaborador_id)
-      return toast.warning('Debes seleccionar un colaborador');
+      return sileo.warning({ title: 'Debes seleccionar un colaborador' });
 
     try {
       await api.post('/auth/register', newUser);
-      toast.success('Acceso concedido exitosamente');
+      sileo.success({ title: 'Acceso concedido exitosamente' });
       onClose();
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Error al crear credenciales');
+      sileo.error({
+        title: error.response?.data?.error || 'Error al crear credenciales',
+      });
     }
   };
 

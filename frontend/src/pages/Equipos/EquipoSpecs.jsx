@@ -1,19 +1,19 @@
 //frontend/src/pages/Equipos/EquipoSpecs.jsx
-import { useState, useRef, useEffect } from 'react';
 import {
-  Laptop,
-  Building2,
-  Handshake,
   AlertTriangle,
   Barcode,
-  Clock,
+  Building2,
   CalendarDays,
-  Image as ImageIcon,
   Camera,
+  Clock,
+  Handshake,
+  Image as ImageIcon,
+  Laptop,
   Loader2,
 } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { sileo } from 'sileo';
 import api from '../../service/api';
-import { toast } from 'react-toastify';
 import './EquipoSpecs.scss';
 
 const EquipoSpecs = ({ equipo, calcularAntiguedad, formatDate }) => {
@@ -37,11 +37,11 @@ const EquipoSpecs = ({ equipo, calcularAntiguedad, formatDate }) => {
 
     // Validación básica de tipo de archivo e imagen
     if (!file.type.startsWith('image/')) {
-      return toast.error('Solo se permiten archivos de imagen.');
+      return sileo.error({ title: 'Error', description: 'Solo se permiten archivos de imagen.' });
     }
     if (file.size > 5 * 1024 * 1024) {
       // Límite de 5MB
-      return toast.error('La imagen no debe superar los 5MB.');
+      return sileo.error({ title: 'Error', description: 'La imagen no debe superar los 5MB.' });
     }
 
     const formData = new FormData();
@@ -55,23 +55,20 @@ const EquipoSpecs = ({ equipo, calcularAntiguedad, formatDate }) => {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      setImagenActual(res.data.imagen_url); // Actualizamos la UI inmediatamente
-      toast.update(toastId, {
+      setImagenActual(res.data.imagen_url);
+      sileo.update(toastId, {
         render: 'Fotografía guardada correctamente',
         type: 'success',
-        isLoading: false,
         autoClose: 3000,
       });
     } catch (error) {
-      toast.update(toastId, {
+      sileo.update(toastId, {
         render: 'Error al subir la fotografía',
         type: 'error',
-        isLoading: false,
         autoClose: 4000,
       });
     } finally {
       setIsUploading(false);
-      // Limpiamos el input para permitir subir la misma foto si hubo error
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };

@@ -1,23 +1,19 @@
 //frontend/src/pages/Servicios/PagoServicioModal.jsx
-import { useState, useEffect } from 'react';
-import api from '../../service/api';
-import { toast } from 'react-toastify';
-import Select from 'react-select';
 import {
-  CalendarCheck,
-  History,
-  Eye,
-  Download,
-  Trash2,
-  Save,
   AlertTriangle,
-  X,
-  Check,
   ChevronLeft,
   ChevronRight,
+  Download,
+  Eye,
+  Save,
+  Trash2,
 } from 'lucide-react';
-import Modal from '../../components/Modal/Modal';
+import { useEffect, useState } from 'react';
+import Select from 'react-select';
+import { sileo } from 'sileo';
 import FileUploader from '../../components/FileUploader/FileUploader';
+import Modal from '../../components/Modal/Modal';
+import api from '../../service/api';
 import './PagoServicioModal.scss';
 
 const PagoServicioModal = ({ servicio, onClose }) => {
@@ -70,7 +66,7 @@ const PagoServicioModal = ({ servicio, onClose }) => {
       const res = await api.get(`/servicios/${servicio.id}/pagos`);
       setPagos(res.data);
     } catch (error) {
-      toast.error('Error al cargar el historial de pagos');
+      sileo.error({ title: 'Error', description: 'Error al cargar el historial de pagos' });
     }
   };
 
@@ -157,7 +153,7 @@ const PagoServicioModal = ({ servicio, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.monto_pagado || !formData.periodo_mes) {
-      return toast.warning('Debes completar el monto y el periodo del pago.');
+      return sileo.warning({ title: 'Advertencia', description: 'Debes completar el monto y el periodo del pago.' });
     }
 
     setLoading(true);
@@ -169,12 +165,12 @@ const PagoServicioModal = ({ servicio, onClose }) => {
       await api.post(`/servicios/${servicio.id}/pagos`, form, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      toast.success('Pago registrado correctamente ✅');
+      sileo.success({ title: 'Éxito', description: 'Pago registrado correctamente ✅' });
       setArchivo(null);
       setCurrentPagoPage(1);
       fetchPagos();
     } catch (error) {
-      toast.error('Error al registrar el pago ❌');
+      sileo.error({ title: 'Error', description: 'Error al registrar el pago ❌' });
     } finally {
       setLoading(false);
     }
@@ -189,12 +185,12 @@ const PagoServicioModal = ({ servicio, onClose }) => {
     if (!pagoToAnular) return;
     try {
       await api.put(`/servicios/pagos/${pagoToAnular}/anular`);
-      toast.success('Pago anulado exitosamente');
+      sileo.success({ title: 'Éxito', description: 'Pago anulado exitosamente' });
       setIsAnularModalOpen(false);
       setPagoToAnular(null);
       fetchPagos();
     } catch (error) {
-      toast.error('Error al anular el pago');
+      sileo.error({ title: 'Error', description: 'Error al anular el pago' });
     }
   };
 

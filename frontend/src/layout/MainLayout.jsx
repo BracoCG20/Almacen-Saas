@@ -1,9 +1,9 @@
 //frontend/src/layout/MainLayout.jsx
-import { Outlet, useNavigate } from 'react-router-dom';
 import { useIdleTimer } from 'react-idle-timer';
-import { toast } from 'react-toastify';
-import { useAuth } from '../context/AuthContext';
+import { Outlet, useNavigate } from 'react-router-dom';
+import { sileo } from 'sileo';
 import Sidebar from '../components/Sidebar/Sidebar';
+import { useAuth } from '../context/AuthContext';
 import './MainLayout.scss';
 
 const MainLayout = () => {
@@ -15,9 +15,7 @@ const MainLayout = () => {
     logout(); // 1. Limpiamos el token y estado del usuario
 
     // 2. Le avisamos por qué lo sacamos del sistema
-    toast.info('⏳ Tu sesión se cerró por inactividad.', {
-      autoClose: 5000,
-    });
+    sileo.info({ title: '⏳ Tu sesión se cerró por inactividad.' });
 
     // 3. Lo mandamos al login
     navigate('/login');

@@ -20,7 +20,7 @@ import {
   X,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
+import { sileo } from 'sileo';
 import * as XLSX from 'xlsx';
 import api from '../../service/api';
 
@@ -149,7 +149,7 @@ const Proveedores = () => {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Proveedores');
     XLSX.writeFile(wb, 'Reporte_Gerencial_Proveedores.xlsx');
-    toast.success('Reporte gerencial generado exitosamente');
+    sileo.success({ title: 'Éxito', description: 'Reporte gerencial generado exitosamente' });
   };
 
   // --- MANEJADORES DE MODALES Y ACCIONES CRUD ---
@@ -184,9 +184,9 @@ const Proveedores = () => {
   const handleToggleEstado = async (estado) => {
     try {
       await api.put(`/proveedores/${providerToAction.id}/estado`, { estado });
-      toast.success(
+      sileo.success({ title: 'Éxito', description: 
         `Proveedor ${estado ? 'reactivado' : 'desactivado'} exitosamente.`,
-      );
+      });
       setIsDeleteModalOpen(false);
       fetchProveedores();
     } catch (error) {

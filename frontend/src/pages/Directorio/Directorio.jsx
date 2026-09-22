@@ -1,7 +1,7 @@
 //frontend/src/pages/Directorio/Directorio.jsx
 import { AlertTriangle, Check, FileSpreadsheet, Plus, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
+import { sileo } from 'sileo';
 import * as XLSX from 'xlsx';
 import Modal from '../../components/Modal/Modal';
 import api from '../../service/api';
@@ -58,7 +58,7 @@ const Directorio = () => {
       setEstadisticas(resStats.data);
       setHistorialAuditoria(resHist.data);
     } catch (error) {
-      toast.error('Error al cargar datos del directorio');
+      sileo.error({ title: 'Error', description: 'Error al cargar datos del directorio' });
     } finally {
       setLoading(false);
     }
@@ -95,7 +95,7 @@ const Directorio = () => {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Auditoria');
     XLSX.writeFile(wb, 'Historial_Directorio.xlsx');
-    toast.success('Excel generado correctamente');
+    sileo.success({ title: 'Éxito', description: 'Excel generado correctamente' });
   };
 
   // --- CONTROLADORES DE APERTURA DE MODALES ---
@@ -158,9 +158,9 @@ const Directorio = () => {
       (s) => s.tipo_licencia === registro.tipo_licencia,
     );
     if (statsLicencia && statsLicencia.disponibles <= 0) {
-      return toast.error(
+      return sileo.error({ title: 'Error', description: 
         `No te quedan licencias disponibles de tipo ${registro.tipo_licencia} para reactivar.`,
-      );
+      });
     }
     try {
       await api.put(`/directorio/${registro.id}`, {
@@ -169,10 +169,10 @@ const Directorio = () => {
         datos_transferidos: false,
         colaborador_destino_id: null,
       });
-      toast.success('Licencia reactivada correctamente');
+      sileo.success({ title: 'Éxito', description: 'Licencia reactivada correctamente' });
       fetchData();
     } catch (error) {
-      toast.error('Error al reactivar');
+      sileo.error({ title: 'Error', description: 'Error al reactivar' });
     }
   };
 
@@ -183,7 +183,7 @@ const Directorio = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.colaborador_id)
-      return toast.warning('Selecciona un colaborador');
+      return sileo.warning({ title: 'Advertencia', description: 'Selecciona un colaborador' });
 
     // Valido disponibilidad si es una cuenta activa
     if ((modalMode === 'ADD' || modalMode === 'EDIT') && formData.estado) {
@@ -191,18 +191,18 @@ const Directorio = () => {
         (s) => s.tipo_licencia === formData.tipo_licencia,
       );
       if (statsLicencia && statsLicencia.disponibles <= 0) {
-        return toast.error(
+        return sileo.error({ title: 'Error', description: 
           `No te quedan licencias disponibles de tipo ${formData.tipo_licencia}.`,
-        );
+        });
       }
     }
 
     // Valido el flujo de baja de usuario
     if (modalMode === 'BAJA') {
       if (formData.datos_transferidos && !formData.colaborador_destino_id) {
-        return toast.warning(
+        return sileo.warning({ title: 'Advertencia', description: 
           'Selecciona a quién se le transfirieron los datos',
-        );
+        });
       }
       setConfirmBajaOpen(true);
       return; // Detengo aquí para esperar confirmación del modal
@@ -215,29 +215,29 @@ const Directorio = () => {
     try {
       if (modalMode === 'ADD') {
         await api.post('/directorio', formData);
-        toast.success('Licencia asignada exitosamente');
+        sileo.success({ title: 'Éxito', description: 'Licencia asignada exitosamente' });
       } else {
         await api.put(`/directorio/${currentId}`, formData);
-        toast.success('Licencia actualizada');
+        sileo.success({ title: 'Éxito', description: 'Licencia actualizada' });
       }
       setModalOpen(false);
       fetchData();
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Ocurrió un error al guardar');
+      sileo.error({ title: 'Error', description: error.response?.data?.error || 'Ocurrió un error al guardar' });
     }
   };
 
   const executeBaja = async () => {
     try {
       await api.put(`/directorio/${currentId}`, formData);
-      toast.success('Servicio dado de baja correctamente');
+      sileo.success({ title: 'Éxito', description: 'Servicio dado de baja correctamente' });
       setConfirmBajaOpen(false);
       setModalOpen(false);
       fetchData();
     } catch (error) {
-      toast.error(
+      sileo.error({ title: 'Error', description: 
         error.response?.data?.error || 'Ocurrió un error al dar de baja',
-      );
+      });
     }
   };
 

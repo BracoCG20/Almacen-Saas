@@ -1,17 +1,19 @@
-//backend/src/config/db.js
 const { Pool } = require('pg');
 require('dotenv').config();
 
-// Creamos el Pool de conexiones
+const isLocalhost =
+  process.env.DB_HOST === 'localhost' || process.env.DB_HOST === '127.0.0.1';
+
 const pool = new Pool({
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
   database: process.env.DB_NAME,
+  ssl: isLocalhost ? false : { rejectUnauthorized: false },
 });
 
-// Confirmar conexión a BD de manera correcta
+// Confirmar conexión a BD
 pool.on('connect', () => {
   console.log('✅ Base de Datos conectada exitosamente');
 });

@@ -1,8 +1,8 @@
 //frontend/src/components/AddEmpresaModal/AddEmpresaModal.jsx
-import React, { useState, useEffect } from 'react';
+import { Building2, Save, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { sileo } from 'sileo';
 import api from '../../service/api';
-import { toast } from 'react-toastify';
-import { X, Building2, Save } from 'lucide-react';
 import './AddEmpresaModal.scss';
 
 const AddEmpresaModal = ({ onClose, onSuccess, empresaToEdit }) => {
@@ -55,21 +55,23 @@ const AddEmpresaModal = ({ onClose, onSuccess, empresaToEdit }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (empresa.ruc.length !== 11)
-      return toast.warning('El RUC debe tener 11 dígitos');
+      return sileo.warning({ title: 'El RUC debe tener 11 dígitos' });
 
     try {
       if (empresaToEdit) {
         await api.put(`/empresas/${empresaToEdit.id}`, empresa);
-        toast.success('Empresa actualizada exitosamente');
+        sileo.success({ title: 'Empresa actualizada exitosamente' });
       } else {
         await api.post('/empresas', empresa);
-        toast.success('Empresa registrada exitosamente');
+        sileo.success({ title: 'Empresa registrada exitosamente' });
       }
       onSuccess();
       onClose();
     } catch (error) {
       console.error(error);
-      toast.error(error.response?.data?.error || 'Error al guardar empresa');
+      sileo.error({
+        title: error.response?.data?.error || 'Error al guardar empresa',
+      });
     }
   };
 
