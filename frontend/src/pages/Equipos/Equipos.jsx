@@ -29,8 +29,6 @@ import { sileo } from 'sileo';
 import * as XLSX from 'xlsx';
 import api from '../../service/api';
 
-import 'driver.js/dist/driver.css';
-
 import Modal from '../../components/Modal/Modal';
 import AddEquipoForm from './AddEquipoForm';
 import EquipoHistorial from './EquipoHistorial';
@@ -107,7 +105,10 @@ const Equipos = () => {
       });
       setEquipos(sorted);
     } catch (error) {
-      sileo.error({ title: 'Error', description: 'Error al cargar datos del inventario' });
+      sileo.error({
+        title: 'Error',
+        description: 'Error al cargar datos del inventario',
+      });
     } finally {
       setLoading(false);
     }
@@ -249,7 +250,10 @@ const Equipos = () => {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Inventario');
     XLSX.writeFile(wb, 'Reporte_Inventario.xlsx');
-    sileo.success({ title: 'Éxito', description: 'Reporte generado exitosamente' });
+    sileo.success({
+      title: 'Éxito',
+      description: 'Reporte generado exitosamente',
+    });
   };
 
   // --- MANEJADORES DE MODALES ---
@@ -295,14 +299,18 @@ const Equipos = () => {
       await api.put(`/equipos/${equipo.id}/disponibilidad`, {
         disponible: nuevaDisponibilidad,
       });
-      sileo.success({ title: 'Éxito', description: 
-        `Ítem ${nuevaDisponibilidad ? 'reactivado' : 'dado de baja'}`,
+      sileo.success({
+        title: 'Éxito',
+        description: `Ítem ${nuevaDisponibilidad ? 'reactivado' : 'dado de baja'}`,
       });
       fetchData();
       setIsDeleteModalOpen(false);
       setEquipoToDelete(null);
     } catch (error) {
-      sileo.error({ title: 'Error', description: 'Error al actualizar disponibilidad' });
+      sileo.error({
+        title: 'Error',
+        description: 'Error al actualizar disponibilidad',
+      });
     }
   };
 
