@@ -9,6 +9,6 @@
     "dev": "concurrently -c \"cyan.bold,magenta.bold\" -n \"BACKEND,FRONTEND\" \"npm run dev:backend\" \"npm run dev:frontend\""
   },
   "devDependencies": {
-    "concurrently": "^9.2.1"
+    "concurrently": "^10.0.5"
   }
 }
