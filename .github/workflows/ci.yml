@@ -1,4 +1,4 @@
-name: CI Pipeline - Almacen Grupo SP
+name: CI Pipeline - Almacen
 
 # Se ejecutará cada vez que se haga un push o pull request a la rama main
 on:
@@ -9,14 +9,14 @@ on:
 
 jobs:
   # -------------------------------------------
-  # 1. TRABAJO DEL BACKEND
+  # 1. BACKEND
   # -------------------------------------------
   backend-check:
     name: Backend Install & Check
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./backend # Le dice que corra los comandos dentro de la carpeta backend
+        working-directory: ./backend
 
     steps:
       - name: Clonar el repositorio
@@ -30,17 +30,17 @@ jobs:
           cache-dependency-path: './backend/package-lock.json'
 
       - name: Instalar dependencias del Backend
-        run: npm ci # 'npm ci' es más estricto y limpio que 'npm install' para entornos de CI/CD
+        run: npm ci
 
   # -------------------------------------------
-  # 2. TRABAJO DEL FRONTEND
+  # 2. FRONTEND
   # -------------------------------------------
   frontend-build:
     name: Frontend Build Test
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./frontend # Le dice que corra los comandos dentro de la carpeta frontend
+        working-directory: ./frontend
 
     steps:
       - name: Clonar el repositorio
@@ -57,5 +57,5 @@ jobs:
         run: npm ci
 
       - name: Compilar Frontend (Vite Build)
-        # Esto es vital: asegura que tu código de React no tenga errores críticos antes de ir a producción
+
         run: npm run build

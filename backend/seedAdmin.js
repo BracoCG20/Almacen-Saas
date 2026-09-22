@@ -43,7 +43,7 @@ async function createSuperAdmin() {
     );
 
     await client.query('COMMIT');
-    console.log('¡SuperAdmin creado con éxito!.');
+    console.log('✔️ ¡SuperAdmin creado con éxito!.');
     console.log('Correo: cbraco@gruposp.pe');
     console.log('Clave: NOSQLMy.');
   } catch (error) {

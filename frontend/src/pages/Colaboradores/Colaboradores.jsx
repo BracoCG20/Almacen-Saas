@@ -59,10 +59,6 @@ const Colaboradores = () => {
   const [colabToAction, setColabToAction] = useState(null);
   const [historyData, setHistoryData] = useState([]);
 
-  /**
-   * CARGA INICIAL DE DATOS
-   * Obtengo mi rol, las empresas habilitadas y la lista de colaboradores ordenados.
-   */
   const fetchData = async () => {
     setLoading(true);
     try {

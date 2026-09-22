@@ -15,7 +15,7 @@ const pool = new Pool({
 
 // Confirmar conexión a BD
 pool.on('connect', () => {
-  console.log('✅ Base de Datos conectada exitosamente');
+  console.log('✔️ Base de Datos conectada exitosamente');
 });
 
 // Manejo de errores

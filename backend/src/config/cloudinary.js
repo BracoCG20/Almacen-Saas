@@ -4,7 +4,8 @@ const { pool } = require('./db');
 
 /**
  * INICIALIZADOR DE CLOUDINARY
- * Esta función viaja a la BD, extrae las credenciales activas y configura la instancia global.
+ * Esta función viaja a la BD,
+ * extrae las credenciales activas y configura la instancia global.
  */
 const initCloudinary = async () => {
   try {
@@ -22,7 +23,7 @@ const initCloudinary = async () => {
         api_secret: creds.api_secret,
       });
 
-      console.log('✅ Cloudinary configurado correctamente desde la BD');
+      console.log('✔️ Cloudinary configurado correctamente desde la BD');
     } else {
       console.warn('⚠️ No se encontraron credenciales de Cloudinary en la BD');
     }

@@ -108,9 +108,9 @@ initCloudinary()
   .then(() => {
     server.listen(PORT, () => {
       console.log(`-------------------------------------------`);
-      console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
-      console.log(`🔌 WebSockets habilitados y escuchando`);
-      console.log(`☁️  Cloudinary inicializado correctamente`);
+      console.log(`✔️ Servidor corriendo en http://localhost:${PORT}`);
+      console.log(`✔️ WebSockets habilitados y escuchando`);
+      console.log(`✔️  Cloudinary inicializado correctamente`);
       console.log(`-------------------------------------------`);
     });
   })
