@@ -14,7 +14,6 @@ import './FirmarDocumento.scss';
 
 const FirmarDocumento = () => {
   // --- 1. PARÁMETROS Y ESTADOS ---
-  // Capturo el token único de la URL para identificar qué documento se va a firmar.
   const { token } = useParams();
   const [docInfo, setDocInfo] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -24,8 +23,6 @@ const FirmarDocumento = () => {
 
   /**
    * 2. VALIDACIÓN INICIAL DEL TOKEN
-   * Al cargar la página, envío el token al backend para verificar si es válido,
-   * si el documento ya fue firmado o si el enlace ha expirado.
    */
   useEffect(() => {
     const fetchInfo = async () => {
@@ -43,8 +40,6 @@ const FirmarDocumento = () => {
 
   /**
    * 3. PROCESO DE FIRMA DIGITAL
-   * Valido que el DNI ingresado coincida con los registros para autorizar
-   * la generación del nuevo PDF con la estampa de la firma.
    */
   const handleFirmar = async (e) => {
     e.preventDefault();
@@ -72,8 +67,6 @@ const FirmarDocumento = () => {
       setFirmando(false);
     }
   };
-
-  // --- RENDERIZADO DE ESTADOS DE INTERFAZ ---
 
   // Pantalla de carga mientras valido el enlace
   if (loading)
@@ -140,7 +133,6 @@ const FirmarDocumento = () => {
   return (
     <div className='firma-public-container'>
       <div className='firma-card'>
-        {/* Cabecera dinámica según el tipo de movimiento */}
         <div className='firma-header'>
           <div className='header-title'>
             <div className='icon-wrapper'>
@@ -164,7 +156,6 @@ const FirmarDocumento = () => {
         </div>
 
         <div className='firma-body'>
-          {/* Resumen de los datos del documento a firmar */}
           <div className='info-summary'>
             <div className='info-item'>
               <label>Colaborador</label>
@@ -179,8 +170,6 @@ const FirmarDocumento = () => {
               </span>
             </div>
           </div>
-
-          {/* Visor de PDF: Muestro el documento original antes de ser firmado */}
           <div className='pdf-preview-container'>
             <iframe
               src={
@@ -193,8 +182,6 @@ const FirmarDocumento = () => {
               title='Vista previa del documento'
             />
           </div>
-
-          {/* Sección de acción: Formulario de DNI o animación de procesamiento */}
           {firmando ? (
             <div className='signing-animation-container'>
               <Loader2
@@ -223,7 +210,6 @@ const FirmarDocumento = () => {
                   inputMode='numeric'
                   required
                   value={dni}
-                  // Solo permito números en el campo de DNI
                   onChange={(e) => setDni(e.target.value.replace(/\D/g, ''))}
                   placeholder='Ingresa tus 8 dígitos'
                   autoComplete='off'
