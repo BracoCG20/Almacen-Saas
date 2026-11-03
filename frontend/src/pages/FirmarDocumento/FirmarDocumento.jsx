@@ -13,7 +13,6 @@ import api from '../../service/api';
 import './FirmarDocumento.scss';
 
 const FirmarDocumento = () => {
-  // --- 1. PARÁMETROS Y ESTADOS ---
   const { token } = useParams();
   const [docInfo, setDocInfo] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -21,9 +20,6 @@ const FirmarDocumento = () => {
   const [firmando, setFirmando] = useState(false);
   const [firmadoSuccess, setFirmadoSuccess] = useState(false);
 
-  /**
-   * 2. VALIDACIÓN INICIAL DEL TOKEN
-   */
   useEffect(() => {
     const fetchInfo = async () => {
       try {
@@ -38,9 +34,6 @@ const FirmarDocumento = () => {
     fetchInfo();
   }, [token]);
 
-  /**
-   * 3. PROCESO DE FIRMA DIGITAL
-   */
   const handleFirmar = async (e) => {
     e.preventDefault();
     if (!dni || dni.length < 8)
@@ -51,7 +44,6 @@ const FirmarDocumento = () => {
 
     setFirmando(true);
     try {
-      // Envío el DNI como factor de autenticación para aplicar la firma
       await api.post(`/firmas/${token}`, { dni_ingresado: dni });
       setFirmadoSuccess(true);
       sileo.success({
@@ -68,7 +60,6 @@ const FirmarDocumento = () => {
     }
   };
 
-  // Pantalla de carga mientras valido el enlace
   if (loading)
     return (
       <div className='firma-public-container'>
@@ -83,7 +74,6 @@ const FirmarDocumento = () => {
       </div>
     );
 
-  // Pantalla de éxito tras confirmar la firma en el servidor
   if (firmadoSuccess)
     return (
       <div className='firma-public-container'>
@@ -103,7 +93,6 @@ const FirmarDocumento = () => {
       </div>
     );
 
-  // Pantalla de error si el token no existe o ya se usó
   if (!docInfo)
     return (
       <div className='firma-public-container'>
@@ -123,7 +112,6 @@ const FirmarDocumento = () => {
       </div>
     );
 
-  // --- CONFIGURACIÓN DE VISTA PREVIA ---
   const baseUrl = api.defaults.baseURL
     ? api.defaults.baseURL.replace(/\/api\/?$/, '')
     : 'http://localhost:4000';
