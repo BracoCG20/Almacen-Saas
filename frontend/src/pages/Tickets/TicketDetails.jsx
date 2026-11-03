@@ -1,21 +1,21 @@
 //frontend/src/pages/Tickets/TicketDetails.jsx
-import React, { useState, useEffect, useRef } from 'react';
-import api from '../../service/api';
-import { sileo } from 'sileo';
-import { useAuth } from '../../context/AuthContext';
 import {
-  Send,
-  Clock,
-  User,
-  CheckCircle,
   AlertCircle,
-  Info,
+  CheckCircle,
   ChevronDown,
   ChevronUp,
-  Paperclip, // Nuevo ícono para adjuntar
-  X, // Nuevo ícono para quitar el archivo seleccionado
+  Clock,
+  Info,
+  Paperclip,
+  Send,
+  User,
+  X,
 } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { sileo } from 'sileo';
 import { io } from 'socket.io-client';
+import { useAuth } from '../../context/AuthContext';
+import api from '../../service/api';
 import './TicketDetails.scss';
 
 const SOCKET_URL = api.defaults.baseURL
@@ -26,19 +26,22 @@ const TicketDetails = ({ ticket, onClose, onUpdate }) => {
   const { user } = useAuth();
   const [historial, setHistorial] = useState([]);
   const [comentario, setComentario] = useState('');
-  const [archivoAdjunto, setArchivoAdjunto] = useState(null); // Estado para el archivo
+  const [archivoAdjunto, setArchivoAdjunto] = useState(null);
   const [loading, setLoading] = useState(true);
   const [estadoActual, setEstadoActual] = useState(ticket.estado);
   const [showMobileDetails, setShowMobileDetails] = useState(false);
 
-  const fileInputRef = useRef(null); // Referencia al input de archivo oculto
+  const fileInputRef = useRef(null);
 
   const fetchHistorial = async () => {
     try {
       const res = await api.get(`/tickets/${ticket.id}/historial`);
       setHistorial(res.data);
     } catch (error) {
-      sileo.error({ title: 'Error', description: 'Error al cargar el historial del ticket' });
+      sileo.error({
+        title: 'Error',
+        description: 'Error al cargar el historial del ticket',
+      });
     } finally {
       setLoading(false);
     }
@@ -91,10 +94,9 @@ const TicketDetails = ({ ticket, onClose, onUpdate }) => {
 
   const handleEnviarComentario = async (e) => {
     e.preventDefault();
-    if (!comentario.trim() && !archivoAdjunto) return; // Permitir enviar si solo hay archivo o solo texto
+    if (!comentario.trim() && !archivoAdjunto) return;
 
     try {
-      // Usamos FormData para poder enviar el archivo adjunto
       const formData = new FormData();
       formData.append('comentario', comentario);
 
@@ -110,9 +112,12 @@ const TicketDetails = ({ ticket, onClose, onUpdate }) => {
 
       setComentario('');
       setArchivoAdjunto(null);
-      if (fileInputRef.current) fileInputRef.current.value = ''; // Limpiar el input file
+      if (fileInputRef.current) fileInputRef.current.value = '';
     } catch (error) {
-      sileo.error({ title: 'Error', description: 'Error al enviar el mensaje' });
+      sileo.error({
+        title: 'Error',
+        description: 'Error al enviar el mensaje',
+      });
     }
   };
 
@@ -124,9 +129,15 @@ const TicketDetails = ({ ticket, onClose, onUpdate }) => {
         estado: nuevoEstado,
       });
       setEstadoActual(nuevoEstado);
-      sileo.success({ title: 'Éxito', description: `Estado cambiado a ${nuevoEstado}` });
+      sileo.success({
+        title: 'Éxito',
+        description: `Estado cambiado a ${nuevoEstado}`,
+      });
     } catch (error) {
-      sileo.error({ title: 'Error', description: 'Error al cambiar el estado' });
+      sileo.error({
+        title: 'Error',
+        description: 'Error al cambiar el estado',
+      });
     }
   };
 
@@ -153,7 +164,6 @@ const TicketDetails = ({ ticket, onClose, onUpdate }) => {
         </button>
       </div>
 
-      {/* --- COLUMNA IZQUIERDA --- */}
       <div
         className={`ticket-info-sidebar ${showMobileDetails ? 'show-in-mobile' : ''}`}
       >
@@ -205,7 +215,6 @@ const TicketDetails = ({ ticket, onClose, onUpdate }) => {
         )}
       </div>
 
-      {/* --- COLUMNA DERECHA (CHAT) --- */}
       <div className='ticket-chat-area'>
         <div className='chat-history'>
           {historial.map((item) => {
@@ -250,10 +259,7 @@ const TicketDetails = ({ ticket, onClose, onUpdate }) => {
                           )}
                         </span>
                       </div>
-                      {/* Aplicamos la función para parsear links aquí */}
                       <p>{renderTextWithLinks(item.detalles)}</p>
-
-                      {/* Si el backend envía la URL del archivo, lo mostramos (Ajusta 'item.archivo_url' según tu BD) */}
                       {item.archivo_url && (
                         <a
                           href={item.archivo_url}
@@ -272,9 +278,7 @@ const TicketDetails = ({ ticket, onClose, onUpdate }) => {
           })}
         </div>
 
-        {/* --- CONTENEDOR DEL INPUT --- */}
         <div className='chat-input-wrapper'>
-          {/* Vista previa del archivo seleccionado */}
           {archivoAdjunto && (
             <div className='file-preview-badge'>
               <span className='file-name'>
@@ -298,7 +302,7 @@ const TicketDetails = ({ ticket, onClose, onUpdate }) => {
               ref={fileInputRef}
               style={{ display: 'none' }}
               onChange={handleFileChange}
-              accept='image/*,.pdf,.doc,.docx,.xls,.xlsx' // Limita los tipos si lo deseas
+              accept='image/*,.pdf,.doc,.docx,.xls,.xlsx'
             />
 
             <button
