@@ -19,8 +19,6 @@ import api from '../../service/api';
 import './AddEquipoForm.scss';
 
 const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
-  // --- 1. ESTADO PRINCIPAL ---
-  // Aquí guardo los datos básicos que se enviarán a la tabla 'equipos'
   const [formData, setFormData] = useState({
     categoria: 'Laptop/PC',
     empresa_id: '',
@@ -39,23 +37,15 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
     procesador: '',
   });
 
-  // --- 2. ESTADOS DEL CONSTRUCTOR DE PROCESADORES ---
-  // Estos estados me ayudan a armar el nombre del procesador (Ej: Intel + Core i7 + 10ma Gen)
   const [builderMarca, setBuilderMarca] = useState(null);
   const [builderModelo, setBuilderModelo] = useState(null);
   const [builderGen, setBuilderGen] = useState(null);
-
-  // --- 3. CATÁLOGOS DINÁMICOS Y EXTRA SPECS ---
   const [marcasOptions, setMarcasOptions] = useState([]);
   const [proveedoresOptions, setProveedoresOptions] = useState([]);
   const [empresasOptions, setEmpresasOptions] = useState([]);
   const [estadosFisicosOptions, setEstadosFisicosOptions] = useState([]);
   const [loadingData, setLoadingData] = useState(false);
-
-  // Manejo de especificaciones personalizadas (Key-Value)
   const [specsList, setSpecsList] = useState([]);
-
-  // --- 4. OPCIONES ESTÁTICAS ---
   const categoriasOptions = [
     { value: 'Laptop/PC', label: 'Laptop / PC' },
     { value: 'Celular/Tablet', label: 'Celular / Tablet' },
@@ -82,7 +72,6 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
     { value: 'Apple', label: 'Apple' },
   ];
 
-  // Dependiendo de la marca del procesador, devuelvo los modelos disponibles
   const getModeloOptions = (marca) => {
     switch (marca) {
       case 'Intel':
@@ -118,7 +107,6 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
     }
   };
 
-  // Dependiendo de la marca, devuelvo las generaciones
   const getGenOptions = (marca) => {
     switch (marca) {
       case 'Intel':
@@ -145,10 +133,6 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
     }
   };
 
-  /**
-   * 5. EFECTOS DE CARGA Y PARSEO
-   */
-  // Cargo todos los catálogos en paralelo al montar el componente
   useEffect(() => {
     const loadData = async () => {
       setLoadingData(true);
@@ -185,7 +169,6 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
     loadData();
   }, []);
 
-  // Si estoy en modo edición, "desempaco" el JSON de especificaciones para rellenar los inputs
   useEffect(() => {
     if (equipoToEdit) {
       let existingRam = '';
@@ -206,11 +189,10 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
         parsedSpecs = equipoToEdit.especificaciones;
       }
 
-      // Analizo el JSON para extraer RAM, Almacenamiento y Procesador. Lo demás va a extras.
       Object.entries(parsedSpecs).forEach(([k, v]) => {
         const keyLower = k.toLowerCase().trim();
         if (keyLower === 'ram') {
-          existingRam = String(v).replace(/[^\d.]/g, ''); // Saco solo los números
+          existingRam = String(v).replace(/[^\d.]/g, '');
         } else if (keyLower === 'procesador') {
           existingProc = v;
         } else if (keyLower === 'almacenamiento') {
@@ -249,7 +231,6 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
     }
   }, [equipoToEdit]);
 
-  // Construyo el procesador automáticamente si uso los selects del constructor rápido
   useEffect(() => {
     if (builderMarca || builderModelo || builderGen) {
       const parts = [
@@ -261,13 +242,11 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
     }
   }, [builderMarca, builderModelo, builderGen]);
 
-  // --- 6. MANEJADORES DE ESTADO ---
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
   const handleSelectChange = (name, newValue) =>
     setFormData({ ...formData, [name]: newValue ? newValue.value : '' });
 
-  // Si cambia a "Propio", limpio proveedor y fecha de alquiler
   const handleCondicionChange = (newValue) => {
     const esPropio = newValue.value;
     setFormData({
@@ -278,7 +257,6 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
     });
   };
 
-  // Si cambio de Intel a AMD, reseteo el modelo y generación para evitar combinaciones raras
   const handleBuilderMarcaChange = (selected) => {
     setBuilderMarca(selected);
     setBuilderModelo(null);
@@ -295,26 +273,30 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
   const removeSpecRow = (index) =>
     setSpecsList(specsList.filter((_, i) => i !== index));
 
-  // --- 7. ENVÍO DE DATOS ---
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!formData.empresa_id)
-      return sileo.warning({ title: 'Advertencia', description: 'Debes seleccionar la Empresa a cargo del ítem.' });
+      return sileo.warning({
+        title: 'Advertencia',
+        description: 'Debes seleccionar la Empresa a cargo del ítem.',
+      });
     if (!formData.estado_fisico_id)
-      return sileo.warning({ title: 'Advertencia', description: 'Debes indicar el Estado Físico.' });
+      return sileo.warning({
+        title: 'Advertencia',
+        description: 'Debes indicar el Estado Físico.',
+      });
     if (!formData.es_propio && !formData.proveedor_id)
-      return sileo.warning({ title: 'Advertencia', description: 
-        'Debes seleccionar un Proveedor para ítems alquilados.',
+      return sileo.warning({
+        title: 'Advertencia',
+        description: 'Debes seleccionar un Proveedor para ítems alquilados.',
       });
 
-    // Empaqueto todas las especificaciones extras en un objeto
     const specsObject = specsList.reduce((acc, item) => {
       if (item.key && item.value) acc[item.key] = item.value;
       return acc;
     }, {});
 
-    // Añado las specs principales si aplica a la categoría
     if (
       formData.categoria === 'Laptop/PC' ||
       formData.categoria === 'Celular/Tablet'
@@ -338,18 +320,26 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
     try {
       if (equipoToEdit) {
         await api.put(`/equipos/${equipoToEdit.id}`, payload);
-        sileo.success({ title: 'Éxito', description: 'Ítem actualizado correctamente' });
+        sileo.success({
+          title: 'Éxito',
+          description: 'Ítem actualizado correctamente',
+        });
       } else {
         await api.post('/equipos', payload);
-        sileo.success({ title: 'Éxito', description: 'Ítem registrado en inventario' });
+        sileo.success({
+          title: 'Éxito',
+          description: 'Ítem registrado en inventario',
+        });
       }
       onSuccess();
     } catch (error) {
-      sileo.error({ title: 'Error', description: error.response?.data?.error || 'Error al guardar el ítem' });
+      sileo.error({
+        title: 'Error',
+        description: error.response?.data?.error || 'Error al guardar el ítem',
+      });
     }
   };
 
-  // --- 8. ESTILOS REACT-SELECT ---
   const customSelectStyles = {
     control: (provided, state) => ({
       ...provided,
@@ -419,7 +409,6 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
       className='equipo-form-modern'
       onSubmit={handleSubmit}
     >
-      {/* SECCIÓN: CLASIFICACIÓN Y PROPIEDAD */}
       <div className='form-section'>
         <div className='section-header'>
           <div className='indicator' />
@@ -479,7 +468,6 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
         </div>
       </div>
 
-      {/* SECCIÓN DINÁMICA: PROVEEDOR (Solo si es alquilado) */}
       {!formData.es_propio && (
         <div className='form-section rent-section'>
           <div className='form-grid'>
@@ -514,7 +502,6 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
         </div>
       )}
 
-      {/* SECCIÓN: DATOS DEL EQUIPO */}
       <div className='form-section'>
         <div className='section-header'>
           <div className='indicator' />
@@ -604,7 +591,6 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
         </div>
       </div>
 
-      {/* SECCIÓN ESPECIFICACIONES TÉCNICAS (Solo Laptops o Celulares) */}
       {(formData.categoria === 'Laptop/PC' ||
         formData.categoria === 'Celular/Tablet') && (
         <div className='form-section'>
@@ -705,7 +691,6 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
         </div>
       )}
 
-      {/* SECCIÓN DETALLES EXTRA */}
       <div className='form-section'>
         <div className='section-header'>
           <div className='indicator' />
@@ -754,7 +739,7 @@ const AddEquipoForm = ({ onSuccess, equipoToEdit }) => {
           className='btn-submit-modern'
           disabled={loadingData}
         >
-          <Save size={18} />{' '}
+          <Save size={18} />
           {equipoToEdit ? 'Actualizar Cambios' : 'Guardar en Inventario'}
         </button>
       </div>

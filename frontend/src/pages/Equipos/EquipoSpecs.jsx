@@ -21,7 +21,6 @@ const EquipoSpecs = ({ equipo, calcularAntiguedad, formatDate }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [imagenActual, setImagenActual] = useState(null);
 
-  // Sincronizamos la imagen actual cuando cambia el equipo seleccionado
   useEffect(() => {
     if (equipo) {
       setImagenActual(equipo.imagen_url);
@@ -30,18 +29,21 @@ const EquipoSpecs = ({ equipo, calcularAntiguedad, formatDate }) => {
 
   if (!equipo) return null;
 
-  // --- MANEJADOR DE SUBIDA DE IMAGEN ---
   const handleImageUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
-    // Validación básica de tipo de archivo e imagen
     if (!file.type.startsWith('image/')) {
-      return sileo.error({ title: 'Error', description: 'Solo se permiten archivos de imagen.' });
+      return sileo.error({
+        title: 'Error',
+        description: 'Solo se permiten archivos de imagen.',
+      });
     }
     if (file.size > 5 * 1024 * 1024) {
-      // Límite de 5MB
-      return sileo.error({ title: 'Error', description: 'La imagen no debe superar los 5MB.' });
+      return sileo.error({
+        title: 'Error',
+        description: 'La imagen no debe superar los 5MB.',
+      });
     }
 
     const formData = new FormData();
@@ -75,7 +77,6 @@ const EquipoSpecs = ({ equipo, calcularAntiguedad, formatDate }) => {
 
   return (
     <div className='specs-grid-modern'>
-      {/* --- VISOR DE FOTOGRAFÍA --- */}
       <div className='equipo-image-container'>
         {imagenActual ? (
           <div
@@ -106,7 +107,6 @@ const EquipoSpecs = ({ equipo, calcularAntiguedad, formatDate }) => {
           </div>
         )}
 
-        {/* Input invisible para abrir el selector de archivos */}
         <input
           type='file'
           ref={fileInputRef}
@@ -116,7 +116,6 @@ const EquipoSpecs = ({ equipo, calcularAntiguedad, formatDate }) => {
           disabled={isUploading}
         />
 
-        {/* Overlay de carga mientras sube a Cloudinary */}
         {isUploading && (
           <div className='uploading-overlay'>
             <Loader2
@@ -128,7 +127,6 @@ const EquipoSpecs = ({ equipo, calcularAntiguedad, formatDate }) => {
         )}
       </div>
 
-      {/* --- CABECERA PRINCIPAL --- */}
       <div className='header-specs'>
         <div className='big-icon'>
           <Laptop size={32} />

@@ -36,13 +36,9 @@ import EquipoSpecs from './EquipoSpecs';
 import './Equipos.scss';
 
 const Equipos = () => {
-  // --- 1. ESTADOS DE DATOS ---
-  // Guardo todo el inventario, mi rol para permisos y controlo la pantalla de carga.
   const [equipos, setEquipos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState(null);
-
-  // --- 2. ESTADOS DE BÚSQUEDA Y FILTRADO ---
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCondicion, setFilterCondicion] = useState({
     value: 'todos',
@@ -52,21 +48,16 @@ const Equipos = () => {
     value: 'todos',
     label: 'Todas las Categorías',
   });
-
-  // --- 3. ESTADOS DE PAGINACIÓN ---
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-
-  // --- 4. ESTADOS DE MODALES Y ACCIONES ---
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [modalType, setModalType] = useState('specs'); // 'specs' | 'history' | 'form'
+  const [modalType, setModalType] = useState('specs');
   const [historyData, setHistoryData] = useState([]);
   const [selectedEquipo, setSelectedEquipo] = useState(null);
   const [equipoToEdit, setEquipoToEdit] = useState(null);
   const [equipoToDelete, setEquipoToDelete] = useState(null);
 
-  // --- Opciones Estáticas para Filtros ---
   const condicionOptions = [
     { value: 'todos', label: 'Todos (Propiedad)' },
     { value: 'propios', label: 'Propios' },
@@ -84,11 +75,6 @@ const Equipos = () => {
     { value: 'Otros', label: 'Otros' },
   ];
 
-  /**
-   * CARGA INICIAL
-   * Traigo mi perfil de usuario y la lista completa de equipos, ordenándolos para que
-   * los inactivos/dados de baja aparezcan al final.
-   */
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -118,12 +104,10 @@ const Equipos = () => {
     fetchData();
   }, []);
 
-  // Si busco algo o cambio de filtro, regreso a la página 1.
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, filterCondicion, filterCategoria]);
 
-  // --- HELPERS DE FORMATEO ---
   const formatDate = (dateString) => {
     if (!dateString) return '-';
     return new Date(dateString).toLocaleDateString('es-PE', {
@@ -170,7 +154,6 @@ const Equipos = () => {
     }
   };
 
-  // --- LÓGICA DE FILTRADO ---
   const filteredEquipos = equipos.filter((item) => {
     const term = searchTerm.toLowerCase();
     const matchesSearch =
@@ -193,16 +176,11 @@ const Equipos = () => {
     return matchesSearch && matchesCondicion && matchesCat;
   });
 
-  // --- PAGINACIÓN ---
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredEquipos.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(filteredEquipos.length / itemsPerPage);
 
-  /**
-   * EXPORTACIÓN A EXCEL
-   * Genero un reporte detallado "desempaquetando" el JSON de especificaciones técnicas.
-   */
   const exportarExcel = () => {
     if (equipos.length === 0) return toast.info('No hay datos para exportar');
 
@@ -256,7 +234,6 @@ const Equipos = () => {
     });
   };
 
-  // --- MANEJADORES DE MODALES ---
   const handleViewSpecs = (equipo) => {
     setModalType('specs');
     setSelectedEquipo(equipo);
@@ -293,7 +270,6 @@ const Equipos = () => {
     }
   };
 
-  // --- ACCIONES CRUD ---
   const toggleDisponibilidad = async (equipo, nuevaDisponibilidad) => {
     try {
       await api.put(`/equipos/${equipo.id}/disponibilidad`, {
@@ -319,7 +295,6 @@ const Equipos = () => {
     fetchData();
   };
 
-  // --- ESTILOS DE SELECT ---
   const customFilterStyles = {
     control: (provided, state) => ({
       ...provided,
@@ -396,7 +371,6 @@ const Equipos = () => {
         </div>
       </div>
 
-      {/* BARRA DE BÚSQUEDA Y FILTROS */}
       <div className='filters-bar'>
         <div className='search-input'>
           <Search
@@ -430,7 +404,6 @@ const Equipos = () => {
         </div>
       </div>
 
-      {/* TABLA PRINCIPAL */}
       <div className='table-container'>
         {currentItems.length === 0 ? (
           <div className='no-data'>
@@ -528,8 +501,6 @@ const Equipos = () => {
                       >
                         <Eye size={16} />
                       </button>
-
-                      {/* ACCIONES CRÍTICAS (Editar, Dar de Baja, Reactivar) */}
                       {item.disponible ? (
                         <>
                           <button
@@ -568,7 +539,6 @@ const Equipos = () => {
           </table>
         )}
 
-        {/* PAGINACIÓN */}
         {filteredEquipos.length > itemsPerPage && (
           <div className='pagination-footer'>
             <div className='info'>
@@ -601,9 +571,6 @@ const Equipos = () => {
         )}
       </div>
 
-      {/* --- MODALES --- */}
-
-      {/* Modal Principal Multipropósito */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -636,7 +603,6 @@ const Equipos = () => {
         )}
       </Modal>
 
-      {/* Modal Confirmación de Baja */}
       <Modal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
@@ -649,7 +615,7 @@ const Equipos = () => {
           </div>
           <h3>¿Estás seguro?</h3>
           <p>
-            Estás a punto de dar de baja el ítem{' '}
+            Estás a punto de dar de baja el ítem
             <strong>
               {equipoToDelete?.marca} {equipoToDelete?.modelo}
             </strong>{' '}

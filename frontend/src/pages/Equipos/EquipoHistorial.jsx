@@ -1,16 +1,16 @@
 //frontend/src/pages/Equipos/EquipoHistorial.jsx
-import React, { useState, useEffect } from 'react';
 import {
-  History,
-  Building2,
-  Handshake,
   AlertTriangle,
+  Building2,
   ChevronLeft,
   ChevronRight,
   Clock,
+  Handshake,
+  History,
   User,
   UserCheck,
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import './EquipoHistorial.scss';
 
 const EquipoHistorial = ({ equipo, historyData }) => {
@@ -30,7 +30,6 @@ const EquipoHistorial = ({ equipo, historyData }) => {
 
   return (
     <div className='history-container'>
-      {/* CABECERA DEL MODAL */}
       <div className='history-header'>
         <div className='big-icon'>
           <History size={22} />
@@ -54,7 +53,6 @@ const EquipoHistorial = ({ equipo, historyData }) => {
         <>
           <ul className='audit-timeline'>
             {currentItems.map((hist) => {
-              // Limpiamos el texto genérico del Token N/A si viene del backend
               const cleanDesc = hist.descripcion_cambio
                 ? hist.descripcion_cambio.replace(/Token:\s*N\/A/gi, '').trim()
                 : '';
@@ -62,11 +60,10 @@ const EquipoHistorial = ({ equipo, historyData }) => {
               return (
                 <li key={hist.id}>
                   <div className='audit-card'>
-                    {/* CABECERA DEL LOG */}
                     <div className='log-header'>
                       <strong>{hist.accion_realizada}</strong>
                       <span className='date-badge'>
-                        <Clock size={12} />{' '}
+                        <Clock size={12} />
                         {new Date(hist.fecha_accion).toLocaleString('es-PE', {
                           day: '2-digit',
                           month: '2-digit',
@@ -77,8 +74,6 @@ const EquipoHistorial = ({ equipo, historyData }) => {
                         })}
                       </span>
                     </div>
-
-                    {/* CUERPO DEL LOG: Descripción y Colaborador */}
                     <div style={{ marginBottom: '12px' }}>
                       {cleanDesc && (
                         <p
@@ -89,7 +84,6 @@ const EquipoHistorial = ({ equipo, historyData }) => {
                         </p>
                       )}
 
-                      {/* Si el backend nos envía el nombre del empleado, lo mostramos explícitamente aquí */}
                       {(hist.empleado_nombre ||
                         hist.colaborador_nombre ||
                         hist.empleado_nombres) && (
@@ -128,7 +122,6 @@ const EquipoHistorial = ({ equipo, historyData }) => {
                       )}
                     </div>
 
-                    {/* ETIQUETAS */}
                     <div className='hist-details-grid'>
                       <span
                         className={`hist-tag ${hist.es_propio ? 'owned' : 'rented'}`}
@@ -161,7 +154,6 @@ const EquipoHistorial = ({ equipo, historyData }) => {
                       </span>
                     </div>
 
-                    {/* OBSERVACIONES EXTRAS */}
                     {hist.observaciones_equipo && (
                       <div className='hist-observations'>
                         <AlertTriangle
@@ -174,7 +166,6 @@ const EquipoHistorial = ({ equipo, historyData }) => {
                       </div>
                     )}
 
-                    {/* FOOTER DEL LOG */}
                     <div className='log-footer-grid'>
                       <div className='footer-item'>
                         <Building2
@@ -182,7 +173,7 @@ const EquipoHistorial = ({ equipo, historyData }) => {
                           style={{ color: '#059669' }}
                         />
                         <span>
-                          Empresa:{' '}
+                          Empresa:
                           <strong>
                             {hist.es_propio
                               ? hist.empresa_nombre
@@ -211,7 +202,6 @@ const EquipoHistorial = ({ equipo, historyData }) => {
             })}
           </ul>
 
-          {/* CONTROLES DE PAGINACIÓN */}
           {historyData.length > itemsPerPage && (
             <div className='pagination-footer'>
               <div className='info'>
