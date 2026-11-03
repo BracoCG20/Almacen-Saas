@@ -1,11 +1,11 @@
 //frontend/src/pages/Directorio/DirectorioTable.jsx
 import {
-  Mail,
   CornerDownRight,
   Edit,
-  UserMinus,
-  UserCheck,
   History,
+  Mail,
+  UserCheck,
+  UserMinus,
 } from 'lucide-react';
 import './DirectorioTable.scss';
 
@@ -16,7 +16,6 @@ const DirectorioTable = ({
   onReactivar,
   onViewHistory,
 }) => {
-  // Manejo de estado vacío: Si no hay nadie registrado en Workspace aún
   if (directorio.length === 0) {
     return (
       <div className='no-data'>
@@ -42,7 +41,6 @@ const DirectorioTable = ({
           {directorio.map((d) => (
             <tr
               key={d.id}
-              // Aplico un estilo atenuado si la cuenta fue suspendida/dada de baja
               className={!d.estado ? 'row-inactive' : ''}
             >
               <td>
@@ -76,9 +74,6 @@ const DirectorioTable = ({
               </td>
 
               <td>
-                {/* Renderizado de Transferencias: 
-                    Solo si está suspendido, verifico si los datos fueron transferidos 
-                    a otro compañero y pinto una pequeña flecha indicativa. */}
                 {!d.estado &&
                 d.datos_transferidos &&
                 d.colaborador_destino_id ? (
@@ -97,14 +92,12 @@ const DirectorioTable = ({
                 ) : !d.estado ? (
                   <span className='no-transfer'>Sin transferencia</span>
                 ) : (
-                  // Si la cuenta está activa, esta columna no aplica
                   <span className='dash'>-</span>
                 )}
               </td>
 
               <td className='center'>
                 <div className='actions-cell'>
-                  {/* BOTÓN HISTORIAL: Siempre visible sin importar el estado */}
                   <button
                     className='action-btn history'
                     onClick={() => onViewHistory(d)}
@@ -112,10 +105,6 @@ const DirectorioTable = ({
                   >
                     <History size={16} />
                   </button>
-
-                  {/* LÓGICA CONDICIONAL DE BOTONES: 
-                      Si está Activa -> Permito Editar plan o Suspender. 
-                      Si está Suspendida -> Solo permito Reactivar. */}
                   {d.estado ? (
                     <>
                       <button
