@@ -1,7 +1,7 @@
 //frontend/src/utils/pdfGeneratorDevolucion.js
 import { jsPDF } from 'jspdf';
-import logoImg from '../assets/logo_grupoSP.png';
 import firmaImg from '../assets/firma_pierina.png';
+import logoImg from '../assets/logo_grupoSP.png';
 
 export const generarPDFDevolucion = (
   equipos, // AHORA RECIBE UN ARREGLO
@@ -59,7 +59,7 @@ export const generarPDFDevolucion = (
   doc.text(lineasCuerpo, margen, y);
   y += lineasCuerpo.length * 5 + 5;
 
-  // 5. Detalles de Equipos (Iterar sobre la lista)
+  // 5. Detalles de Equipos
   doc.setFont('helvetica', 'normal');
   listaEquipos.forEach((eq) => {
     const itemEquipo = `- ${eq.marca} ${eq.modelo} (S/N: ${eq.serie})`;
@@ -108,7 +108,7 @@ export const generarPDFDevolucion = (
   const lineasLegal2 = doc.splitTextToSize(textoLegal2, anchoUtil);
   doc.text(lineasLegal2, margen, y);
 
-  // 8. Cajas de Firmas (Empujamos al fondo)
+  // 8. Cajas de Firmas
   y = Math.max(y + 20, 220);
   const alturaCaja = 40;
   const anchoCaja = anchoUtil / 2;

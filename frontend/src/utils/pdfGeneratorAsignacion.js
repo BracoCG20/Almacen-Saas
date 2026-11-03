@@ -1,10 +1,10 @@
 //frontend/src/utils/pdfGeneratorAsignacion.js
 import { jsPDF } from 'jspdf';
-import logoImg from '../assets/logo_grupoSP.png';
 import firmaImg from '../assets/firma_pierina.png';
+import logoImg from '../assets/logo_grupoSP.png';
 
 export const generarPDFBlob = (
-  equipos, // AHORA RECIBE UN ARREGLO DE EQUIPOS
+  equipos,
   usuario,
   fechaOverride = null,
   cargadorOverride = null,
@@ -16,7 +16,6 @@ export const generarPDFBlob = (
   const anchoUtil = anchoPagina - margenIzq - margenDer;
   let y = 20;
 
-  // Si envían un solo equipo (por compatibilidad), lo convertimos en arreglo
   const listaEquipos = Array.isArray(equipos)
     ? equipos
     : [{ ...equipos, cargador: cargadorOverride }];
@@ -67,7 +66,7 @@ export const generarPDFBlob = (
   doc.text(splitIntro, margenIzq, y);
   y += splitIntro.length * 5 + 5;
 
-  // 5. Tabla (Multiples filas)
+  // 5. Tabla
   const altoFila = 10;
   const col1 = margenIzq;
   const col2 = margenIzq + 50;
@@ -98,12 +97,10 @@ export const generarPDFBlob = (
     doc.rect(col2, y, 70, altoFila);
     doc.rect(col3, y, anchoCol3, altoFila);
 
-    // LÓGICA DE TEXTO SEGÚN EL CARGADOR
     const tieneCargador = eq.cargador !== undefined ? eq.cargador : true;
     let itemTexto = eq.modelo;
     if (tieneCargador === true) itemTexto += ' y accesorios';
     else if (tieneCargador === false) itemTexto += ' (sólo equipo)';
-    // Si es null, simplemente imprime el modelo.
 
     const textoItemRecortado = doc.splitTextToSize(itemTexto, 46);
     doc.text(textoItemRecortado, col1 + 2, y + 5);
