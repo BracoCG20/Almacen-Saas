@@ -30,16 +30,11 @@ import ProveedorHistorial from './ProveedorHistorial';
 import './Proveedores.scss';
 
 const Proveedores = () => {
-  // --- 1. ESTADOS DE DATOS ---
   const [proveedores, setProveedores] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // --- 2. ESTADOS DE BÚSQUEDA Y PAGINACIÓN ---
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
-
-  // --- 3. ESTADOS DE MODALES ---
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
@@ -48,10 +43,6 @@ const Proveedores = () => {
   const [providerToAction, setProviderToAction] = useState(null);
   const [historyData, setHistoryData] = useState([]);
 
-  /**
-   * CARGA INICIAL DE DATOS
-   * Solicita al backend la lista de proveedores y la ordena, poniendo a los activos primero.
-   */
   const fetchProveedores = async () => {
     setLoading(true);
     try {
@@ -73,12 +64,10 @@ const Proveedores = () => {
     fetchProveedores();
   }, []);
 
-  // Si busco algo en la barra, devuelvo la paginación a la primera página
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm]);
 
-  // --- FILTRADO Y PAGINACIÓN MATEMÁTICA ---
   const filtered = proveedores.filter(
     (p) =>
       p.razon_social.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -91,7 +80,6 @@ const Proveedores = () => {
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  // --- HELPERS DE URL Y FECHAS ---
   const getBackendFileUrl = (path) => {
     if (!path) return null;
     if (path.startsWith('http')) return path;
@@ -101,7 +89,6 @@ const Proveedores = () => {
     return `${baseUrl}${path}`;
   };
 
-  // Fuerzo la zona horaria UTC para que la fecha (ej: "2026-10-15") no se reduzca un día por diferencia horaria
   const formatLocalDate = (isoString) => {
     if (!isoString) return '-';
     const date = new Date(
@@ -110,9 +97,6 @@ const Proveedores = () => {
     return date.toLocaleDateString('es-PE');
   };
 
-  /**
-   * EXPORTACIÓN A EXCEL
-   */
   const exportarExcel = () => {
     if (filtered.length === 0) return toast.info('No hay datos para exportar');
 
@@ -149,10 +133,11 @@ const Proveedores = () => {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Proveedores');
     XLSX.writeFile(wb, 'Reporte_Gerencial_Proveedores.xlsx');
-    sileo.success({ title: 'Éxito', description: 'Reporte gerencial generado exitosamente' });
+    sileo.success({
+      title: 'Éxito',
+      description: 'Reporte gerencial generado exitosamente',
+    });
   };
-
-  // --- MANEJADORES DE MODALES Y ACCIONES CRUD ---
 
   const handleAdd = () => {
     setProviderToEdit(null);
@@ -184,8 +169,9 @@ const Proveedores = () => {
   const handleToggleEstado = async (estado) => {
     try {
       await api.put(`/proveedores/${providerToAction.id}/estado`, { estado });
-      sileo.success({ title: 'Éxito', description: 
-        `Proveedor ${estado ? 'reactivado' : 'desactivado'} exitosamente.`,
+      sileo.success({
+        title: 'Éxito',
+        description: `Proveedor ${estado ? 'reactivado' : 'desactivado'} exitosamente.`,
       });
       setIsDeleteModalOpen(false);
       fetchProveedores();
@@ -193,8 +179,6 @@ const Proveedores = () => {
       toast.error('Error al cambiar el estado del proveedor.');
     }
   };
-
-  // Se ejecuta desde dentro del AddProveedorForm cuando se guarda exitosamente
   const handleFormSuccess = () => {
     setIsModalOpen(false);
     fetchProveedores();
@@ -321,7 +305,6 @@ const Proveedores = () => {
                     )}
                   </td>
                   <td className='center'>
-                    {/* Si tiene contrato adjunto, permito descargarlo directamente */}
                     {prov.contrato_url ? (
                       <a
                         href={getBackendFileUrl(prov.contrato_url)}
@@ -354,8 +337,6 @@ const Proveedores = () => {
                       >
                         <History size={16} />
                       </button>
-
-                      {/* Si está activo permito editar o suspender. Si está inactivo, solo puedo reactivarlo. */}
                       {prov.estado ? (
                         <>
                           <button
@@ -422,10 +403,6 @@ const Proveedores = () => {
           </div>
         )}
       </div>
-
-      {/* --- MODALES --- */}
-
-      {/* Modal Principal: Add/Edit */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -437,7 +414,6 @@ const Proveedores = () => {
         />
       </Modal>
 
-      {/* Modal de Auditoría */}
       <Modal
         isOpen={isHistoryModalOpen}
         onClose={() => setIsHistoryModalOpen(false)}
@@ -446,7 +422,6 @@ const Proveedores = () => {
         <ProveedorHistorial historyData={historyData} />
       </Modal>
 
-      {/* Modal Confirmación Crítica (Baja) */}
       <Modal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
