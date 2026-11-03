@@ -1,19 +1,20 @@
 //frontend/src/pages/Perfil/Perfil.jsx
-import { useState, useEffect } from 'react';
-import api from '../../service/api';
-import { toast } from 'react-toastify';
-import { useAuth } from '../../context/AuthContext';
 import {
+  Briefcase,
   Building2,
   Camera,
-  Save,
+  Fingerprint,
   Lock,
   Mail,
   Phone,
-  Briefcase,
-  Fingerprint,
+  Save,
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+import { useAuth } from '../../context/AuthContext';
+import api from '../../service/api';
 
+import { sileo } from 'sileo';
 import './Perfil.scss';
 
 const Perfil = () => {
@@ -75,7 +76,10 @@ const Perfil = () => {
           setPreview(getAvatarUrl(u.foto_perfil_url));
         }
       } catch (error) {
-        toast.error('Error al cargar tu perfil');
+        sileo.error({
+          title: 'Error al cargar tu perfil',
+          description: 'No se pudieron cargar los datos de tu perfil.',
+        });
       } finally {
         setLoading(false);
       }
@@ -106,10 +110,18 @@ const Perfil = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.password && formData.password.length < 6) {
-      return toast.warning('La contraseña debe tener al menos 6 caracteres.');
+      return sileo.warning({
+        title: 'Contraseña inválida',
+        description: 'La contraseña debe tener al menos 6 caracteres.',
+      });
     }
 
-    const toastId = toast.loading('Guardando perfil...');
+    const toastId = sileo.promise(fetchData(), {
+      loading: { title: 'Guardando perfil...' },
+      success: { title: 'Perfil actualizado ✅' },
+      error: { title: 'Error al guardar' },
+    });
+
     const data = new FormData();
 
     // Solo envío lo que se ha modificado o está permitido para este rol

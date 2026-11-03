@@ -1,15 +1,15 @@
 //frontend/src/pages/FirmarDocumento/FirmarDocumento.jsx
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import api from '../../service/api';
 import {
-  FileText,
-  CheckCircle2,
   AlertCircle,
+  CheckCircle2,
+  FileText,
   Loader2,
   PenTool,
 } from 'lucide-react';
-import { toast } from 'react-toastify';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { sileo } from 'sileo';
+import api from '../../service/api';
 import './FirmarDocumento.scss';
 
 const FirmarDocumento = () => {
@@ -49,16 +49,26 @@ const FirmarDocumento = () => {
   const handleFirmar = async (e) => {
     e.preventDefault();
     if (!dni || dni.length < 8)
-      return toast.warning('Ingrese un DNI válido de 8 dígitos.');
+      return sileo.warning({
+        title: 'DNI inválido',
+        description: 'Por favor, ingresa un DNI válido de 8 dígitos.',
+      });
 
     setFirmando(true);
     try {
       // Envío el DNI como factor de autenticación para aplicar la firma
       await api.post(`/firmas/${token}`, { dni_ingresado: dni });
       setFirmadoSuccess(true);
-      toast.success('¡Documento firmado correctamente!');
+      sileo.success({
+        title: 'Documento firmado',
+        description: '¡Documento firmado correctamente!',
+      });
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Error al procesar la firma.');
+      sileo.error({
+        title: 'Error al firmar',
+        description:
+          error.response?.data?.error || 'Error al procesar la firma.',
+      });
       setFirmando(false);
     }
   };
