@@ -18,7 +18,6 @@ import { sileo } from 'sileo';
 import './Perfil.scss';
 
 const Perfil = () => {
-  // --- 1. ESTADOS Y CONTEXTO ---
   const { updateUser, user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [preview, setPreview] = useState(null);
@@ -38,11 +37,6 @@ const Perfil = () => {
 
   const isSuperAdmin = userRole === 1;
 
-  /**
-   * MANEJO DE RUTAS DE IMÁGENES (CLOUDINARY VS LOCAL)
-   * Función crítica para asegurar que las URLs que vienen de BD se dibujen
-   * correctamente, ya sean URLs absolutas (Cloudinary) o relativas (Local).
-   */
   const getAvatarUrl = (path) => {
     if (!path) return null;
     if (path.startsWith('http') || path.startsWith('blob:')) return path;
@@ -53,7 +47,6 @@ const Perfil = () => {
     return `${baseUrl}${path}`;
   };
 
-  // --- 2. CARGA INICIAL DE DATOS ---
   useEffect(() => {
     const fetchPerfil = async () => {
       try {
@@ -87,7 +80,6 @@ const Perfil = () => {
     fetchPerfil();
   }, []);
 
-  // --- 3. MANEJADORES DE INPUTS ---
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -105,7 +97,6 @@ const Perfil = () => {
     }
   };
 
-  // --- 4. ENVÍO DE DATOS AL SERVIDOR ---
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.password && formData.password.length < 6) {
@@ -184,7 +175,6 @@ const Perfil = () => {
         onSubmit={handleSubmit}
         className='perfil-grid'
       >
-        {/* --- TARJETA IZQUIERDA: Avatar y Rol --- */}
         <div className='card profile-card'>
           <div className='photo-wrapper'>
             <img
@@ -226,8 +216,6 @@ const Perfil = () => {
             />
           </div>
         </div>
-
-        {/* --- TARJETA DERECHA: Datos de Contacto y Seguridad --- */}
         <div className='card details-card'>
           <h3 className='section-title'>Datos de Contacto</h3>
 
