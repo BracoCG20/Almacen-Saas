@@ -8,20 +8,13 @@ import './Login.scss';
 import logo from '../../assets/logo_grupoSP.png';
 
 const Login = () => {
-  // --- 1. ESTADOS DEL FORMULARIO ---
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Consumo el contexto de autenticación y el hook de enrutamiento
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  /**
-   * 2. MANEJADOR DE INICIO DE SESIÓN
-   * Envío las credenciales al contexto para validarlas contra el backend.
-   * Si todo es correcto, redirijo al dashboard con una alerta personalizada.
-   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -30,14 +23,12 @@ const Login = () => {
       const result = await login(email, password);
 
       if (result && result.success) {
-        // Alerta personalizada de Éxito usando el formato de SileoOptions
         sileo.success({
           title: '¡Acceso Concedido!',
           description: 'Autenticación exitosa. Cargando tu panel de control...',
         });
         navigate('/');
       } else {
-        // Alerta personalizada para Credenciales Incorrectas o cuenta inactiva
         sileo.error({
           title: 'Fallo de Autenticación',
           description:
@@ -47,7 +38,6 @@ const Login = () => {
         setIsLoading(false);
       }
     } catch (error) {
-      // Alerta personalizada para Errores de Conexión/Servidor
       sileo.error({
         title: 'Error de Conexión',
         description:
@@ -60,7 +50,6 @@ const Login = () => {
   return (
     <div className='modern-login-container'>
       <div className='login-box'>
-        {/* --- PANEL IZQUIERDO (Branding y Diseño Visual) --- */}
         <div className='login-brand-panel'>
           <div className='brand-content'>
             <span className='brand-badge'>Plataforma Centralizada</span>
