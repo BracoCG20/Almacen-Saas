@@ -97,7 +97,6 @@ const Perfil = () => {
     setFormData({ ...formData, telefono: onlyNums });
   };
 
-  // Cuando escojo una foto, creo un blob local temporal para previsualizarla antes de guardar
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -124,7 +123,6 @@ const Perfil = () => {
 
     const data = new FormData();
 
-    // Solo envío lo que se ha modificado o está permitido para este rol
     if (formData.password) data.append('password', formData.password);
     if (formData.telefono) data.append('telefono', formData.telefono);
     if (fotoFile) data.append('foto', fotoFile);
@@ -141,18 +139,14 @@ const Perfil = () => {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      // Recupero la URL procesada por el backend (ej: Cloudinary)
       const nuevaFotoUrl = res.data.foto_url || user?.foto_url;
 
       if (fotoFile || isSuperAdmin) {
-        // Actualizo el Contexto global para que el Sidebar refleje los cambios al instante
         updateUser({
           foto_url: nuevaFotoUrl,
           nombre: `${formData.nombres} ${formData.apellidos}`,
           email: formData.email_login,
         });
-
-        // Actualizo la imagen de este mismo componente
         if (nuevaFotoUrl) setPreview(getAvatarUrl(nuevaFotoUrl));
       }
 
@@ -163,7 +157,6 @@ const Perfil = () => {
         autoClose: 3000,
       });
 
-      // Reseteo campos temporales de seguridad
       setFormData((prev) => ({ ...prev, password: '' }));
       setFotoFile(null);
     } catch (error) {
@@ -178,7 +171,6 @@ const Perfil = () => {
 
   if (loading) return <div className='loading-state'>Cargando perfil...</div>;
 
-  // Avatar por defecto generado con las iniciales si el usuario no tiene foto
   const defaultImage = `https://ui-avatars.com/api/?name=${formData.nombres}+${formData.apellidos}&background=random`;
 
   return (
