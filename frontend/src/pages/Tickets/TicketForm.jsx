@@ -1,7 +1,6 @@
 //frontend/src/pages/Tickets/TicketForm.jsx
-import React from 'react';
-import Select from 'react-select';
 import { Clock, Info, User } from 'lucide-react';
+import Select from 'react-select';
 import './TicketForm.scss';
 
 const catalogoSolicitudes = [
@@ -113,7 +112,6 @@ const TicketForm = ({
       onSubmit={onSubmit}
       className='ticket-form'
     >
-      {/* 1. SOLICITANTE LECTURA SOLAMENTE */}
       <div className='form-group'>
         <label>Solicitante</label>
         <div className='readonly-user-badge'>
@@ -121,8 +119,6 @@ const TicketForm = ({
           <span>{currentUser?.nombre || 'Usuario Actual'}</span>
         </div>
       </div>
-
-      {/* 2. SELECTOR DE CATÁLOGO INTELIGENTE */}
       <div className='form-group mt-1'>
         <label>¿En qué te podemos ayudar? *</label>
         <Select
@@ -143,7 +139,6 @@ const TicketForm = ({
         />
       </div>
 
-      {/* 3. CAJA DE INFORMACIÓN SLA (Aparece al seleccionar algo) */}
       {selectedService && (
         <div
           className={`sla-info-box ${selectedService.prioridad.toLowerCase()}`}

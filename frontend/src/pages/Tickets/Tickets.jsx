@@ -102,7 +102,10 @@ const Tickets = () => {
       const resTickets = await api.get('/tickets');
       setTickets(resTickets.data);
     } catch (error) {
-      sileo.error({ title: 'Error', description: 'Error al cargar los tickets' });
+      sileo.error({
+        title: 'Error',
+        description: 'Error al cargar los tickets',
+      });
     } finally {
       setLoading(false);
     }
@@ -122,15 +125,25 @@ const Tickets = () => {
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();
     if (!formData.tipo_solicitud || !formData.asunto || !formData.descripcion) {
-      return sileo.warning({ title: 'Advertencia', description: 'Completa todos los campos obligatorios' });
+      return sileo.warning({
+        title: 'Advertencia',
+        description: 'Completa todos los campos obligatorios',
+      });
     }
     try {
       await api.post('/tickets', formData);
-      sileo.success({ title: 'Éxito', description: 'Ticket generado exitosamente' });
+      sileo.success({
+        title: 'Éxito',
+        description: 'Ticket generado exitosamente',
+      });
       setModalOpen(false);
       fetchData();
     } catch (error) {
-      sileo.error({ title: 'Error', description: error.response?.data?.error || 'Error al generar el ticket' });
+      sileo.error({
+        title: 'Error',
+        description:
+          error.response?.data?.error || 'Error al generar el ticket',
+      });
     }
   };
 
@@ -140,13 +153,15 @@ const Tickets = () => {
       sileo.success({ title: 'Éxito', description: '¡Has tomado el ticket!' });
       fetchData();
     } catch (error) {
-      sileo.error({ title: 'Error', description: 'Error al asignar el ticket' });
+      sileo.error({
+        title: 'Error',
+        description: 'Error al asignar el ticket',
+      });
     }
   };
 
   const filteredTickets = tickets.filter((t) => {
-    // 1. Validamos si es Admin (En tu consola vimos que la variable se llama 'rol')
-    // Asumiendo que el rol '1' es Admin/TI y el '2' es un Usuario normal
+    // 1. Validamos si es Admin
     const rolUsuario = user?.rol?.toString() || user?.rol_id?.toString();
     const isAdmin = rolUsuario === '1';
 
@@ -156,13 +171,11 @@ const Tickets = () => {
 
     const matchUser = isAdmin ? true : ticketCreadorId === userId;
 
-    // Búsqueda por texto
     const matchSearch =
       t.asunto?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       t.solicitante_nombres?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       `TKT-${t.id}`.toLowerCase().includes(searchTerm.toLowerCase());
 
-    // Búsqueda por select
     const matchTipo =
       filtroTipo.value === 'todos' || t.tipo_solicitud === filtroTipo.value;
 
@@ -232,7 +245,6 @@ const Tickets = () => {
         </div>
       </div>
 
-      {/* AQUÍ LLAMAMOS A LA TABLA MODULARIZADA */}
       <TicketsTable
         filteredTickets={filteredTickets}
         currentItems={currentItems}
