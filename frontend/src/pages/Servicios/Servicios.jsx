@@ -90,7 +90,10 @@ const Servicios = () => {
       });
       setServicios(sorted);
     } catch (error) {
-      sileo.error({ title: 'Error', description: 'Error al cargar los servicios' });
+      sileo.error({
+        title: 'Error',
+        description: 'Error al cargar los servicios',
+      });
     } finally {
       setLoading(false);
     }
@@ -237,7 +240,10 @@ const Servicios = () => {
       await api.put(`/servicios/${servicioToChangeStatus.id}/estado`, {
         estado: newStatus,
       });
-      sileo.success({ title: 'Éxito', description: `Servicio ${newStatus ? 'activado' : 'cancelado'}` });
+      sileo.success({
+        title: 'Éxito',
+        description: `Servicio ${newStatus ? 'activado' : 'cancelado'}`,
+      });
       fetchData();
       setIsStatusModalOpen(false);
     } catch (error) {

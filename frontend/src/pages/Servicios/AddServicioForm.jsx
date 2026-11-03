@@ -1,17 +1,16 @@
 //frontend/src/pages/Servicios/AddServicioForm.jsx
-import React, { useState, useEffect } from 'react';
-import api from '../../service/api';
-import { sileo } from 'sileo';
-import Select from 'react-select';
 import {
   CloudUpload,
-  Save,
-  Link as LinkIcon,
-  Wallet,
-  CreditCard,
-  Landmark,
   FileText,
+  Landmark,
+  Link as LinkIcon,
+  Save,
+  Wallet,
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import Select from 'react-select';
+import { sileo } from 'sileo';
+import api from '../../service/api';
 import './AddServicioForm.scss';
 
 const AddServicioForm = ({ onSuccess, servicioToEdit }) => {
@@ -81,7 +80,10 @@ const AddServicioForm = ({ onSuccess, servicioToEdit }) => {
           })),
         );
       } catch (error) {
-        sileo.error({ title: 'Error', description: 'Error al cargar datos iniciales' });
+        sileo.error({
+          title: 'Error',
+          description: 'Error al cargar datos iniciales',
+        });
       }
     };
     fetchIniciales();
@@ -134,20 +136,32 @@ const AddServicioForm = ({ onSuccess, servicioToEdit }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.nombre.trim())
-      return sileo.warning({ title: 'Advertencia', description: 'El nombre es obligatorio.' });
+      return sileo.warning({
+        title: 'Advertencia',
+        description: 'El nombre es obligatorio.',
+      });
 
     setLoading(true);
     try {
       if (servicioToEdit) {
         await api.put(`/servicios/${servicioToEdit.id}`, formData);
-        sileo.success({ title: 'Éxito', description: 'Servicio actualizado correctamente' });
+        sileo.success({
+          title: 'Éxito',
+          description: 'Servicio actualizado correctamente',
+        });
       } else {
         await api.post('/servicios', formData);
-        sileo.success({ title: 'Éxito', description: 'Servicio registrado correctamente' });
+        sileo.success({
+          title: 'Éxito',
+          description: 'Servicio registrado correctamente',
+        });
       }
       onSuccess();
     } catch (error) {
-      sileo.error({ title: 'Error', description: error.response?.data?.error || 'Error al guardar' });
+      sileo.error({
+        title: 'Error',
+        description: error.response?.data?.error || 'Error al guardar',
+      });
     } finally {
       setLoading(false);
     }
@@ -221,7 +235,6 @@ const AddServicioForm = ({ onSuccess, servicioToEdit }) => {
       className='servicio-form-modern'
       onSubmit={handleSubmit}
     >
-      {/* SECCIÓN 1: GENERAL */}
       <div className='form-section'>
         <div className='section-header'>
           <div className='indicator' />
@@ -278,7 +291,6 @@ const AddServicioForm = ({ onSuccess, servicioToEdit }) => {
         </div>
       </div>
 
-      {/* SECCIÓN 2: COSTOS */}
       <div className='form-section'>
         <div className='section-header'>
           <div className='indicator' />
@@ -352,7 +364,6 @@ const AddServicioForm = ({ onSuccess, servicioToEdit }) => {
         </div>
       </div>
 
-      {/* SECCIÓN 3: FACTURACIÓN */}
       <div className='form-section'>
         <div className='section-header'>
           <div className='indicator' />
@@ -398,7 +409,6 @@ const AddServicioForm = ({ onSuccess, servicioToEdit }) => {
             </div>
           </div>
 
-          {/* Empresa Usuaria */}
           <div className='billing-card usuaria'>
             <div className='card-title'>
               <Landmark size={14} /> Empresa Usuaria

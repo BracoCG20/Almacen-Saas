@@ -66,7 +66,10 @@ const PagoServicioModal = ({ servicio, onClose }) => {
       const res = await api.get(`/servicios/${servicio.id}/pagos`);
       setPagos(res.data);
     } catch (error) {
-      sileo.error({ title: 'Error', description: 'Error al cargar el historial de pagos' });
+      sileo.error({
+        title: 'Error',
+        description: 'Error al cargar el historial de pagos',
+      });
     }
   };
 
@@ -91,12 +94,10 @@ const PagoServicioModal = ({ servicio, onClose }) => {
   const getBackendFileUrl = (path) => {
     if (!path) return null;
 
-    // Si el string contiene 'cloudinary' o empieza con http, es de la nube
     if (path.includes('cloudinary.com') || path.includes('http')) {
       return path.startsWith('/') ? path.substring(1) : path;
     }
 
-    // Archivos locales antiguos
     const baseUrl = api.defaults.baseURL
       ? api.defaults.baseURL.replace(/\/api\/?$/, '')
       : 'http://localhost:4000';
@@ -153,7 +154,10 @@ const PagoServicioModal = ({ servicio, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.monto_pagado || !formData.periodo_mes) {
-      return sileo.warning({ title: 'Advertencia', description: 'Debes completar el monto y el periodo del pago.' });
+      return sileo.warning({
+        title: 'Advertencia',
+        description: 'Debes completar el monto y el periodo del pago.',
+      });
     }
 
     setLoading(true);
@@ -165,12 +169,18 @@ const PagoServicioModal = ({ servicio, onClose }) => {
       await api.post(`/servicios/${servicio.id}/pagos`, form, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      sileo.success({ title: 'Éxito', description: 'Pago registrado correctamente ✅' });
+      sileo.success({
+        title: 'Éxito',
+        description: 'Pago registrado correctamente ✅',
+      });
       setArchivo(null);
       setCurrentPagoPage(1);
       fetchPagos();
     } catch (error) {
-      sileo.error({ title: 'Error', description: 'Error al registrar el pago ❌' });
+      sileo.error({
+        title: 'Error',
+        description: 'Error al registrar el pago ❌',
+      });
     } finally {
       setLoading(false);
     }
@@ -185,7 +195,10 @@ const PagoServicioModal = ({ servicio, onClose }) => {
     if (!pagoToAnular) return;
     try {
       await api.put(`/servicios/pagos/${pagoToAnular}/anular`);
-      sileo.success({ title: 'Éxito', description: 'Pago anulado exitosamente' });
+      sileo.success({
+        title: 'Éxito',
+        description: 'Pago anulado exitosamente',
+      });
       setIsAnularModalOpen(false);
       setPagoToAnular(null);
       fetchPagos();
@@ -194,7 +207,6 @@ const PagoServicioModal = ({ servicio, onClose }) => {
     }
   };
 
-  // --- REACT-SELECT ---
   const customSelectStyles = {
     control: (provided, state) => ({
       ...provided,
@@ -262,7 +274,6 @@ const PagoServicioModal = ({ servicio, onClose }) => {
 
   return (
     <div className='pago-modal-modern'>
-      {/* SECCIÓN: FORMULARIO DE REGISTRO */}
       <div className='form-section'>
         <div className='section-header'>
           <div className='indicator' />
@@ -382,7 +393,6 @@ const PagoServicioModal = ({ servicio, onClose }) => {
         </form>
       </div>
 
-      {/* SECCIÓN: HISTORIAL DE PAGOS */}
       <div className='history-section'>
         <div
           className='section-header'
@@ -507,7 +517,6 @@ const PagoServicioModal = ({ servicio, onClose }) => {
         )}
       </div>
 
-      {/* MODAL ANULAR PAGO */}
       <Modal
         isOpen={isAnularModalOpen}
         onClose={() => setIsAnularModalOpen(false)}
