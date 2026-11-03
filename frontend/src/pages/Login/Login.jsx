@@ -51,7 +51,7 @@ const Login = () => {
       sileo.error({
         title: 'Error de Conexión',
         description:
-          'No se pudo establecer comunicación con el servidor de Grupo SP. Inténtalo más tarde.',
+          'No se pudo establecer comunicación con el servidors. Inténtalo más tarde.',
       });
       setIsLoading(false);
     }
@@ -74,16 +74,11 @@ const Login = () => {
               equipos y servicios de <strong>Grupo SP</strong>.
             </p>
           </div>
-
-          {/* Elementos decorativos de fondo para el panel */}
           <div className='circle-decoration circle-1'></div>
           <div className='circle-decoration circle-2'></div>
         </div>
-
-        {/* --- PANEL DERECHO (Formulario de Acceso) --- */}
         <div className='login-form-panel'>
           <div className='form-wrapper'>
-            {/* Cabecera del formulario */}
             <div className='form-header'>
               <div className='logo-container'>
                 <img
@@ -96,7 +91,6 @@ const Login = () => {
             </div>
 
             <form onSubmit={handleSubmit}>
-              {/* Input: Correo Electrónico */}
               <div className={`modern-input-group ${email ? 'has-value' : ''}`}>
                 <div className='input-content'>
                   <label>Correo Electrónico</label>
@@ -113,8 +107,6 @@ const Login = () => {
                   <Mail size={18} />
                 </div>
               </div>
-
-              {/* Input: Contraseña */}
               <div
                 className={`modern-input-group ${password ? 'has-value' : ''}`}
               >
@@ -133,8 +125,6 @@ const Login = () => {
                   <Lock size={18} />
                 </div>
               </div>
-
-              {/* Botón de Ingreso con estado de carga (Spinner) */}
               <div className='form-actions'>
                 <button
                   type='submit'
